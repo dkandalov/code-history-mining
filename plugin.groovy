@@ -1,35 +1,42 @@
-import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diff.impl.fragments.LineFragment
+import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
+import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 
-import static com.intellij.openapi.diff.impl.ComparisonPolicy.*
-import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
+import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-
-
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
-def psiFile = currentPsiFileIn(project)
+def file = currentFileIn(project)
+def (errorMessage, Collection<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
+if (errorMessage != null) {
+	show(errorMessage)
+	return
+}
+
+show(revisions.size())
+show("good to go")
 
 
-static def checkIfCanRunAction(AnActionEvent event) {
-	VirtualFile file = currentFileIn(event.project)
-	if (file == null) return ["There are no open file editors"]
+static def tryToGetHistoryFor(VirtualFile file, Project project) {
+	if (file == null) return ["Virtual file was null"]
 
-	AbstractVcs activeVcs = ProjectLevelVcsManager.getInstance(event.project).getVcsFor(file)
+	AbstractVcs activeVcs = ProjectLevelVcsManager.getInstance(project).getVcsFor(file)
 	if (activeVcs == null) return ["There is no history for '${file.name}'"]
 
 	def historySession = activeVcs.vcsHistoryProvider.createSessionFor(new FilePathImpl(file))
 	def revisions = historySession.revisionList.sort{ it.revisionDate }
 	if (revisions.size() < 2) return ["There is only one revision for '${file.name}'"]
 
-	[null, file, revisions]
+	def noErrors = null
+	[noErrors, revisions]
 }
 
 void testTextCompare() {
