@@ -7,6 +7,7 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFileFactory
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
@@ -15,13 +16,27 @@ import static intellijeval.PluginUtil.*
 if (isIdeStartup) return
 
 def file = currentFileIn(project)
-def (errorMessage, Collection<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
+def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
 if (errorMessage != null) {
 	show(errorMessage)
 	return
 }
+show(revisions.collect{it.commitMessage}.join("<br/>\n"))
 
-show(revisions.size())
+def revisionPairs = (0..<revisions.size() - 1).collect{revisions[it, it + 1]}
+def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
+def changesByRevision = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+	def changedFragments = compareProcessor.process(new String(before.content), new String(after.content)).findAll{ it.type != null }
+	changedFragments.collect{ fragment -> fragment.type == DELETED ? [before, fragment] : [after, fragment] }
+}.groupBy{it[0]}
+show(changesByRevision.keySet().join("<br/>"))
+
+def psiFileFactory = PsiFileFactory.getInstance(project)
+changesByRevision.each { VcsFileRevision revision, Collection<LineFragment> fragments ->
+	def psiFile = psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content))
+//	show(psiFile.name)
+}
+
 show("good to go")
 
 
@@ -130,7 +145,7 @@ void testTextCompare() {
 
 		new TextCompareProcessor(IGNORE_SPACE).with {
 			def fragments = process("abc\ndef\nghi", "abc\nghi\ndef")
-			assert asDiffInfo(fragments) == [new DiffInfo(DELETED, 1, 2), new DiffInfo(INSERT, 2, 3)]
+			assert asDiffInfo(fragments) == [new TextDiffInfo(DELETED, 1, 2), new TextDiffInfo(INSERT, 2, 3)]
 		}
 		showInConsole("OK...", "TextCompareProcessorTest", project)
 
@@ -141,16 +156,16 @@ void testTextCompare() {
 	}
 }
 
-static Collection<DiffInfo> asDiffInfo(List<LineFragment> fragments) {
+static Collection<TextDiffInfo> asDiffInfo(List<LineFragment> fragments) {
 	fragments.findAll{it.type != null}.collect{
 		int startLine = (it.type == DELETED ? it.startingLine1 : it.startingLine2)
 		int endLine = (it.type == DELETED ? it.endLine1 : it.endLine2)
-		new DiffInfo(it.type, startLine, endLine)
+		new TextDiffInfo(it.type, startLine, endLine)
 	}
 }
 
 @groovy.transform.Immutable
-final class DiffInfo {
+final class TextDiffInfo {
 	final TextDiffTypeEnum diffType
 	final int startLine
 	final int endLine
