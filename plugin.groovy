@@ -73,18 +73,37 @@ try {
 			assert size() == 1
 			assertFragment(get(0), null, [0, 3], [0, 3])
 		}
+		process("abc\ndef\nghi", "abc\ndef").with {
+			assert size() == 2
+			assertFragment(get(0), null, [0, 2], [0, 2])
+			assertFragment(get(1), DELETED, [2, 3], [2, 2])
+		}
 		process("abc\ndef\nghi", "abc\nghi").with {
 			assert size() == 3
 			assertFragment(get(0), null, [0, 1], [0, 1])
-			// TODO
+			assertFragment(get(1), DELETED, [1, 2], [1, 1])
+			assertFragment(get(2), null, [2, 3], [1, 2])
+		}
+		process("abc\ndef\nghi", "def\nghi").with {
+			assert size() == 2
+			assertFragment(get(0), DELETED, [0, 1], [0, 0])
+			assertFragment(get(1), null, [1, 3], [0, 2])
+		}
+		process("abc\ndef\nghi", "abc\nghi\ndef").with {
+			assert size() == 4
+			assertFragment(get(0), null, [0, 1], [0, 1])
+			assertFragment(get(1), DELETED, [1, 2], [1, 1])
+			assertFragment(get(2), null, [2, 3], [1, 2])
+			assertFragment(get(3), DELETED, [2, 3], [2, 2])
 		}
 	}
+
+	showInConsole("OK...", "TextCompareProcessorTest", project)
 } catch (AssertionError assertionError) {
 	def writer = new StringWriter()
 	assertionError.printStackTrace(new PrintWriter(writer))
 	showInConsole(writer.buffer.toString(), "TextCompareProcessorTest", project)
 }
-showInConsole("OK...", "TextCompareProcessorTest", project)
 
 
 def assertFragment(LineFragment fragment, TextDiffTypeEnum diffType, leftRange, rightRange) {
