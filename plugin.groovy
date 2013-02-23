@@ -94,19 +94,38 @@ try {
 			assertFragment(get(0), null, [0, 1], [0, 1])
 			assertFragment(get(1), DELETED, [1, 2], [1, 1])
 			assertFragment(get(2), null, [2, 3], [1, 2])
-			assertFragment(get(3), DELETED, [2, 3], [2, 2])
+			assertFragment(get(3), INSERT, [3, 3], [2, 3])
 		}
 	}
 
+	new TextCompareProcessor(IGNORE_SPACE).with {
+		def fragments = process("abc\ndef\nghi", "abc\nghi\ndef")
+		assert asDiffInfo(fragments) == [new DiffInfo(DELETED, 1, 2), new DiffInfo(INSERT, 2, 3)]
+	}
 	showInConsole("OK...", "TextCompareProcessorTest", project)
+
 } catch (AssertionError assertionError) {
 	def writer = new StringWriter()
 	assertionError.printStackTrace(new PrintWriter(writer))
 	showInConsole(writer.buffer.toString(), "TextCompareProcessorTest", project)
 }
 
+static Collection<DiffInfo> asDiffInfo(List<LineFragment> fragments) {
+	fragments.findAll{it.type != null}.collect{
+		int startLine = (it.type == DELETED ? it.startingLine1 : it.startingLine2)
+		int endLine = (it.type == DELETED ? it.endLine1 : it.endLine2)
+		new DiffInfo(it.type, startLine, endLine)
+	}
+}
 
-def assertFragment(LineFragment fragment, TextDiffTypeEnum diffType, leftRange, rightRange) {
+@groovy.transform.Immutable
+final class DiffInfo {
+	final TextDiffTypeEnum diffType
+	final int startLine
+	final int endLine
+}
+
+static assertFragment(LineFragment fragment, TextDiffTypeEnum diffType, leftRange, rightRange) {
 	fragment.with {
 		assert type == diffType
 		assert [startingLine1, endLine1] == leftRange
