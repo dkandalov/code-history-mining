@@ -100,13 +100,20 @@ static int toLineNumber(int offset, String text) {
 }
 
 static String containingFileName(PsiElement psiElement) {
-	""
-}
-
-static String fullNameOf(PsiNamedElement psiElement) {
 	if (psiElement == null) "null"
 	else if (psiElement instanceof PsiFile) psiElement.name
-	else fullNameOf(psiElement.parent) + "/" + psiElement.name
+	else (containingFileName(psiElement.parent))
+}
+
+static String fullNameOf(PsiElement psiElement) {
+	if (psiElement == null) "null"
+	else if (psiElement instanceof PsiFile) ""
+	else if (psiElement instanceof PsiMethod || psiElement instanceof PsiClass) {
+		def parentName = fullNameOf(psiElement.parent)
+		parentName.empty ? psiElement.name : (parentName + "::" + psiElement.name)
+	} else {
+		fullNameOf(psiElement.parent)
+	}
 }
 
 static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
