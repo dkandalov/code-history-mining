@@ -38,10 +38,10 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 	def psiAfter = parseAsPSI(after)
 
 	changedFragments.collectMany { LineFragment fragment ->
+		def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
+
 		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-		def lineRange = (fragment.type == DELETED ? (fragment.startingLine1..<fragment.endLine1) : (fragment.startingLine2..<fragment.endLine2))
 		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
-		def offsetToLineNumber = { int offset -> offset } // TODO implement
 
 		def stats = []
 		def prevPsiElement = null
@@ -53,16 +53,18 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 						after.revisionNumber.asString(),
 						after.author,
 						after.revisionDate,
-						fragment.type,
+						// TODO file name
+						format(fragment.type),
+						offsetToLineNumber(offset),
+						offsetToLineNumber(offset + 1),
 						offset,
 						offset + 1,
-						offsetToLineNumber(offset),
-						offsetToLineNumber(offset + 1)
+						after.commitMessage
 				]
 				prevPsiElement = psiElement
 			} else {
-				stats.last()[6] = offset + 1
-				stats.last()[8] = offsetToLineNumber(offset + 1)
+				stats.last()[6] = offsetToLineNumber(offset + 1)
+				stats.last()[8] = offset + 1
 			}
 		}
 		stats
@@ -71,6 +73,18 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 show(stats.join("<br/>"))
 
 show("good to go")
+
+static String format(TextDiffTypeEnum diffType) {
+	diffType.toString()
+}
+
+static int toLineNumber(int offset, String text) {
+	int counter = 0
+	for (int i = 0; i < offset; i++) {
+		if (text.charAt(i) == '\n') counter++
+	}
+	counter
+}
 
 static String fullNameOf(PsiNamedElement psiElement) {
 	if (psiElement == null) "null"
