@@ -10,6 +10,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFileFactory
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
+import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
+import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static intellijeval.PluginUtil.*
 
@@ -25,22 +27,32 @@ show(revisions.collect{it.commitMessage}.join("<br/>\n"))
 
 def revisionPairs = (0..<revisions.size() - 1).collect{revisions[it, it + 1]}
 def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
-def changesByRevision = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
-	def changedFragments = compareProcessor.process(new String(before.content), new String(after.content)).findAll{ it.type != null }
-	changedFragments.collect{ fragment -> fragment.type == DELETED ? [before, fragment] : [after, fragment] }
-}.groupBy{it[0]}
-show(changesByRevision.keySet().join("<br/>"))
-
 def psiFileFactory = PsiFileFactory.getInstance(project)
-changesByRevision.each { VcsFileRevision revision, Collection<LineFragment> fragments ->
-	def psiFile = psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content))
-//	show(psiFile.name)
+def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
+
+revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+	def changedFragments = compareProcessor.process(new String(before.content), new String(after.content)).findAll{ it.type != null }
+	def psiBefore = parseAsPSI(before)
+	def psiAfter = parseAsPSI(after)
+
+	changedFragments.collect{ fragment ->
+		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+		def changeRange = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+
+		changeRange.each { lineNumber ->
+//			def psiElement = parentElementAt(lineNumber)
+		}
+	}
 }
+//show(changesByRevision.keySet().join("<br/>"))
 
 show("good to go")
 
+static commitInfo(VcsFileRevision revision) {
+	[revision.revisionNumber.asString(), revision.author, revision.revisionDate]
+}
 
-static def tryToGetHistoryFor(VirtualFile file, Project project) {
+static tryToGetHistoryFor(VirtualFile file, Project project) {
 	if (file == null) return ["Virtual file was null"]
 
 	AbstractVcs activeVcs = ProjectLevelVcsManager.getInstance(project).getVcsFor(file)
