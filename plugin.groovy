@@ -9,6 +9,8 @@ import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 
+import java.text.SimpleDateFormat
+
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
@@ -52,8 +54,8 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 						fullNameOf(psiElement),
 						after.revisionNumber.asString(),
 						after.author,
-						after.revisionDate,
-						// TODO file name
+						format(after.revisionDate),
+						containingFileName(psiElement),
 						format(fragment.type),
 						offsetToLineNumber(offset),
 						offsetToLineNumber(offset + 1),
@@ -63,8 +65,8 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 				]
 				prevPsiElement = psiElement
 			} else {
-				stats.last()[6] = offsetToLineNumber(offset + 1)
-				stats.last()[8] = offset + 1
+				stats.last()[7] = offsetToLineNumber(offset + 1)
+				stats.last()[9] = offset + 1
 			}
 		}
 		stats
@@ -74,8 +76,19 @@ show(stats.join("<br/>"))
 
 show("good to go")
 
+static String format(Date date) {
+	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
+}
+
 static String format(TextDiffTypeEnum diffType) {
-	diffType.toString()
+	switch (diffType) {
+		case TextDiffTypeEnum.INSERT: return "added"
+		case TextDiffTypeEnum.CHANGED: return "changed"
+		case TextDiffTypeEnum.DELETED: return "deleted"
+		case TextDiffTypeEnum.CONFLICT: return "conflict"
+		case TextDiffTypeEnum.NONE: return "none"
+		default: return "unknown"
+	}
 }
 
 static int toLineNumber(int offset, String text) {
@@ -84,6 +97,10 @@ static int toLineNumber(int offset, String text) {
 		if (text.charAt(i) == '\n') counter++
 	}
 	counter
+}
+
+static String containingFileName(PsiElement psiElement) {
+	""
 }
 
 static String fullNameOf(PsiNamedElement psiElement) {
