@@ -10,7 +10,7 @@ import static intellijeval.PluginUtil.showInConsole
 // Can only be executed within IntelliJEval.
 // E.g. like this
 //   TextCompareProcessorTest.testTextCompare(project)
-//   if (true)return
+//   if (true) return
 // Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code :(
 class TextCompareProcessorTest {
 

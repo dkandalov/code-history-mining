@@ -2,7 +2,11 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
@@ -10,6 +14,7 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
+import org.jetbrains.annotations.NotNull
 
 import java.text.SimpleDateFormat
 
@@ -20,6 +25,32 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.DELETED
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
+
+for (VirtualFile file in allFilesIn_(project)) {
+	show(file.path)
+}
+
+static Iterator<VirtualFile> allFilesIn_(@NotNull Project project) {
+	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots
+	def modules = ModuleManager.getInstance(project).modules
+	def exclusions = modules.collectMany { Module module -> ModuleRootManager.getInstance(module).excludeRoots.toList() }
+
+	def queue = new LinkedList<VirtualFile>(sourceRoots.toList())
+
+	new Iterator<VirtualFile>() {
+		@Override boolean hasNext() { !queue.empty }
+
+		@Override VirtualFile next() {
+			if (queue.first.isDirectory() && !exclusions.contains(queue.first))
+				queue.addAll(queue.first.children)
+			queue.removeFirst()
+		}
+
+		@Override void remove() { throw new UnsupportedOperationException() }
+	}
+}
+
+if (true) return
 
 def file = currentFileIn(project)
 def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
