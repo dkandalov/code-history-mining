@@ -2,11 +2,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
@@ -14,7 +10,6 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import org.jetbrains.annotations.NotNull
 
 import java.text.SimpleDateFormat
 
@@ -26,28 +21,21 @@ import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
-for (VirtualFile file in allFilesIn_(project)) {
-	show(file.path)
-}
+for (VirtualFile file in allFilesIn(project)) {
+	if (file.extension != "java" && file.extension != "groovy") continue
+	if (!file.name.contains("Test")) continue
 
-static Iterator<VirtualFile> allFilesIn_(@NotNull Project project) {
-	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots
-	def modules = ModuleManager.getInstance(project).modules
-	def exclusions = modules.collectMany { Module module -> ModuleRootManager.getInstance(module).excludeRoots.toList() }
-
-	def queue = new LinkedList<VirtualFile>(sourceRoots.toList())
-
-	new Iterator<VirtualFile>() {
-		@Override boolean hasNext() { !queue.empty }
-
-		@Override VirtualFile next() {
-			if (queue.first.isDirectory() && !exclusions.contains(queue.first))
-				queue.addAll(queue.first.children)
-			queue.removeFirst()
-		}
-
-		@Override void remove() { throw new UnsupportedOperationException() }
+	def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
+	if (errorMessage != null) {
+		show(errorMessage)
+		appendToLogFile(errorMessage)
+		continue
 	}
+
+	show(file.name)
+	def events = extractChangeEvents(file, revisions, project)
+	show(events.size())
+	appendToEventsFile(events)
 }
 
 if (true) return
@@ -62,14 +50,25 @@ show("good to go")
 
 def changeEvents = extractChangeEvents(file, revisions, project)
 show(toCsv(changeEvents))
-save(toCsv(changeEvents), "${PathManager.pluginsPath}/delta-flora/stats.csv")
+appendTo("${PathManager.pluginsPath}/delta-flora/stats.csv", toCsv(changeEvents))
 
-static save(String csv, String fileName) {
-	FileUtil.writeToFile(new File(fileName), csv)
+
+static appendToEventsFile(List<List> changeEvents) {
+	appendTo("${PathManager.pluginsPath}/delta-flora/events.csv", toCsv(changeEvents))
+}
+
+static appendToLogFile(message) {
+	appendTo("${PathManager.pluginsPath}/delta-flora/my.log", message.toString())
+}
+
+static appendTo(String fileName, String text) {
+	def file = new File(fileName)
+	FileUtil.createParentDirs(file)
+	file.append(text)
 }
 
 static String toCsv(List<List> changeEvents) {
-	changeEvents.collect{toCsvLine(it)}.join("\n")
+	changeEvents.collect{toCsvLine(it)}.join("\n") + "\n"
 }
 static String toCsvLine(List changeEvent) {
 	def eventsAsString = changeEvent.collect {
