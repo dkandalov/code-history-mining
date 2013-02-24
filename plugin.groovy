@@ -21,8 +21,8 @@ import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
-//TextCompareProcessorTest.testTextCompare(project)
-//if (true) return
+TextCompareProcessorTest.testTextCompare(project)
+if (true) return
 
 for (VirtualFile file in allFilesIn(project)) {
 	if (file.extension != "java" && file.extension != "groovy") continue

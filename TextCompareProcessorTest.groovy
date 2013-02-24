@@ -7,7 +7,6 @@ import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static intellijeval.PluginUtil.showInConsole
-
 // Can only be executed within IntelliJEval.
 // E.g. like this
 //   TextCompareProcessorTest.testTextCompare(project)
@@ -17,29 +16,6 @@ class TextCompareProcessorTest {
 
 	static void testTextCompare(Project project) {
 		try {
-
-			// difference between ignore and trim space
-			new TextCompareProcessor(IGNORE_SPACE).with {
-				process("(some) expression", "(some)  expression").with {
-					assert size() == 1
-					assertFragment(first(), null, [0, 1], [0, 1])
-				}
-				process("some expression", "some  expression").with {
-					assert size() == 1
-					assertFragment(first(), null, [0, 1], [0, 1])
-				}
-			}
-			new TextCompareProcessor(TRIM_SPACE).with {
-				process("(some) expression", "(some)  expression").with {
-					assert size() == 1
-					assertFragment(first(), INSERT, [0, 1], [0, 1]) // TODO this is not really insert of a new line (check if it can affect results)
-				}
-				process("some expression", "some  expression").with {
-					assert size() == 1
-					assertFragment(first(), CHANGED, [0, 1], [0, 1])
-				}
-			}
-
 
 			new TextCompareProcessor(TRIM_SPACE).with {
 				process("", "").with {
@@ -125,6 +101,46 @@ class TextCompareProcessorTest {
 					assertFragment(get(1), DELETED, [1, 2], [1, 1])
 					assertFragment(get(2), null, [2, 3], [1, 2])
 					assertFragment(get(3), INSERT, [3, 3], [2, 3])
+				}
+			}
+
+			// difference between ignore and trim space
+			new TextCompareProcessor(IGNORE_SPACE).with {
+				process("(some) expression", "(some)  expression").with {
+					assert size() == 1
+					assertFragment(first(), null, [0, 1], [0, 1])
+					assert first().childrenIterator == null
+				}
+				process("some expression", "some  expression").with {
+					assert size() == 1
+					assertFragment(first(), null, [0, 1], [0, 1])
+					assert first().childrenIterator == null
+				}
+			}
+			new TextCompareProcessor(TRIM_SPACE).with {
+				process("(some) expression", "(some)  expression").with {
+					assert size() == 1
+					assertFragment(first(), INSERT, [0, 1], [0, 1])
+					assert first().childrenIterator != null
+					first().childrenIterator.toList().with {
+						assert it[0].type == null
+						assert it[1].type == INSERT
+						assert it[2].type == null
+					}
+				}
+				process("(some)  expression", "(some) expression").with {
+					assert size() == 1
+					assertFragment(first(), DELETED, [0, 1], [0, 1])
+					first().childrenIterator.toList().with {
+						assert it[0].type == null
+						assert it[1].type == DELETED
+						assert it[2].type == null
+					}
+				}
+				process("some expression", "some  expression").with {
+					assert size() == 1
+					assertFragment(first(), CHANGED, [0, 1], [0, 1])
+					assert first().childrenIterator == null
 				}
 			}
 
