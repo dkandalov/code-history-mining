@@ -1,7 +1,9 @@
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
@@ -28,7 +30,25 @@ if (errorMessage != null) {
 show("good to go")
 
 def changeEvents = extractChangeEvents(file, revisions, project)
-show(changeEvents.join("<br/>"))
+show(toCsv(changeEvents))
+save(toCsv(changeEvents), "${PathManager.pluginsPath}/delta-flora/stats.csv")
+
+static save(String csv, String fileName) {
+	FileUtil.writeToFile(new File(fileName), csv)
+}
+
+static String toCsv(List<List> changeEvents) {
+	changeEvents.collect{toCsvLine(it)}.join("\n")
+}
+static String toCsvLine(List changeEvent) {
+	def eventsAsString = changeEvent.collect {
+		if (it instanceof Date) format((Date) it)
+		else if (it instanceof TextDiffTypeEnum) format((TextDiffTypeEnum) it)
+		else asString(it)
+	}
+	eventsAsString[eventsAsString.size() - 1] = '"' + eventsAsString.last().replaceAll("\"", "\\\"") + '"'
+	eventsAsString.join(",")
+}
 
 static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
@@ -58,9 +78,9 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 							fullNameOf(psiElement),
 							after.revisionNumber.asString(),
 							after.author,
-							format(after.revisionDate),
+							after.revisionDate,
 							containingFileName(psiElement),
-							format(fragment.type),
+							fragment.type,
 							offsetToLineNumber(offset),
 							offsetToLineNumber(offset + 1),
 							offset,
