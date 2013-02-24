@@ -31,7 +31,9 @@ def psiFileFactory = PsiFileFactory.getInstance(project)
 def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
 
 def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
-	def changedFragments = compareProcessor.process(new String(before.content), new String(after.content)).findAll{ it.type != null }
+	def beforeText = new String(before.content)
+	def afterText = new String(after.content)
+	def changedFragments = compareProcessor.process(beforeText, afterText).findAll{ it.type != null }
 	def psiBefore = parseAsPSI(before)
 	def psiAfter = parseAsPSI(after)
 
@@ -39,16 +41,28 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
 		def lineRange = (fragment.type == DELETED ? (fragment.startingLine1..<fragment.endLine1) : (fragment.startingLine2..<fragment.endLine2))
 		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+		def offsetToLineNumber = { int offset -> offset } // TODO implement
 
 		def stats = []
 		def prevPsiElement = null
-		for (int offset in range.startOffset..<range.endOffset) { // TODO use line numbers instead of offset
+		for (int offset in range.startOffset..<range.endOffset) {
 			PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
 			if (psiElement != prevPsiElement) {
-				stats << [fullNameOf(psiElement), after.revisionNumber.asString(), after.author, after.revisionDate, fragment.type, offset, offset + 1]
+				stats << [
+						fullNameOf(psiElement),
+						after.revisionNumber.asString(),
+						after.author,
+						after.revisionDate,
+						fragment.type,
+						offset,
+						offset + 1,
+						offsetToLineNumber(offset),
+						offsetToLineNumber(offset + 1)
+				]
 				prevPsiElement = psiElement
 			} else {
-				stats.last()[5] = offset + 1
+				stats.last()[6] = offset + 1
+				stats.last()[8] = offsetToLineNumber(offset + 1)
 			}
 		}
 		stats
