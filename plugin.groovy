@@ -25,56 +25,58 @@ if (errorMessage != null) {
 	show(errorMessage)
 	return
 }
-show(revisions.collect{it.commitMessage}.join("<br/>\n"))
+show("good to go")
 
-def revisionPairs = (0..<revisions.size() - 1).collect{revisions[it, it + 1]}
-def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
-def psiFileFactory = PsiFileFactory.getInstance(project)
-def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
+def changeEvents = extractChangeEvents(file, revisions, project)
+show(changeEvents.join("<br/>"))
 
-def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
-	def beforeText = new String(before.content)
-	def afterText = new String(after.content)
-	def changedFragments = compareProcessor.process(beforeText, afterText).findAll{ it.type != null }
-	def psiBefore = parseAsPSI(before)
-	def psiAfter = parseAsPSI(after)
+static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
+	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
+	def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
+	def psiFileFactory = PsiFileFactory.getInstance(project)
+	def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
 
-	changedFragments.collectMany { LineFragment fragment ->
-		def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
+	revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+		def beforeText = new String(before.content)
+		def afterText = new String(after.content)
+		def psiBefore = parseAsPSI(before)
+		def psiAfter = parseAsPSI(after)
 
-		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+		def changedFragments = compareProcessor.process(beforeText, afterText).findAll { it.type != null }
+		changedFragments.collectMany { LineFragment fragment ->
+			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
-		def stats = []
-		def prevPsiElement = null
-		for (int offset in range.startOffset..<range.endOffset) {
-			PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-			if (psiElement != prevPsiElement) {
-				stats << [
-						fullNameOf(psiElement),
-						after.revisionNumber.asString(),
-						after.author,
-						format(after.revisionDate),
-						containingFileName(psiElement),
-						format(fragment.type),
-						offsetToLineNumber(offset),
-						offsetToLineNumber(offset + 1),
-						offset,
-						offset + 1,
-						after.commitMessage
-				]
-				prevPsiElement = psiElement
-			} else {
-				stats.last()[7] = offsetToLineNumber(offset + 1)
-				stats.last()[9] = offset + 1
+			def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+
+			def changeEvents = []
+			def prevPsiElement = null
+			for (int offset in range.startOffset..<range.endOffset) {
+				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+				if (psiElement != prevPsiElement) {
+					changeEvents << [
+							fullNameOf(psiElement),
+							after.revisionNumber.asString(),
+							after.author,
+							format(after.revisionDate),
+							containingFileName(psiElement),
+							format(fragment.type),
+							offsetToLineNumber(offset),
+							offsetToLineNumber(offset + 1),
+							offset,
+							offset + 1,
+							after.commitMessage
+					]
+					prevPsiElement = psiElement
+				} else {
+					changeEvents.last()[7] = offsetToLineNumber(offset + 1)
+					changeEvents.last()[9] = offset + 1
+				}
 			}
+			changeEvents
 		}
-		stats
 	}
 }
-show(stats.join("<br/>"))
-
-show("good to go")
 
 static String format(Date date) {
 	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
