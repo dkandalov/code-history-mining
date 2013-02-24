@@ -21,7 +21,7 @@ import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
-new TextCompareProcessorTest(project).testTextCompare()
+new TextCompareProcessorTestSuite(project).run()
 if (true) return
 
 for (VirtualFile file in allFilesIn(project)) {
