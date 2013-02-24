@@ -4,6 +4,7 @@ import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
+import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static intellijeval.PluginUtil.showInConsole
 
@@ -16,7 +17,31 @@ class TextCompareProcessorTest {
 
 	static void testTextCompare(Project project) {
 		try {
+
+			// difference between ignore and trim space
 			new TextCompareProcessor(IGNORE_SPACE).with {
+				process("(some) expression", "(some)  expression").with {
+					assert size() == 1
+					assertFragment(first(), null, [0, 1], [0, 1])
+				}
+				process("some expression", "some  expression").with {
+					assert size() == 1
+					assertFragment(first(), null, [0, 1], [0, 1])
+				}
+			}
+			new TextCompareProcessor(TRIM_SPACE).with {
+				process("(some) expression", "(some)  expression").with {
+					assert size() == 1
+					assertFragment(first(), INSERT, [0, 1], [0, 1]) // TODO this is not really insert of a new line (check if it can affect results)
+				}
+				process("some expression", "some  expression").with {
+					assert size() == 1
+					assertFragment(first(), CHANGED, [0, 1], [0, 1])
+				}
+			}
+
+
+			new TextCompareProcessor(TRIM_SPACE).with {
 				process("", "").with {
 					assert size() == 0
 				}

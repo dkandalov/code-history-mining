@@ -13,7 +13,7 @@ import com.intellij.psi.*
 
 import java.text.SimpleDateFormat
 
-import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
+import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.DELETED
@@ -21,9 +21,11 @@ import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
+//TextCompareProcessorTest.testTextCompare(project)
+//if (true) return
+
 for (VirtualFile file in allFilesIn(project)) {
 	if (file.extension != "java" && file.extension != "groovy") continue
-	if (!file.name.contains("Test")) continue
 
 	def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
 	if (errorMessage != null) {
@@ -82,7 +84,7 @@ static String toCsvLine(List changeEvent) {
 
 static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
-	def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
+	def compareProcessor = new TextCompareProcessor(TRIM_SPACE)
 	def psiFileFactory = PsiFileFactory.getInstance(project)
 	def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
 
@@ -92,7 +94,7 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 		def psiBefore = parseAsPSI(before)
 		def psiAfter = parseAsPSI(after)
 
-		def changedFragments = compareProcessor.process(beforeText, afterText).findAll { it.type != null }
+		def changedFragments = compareProcessor.process(beforeText, afterText).findAll{ it.type != null }
 		changedFragments.collectMany { LineFragment fragment ->
 			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
