@@ -35,12 +35,23 @@ def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision 
 	def psiBefore = parseAsPSI(before)
 	def psiAfter = parseAsPSI(after)
 
-	changedFragments.collect { LineFragment fragment ->
+	changedFragments.collectMany { LineFragment fragment ->
 		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
 		def lineRange = (fragment.type == DELETED ? (fragment.startingLine1..<fragment.endLine1) : (fragment.startingLine2..<fragment.endLine2))
 		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
-		PsiNamedElement psiElement = methodOrClassAt(range.startOffset, revisionWithCode) // TODO do it for each line
-		[fullNameOf(psiElement), after.revisionNumber.asString(), after.author, after.revisionDate, fragment.type, lineRange.from, lineRange.to]
+
+		def stats = []
+		def prevPsiElement = null
+		for (int offset in range.startOffset..<range.endOffset) { // TODO use line numbers instead of offset
+			PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+			if (psiElement != prevPsiElement) {
+				stats << [fullNameOf(psiElement), after.revisionNumber.asString(), after.author, after.revisionDate, fragment.type, offset, offset + 1]
+				prevPsiElement = psiElement
+			} else {
+				stats.last()[5] = offset + 1
+			}
+		}
+		stats
 	}
 }
 show(stats.join("<br/>"))
@@ -48,7 +59,9 @@ show(stats.join("<br/>"))
 show("good to go")
 
 static String fullNameOf(PsiNamedElement psiElement) {
-	psiElement?.name // TODO
+	if (psiElement == null) "null"
+	else if (psiElement instanceof PsiFile) psiElement.name
+	else fullNameOf(psiElement.parent) + "/" + psiElement.name
 }
 
 static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
@@ -56,8 +69,7 @@ static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
 }
 
 static PsiNamedElement parentMethodOrClassOf(PsiElement psiElement) {
-	if (psiElement == null) null
-	else if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
+	if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
 	else if (psiElement instanceof PsiClass) psiElement as PsiNamedElement
 	else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
 	else parentMethodOrClassOf(psiElement.parent)
