@@ -7,7 +7,7 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.*
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
@@ -30,23 +30,38 @@ def compareProcessor = new TextCompareProcessor(IGNORE_SPACE)
 def psiFileFactory = PsiFileFactory.getInstance(project)
 def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
 
-revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+def stats = revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 	def changedFragments = compareProcessor.process(new String(before.content), new String(after.content)).findAll{ it.type != null }
 	def psiBefore = parseAsPSI(before)
 	def psiAfter = parseAsPSI(after)
 
-	changedFragments.collect{ fragment ->
+	changedFragments.collect { LineFragment fragment ->
 		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-		def changeRange = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
-
-		changeRange.each { lineNumber ->
-//			def psiElement = parentElementAt(lineNumber)
-		}
+		def lineRange = (fragment.type == DELETED ? (fragment.startingLine1..<fragment.endLine1) : (fragment.startingLine2..<fragment.endLine2))
+		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+		PsiNamedElement psiElement = methodOrClassAt(range.startOffset, revisionWithCode) // TODO do it for each line
+		[fullNameOf(psiElement), after.revisionNumber.asString(), after.author, after.revisionDate, fragment.type, lineRange.from, lineRange.to]
 	}
 }
-//show(changesByRevision.keySet().join("<br/>"))
+show(stats.join("<br/>"))
 
 show("good to go")
+
+static String fullNameOf(PsiNamedElement psiElement) {
+	psiElement?.name // TODO
+}
+
+static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
+	parentMethodOrClassOf(psiFile.findElementAt(offset))
+}
+
+static PsiNamedElement parentMethodOrClassOf(PsiElement psiElement) {
+	if (psiElement == null) null
+	else if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
+	else if (psiElement instanceof PsiClass) psiElement as PsiNamedElement
+	else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
+	else parentMethodOrClassOf(psiElement.parent)
+}
 
 static commitInfo(VcsFileRevision revision) {
 	[revision.revisionNumber.asString(), revision.author, revision.revisionDate]
