@@ -7,14 +7,20 @@ import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static intellijeval.PluginUtil.showInConsole
+
 // Can only be executed within IntelliJEval.
 // E.g. like this
 //   TextCompareProcessorTest.testTextCompare(project)
 //   if (true) return
 // Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code :(
 class TextCompareProcessorTest {
+	private final Project project
 
-	static void testTextCompare(Project project) {
+	TextCompareProcessorTest(Project project) {
+		this.project = project
+	}
+
+	void testTextCompare() {
 		try {
 
 			new TextCompareProcessor(TRIM_SPACE).with {
@@ -153,7 +159,19 @@ class TextCompareProcessorTest {
 		}
 	}
 
-	static assertFragment(LineFragment fragment, TextDiffTypeEnum diffType, leftRange, rightRange) {
+	private runAsConsoleTest(Closure closure) {
+		try {
+
+			closure()
+
+		} catch (AssertionError assertionError) {
+			def writer = new StringWriter()
+			assertionError.printStackTrace(new PrintWriter(writer))
+			showInConsole(writer.buffer.toString(), "TextCompareProcessorTest", project)
+		}
+	}
+
+	private static assertFragment(LineFragment fragment, TextDiffTypeEnum diffType, leftRange, rightRange) {
 		fragment.with {
 			assert type == diffType
 			assert [startingLine1, endLine1] == leftRange
