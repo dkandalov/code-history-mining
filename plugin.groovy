@@ -16,14 +16,15 @@ import java.text.SimpleDateFormat
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
-import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.DELETED
+import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
-new TextCompareProcessorTestSuite(project).run()
-if (true) return
+//new TextCompareProcessorTestSuite(project).run()
+//if (true) return
 
+// TODO use code similar to ShowAllAffectedGenericAction#showSubmittedFiles
 for (VirtualFile file in allFilesIn(project)) {
 	if (file.extension != "java" && file.extension != "groovy") continue
 
@@ -112,7 +113,7 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 							after.author,
 							after.revisionDate,
 							containingFileName(psiElement),
-							fragment.type,
+							changeTypeOf(fragment),
 							offsetToLineNumber(offset),
 							offsetToLineNumber(offset + 1),
 							offset,
@@ -130,17 +131,23 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 	}
 }
 
+static TextDiffTypeEnum changeTypeOf(LineFragment fragment) {
+	// this is because fragment uses its child fragments type, which can be "INSERT/DELETED"
+	// event though from line point of view it is "CHANGED"
+	fragment.childrenIterator != null ? CHANGED : fragment.type
+}
+
 static String format(Date date) {
 	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
 }
 
 static String format(TextDiffTypeEnum diffType) {
 	switch (diffType) {
-		case TextDiffTypeEnum.INSERT: return "added"
-		case TextDiffTypeEnum.CHANGED: return "changed"
-		case TextDiffTypeEnum.DELETED: return "deleted"
-		case TextDiffTypeEnum.CONFLICT: return "conflict"
-		case TextDiffTypeEnum.NONE: return "none"
+		case INSERT: return "added"
+		case CHANGED: return "changed"
+		case DELETED: return "deleted"
+		case CONFLICT: return "conflict"
+		case NONE: return "none"
 		default: return "unknown"
 	}
 }
