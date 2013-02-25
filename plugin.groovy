@@ -3,11 +3,13 @@ import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
 
@@ -23,6 +25,24 @@ if (isIdeStartup) return
 
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
+
+def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
+def sourceRoot = sourceRoots.first()
+def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
+if (vcsRoot == null) return
+
+def changesProvider = vcsRoot.vcs.committedChangesProvider
+def settings = changesProvider.createDefaultSettings()
+def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+List<CommittedChangeList> changeLists = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
+show(changeLists.size())
+changeLists.each { changeList ->
+	changeList.changes.each {
+		show(it?.afterRevision?.file?.name)
+	}
+}
+
+if (true) return
 
 // TODO use code similar to ShowAllAffectedGenericAction#showSubmittedFiles
 for (VirtualFile file in allFilesIn(project)) {
