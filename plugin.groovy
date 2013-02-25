@@ -52,6 +52,16 @@ final class ChangeEvent {
 	final String author
 	final Date revisionDate
 	final String commitMessage
+
+	String toCsv() {
+		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
+		[elementName, revision, author, format(revisionDate), fileName,
+				changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
+	}
+
+	private static String format(Date date) {
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
+	}
 }
 
 @groovy.transform.Immutable
@@ -99,7 +109,6 @@ static String toCsv(List<List> changeEvents) {
 static String toCsvLine(List changeEvent) {
 	def eventsAsString = changeEvent.collect {
 		if (it instanceof Date) format((Date) it)
-		else if (it instanceof TextDiffTypeEnum) format((TextDiffTypeEnum) it)
 		else asString(it)
 	}
 	eventsAsString[eventsAsString.size() - 1] = '"' + eventsAsString.last().replaceAll("\"", "\\\"") + '"'
@@ -130,13 +139,22 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 			for (int offset in range.startOffset..<range.endOffset) {
 				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
 				if (psiElement != prevPsiElement) {
+					def partialChangeEvent = new PartialChangeEvent(
+							fullNameOf(psiElement),
+							containingFileName(psiElement),
+							diffTypeAsString(diffTypeOf(fragment)),
+							offsetToLineNumber(offset),
+							offsetToLineNumber(offset + 1),
+							offset,
+							offset + 1
+					)
 					changeEvents << [
 							fullNameOf(psiElement),
 							after.revisionNumber.asString(),
 							after.author,
 							after.revisionDate,
 							containingFileName(psiElement),
-							changeTypeOf(fragment),
+							diffTypeAsString(diffTypeOf(fragment)),
 							offsetToLineNumber(offset),
 							offsetToLineNumber(offset + 1),
 							offset,
@@ -154,7 +172,7 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 	}
 }
 
-static TextDiffTypeEnum changeTypeOf(LineFragment fragment) {
+static TextDiffTypeEnum diffTypeOf(LineFragment fragment) {
 	// this is because fragment uses its child fragments type, which can be "INSERT/DELETED"
 	// event though from line point of view it is "CHANGED"
 	fragment.childrenIterator != null ? CHANGED : fragment.type
@@ -164,14 +182,14 @@ static String format(Date date) {
 	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
 }
 
-static String format(TextDiffTypeEnum diffType) {
+static String diffTypeAsString(TextDiffTypeEnum diffType) {
 	switch (diffType) {
 		case INSERT: return "added"
 		case CHANGED: return "changed"
 		case DELETED: return "deleted"
-		case CONFLICT: return "conflict"
-		case NONE: return "none"
-		default: return "unknown"
+		case CONFLICT: return "other"
+		case NONE: return "other"
+		default: return "other"
 	}
 }
 
