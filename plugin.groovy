@@ -26,42 +26,44 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
-def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
-def sourceRoot = sourceRoots.first()
-def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
-if (vcsRoot == null) return
+if (false) {
+	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
+	def sourceRoot = sourceRoots.first()
+	def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
+	if (vcsRoot == null) return
 
-def changesProvider = vcsRoot.vcs.committedChangesProvider
-def settings = changesProvider.createDefaultSettings()
-def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
-List<CommittedChangeList> changeLists = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
-show(changeLists.size())
-changeLists.each { changeList ->
-	changeList.changes.each {
-		show(it?.afterRevision?.file?.name)
+	def changesProvider = vcsRoot.vcs.committedChangesProvider
+	def settings = changesProvider.createDefaultSettings()
+	def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+	List<CommittedChangeList> changeLists = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
+	show(changeLists.size())
+	changeLists.each { changeList ->
+		changeList.changes.each {
+			show(it?.beforeRevision?.file?.name + "" + it?.afterRevision?.file?.name)
+		}
 	}
 }
 
-if (true) return
 
-// TODO use code similar to ShowAllAffectedGenericAction#showSubmittedFiles
-for (VirtualFile file in allFilesIn(project)) {
-	if (file.extension != "java" && file.extension != "groovy") continue
-
-	def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
-	if (errorMessage != null) {
-		show(errorMessage)
-		appendToLogFile(errorMessage)
-		continue
-	}
-
-	show(file.name)
-	def events = extractChangeEvents(file, revisions, project)
-	show(events.size())
-	appendToEventsFile(events)
+@groovy.transform.Immutable
+final class ChangeEvent {
+	@Delegate final PartialChangeEvent delegate
+	final String revision
+	final String author
+	final Date revisionDate
+	final String commitMessage
 }
 
-if (true) return
+@groovy.transform.Immutable
+final class PartialChangeEvent {
+	final String elementName
+	final String fileName
+	final String changeType
+	final int fromLine
+	final int toLine
+	final int fromOffset
+	final int toOffset
+}
 
 def file = currentFileIn(project)
 def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
@@ -72,8 +74,9 @@ if (errorMessage != null) {
 show("good to go")
 
 def changeEvents = extractChangeEvents(file, revisions, project)
-show(toCsv(changeEvents))
-appendTo("${PathManager.pluginsPath}/delta-flora/stats.csv", toCsv(changeEvents))
+showInConsole(toCsv(changeEvents.take(10)), "output", project)
+
+show("done")
 
 
 static appendToEventsFile(List<List> changeEvents) {
@@ -216,7 +219,7 @@ static tryToGetHistoryFor(VirtualFile file, Project project) {
 
 	def historySession = activeVcs.vcsHistoryProvider.createSessionFor(new FilePathImpl(file))
 	def revisions = historySession.revisionList.sort{ it.revisionDate }
-	if (revisions.size() < 2) return ["There is only one revision for '${file.name}'"]
+	if (revisions.size() < 1) return ["There are no committed revisions for '${file.name}'"]
 
 	def noErrors = null
 	[noErrors, revisions]
