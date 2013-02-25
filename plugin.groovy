@@ -62,6 +62,13 @@ final class ChangeEvent {
 	private static String format(Date date) {
 		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
 	}
+
+	ChangeEvent updated(int updatedToLine, int updatedToOffset) {
+		new ChangeEvent(
+				new PartialChangeEvent(elementName, fileName, changeType, fromLine, updatedToLine, fromOffset, updatedToOffset),
+				revision, author, revisionDate, commitMessage
+		)
+	}
 }
 
 @groovy.transform.Immutable
@@ -89,7 +96,7 @@ showInConsole(toCsv(changeEvents.take(10)), "output", project)
 show("done")
 
 
-static appendToEventsFile(List<List> changeEvents) {
+static appendToEventsFile(List<ChangeEvent> changeEvents) {
 	appendTo("${PathManager.pluginsPath}/delta-flora/events.csv", toCsv(changeEvents))
 }
 
@@ -103,8 +110,8 @@ static appendTo(String fileName, String text) {
 	file.append(text)
 }
 
-static String toCsv(List<List> changeEvents) {
-	changeEvents.collect{toCsvLine(it)}.join("\n") + "\n"
+static String toCsv(List<ChangeEvent> changeEvents) {
+	changeEvents.collect{it.toCsv()}.join("\n") + "\n"
 }
 static String toCsvLine(List changeEvent) {
 	def eventsAsString = changeEvent.collect {
@@ -115,13 +122,13 @@ static String toCsvLine(List changeEvent) {
 	eventsAsString.join(",")
 }
 
-static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
+static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 	def compareProcessor = new TextCompareProcessor(TRIM_SPACE)
 	def psiFileFactory = PsiFileFactory.getInstance(project)
 	def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
 
-	revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 		def beforeText = new String(before.content)
 		def afterText = new String(after.content)
 		def psiBefore = parseAsPSI(before)
@@ -134,7 +141,7 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 			def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
 			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
-			def changeEvents = []
+			List<ChangeEvent> changeEvents = []
 			def prevPsiElement = null
 			for (int offset in range.startOffset..<range.endOffset) {
 				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
@@ -148,23 +155,17 @@ static List<List> extractChangeEvents(VirtualFile file, List<VcsFileRevision> re
 							offset,
 							offset + 1
 					)
-					changeEvents << [
-							fullNameOf(psiElement),
+					def changeEvent = new ChangeEvent(
+							partialChangeEvent,
 							after.revisionNumber.asString(),
 							after.author,
 							after.revisionDate,
-							containingFileName(psiElement),
-							diffTypeAsString(diffTypeOf(fragment)),
-							offsetToLineNumber(offset),
-							offsetToLineNumber(offset + 1),
-							offset,
-							offset + 1,
 							after.commitMessage
-					]
+					)
+					changeEvents << changeEvent
 					prevPsiElement = psiElement
 				} else {
-					changeEvents.last()[7] = offsetToLineNumber(offset + 1)
-					changeEvents.last()[9] = offset + 1
+					changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
 				}
 			}
 			changeEvents
