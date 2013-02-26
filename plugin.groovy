@@ -15,6 +15,7 @@ import com.intellij.psi.*
 
 import java.text.SimpleDateFormat
 
+import static ChangeEvent.toCsv
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
@@ -49,6 +50,10 @@ if (false) {
 final class ChangeEvent {
 	@Delegate PartialChangeEvent partialChangeEvent
 	@Delegate CommitInfo commitInfo
+
+	static String toCsv(Collection<ChangeEvent> changeEvents) {
+		changeEvents.collect{it.toCsv()}.join("\n") + "\n"
+	}
 
 	String toCsv() {
 		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
@@ -96,7 +101,7 @@ if (errorMessage != null) {
 show("good to go")
 
 def changeEvents = extractChangeEvents(file, revisions, project)
-showInConsole(toCsv(changeEvents.take(10)), "output", project)
+showInConsole(toCsv(changeEvents.take(12)), "output", project)
 
 show("done")
 
@@ -115,25 +120,13 @@ static appendTo(String fileName, String text) {
 	file.append(text)
 }
 
-static String toCsv(List<ChangeEvent> changeEvents) {
-	changeEvents.collect{it.toCsv()}.join("\n") + "\n"
-}
-static String toCsvLine(List changeEvent) {
-	def eventsAsString = changeEvent.collect {
-		if (it instanceof Date) format((Date) it)
-		else asString(it)
-	}
-	eventsAsString[eventsAsString.size() - 1] = '"' + eventsAsString.last().replaceAll("\"", "\\\"") + '"'
-	eventsAsString.join(",")
-}
-
 static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
-	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
+	def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 	def psiFileFactory = PsiFileFactory.getInstance(project)
 	def parseAsPSI = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(text)) }
 
 	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
-		def beforeText = new String(before.content)
+		def beforeText = (before == null ? "" : new String(before.content))
 		def afterText = new String(after.content)
 		def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
 		changesBetween(beforeText, afterText, commitInfo, parseAsPSI)
@@ -183,10 +176,6 @@ static TextDiffTypeEnum diffTypeOf(LineFragment fragment) {
 	// this is because fragment uses its child fragments type, which can be "INSERT/DELETED"
 	// event though from line point of view it is "CHANGED"
 	fragment.childrenIterator != null ? CHANGED : fragment.type
-}
-
-static String format(Date date) {
-	new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
 }
 
 static String diffTypeAsString(TextDiffTypeEnum diffType) {
