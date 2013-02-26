@@ -123,106 +123,117 @@ static appendTo(String fileName, String text) {
 static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 	def psiFileFactory = PsiFileFactory.getInstance(project)
-	def parseAsPSI = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(text)) }
+	def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(text)) }
 
 	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 		def beforeText = (before == null ? "" : new String(before.content))
 		def afterText = new String(after.content)
 		def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-		changesBetween(beforeText, afterText, commitInfo, parseAsPSI)
+		ChangeFinder.changesBetween(beforeText, afterText, commitInfo, parseAsPsi)
 	}
 }
 
-static changesBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPSI) {
-	PsiFile psiBefore = parseAsPSI(beforeText)
-	PsiFile psiAfter = parseAsPSI(afterText)
+class ChangeFinder {
+	static List<ChangeEvent> changesBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPsi) {
+		PsiFile psiBefore = parseAsPsi(beforeText)
+		PsiFile psiAfter = parseAsPsi(afterText)
 
-	def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null }
-	changedFragments.collectMany { LineFragment fragment ->
-		def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
+		def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null }
+		(List<ChangeEvent>) changedFragments.collectMany { LineFragment fragment ->
+			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
-		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+			def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
-		List<ChangeEvent> changeEvents = []
-		def prevPsiElement = null
-		for (int offset in range.startOffset..<range.endOffset) {
-			PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-			if (psiElement != prevPsiElement) {
-				def partialChangeEvent = new PartialChangeEvent(
-						fullNameOf(psiElement),
-						containingFileName(psiElement),
-						diffTypeAsString(diffTypeOf(fragment)),
-						offsetToLineNumber(offset),
-						offsetToLineNumber(offset + 1),
-						offset,
-						offset + 1
-				)
-				def changeEvent = new ChangeEvent(
-						partialChangeEvent,
-						commitInfo
-				)
-				changeEvents << changeEvent
-				prevPsiElement = psiElement
-			} else {
-				changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
+			List<ChangeEvent> changeEvents = []
+			def prevPsiElement = null
+			for (int offset in range.startOffset..<range.endOffset) {
+				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+				if (psiElement != prevPsiElement) {
+					def partialChangeEvent = new PartialChangeEvent(
+							fullNameOf(psiElement),
+							containingFileName(psiElement),
+							diffTypeOf(fragment),
+							offsetToLineNumber(offset),
+							offsetToLineNumber(offset + 1),
+							offset,
+							offset + 1
+					)
+					def changeEvent = new ChangeEvent(
+							partialChangeEvent,
+							commitInfo
+					)
+					changeEvents << changeEvent
+					prevPsiElement = psiElement
+				} else {
+					changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
+				}
 			}
+			changeEvents
 		}
-		changeEvents
 	}
-}
 
-static TextDiffTypeEnum diffTypeOf(LineFragment fragment) {
-	// this is because fragment uses its child fragments type, which can be "INSERT/DELETED"
-	// event though from line point of view it is "CHANGED"
-	fragment.childrenIterator != null ? CHANGED : fragment.type
-}
+	private static String diffTypeOf(LineFragment fragment) {
+		// this is because if fragment has children it infers diff type from them,
+		// which can be "INSERT/DELETED" event though from line point of view it is "CHANGED"
+		def diffType = (fragment.childrenIterator != null ? CHANGED : fragment.type)
 
-static String diffTypeAsString(TextDiffTypeEnum diffType) {
-	switch (diffType) {
-		case INSERT: return "added"
-		case CHANGED: return "changed"
-		case DELETED: return "deleted"
-		case CONFLICT: return "other"
-		case NONE: return "other"
-		default: return "other"
+		switch (diffType) {
+			case INSERT: return "added"
+			case CHANGED: return "changed"
+			case DELETED: return "deleted"
+			case CONFLICT: return "other"
+			case NONE: return "other"
+			default: return "other"
+		}
 	}
-}
 
-static int toLineNumber(int offset, String text) {
-	int counter = 0
-	for (int i = 0; i < offset; i++) {
-		if (text.charAt(i) == '\n') counter++
+	private static String diffTypeAsString(TextDiffTypeEnum diffType) {
+		switch (diffType) {
+			case INSERT: return "added"
+			case CHANGED: return "changed"
+			case DELETED: return "deleted"
+			case CONFLICT: return "other"
+			case NONE: return "other"
+			default: return "other"
+		}
 	}
-	counter
-}
 
-static String containingFileName(PsiElement psiElement) {
-	if (psiElement == null) "null"
-	else if (psiElement instanceof PsiFile) psiElement.name
-	else (containingFileName(psiElement.parent))
-}
-
-static String fullNameOf(PsiElement psiElement) {
-	if (psiElement == null) "null"
-	else if (psiElement instanceof PsiFile) ""
-	else if (psiElement instanceof PsiMethod || psiElement instanceof PsiClass) {
-		def parentName = fullNameOf(psiElement.parent)
-		parentName.empty ? psiElement.name : (parentName + "::" + psiElement.name)
-	} else {
-		fullNameOf(psiElement.parent)
+	private static int toLineNumber(int offset, String text) {
+		int counter = 0
+		for (int i = 0; i < offset; i++) {
+			if (text.charAt(i) == '\n') counter++
+		}
+		counter
 	}
-}
 
-static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
-	parentMethodOrClassOf(psiFile.findElementAt(offset))
-}
+	private static String containingFileName(PsiElement psiElement) {
+		if (psiElement == null) "null"
+		else if (psiElement instanceof PsiFile) psiElement.name
+		else (containingFileName(psiElement.parent))
+	}
 
-static PsiNamedElement parentMethodOrClassOf(PsiElement psiElement) {
-	if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
-	else if (psiElement instanceof PsiClass) psiElement as PsiNamedElement
-	else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
-	else parentMethodOrClassOf(psiElement.parent)
+	private static String fullNameOf(PsiElement psiElement) {
+		if (psiElement == null) "null"
+		else if (psiElement instanceof PsiFile) ""
+		else if (psiElement instanceof PsiMethod || psiElement instanceof PsiClass) {
+			def parentName = fullNameOf(psiElement.parent)
+			parentName.empty ? psiElement.name : (parentName + "::" + psiElement.name)
+		} else {
+			fullNameOf(psiElement.parent)
+		}
+	}
+
+	private static PsiNamedElement methodOrClassAt(int offset, PsiFile psiFile) {
+		parentMethodOrClassOf(psiFile.findElementAt(offset))
+	}
+
+	private static PsiNamedElement parentMethodOrClassOf(PsiElement psiElement) {
+		if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
+		else if (psiElement instanceof PsiClass) psiElement as PsiNamedElement
+		else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
+		else parentMethodOrClassOf(psiElement.parent)
+	}
 }
 
 static tryToGetHistoryFor(VirtualFile file, Project project) {
