@@ -8,10 +8,12 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
+import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
+import com.intellij.unscramble.UnscrambleDialog
 
 import java.text.SimpleDateFormat
 
@@ -27,9 +29,7 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
-if (false) {
-	changeEventsForAllCommitsIn(project)
-}
+changeEventsForAllCommitsIn(project)
 
 static changeEventsForAllCommitsIn(Project project) {
 	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
@@ -41,11 +41,35 @@ static changeEventsForAllCommitsIn(Project project) {
 	def settings = changesProvider.createDefaultSettings()
 	def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 	List<CommittedChangeList> changeLists = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
+
 	show(changeLists.size())
-	changeLists.each { changeList ->
-		changeList.changes.each {
-			show(it?.beforeRevision?.file?.name + "" + it?.afterRevision?.file?.name)
+
+	try {
+		def changeEvents = (List<ChangeEvent>) changeLists.collectMany { CommittedChangeList changeList ->
+			changeList.changes.collectMany { Change change ->
+				change.with {
+					def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
+					def afterText = (afterRevision == null ? "" : afterRevision.content)
+					def nonEmptyRevision = (beforeRevision == null ? afterRevision : beforeRevision)
+					def commitInfo = new CommitInfo(
+							nonEmptyRevision.revisionNumber.asString(),
+							changeList.committerName, changeList.commitDate, changeList.comment.trim())
+					def parseAsPsi = { String text ->
+						def fileFactory = PsiFileFactory.getInstance(project)
+						fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+					}
+
+					ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+				}
+			}
 		}
+		showInConsole(toCsv(changeEvents.reverse().take(100)), "output", project)
+	} catch (Exception e) {
+		def writer = new StringWriter()
+		def message = e
+		message.printStackTrace(new PrintWriter(writer))
+		message = UnscrambleDialog.normalizeText(writer.buffer.toString())
+		showInNewConsole(message, "NPE", project)
 	}
 }
 
@@ -82,18 +106,18 @@ static appendTo(String fileName, String text) {
 static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 	def psiFileFactory = PsiFileFactory.getInstance(project)
-	def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(text)) }
+	def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, text) }
 
 	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 		def beforeText = (before == null ? "" : new String(before.content))
 		def afterText = new String(after.content)
 		def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-		ChangeFinder.changesBetween(beforeText, afterText, commitInfo, parseAsPsi)
+		ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
 	}
 }
 
 class ChangeFinder {
-	static List<ChangeEvent> changesBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPsi) {
+	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPsi) {
 		PsiFile psiBefore = parseAsPsi(beforeText)
 		PsiFile psiAfter = parseAsPsi(afterText)
 
