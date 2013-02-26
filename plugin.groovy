@@ -47,11 +47,8 @@ if (false) {
 
 @groovy.transform.Immutable
 final class ChangeEvent {
-	@Delegate PartialChangeEvent delegate
-	String revision
-	String author
-	Date revisionDate
-	String commitMessage
+	@Delegate PartialChangeEvent partialChangeEvent
+	@Delegate CommitInfo commitInfo
 
 	String toCsv() {
 		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
@@ -66,7 +63,7 @@ final class ChangeEvent {
 	ChangeEvent updated(int updatedToLine, int updatedToOffset) {
 		new ChangeEvent(
 				new PartialChangeEvent(elementName, fileName, changeType, fromLine, updatedToLine, fromOffset, updatedToOffset),
-				revision, author, revisionDate, commitMessage
+				new CommitInfo(revision, author, revisionDate, commitMessage)
 		)
 	}
 }
@@ -138,45 +135,47 @@ static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevis
 	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 		def beforeText = new String(before.content)
 		def afterText = new String(after.content)
-		def psiBefore = parseAsPSI(beforeText)
-		def psiAfter = parseAsPSI(afterText)
+		def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
+		changesBetween(beforeText, afterText, commitInfo, parseAsPSI)
+	}
+}
 
-		def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll{ it.type != null }
-		changedFragments.collectMany { LineFragment fragment ->
-			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
+static changesBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPSI) {
+	PsiFile psiBefore = parseAsPSI(beforeText)
+	PsiFile psiAfter = parseAsPSI(afterText)
 
-			def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+	def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null }
+	changedFragments.collectMany { LineFragment fragment ->
+		def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
-			List<ChangeEvent> changeEvents = []
-			def prevPsiElement = null
-			for (int offset in range.startOffset..<range.endOffset) {
-				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-				if (psiElement != prevPsiElement) {
-					def partialChangeEvent = new PartialChangeEvent(
-							fullNameOf(psiElement),
-							containingFileName(psiElement),
-							diffTypeAsString(diffTypeOf(fragment)),
-							offsetToLineNumber(offset),
-							offsetToLineNumber(offset + 1),
-							offset,
-							offset + 1
-					)
-					def changeEvent = new ChangeEvent(
-							partialChangeEvent,
-							after.revisionNumber.asString(),
-							after.author,
-							after.revisionDate,
-							after.commitMessage
-					)
-					changeEvents << changeEvent
-					prevPsiElement = psiElement
-				} else {
-					changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
-				}
+		def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+
+		List<ChangeEvent> changeEvents = []
+		def prevPsiElement = null
+		for (int offset in range.startOffset..<range.endOffset) {
+			PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+			if (psiElement != prevPsiElement) {
+				def partialChangeEvent = new PartialChangeEvent(
+						fullNameOf(psiElement),
+						containingFileName(psiElement),
+						diffTypeAsString(diffTypeOf(fragment)),
+						offsetToLineNumber(offset),
+						offsetToLineNumber(offset + 1),
+						offset,
+						offset + 1
+				)
+				def changeEvent = new ChangeEvent(
+						partialChangeEvent,
+						commitInfo
+				)
+				changeEvents << changeEvent
+				prevPsiElement = psiElement
+			} else {
+				changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
 			}
-			changeEvents
 		}
+		changeEvents
 	}
 }
 
