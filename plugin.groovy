@@ -28,6 +28,10 @@ if (isIdeStartup) return
 //if (true) return
 
 if (false) {
+	changeEventsForAllCommitsIn(project)
+}
+
+static changeEventsForAllCommitsIn(Project project) {
 	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
 	def sourceRoot = sourceRoots.first()
 	def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
@@ -45,65 +49,20 @@ if (false) {
 	}
 }
 
-
-@groovy.transform.Immutable
-final class ChangeEvent {
-	@Delegate PartialChangeEvent partialChangeEvent
-	@Delegate CommitInfo commitInfo
-
-	static String toCsv(Collection<ChangeEvent> changeEvents) {
-		changeEvents.collect{it.toCsv()}.join("\n") + "\n"
+static showChangeEventsForCurrentFileHistory(Project project) {
+	def file = currentFileIn(project)
+	def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
+	if (errorMessage != null) {
+		show(errorMessage)
+		return
 	}
+	show("good to go")
 
-	String toCsv() {
-		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
-		[elementName, revision, author, format(revisionDate), fileName,
-				changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
-	}
+	def changeEvents = extractChangeEvents(file, revisions, project)
+	showInConsole(toCsv(changeEvents.take(12)), "output", project)
 
-	private static String format(Date date) {
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
-	}
-
-	ChangeEvent updated(int updatedToLine, int updatedToOffset) {
-		new ChangeEvent(
-				new PartialChangeEvent(elementName, fileName, changeType, fromLine, updatedToLine, fromOffset, updatedToOffset),
-				new CommitInfo(revision, author, revisionDate, commitMessage)
-		)
-	}
+	show("done")
 }
-
-@groovy.transform.Immutable
-class CommitInfo {
-	String revision
-	String author
-	Date revisionDate
-	String commitMessage
-}
-
-@groovy.transform.Immutable
-final class PartialChangeEvent {
-	String elementName
-	String fileName
-	String changeType
-	int fromLine
-	int toLine
-	int fromOffset
-	int toOffset
-}
-
-def file = currentFileIn(project)
-def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
-if (errorMessage != null) {
-	show(errorMessage)
-	return
-}
-show("good to go")
-
-def changeEvents = extractChangeEvents(file, revisions, project)
-showInConsole(toCsv(changeEvents.take(12)), "output", project)
-
-show("done")
 
 
 static appendToEventsFile(List<ChangeEvent> changeEvents) {
@@ -234,6 +193,55 @@ class ChangeFinder {
 		else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
 		else parentMethodOrClassOf(psiElement.parent)
 	}
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+@groovy.transform.Immutable
+final class ChangeEvent {
+	@Delegate PartialChangeEvent partialChangeEvent
+	@Delegate CommitInfo commitInfo
+
+	static String toCsv(Collection<ChangeEvent> changeEvents) {
+		changeEvents.collect{it.toCsv()}.join("\n") + "\n"
+	}
+
+	String toCsv() {
+		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
+		[elementName, revision, author, format(revisionDate), fileName,
+				changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
+	}
+
+	private static String format(Date date) {
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
+	}
+
+	ChangeEvent updated(int updatedToLine, int updatedToOffset) {
+		new ChangeEvent(
+				new PartialChangeEvent(elementName, fileName, changeType, fromLine, updatedToLine, fromOffset, updatedToOffset),
+				new CommitInfo(revision, author, revisionDate, commitMessage)
+		)
+	}
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+@groovy.transform.Immutable
+class CommitInfo {
+	String revision
+	String author
+	Date revisionDate
+	String commitMessage
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+@groovy.transform.Immutable
+final class PartialChangeEvent {
+	String elementName
+	String fileName
+	String changeType
+	int fromLine
+	int toLine
+	int fromOffset
+	int toOffset
 }
 
 static tryToGetHistoryFor(VirtualFile file, Project project) {
