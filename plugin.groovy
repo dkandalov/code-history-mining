@@ -47,11 +47,11 @@ if (false) {
 
 @groovy.transform.Immutable
 final class ChangeEvent {
-	@Delegate final PartialChangeEvent delegate
-	final String revision
-	final String author
-	final Date revisionDate
-	final String commitMessage
+	@Delegate PartialChangeEvent delegate
+	String revision
+	String author
+	Date revisionDate
+	String commitMessage
 
 	String toCsv() {
 		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
@@ -72,14 +72,22 @@ final class ChangeEvent {
 }
 
 @groovy.transform.Immutable
+class CommitInfo {
+	String revision
+	String author
+	Date revisionDate
+	String commitMessage
+}
+
+@groovy.transform.Immutable
 final class PartialChangeEvent {
-	final String elementName
-	final String fileName
-	final String changeType
-	final int fromLine
-	final int toLine
-	final int fromOffset
-	final int toOffset
+	String elementName
+	String fileName
+	String changeType
+	int fromLine
+	int toLine
+	int fromOffset
+	int toOffset
 }
 
 def file = currentFileIn(project)
@@ -124,17 +132,16 @@ static String toCsvLine(List changeEvent) {
 
 static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 	def revisionPairs = (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
-	def compareProcessor = new TextCompareProcessor(TRIM_SPACE)
 	def psiFileFactory = PsiFileFactory.getInstance(project)
-	def parseAsPSI = { VcsFileRevision revision -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(revision.content)) }
+	def parseAsPSI = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, new String(text)) }
 
 	(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 		def beforeText = new String(before.content)
 		def afterText = new String(after.content)
-		def psiBefore = parseAsPSI(before)
-		def psiAfter = parseAsPSI(after)
+		def psiBefore = parseAsPSI(beforeText)
+		def psiAfter = parseAsPSI(afterText)
 
-		def changedFragments = compareProcessor.process(beforeText, afterText).findAll{ it.type != null }
+		def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll{ it.type != null }
 		changedFragments.collectMany { LineFragment fragment ->
 			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
