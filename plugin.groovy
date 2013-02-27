@@ -45,12 +45,12 @@ static changeEventsForAllCommitsIn(Project project) {
 	show(changeLists.size())
 
 	try {
-		def changeEvents = (List<ChangeEvent>) changeLists.collectMany { CommittedChangeList changeList ->
+		def changeEvents = (List<ChangeEvent>) changeLists.reverse().collectMany { CommittedChangeList changeList ->
 			changeList.changes.collectMany { Change change ->
 				change.with {
 					def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
 					def afterText = (afterRevision == null ? "" : afterRevision.content)
-					def nonEmptyRevision = (beforeRevision == null ? afterRevision : beforeRevision)
+					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
 					def commitInfo = new CommitInfo(
 							nonEmptyRevision.revisionNumber.asString(),
 							changeList.committerName, changeList.commitDate, changeList.comment.trim())
@@ -63,7 +63,7 @@ static changeEventsForAllCommitsIn(Project project) {
 				}
 			}
 		}
-		showInConsole(toCsv(changeEvents.reverse().take(100)), "output", project)
+		showInConsole(toCsv(changeEvents.take(100)), "output", project)
 	} catch (Exception e) {
 		def writer = new StringWriter()
 		def message = e
