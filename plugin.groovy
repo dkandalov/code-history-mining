@@ -3,6 +3,7 @@ import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
@@ -21,6 +22,8 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
+import groovy.time.TimeCategory
+import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
@@ -36,91 +39,132 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
-//changeEventsForAllCommitsIn(project)
-def fromDate = new SimpleDateFormat("dd/MM/yyyy").parse("25/02/2013")
-def toDate = new SimpleDateFormat("dd/MM/yyyy").parse("26/02/2013")
-List<CommittedChangeList> changeLists = requestChangeListsFor(project, fromDate, toDate)
-show(changeLists.size())
-
-static changeEventsForAllCommitsIn(Project project) {
-	List<CommittedChangeList> changeLists = requestChangeListsFor(project)
-
-	show(changeLists.size())
-
-	try {
-		def changeEvents = (List<ChangeEvent>) changeLists.reverse().collectMany { CommittedChangeList changeList ->
-			changeList.changes.collectMany { Change change ->
-				change.with {
-					def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
-					def afterText = (afterRevision == null ? "" : afterRevision.content)
-					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
-					def commitInfo = new CommitInfo(nonEmptyRevision.revisionNumber.asString(),
-																					changeList.committerName, changeList.commitDate, changeList.comment.trim())
-					def parseAsPsi = { String text ->
-						def fileFactory = PsiFileFactory.getInstance(project)
-						fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-					}
-
-					ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
-				}
+doInBackground("Analyzing project history", {
+	def now = new Date()
+	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 100)
+	for (changeList in changeLists) {
+		if (changeList == null) break
+		catchingAll_ {
+			runReadAction {
+				Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList, project)
+				showInConsole(toCsv(changeEvents), "output", project)
 			}
 		}
-		showInConsole(toCsv(changeEvents.take(100)), "output", project)
+	}
+}, {})
+
+public static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+	(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
+		catchingAll_ {
+			change.with {
+				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
+				def afterText = (afterRevision == null ? "" : afterRevision.content)
+				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+				def commitInfo = new CommitInfo(nonEmptyRevision.revisionNumber.asString(),
+						changeList.committerName, changeList.commitDate, changeList.comment.trim())
+				def parseAsPsi = { String text ->
+					def fileFactory = PsiFileFactory.getInstance(project)
+					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+				}
+
+				ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+			}
+		}
+	}
+}
+
+@Nullable static <T> T catchingAll_(Closure<T> closure) {
+	try {
+
+		closure.call()
+
 	} catch (Exception e) {
 		def writer = new StringWriter()
 		def message = e
 		message.printStackTrace(new PrintWriter(writer))
 		message = UnscrambleDialog.normalizeText(writer.buffer.toString())
-		showInNewConsole(message, "NPE", project)
+		ProjectManager.instance.openProjects.each{ showInNewConsole(message, e.class.simpleName, it) }
+		null
 	}
 }
 
-static List<CommittedChangeList> requestChangeListsFor(Project project, Date fromDate = null, Date toDate = null) {
-	def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
-	def sourceRoot = sourceRoots.first()
-	def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
-	if (vcsRoot == null) return []
+class ProjectHistory {
 
-	def changesProvider = vcsRoot.vcs.committedChangesProvider
-	def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
-	if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
-		return bug_IDEA_102084(project, location, fromDate, toDate)
-	}
+	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null) {
+		use(TimeCategory) {
+			List<CommittedChangeList> changes = []
+			Date date = fromDate
+			Date endDate = (toDate == null ? (fromDate - 10.years) : toDate)
+			new Iterator<CommittedChangeList>() {
+				@Override boolean hasNext() {
+					!changes.empty || date.after(endDate)
+				}
 
-	def settings = changesProvider.createDefaultSettings()
-	if (fromDate != null) {
-		settings.USE_DATE_AFTER_FILTER = true
-		settings.dateAfter = fromDate
-	}
-	if (toDate != null) {
-		settings.USE_DATE_BEFORE_FILTER = true
-		settings.dateBefore = toDate
-	}
-	changesProvider.getCommittedChanges(settings, location, 10000)
-}
+				@Override CommittedChangeList next() {
+					if (!changes.empty) {
+						return changes.remove(0)
+					}
+					while (changes.empty && date.after(endDate)) {
+						use(TimeCategory) {
+							changes = requestChangeListsFor(project, date - 1.month, date)
+							date = date - 1.month
+						}
+					}
+					changes.empty ? null : changes.remove(0)
+				}
 
-// see http://youtrack.jetbrains.com/issue/IDEA-102084
-// it is fixed.. left this workaround to have backward compatibility with IJ12 releases before fix
-private static List<CommittedChangeList> bug_IDEA_102084(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
-	def result = []
-	def handler = new Consumer<GitSimpleHandler>() {
-		public void consume(GitSimpleHandler h) {
-			if (toDate != null) {
-				h.addParameters("--before=" + GitUtil.gitTime(toDate));
-			}
-			if (fromDate != null) {
-				h.addParameters("--after=" + GitUtil.gitTime(fromDate));
+				@Override void remove() {
+					throw new UnsupportedOperationException()
+				}
 			}
 		}
 	}
-	def resultConsumer = new Consumer<GitCommittedChangeList>() {
-		@Override void consume(GitCommittedChangeList list) {
-			result << list
+
+	private static List<CommittedChangeList> requestChangeListsFor(Project project, Date fromDate = null, Date toDate = null) {
+		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
+		def sourceRoot = sourceRoots.first()
+		def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
+		if (vcsRoot == null) return []
+
+		def changesProvider = vcsRoot.vcs.committedChangesProvider
+		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
+			return bug_IDEA_102084(project, location, fromDate, toDate)
 		}
+
+		def settings = changesProvider.createDefaultSettings()
+		if (fromDate != null) {
+			settings.USE_DATE_AFTER_FILTER = true
+			settings.dateAfter = fromDate
+		}
+		if (toDate != null) {
+			settings.USE_DATE_BEFORE_FILTER = true
+			settings.dateBefore = toDate
+		}
+		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
-	VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
-	GitUtil.getLocalCommittedChanges(project, root, handler, resultConsumer, (boolean) false)
-	result
+
+	/**
+	 * see http://youtrack.jetbrains.com/issue/IDEA-102084
+	 * this issue is fixed, left this workaround anyway to have backward compatibility with IJ12 releases before the fix
+	 */
+	private static List<CommittedChangeList> bug_IDEA_102084(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
+		def result = []
+		def handler = new Consumer<GitSimpleHandler>() {
+			@Override void consume(GitSimpleHandler h) {
+				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
+				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
+			}
+		}
+		def resultConsumer = new Consumer<GitCommittedChangeList>() {
+			@Override void consume(GitCommittedChangeList changeList) {
+				result << changeList
+			}
+		}
+		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
+		GitUtil.getLocalCommittedChanges(project, root, handler, resultConsumer, (boolean) false)
+		result
+	}
 }
 
 
