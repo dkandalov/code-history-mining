@@ -1,7 +1,6 @@
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
-import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -45,15 +44,17 @@ doInBackground("Analyzing project history", {
 	for (changeList in changeLists) {
 		if (changeList == null) break
 		catchingAll_ {
-			runReadAction {
-				Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList, project)
-				showInConsole(toCsv(changeEvents), "output", project)
-			}
+			Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList, project)
+			showInConsole(toCsv(changeEvents), "output", project)
 		}
 	}
 }, {})
 
-public static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+	if (changeList.changes == null) {
+		show("No changes for changelist ${changeList.name}")
+		return []
+	}
 	(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
 		catchingAll_ {
 			change.with {
@@ -63,8 +64,10 @@ public static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList ch
 				def commitInfo = new CommitInfo(nonEmptyRevision.revisionNumber.asString(),
 						changeList.committerName, changeList.commitDate, changeList.comment.trim())
 				def parseAsPsi = { String text ->
-					def fileFactory = PsiFileFactory.getInstance(project)
-					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+					runReadAction {
+						def fileFactory = PsiFileFactory.getInstance(project)
+						fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+					}
 				}
 
 				ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
@@ -197,25 +200,29 @@ class ChangeFinder {
 			List<ChangeEvent> changeEvents = []
 			def prevPsiElement = null
 			for (int offset in range.startOffset..<range.endOffset) {
-				PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-				if (psiElement != prevPsiElement) {
-					def partialChangeEvent = new PartialChangeEvent(
-							fullNameOf(psiElement),
-							containingFileName(psiElement),
-							diffTypeOf(fragment),
-							offsetToLineNumber(offset),
-							offsetToLineNumber(offset + 1),
-							offset,
-							offset + 1
-					)
-					def changeEvent = new ChangeEvent(
-							partialChangeEvent,
-							commitInfo
-					)
-					changeEvents << changeEvent
-					prevPsiElement = psiElement
-				} else {
-					changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
+				runReadAction {
+					PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+					if (psiElement == null) {
+						prevPsiElement = null
+					} else if (psiElement != prevPsiElement) {
+						def partialChangeEvent = new PartialChangeEvent(
+								fullNameOf(psiElement),
+								containingFileName(psiElement),
+								diffTypeOf(fragment),
+								offsetToLineNumber(offset),
+								offsetToLineNumber(offset + 1),
+								offset,
+								offset + 1
+						)
+						def changeEvent = new ChangeEvent(
+								partialChangeEvent,
+								commitInfo
+						)
+						changeEvents << changeEvent
+						prevPsiElement = psiElement
+					} else {
+						changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
+					}
 				}
 			}
 			changeEvents
@@ -227,17 +234,6 @@ class ChangeFinder {
 		// which can be "INSERT/DELETED" event though from line point of view it is "CHANGED"
 		def diffType = (fragment.childrenIterator != null ? CHANGED : fragment.type)
 
-		switch (diffType) {
-			case INSERT: return "added"
-			case CHANGED: return "changed"
-			case DELETED: return "deleted"
-			case CONFLICT: return "other"
-			case NONE: return "other"
-			default: return "other"
-		}
-	}
-
-	private static String diffTypeAsString(TextDiffTypeEnum diffType) {
 		switch (diffType) {
 			case INSERT: return "added"
 			case CHANGED: return "changed"
@@ -265,7 +261,11 @@ class ChangeFinder {
 	private static String fullNameOf(PsiElement psiElement) {
 		if (psiElement == null) "null"
 		else if (psiElement instanceof PsiFile) ""
-		else if (psiElement instanceof PsiMethod || psiElement instanceof PsiClass) {
+		else if (psiElement in PsiAnonymousClass) {
+			def parentName = fullNameOf(psiElement.parent)
+			def name = "[" + psiElement.baseClassType.className + "]"
+			parentName.empty ? name : (parentName + "::" + name)
+		} else if (psiElement instanceof PsiMethod || psiElement instanceof PsiClass) {
 			def parentName = fullNameOf(psiElement.parent)
 			parentName.empty ? psiElement.name : (parentName + "::" + psiElement.name)
 		} else {
@@ -278,7 +278,8 @@ class ChangeFinder {
 	}
 
 	private static PsiNamedElement parentMethodOrClassOf(PsiElement psiElement) {
-		if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
+		if (psiElement == null) null
+		else if (psiElement instanceof PsiMethod) psiElement as PsiNamedElement
 		else if (psiElement instanceof PsiClass) psiElement as PsiNamedElement
 		else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
 		else parentMethodOrClassOf(psiElement.parent)
