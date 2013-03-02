@@ -43,6 +43,9 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
+// TODO escape new lines in commit comments
+
+
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
 
@@ -216,29 +219,34 @@ class EventStorage {
 	}
 
 	Date getMostRecentEventTime() {
+		def line = readFirstLine(fileName)
+		if (line == null) new Date()
+		else new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+	}
+
+	private static String readFirstLine(String fileName) {
 		def file = new File(fileName)
-		if (!file.exists()) return new Date()
-		file.withReader { reader -> new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(reader.readLine().split(",")[3]) }
+		if (!file.exists() || file.length() == 0) return null
+		file.withReader{ it.readLine() }
 	}
 
 	private static String readLastLine(String fileName) {
 		def file = new File(fileName)
-		if (!file.exists()) return null
+		if (!file.exists() || file.length() == 0) return null
 
 		def randomAccess = new RandomAccessFile(file, "r")
 		try {
 
-			for (long pos = file.length() - 2; pos >= 0; pos--) {
-				if (pos % 1000 == 0) {
-					log(pos)
-				}
+			int shift = 1 // shift in case file ends with single newline
+			for (long pos = file.length() - 1 - shift; pos >= 0; pos--) {
 				randomAccess.seek(pos)
 				if (randomAccess.read() == '\n') {
 					return randomAccess.readLine()
 				}
 			}
+			// assume that file has only one line
 			randomAccess.seek(0)
-			randomAccess.length() > 0 ? randomAccess.readLine() : null
+			randomAccess.readLine()
 
 		} finally {
 			randomAccess.close()
