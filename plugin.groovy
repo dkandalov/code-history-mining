@@ -1,6 +1,8 @@
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
+import com.intellij.openapi.progress.ProcessCanceledException
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -31,6 +33,7 @@ import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
+import static com.intellij.util.text.DateFormatUtil.*
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
@@ -38,24 +41,29 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
-doInBackground("Analyzing project history", {
+doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	def now = new Date()
 	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 100)
 	for (changeList in changeLists) {
 		if (changeList == null) break
+		if (indicator.canceled) break
+		indicator.text = "Analyzing project history (looking at ${dateFormat.format((Date) changeList.commitDate)})"
+
 		catchingAll_ {
-			Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList, project)
+			Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
 			showInConsole(toCsv(changeEvents), "output", project)
 		}
 	}
 }, {})
 
-static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project, ProgressIndicator indicator = null) {
 	if (changeList.changes == null) {
 		show("No changes for changelist ${changeList.name}")
 		return []
 	}
 	(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
+		if (indicator?.canceled) return []
+
 		catchingAll_ {
 			change.with {
 				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
@@ -70,7 +78,11 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 					}
 				}
 
-				ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+				try {
+					ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+				} catch (ProcessCanceledException ignore) {
+					[]
+				}
 			}
 		}
 	}
