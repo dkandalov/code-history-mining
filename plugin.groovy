@@ -50,23 +50,36 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
 
 		def storage = new EventStorage(project.name)
-		def processChangeLists = { changeLists ->
+		def processChangeLists = { changeLists, callback ->
 			for (changeList in changeLists) {
 				if (changeList == null) break
 				if (indicator.canceled) break
 				catchingAll_ {
 					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
-					storage.appendToEventsFile(changeEvents)
-
+					callback(changeEvents)
 					indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
 				}
 			}
 		}
 
-		def fromDate = storage.oldestEventTime
-		def toDate = (new Date() - 300)
+		def fromDate = (new Date() - 300)
+		def toDate = storage.oldestEventTime
+		if (toDate == null) toDate = new Date()
 		Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
-		processChangeLists(changeLists)
+		processChangeLists(changeLists) { changeEvents ->
+			storage.appendToEventsFile(changeEvents)
+		}
+
+		if (false) {
+			fromDate = storage.mostRecentEventTime
+			toDate = new Date()
+			show(fromDate)
+			show(toDate)
+			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			processChangeLists(changeLists) { changeEvents ->
+				storage.prependToEventsFile(changeEvents)
+			}
+		}
 
 		showInConsole("Saved change events to ${storage.fileName}", "output", project)
 	}
@@ -125,19 +138,19 @@ class ProjectHistory {
 	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null) {
 		use(TimeCategory) {
 			List<CommittedChangeList> changes = []
-			Date date = fromDate
-			Date endDate = (toDate == null ? (fromDate - 10.years) : toDate)
+			Date date = toDate
+			Date beginningOfHistory = (fromDate == null ? (toDate - 10.years) : fromDate)
 
 			new Iterator<CommittedChangeList>() {
 				@Override boolean hasNext() {
-					!changes.empty || date.after(endDate)
+					!changes.empty || date.after(beginningOfHistory)
 				}
 
 				@Override CommittedChangeList next() {
 					if (!changes.empty) return changes.remove(0)
 
 					measure("git request time") {
-						while (changes.empty && date.after(endDate)) {
+						while (changes.empty && date.after(beginningOfHistory)) {
 							use(TimeCategory) {
 								changes = requestChangeListsFor(project, date - 1.month, date)
 								date = date - 1.month
@@ -212,12 +225,18 @@ class EventStorage {
 	}
 
 	def appendToEventsFile(Collection<ChangeEvent> changeEvents) {
+		if (changeEvents.empty) return
 		appendTo(fileName, toCsv(changeEvents))
+	}
+
+	def prependToEventsFile(Collection<ChangeEvent> changeEvents) {
+		if (changeEvents.empty) return
+		prependTo(fileName, toCsv(changeEvents))
 	}
 
 	Date getOldestEventTime() {
 		def line = readLastLine(fileName)
-		if (line == null) new Date()
+		if (line == null) null
 		else {
 			def date = new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
 			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
@@ -231,7 +250,11 @@ class EventStorage {
 	Date getMostRecentEventTime() {
 		def line = readFirstLine(fileName)
 		if (line == null) new Date()
-		else new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+		else {
+			def date = new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+			date.time += 1000 // plus one second (see comments in getOldestEventTime())
+			date
+		}
 	}
 
 	private static String readFirstLine(String fileName) {
@@ -267,6 +290,14 @@ class EventStorage {
 		def file = new File(fileName)
 		FileUtil.createParentDirs(file)
 		file.append(text)
+	}
+
+	private static prependTo(String fileName, String text) {
+//		def file = new File(fileName)
+//		file.withPrintWriter { writer ->
+//			writer. // TODO
+//		}
+//		file.append(text)
 	}
 }
 
