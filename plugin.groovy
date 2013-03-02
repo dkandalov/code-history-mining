@@ -313,11 +313,19 @@ class EventStorage {
 	private static prependTo(String fileName, String text) {
 		def tempFile = FileUtil.createTempFile("delta_flora", "_${new Random().nextInt(10000)}")
 		def file = new File(fileName)
-		def outputStream = new BufferedOutputStream(new FileOutputStream(tempFile))
-		def inputStream = new BufferedInputStream(new FileInputStream(file))
 
-		outputStream.write(text.bytes)
-		FileUtil.copy(inputStream, outputStream)
+		tempFile.withOutputStream { output ->
+			output.write(text.bytes)
+			file.withInputStream { input ->
+				// magic buffer size is copied from com.intellij.openapi.util.io.FileUtilRt#BUFFER (assume there is a reason for it)
+				byte[] buffer = new byte[1024 * 20]
+				while (true) {
+					int read = input.read(buffer)
+					if (read < 0) break
+					output.write(buffer, 0, read)
+				}
+			}
+		}
 
 		file.delete()
 		FileUtil.rename(tempFile, file)
