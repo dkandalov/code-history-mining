@@ -29,11 +29,13 @@ import org.jetbrains.annotations.Nullable
 import java.text.SimpleDateFormat
 
 import static ChangeEvent.toCsv
+import static Measure.measure
+import static Measure.record
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-import static com.intellij.util.text.DateFormatUtil.*
+import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
@@ -46,7 +48,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 	def allEvents = []
 	def now = new Date()
-	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 100)
+	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 300)
 	for (changeList in changeLists) {
 		if (changeList == null) break
 		if (indicator.canceled) break
@@ -60,7 +62,9 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 //	showInConsole(toCsv(allEvents.reverse().take(200)), "output", project)
 	showInConsole(toCsv(allEvents), "output", project)
 
+	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 	log("total time: ${System.currentTimeMillis() - start}")
+
 }, {})
 
 static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project, ProgressIndicator indicator = null) {
@@ -68,6 +72,7 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 		if (indicator?.canceled) return []
 		catchingAll_ {
 			change.with {
+				long before = System.currentTimeMillis()
 
 				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
 				def afterText = (afterRevision == null ? "" : afterRevision.content)
@@ -80,6 +85,8 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 						fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
 					}
 				}
+
+				record("git content time", System.currentTimeMillis() - before)
 
 				try {
 					ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
@@ -114,21 +121,24 @@ class ProjectHistory {
 			List<CommittedChangeList> changes = []
 			Date date = fromDate
 			Date endDate = (toDate == null ? (fromDate - 10.years) : toDate)
+
 			new Iterator<CommittedChangeList>() {
 				@Override boolean hasNext() {
 					!changes.empty || date.after(endDate)
 				}
 
 				@Override CommittedChangeList next() {
-					if (!changes.empty) {
-						return changes.remove(0)
-					}
-					while (changes.empty && date.after(endDate)) {
-						use(TimeCategory) {
-							changes = requestChangeListsFor(project, date - 1.month, date)
-							date = date - 1.month
+					if (!changes.empty) return changes.remove(0)
+
+					measure("git request time") {
+						while (changes.empty && date.after(endDate)) {
+							use(TimeCategory) {
+								changes = requestChangeListsFor(project, date - 1.month, date)
+								date = date - 1.month
+							}
 						}
 					}
+
 					changes.empty ? null : changes.remove(0)
 				}
 
@@ -201,58 +211,60 @@ static appendTo(String fileName, String text) {
 	file.append(text)
 }
 
+
 class ChangeFinder {
-	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPsi) {
-		def beforeParse = System.currentTimeMillis()
-		PsiFile psiBefore = parseAsPsi(beforeText)
-		PsiFile psiAfter = parseAsPsi(afterText)
-		def afterParse = System.currentTimeMillis()
 
-		def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null }
+	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, Closure<PsiFile> parseAsPsi) {
+		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
+		PsiFile psiAfter = measure("parsing time"){ parseAsPsi(afterText) }
+
+		def changedFragments = measure("diff time"){ new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
+
 		(List<ChangeEvent>) changedFragments.collectMany { LineFragment fragment ->
-			def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
+			measure("change events") {
+				def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
-			def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
+				def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+				def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
-			List<ChangeEvent> changeEvents = []
-			def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
-				def partialChangeEvent = new PartialChangeEvent(
-						fullNameOf(psiElement),
-						containingFileName(psiElement),
-						diffTypeOf(fragment),
-						offsetToLineNumber(fromOffset),
-						offsetToLineNumber(toOffset),
-						fromOffset,
-						toOffset
-				)
-				def changeEvent = new ChangeEvent(
-						partialChangeEvent,
-						commitInfo
-				)
-				changeEvents << changeEvent
-			}
+				List<ChangeEvent> changeEvents = []
+				def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
+					def partialChangeEvent = new PartialChangeEvent(
+							fullNameOf(psiElement),
+							containingFileName(psiElement),
+							diffTypeOf(fragment),
+							offsetToLineNumber(fromOffset),
+							offsetToLineNumber(toOffset),
+							fromOffset,
+							toOffset
+					)
+					def changeEvent = new ChangeEvent(
+							partialChangeEvent,
+							commitInfo
+					)
+					changeEvents << changeEvent
+				}
 
-			PsiNamedElement prevPsiElement = null
-			int fromOffset = range.startOffset
-			runReadAction {
+				PsiNamedElement prevPsiElement = null
+				int fromOffset = range.startOffset
 				for (int offset = range.startOffset; offset < range.endOffset; offset++) {
-					PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-					if (psiElement != prevPsiElement) {
-						if (prevPsiElement != null)
-							addChangeEvent(prevPsiElement, fromOffset, offset)
-						prevPsiElement = psiElement
-						fromOffset = offset
+					runReadAction {
+						PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
+						if (psiElement != prevPsiElement) {
+							if (prevPsiElement != null)
+								addChangeEvent(prevPsiElement, fromOffset, offset)
+							prevPsiElement = psiElement
+							fromOffset = offset
+						}
 					}
 				}
-				if (prevPsiElement != null)
-					addChangeEvent(prevPsiElement, fromOffset, range.endOffset)
-			}
+				runReadAction {
+					if (prevPsiElement != null)
+						addChangeEvent(prevPsiElement, fromOffset, range.endOffset)
+				}
 
-			def done = System.currentTimeMillis()
-			log("parsing time: " + (afterParse - beforeParse))
-			log("rest time: " + (done - afterParse))
-			changeEvents
+				changeEvents
+			}
 		}
 	}
 
@@ -353,6 +365,24 @@ final class PartialChangeEvent {
 	int toLine
 	int fromOffset
 	int toOffset
+}
+
+class Measure {
+	static Map<String, Long> durations = [:].withDefault{ 0 }
+
+	static <T> T measure(String id, Closure<T> closure) {
+		long start = System.currentTimeMillis()
+		T result = closure()
+		long time = System.currentTimeMillis() - start
+		durations[id] += time
+		log(id + ": " + time)
+		result
+	}
+
+	static record(String id, long duration) {
+		durations[id] += duration
+		log(id + ": " + duration)
+	}
 }
 
 class CurrentFileHistory {
