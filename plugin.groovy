@@ -46,7 +46,7 @@ if (isIdeStartup) return
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	def start = System.currentTimeMillis()
 
-	def allEvents = []
+	def storage = new EventStorage(project.name)
 	def now = new Date()
 	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 300)
 	for (changeList in changeLists) {
@@ -56,11 +56,10 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 		catchingAll_ {
 			Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
-			allEvents.addAll(changeEvents)
+			storage.appendToEventsFile(changeEvents)
 		}
 	}
-//	showInConsole(toCsv(allEvents.reverse().take(200)), "output", project)
-	showInConsole(toCsv(allEvents), "output", project)
+	showInConsole("Saved change events to ${storage.fileName}", "output", project)
 
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 	log("total time: ${System.currentTimeMillis() - start}")
@@ -196,19 +195,24 @@ class ProjectHistory {
 	}
 }
 
+class EventStorage {
+	private final String name
+	final String fileName
 
-static appendToEventsFile(List<ChangeEvent> changeEvents) {
-	appendTo("${PathManager.pluginsPath}/delta-flora/events.csv", toCsv(changeEvents))
-}
+	EventStorage(String name) {
+		this.name = name
+		this.fileName = "${PathManager.pluginsPath}/delta-flora/${name}-events.csv"
+	}
 
-static appendToLogFile(message) {
-	appendTo("${PathManager.pluginsPath}/delta-flora/my.log", message.toString())
-}
+	def appendToEventsFile(Collection<ChangeEvent> changeEvents) {
+		appendTo(fileName, toCsv(changeEvents))
+	}
 
-static appendTo(String fileName, String text) {
-	def file = new File(fileName)
-	FileUtil.createParentDirs(file)
-	file.append(text)
+	private static appendTo(String fileName, String text) {
+		def file = new File(fileName)
+		FileUtil.createParentDirs(file)
+		file.append(text)
+	}
 }
 
 
