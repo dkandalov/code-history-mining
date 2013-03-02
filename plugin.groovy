@@ -42,6 +42,9 @@ if (isIdeStartup) return
 //if (true) return
 
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
+	def start = System.currentTimeMillis()
+
+	def allEvents = []
 	def now = new Date()
 	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 100)
 	for (changeList in changeLists) {
@@ -51,21 +54,21 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 		catchingAll_ {
 			Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
-			showInConsole(toCsv(changeEvents), "output", project)
+			allEvents.addAll(changeEvents)
 		}
 	}
+//	showInConsole(toCsv(allEvents.reverse().take(200)), "output", project)
+	showInConsole(toCsv(allEvents), "output", project)
+
+	log("total time: ${System.currentTimeMillis() - start}")
 }, {})
 
 static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project, ProgressIndicator indicator = null) {
-	if (changeList.changes == null) {
-		show("No changes for changelist ${changeList.name}")
-		return []
-	}
 	(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
 		if (indicator?.canceled) return []
-
 		catchingAll_ {
 			change.with {
+
 				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
 				def afterText = (afterRevision == null ? "" : afterRevision.content)
 				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
@@ -83,6 +86,7 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 				} catch (ProcessCanceledException ignore) {
 					[]
 				}
+
 			}
 		}
 	}
@@ -199,8 +203,10 @@ static appendTo(String fileName, String text) {
 
 class ChangeFinder {
 	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, parseAsPsi) {
+		def beforeParse = System.currentTimeMillis()
 		PsiFile psiBefore = parseAsPsi(beforeText)
 		PsiFile psiAfter = parseAsPsi(afterText)
+		def afterParse = System.currentTimeMillis()
 
 		def changedFragments = new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null }
 		(List<ChangeEvent>) changedFragments.collectMany { LineFragment fragment ->
@@ -210,33 +216,42 @@ class ChangeFinder {
 			def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
 			List<ChangeEvent> changeEvents = []
-			def prevPsiElement = null
-			for (int offset in range.startOffset..<range.endOffset) {
-				runReadAction {
+			def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
+				def partialChangeEvent = new PartialChangeEvent(
+						fullNameOf(psiElement),
+						containingFileName(psiElement),
+						diffTypeOf(fragment),
+						offsetToLineNumber(fromOffset),
+						offsetToLineNumber(toOffset),
+						fromOffset,
+						toOffset
+				)
+				def changeEvent = new ChangeEvent(
+						partialChangeEvent,
+						commitInfo
+				)
+				changeEvents << changeEvent
+			}
+
+			PsiNamedElement prevPsiElement = null
+			int fromOffset = range.startOffset
+			runReadAction {
+				for (int offset = range.startOffset; offset < range.endOffset; offset++) {
 					PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-					if (psiElement == null) {
-						prevPsiElement = null
-					} else if (psiElement != prevPsiElement) {
-						def partialChangeEvent = new PartialChangeEvent(
-								fullNameOf(psiElement),
-								containingFileName(psiElement),
-								diffTypeOf(fragment),
-								offsetToLineNumber(offset),
-								offsetToLineNumber(offset + 1),
-								offset,
-								offset + 1
-						)
-						def changeEvent = new ChangeEvent(
-								partialChangeEvent,
-								commitInfo
-						)
-						changeEvents << changeEvent
+					if (psiElement != prevPsiElement) {
+						if (prevPsiElement != null)
+							addChangeEvent(prevPsiElement, fromOffset, offset)
 						prevPsiElement = psiElement
-					} else {
-						changeEvents[-1] = changeEvents[-1].updated(offsetToLineNumber(offset + 1), offset + 1)
+						fromOffset = offset
 					}
 				}
+				if (prevPsiElement != null)
+					addChangeEvent(prevPsiElement, fromOffset, range.endOffset)
 			}
+
+			def done = System.currentTimeMillis()
+			log("parsing time: " + (afterParse - beforeParse))
+			log("rest time: " + (done - afterParse))
 			changeEvents
 		}
 	}
@@ -316,13 +331,6 @@ final class ChangeEvent {
 
 	private static String format(Date date) {
 		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
-	}
-
-	ChangeEvent updated(int updatedToLine, int updatedToOffset) {
-		new ChangeEvent(
-				new PartialChangeEvent(elementName, fileName, changeType, fromLine, updatedToLine, fromOffset, updatedToOffset),
-				new CommitInfo(revision, author, revisionDate, commitMessage)
-		)
 	}
 }
 
