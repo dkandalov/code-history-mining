@@ -62,23 +62,31 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			}
 		}
 
-		def fromDate = (new Date() - 300)
-		def toDate = storage.oldestEventTime
-		if (toDate == null) toDate = new Date()
-		Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
-		processChangeLists(changeLists) { changeEvents ->
-			storage.appendToEventsFile(changeEvents)
-		}
+		if (storage.hasNoEvents()) {
+			def now = new Date()
+			def fromDate = (now - 300)
+			def toDate = now
+			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			processChangeLists(changeLists) { changeEvents ->
+				storage.appendToEventsFile(changeEvents)
+			}
+		} else {
+			def fromDate = (new Date() - 300)
+			def toDate = storage.oldestEventTime
+			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			processChangeLists(changeLists) { changeEvents ->
+				storage.appendToEventsFile(changeEvents)
+			}
 
-		if (false) {
 			fromDate = storage.mostRecentEventTime
 			toDate = new Date()
 			show(fromDate)
 			show(toDate)
+
+			def recentChangeEvents = []
 			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
-			processChangeLists(changeLists) { changeEvents ->
-				storage.prependToEventsFile(changeEvents)
-			}
+			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
+			storage.prependToEventsFile(recentChangeEvents)
 		}
 
 		showInConsole("Saved change events to ${storage.fileName}", "output", project)
@@ -255,6 +263,11 @@ class EventStorage {
 			date.time += 1000 // plus one second (see comments in getOldestEventTime())
 			date
 		}
+	}
+
+	boolean hasNoEvents() {
+		def file = new File(fileName)
+		!file.exists() || file.length() == 0
 	}
 
 	private static String readFirstLine(String fileName) {
