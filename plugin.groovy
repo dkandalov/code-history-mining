@@ -73,22 +73,23 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				storage.appendToEventsFile(changeEvents)
 			}
 		} else {
-			def fromDate = now - daysOfHistory
-			def toDate = storage.oldestEventTime
-			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			def fromDate = storage.mostRecentEventTime
+			def toDate = now
+			def recentChangeEvents = []
+			def changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
+			storage.prependToEventsFile(recentChangeEvents)
+
+			fromDate = now - daysOfHistory
+			toDate = storage.oldestEventTime
+			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
-
-			fromDate = storage.mostRecentEventTime
-			toDate = now
-			def recentChangeEvents = []
-			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
-			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
-			storage.prependToEventsFile(recentChangeEvents)
 		}
 
 		showInConsole("Saved change events to ${storage.fileName}", "output", project)
+		showInConsole("(it has history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
@@ -310,11 +311,16 @@ class EventStorage {
 	}
 
 	private static prependTo(String fileName, String text) {
-//		def file = new File(fileName)
-//		file.withPrintWriter { writer ->
-//			writer. // TODO
-//		}
-//		file.append(text)
+		def tempFile = FileUtil.createTempFile("delta_flora", "_${new Random().nextInt(10000)}")
+		def file = new File(fileName)
+		def outputStream = new BufferedOutputStream(new FileOutputStream(tempFile))
+		def inputStream = new BufferedInputStream(new FileInputStream(file))
+
+		outputStream.write(text.bytes)
+		FileUtil.copy(inputStream, outputStream)
+
+		file.delete()
+		FileUtil.rename(tempFile, file)
 	}
 }
 
