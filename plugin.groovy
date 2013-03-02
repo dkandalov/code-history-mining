@@ -50,22 +50,25 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
 
 		def storage = new EventStorage(project.name)
+		def processChangeLists = { changeLists ->
+			for (changeList in changeLists) {
+				if (changeList == null) break
+				if (indicator.canceled) break
+				catchingAll_ {
+					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
+					storage.appendToEventsFile(changeEvents)
+
+					indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
+				}
+			}
+		}
+
 		def fromDate = storage.oldestEventTime
 		def toDate = (new Date() - 300)
 		Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
-		for (changeList in changeLists) {
-			if (changeList == null) break
-			if (indicator.canceled) break
+		processChangeLists(changeLists)
 
-			catchingAll_ {
-				Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
-				storage.appendToEventsFile(changeEvents)
-			}
-
-			indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
-		}
 		showInConsole("Saved change events to ${storage.fileName}", "output", project)
-
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
@@ -215,7 +218,14 @@ class EventStorage {
 	Date getOldestEventTime() {
 		def line = readLastLine(fileName)
 		if (line == null) new Date()
-		else new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+		else {
+			def date = new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
+			// (it means that if processing stops between two commits that happened on the same second,
+			// we will miss one of them.. considered this to be insignificant)
+			date.time -= 1000
+			date
+		}
 	}
 
 	Date getMostRecentEventTime() {
@@ -297,6 +307,8 @@ class ChangeFinder {
 				PsiNamedElement prevPsiElement = null
 				int fromOffset = range.startOffset
 				for (int offset = range.startOffset; offset < range.endOffset; offset++) {
+					// running read action on fine-grained level because this seems to improve UI responsiveness
+					// even though it does make the whole processing a bit slower
 					runReadAction {
 						PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
 						if (psiElement != prevPsiElement) {
@@ -426,13 +438,11 @@ class Measure {
 		T result = closure()
 		long time = System.currentTimeMillis() - start
 		durations[id] += time
-		log(id + ": " + time)
 		result
 	}
 
 	static record(String id, long duration) {
 		durations[id] += duration
-		log(id + ": " + duration)
 	}
 }
 
