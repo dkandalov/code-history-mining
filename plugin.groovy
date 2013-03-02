@@ -44,26 +44,28 @@ if (isIdeStartup) return
 //if (true) return
 
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
-	def start = System.currentTimeMillis()
+	measure("time") {
 
-	def storage = new EventStorage(project.name)
-	def now = new Date()
-	Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, now, now - 300)
-	for (changeList in changeLists) {
-		if (changeList == null) break
-		if (indicator.canceled) break
-		indicator.text = "Analyzing project history (looking at ${dateFormat.format((Date) changeList.commitDate)})"
+		def storage = new EventStorage(project.name)
+		def fromDate = storage.oldestEventTime
+		log(fromDate)
+		def toDate = (new Date() - 300)
+		Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+		for (changeList in changeLists) {
+			if (changeList == null) break
+			if (indicator.canceled) break
 
-		catchingAll_ {
-			Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
-			storage.appendToEventsFile(changeEvents)
+			catchingAll_ {
+				Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
+				storage.appendToEventsFile(changeEvents)
+			}
+
+			indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
 		}
+		showInConsole("Saved change events to ${storage.fileName}", "output", project)
+
 	}
-	showInConsole("Saved change events to ${storage.fileName}", "output", project)
-
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
-	log("total time: ${System.currentTimeMillis() - start}")
-
 }, {})
 
 static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project, ProgressIndicator indicator = null) {
@@ -208,6 +210,20 @@ class EventStorage {
 		appendTo(fileName, toCsv(changeEvents))
 	}
 
+	Date getOldestEventTime() {
+		return new Date()
+
+		def file = new File(fileName)
+		if (!file.exists()) return new Date()
+		file.withReader { reader -> new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(reader.readLine().split(",")[3]) }
+	}
+
+	Date getMostRecentEventTime() {
+		def file = new File(fileName)
+		if (!file.exists()) return new Date()
+		null
+	}
+
 	private static appendTo(String fileName, String text) {
 		def file = new File(fileName)
 		FileUtil.createParentDirs(file)
@@ -332,6 +348,8 @@ class ChangeFinder {
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
 final class ChangeEvent {
+	static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+
 	@Delegate PartialChangeEvent partialChangeEvent
 	@Delegate CommitInfo commitInfo
 
@@ -346,7 +364,7 @@ final class ChangeEvent {
 	}
 
 	private static String format(Date date) {
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(date)
+		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)
 	}
 }
 
