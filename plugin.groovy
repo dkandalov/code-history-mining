@@ -48,7 +48,6 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 		def storage = new EventStorage(project.name)
 		def fromDate = storage.oldestEventTime
-		log(fromDate)
 		def toDate = (new Date() - 300)
 		Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
 		for (changeList in changeLists) {
@@ -211,17 +210,39 @@ class EventStorage {
 	}
 
 	Date getOldestEventTime() {
-		return new Date()
-
-		def file = new File(fileName)
-		if (!file.exists()) return new Date()
-		file.withReader { reader -> new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(reader.readLine().split(",")[3]) }
+		def line = readLastLine(fileName)
+		if (line == null) new Date()
+		else new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
 	}
 
 	Date getMostRecentEventTime() {
 		def file = new File(fileName)
 		if (!file.exists()) return new Date()
-		null
+		file.withReader { reader -> new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(reader.readLine().split(",")[3]) }
+	}
+
+	private static String readLastLine(String fileName) {
+		def file = new File(fileName)
+		if (!file.exists()) return null
+
+		def randomAccess = new RandomAccessFile(file, "r")
+		try {
+
+			for (long pos = file.length() - 2; pos >= 0; pos--) {
+				if (pos % 1000 == 0) {
+					log(pos)
+				}
+				randomAccess.seek(pos)
+				if (randomAccess.read() == '\n') {
+					return randomAccess.readLine()
+				}
+			}
+			randomAccess.seek(0)
+			randomAccess.length() > 0 ? randomAccess.readLine() : null
+
+		} finally {
+			randomAccess.close()
+		}
 	}
 
 	private static appendTo(String fileName, String text) {
