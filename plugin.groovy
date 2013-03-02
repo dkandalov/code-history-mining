@@ -62,16 +62,18 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			}
 		}
 
+		def now = new Date()
+		def daysOfHistory = 300
+
 		if (storage.hasNoEvents()) {
-			def now = new Date()
-			def fromDate = (now - 300)
+			def fromDate = now - daysOfHistory
 			def toDate = now
 			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
 		} else {
-			def fromDate = (new Date() - 300)
+			def fromDate = now - daysOfHistory
 			def toDate = storage.oldestEventTime
 			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
 			processChangeLists(changeLists) { changeEvents ->
@@ -79,10 +81,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			}
 
 			fromDate = storage.mostRecentEventTime
-			toDate = new Date()
-			show(fromDate)
-			show(toDate)
-
+			toDate = now
 			def recentChangeEvents = []
 			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
 			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
@@ -146,8 +145,8 @@ class ProjectHistory {
 	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null) {
 		use(TimeCategory) {
 			List<CommittedChangeList> changes = []
-			Date date = toDate
 			Date beginningOfHistory = (fromDate == null ? (toDate - 10.years) : fromDate)
+			Date date = toDate
 
 			new Iterator<CommittedChangeList>() {
 				@Override boolean hasNext() {
@@ -160,13 +159,18 @@ class ProjectHistory {
 					measure("git request time") {
 						while (changes.empty && date.after(beginningOfHistory)) {
 							use(TimeCategory) {
-								changes = requestChangeListsFor(project, date - 1.month, date)
-								date = date - 1.month
+								def newDate = chooseLatest(date - 1.month, beginningOfHistory)
+								changes = requestChangeListsFor(project, newDate, date)
+								date = newDate
 							}
 						}
 					}
 
 					changes.empty ? null : changes.remove(0)
+				}
+
+				private Date chooseLatest(Date date1, Date date2) {
+					date1.after(date2) ? date1 : date2
 				}
 
 				@Override void remove() {
