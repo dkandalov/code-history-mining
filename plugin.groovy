@@ -55,7 +55,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				if (changeList == null) break
 				if (indicator.canceled) break
 				catchingAll_ {
-					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project, indicator)
+					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
 					indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
 				}
@@ -94,12 +94,11 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
 
-static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project, ProgressIndicator indicator = null) {
-	(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
-		if (indicator?.canceled) return []
-		catchingAll_ {
+static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+	try {
+		(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
 			change.with {
-				long before = System.currentTimeMillis()
+				long timeBeforeGettingGitContent = System.currentTimeMillis()
 
 				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
 				def afterText = (afterRevision == null ? "" : afterRevision.content)
@@ -113,16 +112,13 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 					}
 				}
 
-				record("git content time", System.currentTimeMillis() - before)
+				record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
 
-				try {
-					ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
-				} catch (ProcessCanceledException ignore) {
-					[]
-				}
-
+				ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
 			}
 		}
+	} catch (ProcessCanceledException ignore) {
+		[]
 	}
 }
 
