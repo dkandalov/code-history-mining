@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
-import static ChangeEvent.toCsv
 import static Measure.measure
 import static Measure.record
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
@@ -225,6 +224,8 @@ class ProjectHistory {
 }
 
 class EventStorage {
+	private static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+
 	private final String name
 	final String fileName
 
@@ -247,7 +248,7 @@ class EventStorage {
 		def line = readLastLine(fileName)
 		if (line == null) null
 		else {
-			def date = new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
 			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
 			// (it means that if processing stops between two commits that happened on the same second,
 			// we will miss one of them.. considered this to be insignificant)
@@ -260,7 +261,7 @@ class EventStorage {
 		def line = readFirstLine(fileName)
 		if (line == null) new Date()
 		else {
-			def date = new SimpleDateFormat(ChangeEvent.CSV_DATE_FORMAT).parse(line.split(",")[3])
+			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
 			date.time += 1000 // plus one second (see comments in getOldestEventTime())
 			date
 		}
@@ -269,6 +270,22 @@ class EventStorage {
 	boolean hasNoEvents() {
 		def file = new File(fileName)
 		!file.exists() || file.length() == 0
+	}
+
+	private static String toCsv(Collection<ChangeEvent> changeEvents) {
+		changeEvents.collect{toCsv(it)}.join("\n") + "\n"
+	}
+
+	private static String toCsv(ChangeEvent changeEvent) {
+		changeEvent.with {
+			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
+			[elementName, revision, author, format(revisionDate), fileName,
+					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
+		}
+	}
+
+	private static String format(Date date) {
+		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)
 	}
 
 	private static String readFirstLine(String fileName) {
@@ -447,24 +464,8 @@ class ChangeFinder {
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
 final class ChangeEvent {
-	static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
-
 	@Delegate PartialChangeEvent partialChangeEvent
 	@Delegate CommitInfo commitInfo
-
-	static String toCsv(Collection<ChangeEvent> changeEvents) {
-		changeEvents.collect{it.toCsv()}.join("\n") + "\n"
-	}
-
-	String toCsv() {
-		def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
-		[elementName, revision, author, format(revisionDate), fileName,
-				changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
-	}
-
-	private static String format(Date date) {
-		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)
-	}
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
