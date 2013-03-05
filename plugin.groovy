@@ -42,8 +42,6 @@ if (isIdeStartup) return
 //new TextCompareProcessorTestSuite(project).run()
 //if (true) return
 
-// TODO escape new lines in commit comments
-
 
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
@@ -57,7 +55,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				catchingAll_ {
 					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
-					indicator.text = "Analyzing project history (looked at ${dateFormat.format((Date) changeList.commitDate)})"
+					indicator.text = "Analyzing project history (last change event ${dateFormat.format((Date) changeList.commitDate)})"
 				}
 			}
 		}
@@ -211,7 +209,7 @@ class ProjectHistory {
 	 */
 	private static List<CommittedChangeList> bug_IDEA_102084(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
 		def result = []
-		def handler = new Consumer<GitSimpleHandler>() {
+		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {
 				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
 				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
@@ -223,7 +221,13 @@ class ProjectHistory {
 			}
 		}
 		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
-		GitUtil.getLocalCommittedChanges(project, root, handler, resultConsumer, (boolean) false)
+
+		// this is another difference compared to GitCommittedChangeListProvider#getCommittedChangesImpl
+		// if "false", merge CommittedChangeList will contain all changes from merge which is NOT useful for this use-case
+		// TODO (not sure how it works with other VCS)
+		boolean skipDiffsForMerge = true
+
+		GitUtil.getLocalCommittedChanges(project, root, parametersSpecifier, resultConsumer, skipDiffsForMerge)
 		result
 	}
 }
