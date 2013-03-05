@@ -53,6 +53,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			for (changeList in changeLists) {
 				if (changeList == null) break
 				if (indicator.canceled) break
+				log(changeList.name)
 				catchingAll_ {
 					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
@@ -63,11 +64,12 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 		def now = new Date()
 		def daysOfHistory = 300
+		def historyRequestSizeInDays = 1
 
 		if (storage.hasNoEvents()) {
 			def fromDate = now - daysOfHistory
 			def toDate = now
-			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
@@ -75,13 +77,13 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			def fromDate = storage.mostRecentEventTime
 			def toDate = now
 			def recentChangeEvents = []
-			def changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			def changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
 			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
 			storage.prependToEventsFile(recentChangeEvents)
 
 			fromDate = now - daysOfHistory
 			toDate = storage.oldestEventTime
-			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate)
+			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
@@ -102,6 +104,8 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
 				def afterText = (afterRevision == null ? "" : afterRevision.content)
 				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+				if (nonEmptyRevision.file.fileType.isBinary()) return []
+
 				def commitInfo = new CommitInfo(nonEmptyRevision.revisionNumber.asString(),
 						changeList.committerName, changeList.commitDate, changeList.comment.trim())
 				def parseAsPsi = { String text ->
@@ -138,7 +142,8 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 
 class ProjectHistory {
 
-	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null) {
+	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null,
+	                                                    int historyRequestSizeInDays = 30) {
 		use(TimeCategory) {
 			List<CommittedChangeList> changes = []
 			Date beginningOfHistory = (fromDate == null ? (toDate - 10.years) : fromDate)
@@ -155,7 +160,7 @@ class ProjectHistory {
 					measure("git request time") {
 						while (changes.empty && date.after(beginningOfHistory)) {
 							use(TimeCategory) {
-								def newDate = chooseLatest(date - 1.month, beginningOfHistory)
+								def newDate = chooseLatest(date - historyRequestSizeInDays, beginningOfHistory)
 								changes = requestChangeListsFor(project, newDate, date)
 								date = newDate
 							}
@@ -278,7 +283,7 @@ class EventStorage {
 
 	private static String toCsv(ChangeEvent changeEvent) {
 		changeEvent.with {
-			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"") + '"'
+			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\n") + '"'
 			[elementName, revision, author, format(revisionDate), fileName,
 					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
 		}
@@ -352,10 +357,10 @@ class ChangeFinder {
 		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
 		PsiFile psiAfter = measure("parsing time"){ parseAsPsi(afterText) }
 
-		def changedFragments = measure("diff time"){ new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
+		def changedFragments = measure("diff time") { new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
 
 		(List<ChangeEvent>) changedFragments.collectMany { LineFragment fragment ->
-			measure("change events") {
+			measure("change events time") {
 				def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
 				def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
