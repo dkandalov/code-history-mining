@@ -54,7 +54,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				log(changeList.name)
 
 				def date = dateFormat.format((Date) changeList.commitDate)
-				indicator.text = "Analyzing project history (${date} - '${changeList.comment}')"
+				indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
 				catchingAll_ {
 					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
