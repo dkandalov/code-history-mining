@@ -52,11 +52,14 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				if (changeList == null) break
 				if (indicator.canceled) break
 				log(changeList.name)
+
+				def date = dateFormat.format((Date) changeList.commitDate)
+				indicator.text = "Analyzing project history (${date} - '${changeList.comment}')"
 				catchingAll_ {
 					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
-					indicator.text = "Analyzing project history (last change event ${dateFormat.format((Date) changeList.commitDate)})"
 				}
+				indicator.text = "Analyzing project history (${date} - looking for next commit...)"
 			}
 		}
 
@@ -88,7 +91,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 		}
 
 		showInConsole("Saved change events to ${storage.fileName}", "output", project)
-		showInConsole("(it has history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
+		showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
