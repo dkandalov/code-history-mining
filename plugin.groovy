@@ -236,7 +236,7 @@ class ProjectHistory {
 }
 
 class EventStorage {
-	private static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+	static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
 
 	private final String name
 	final String fileName
