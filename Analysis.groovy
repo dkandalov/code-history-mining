@@ -4,10 +4,11 @@ import static java.lang.System.getenv
 
 class Analysis {
 	static void main(String[] args) {
-		lookAt("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/intellij_eval-events.csv")
+		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/intellij_eval-events.csv")
+
 	}
 
-	static lookAt(eventsFileName) {
+	static loadAllEvents(String eventsFileName) {
 		def events = []
 		new File(eventsFileName).withReader { reader ->
 			def line
@@ -22,8 +23,7 @@ class Analysis {
 				)
 			}
 		}
-
-		println(events.size())
+		events
 	}
 }
 

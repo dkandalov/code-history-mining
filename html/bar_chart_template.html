@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    body {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .bar {
+        fill: steelblue;
+    }
+
+    .x.axis path {
+        display: none;
+    }
+</style>
+<body>
+<script src="d3.v3.min.js"></script>
+<script>
+    var rawData = "\
+letter	frequency\n\
+A	.08167\n\
+B	.01492\n\
+C	.02780\n\
+D	.04253\n\
+E	.12702\n\
+F	.02288\n\
+G	.02022\n\
+H	.06094\n\
+I	.06973\n\
+J	.00153\n\
+K	.00747\n\
+L	.04025\n\
+M	.02517\n\
+N	.06749\n\
+O	.07507\n\
+P	.01929\n\
+Q	.00098\n\
+R	.05987\n\
+S	.06333\n\
+T	.09056\n\
+U	.02758\n\
+V	.01037\n\
+W	.02465\n\
+X	.00150\n\
+Y	.01971\n\
+Z	.00074\n\
+    ";
+
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+    var formatPercent = d3.format(".0%");
+
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+    var y = d3.scale.linear().range([height, 0]);
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var data = d3.tsv.parse(rawData);
+    data.forEach(function (d) { d.frequency = +d.frequency; });
+
+    x.domain(data.map(function (d) { return d.letter; }));
+    y.domain([0, d3.max(data, function (d) { return d.frequency; })]);
+
+    svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+    svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Frequency");
+
+    svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function (d) { return x(d.letter); })
+            .attr("width", x.rangeBand())
+            .attr("y", function (d) { return y(d.frequency); })
+            .attr("height", function (d) { return height - y(d.frequency); });
+
+</script>
+</body>
