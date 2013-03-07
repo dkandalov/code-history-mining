@@ -107,7 +107,6 @@ static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList cha
 				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
 				if (nonEmptyRevision.file.fileType.isBinary()) return []
 
-				show(changeList.committerName)
 				def commitInfo = new CommitInfo(
 						revisionNumberOf(changeList),
 						removeEmailFrom(changeList.committerName),
@@ -307,7 +306,7 @@ class EventStorage {
 
 	private static String toCsv(ChangeEvent changeEvent) {
 		changeEvent.with {
-			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\n") + '"'
+			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
 			[elementName, revision, author, format(revisionDate), fileName,
 					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
 		}
