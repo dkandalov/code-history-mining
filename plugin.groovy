@@ -56,7 +56,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 				def date = dateFormat.format((Date) changeList.commitDate)
 				indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
 				catchingAll_ {
-					Collection<ChangeEvent> changeEvents = extractChangeEvents((CommittedChangeList) changeList, project)
+					Collection<ChangeEvent> changeEvents = decomposeIntoChangeEvents((CommittedChangeList) changeList, project)
 					callback(changeEvents)
 				}
 				indicator.text = "Analyzing project history (${date} - looking for next commit...)"
@@ -96,7 +96,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
 
-static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeList, Project project) {
+static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
 	try {
 		(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
 			change.with {
@@ -107,8 +107,12 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
 				if (nonEmptyRevision.file.fileType.isBinary()) return []
 
-				def commitInfo = new CommitInfo(nonEmptyRevision.revisionNumber.asString(),
-						changeList.committerName, changeList.commitDate, changeList.comment.trim())
+				show(changeList.committerName)
+				def commitInfo = new CommitInfo(
+						revisionNumberOf(changeList),
+						removeEmailFrom(changeList.committerName),
+						changeList.commitDate, changeList.comment.trim()
+				)
 				def parseAsPsi = { String text ->
 					runReadAction {
 						def fileFactory = PsiFileFactory.getInstance(project)
@@ -124,6 +128,19 @@ static Collection<ChangeEvent> extractChangeEvents(CommittedChangeList changeLis
 	} catch (ProcessCanceledException ignore) {
 		[]
 	}
+}
+
+static String revisionNumberOf(CommittedChangeList changeList) {
+	// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
+	if (changeList.class.simpleName == "GitCommittedChangeList") {
+		changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
+	} else {
+		changeList.number.toString()
+	}
+}
+
+static String removeEmailFrom(String committerName) {
+	committerName.replaceAll(/\s+<.+@.+>/, "").trim()
 }
 
 @Nullable static <T> T catchingAll_(Closure<T> closure) {
