@@ -17,52 +17,74 @@
     }
 
     .x.axis path {
-        display: none;
     }
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
     var rawData = "\
-letter	frequency\n\
-A	.08167\n\
-B	.01492\n\
-C	.02780\n\
-D	.04253\n\
-E	.12702\n\
-F	.02288\n\
-G	.02022\n\
-H	.06094\n\
-I	.06973\n\
-J	.00153\n\
-K	.00747\n\
-L	.04025\n\
-M	.02517\n\
-N	.06749\n\
-O	.07507\n\
-P	.01929\n\
-Q	.00098\n\
-R	.05987\n\
-S	.06333\n\
-T	.09056\n\
-U	.02758\n\
-V	.01037\n\
-W	.02465\n\
-X	.00150\n\
-Y	.01971\n\
-Z	.00074\n\
-    ";
+date,changeSize\n\
+11/08/2012,14218\n\
+13/08/2012,12977\n\
+14/08/2012,19705\n\
+15/08/2012,243553\n\
+16/08/2012,3527\n\
+17/08/2012,21786\n\
+19/08/2012,41839\n\
+20/08/2012,404475\n\
+21/08/2012,1388\n\
+23/08/2012,10796\n\
+25/08/2012,19911\n\
+26/08/2012,259407\n\
+21/09/2012,4145\n\
+07/10/2012,4892\n\
+08/10/2012,250\n\
+09/10/2012,316\n\
+15/11/2012,491\n\
+22/11/2012,36125\n\
+06/12/2012,306\n\
+07/12/2012,966\n\
+20/01/2013,30956\n\
+21/01/2013,934\n\
+22/01/2013,16863\n\
+23/01/2013,1795\n\
+24/01/2013,834\n\
+25/01/2013,1955\n\
+26/01/2013,2913\n\
+27/01/2013,42995\n\
+28/01/2013,5739\n\
+29/01/2013,11892\n\
+30/01/2013,18014\n\
+31/01/2013,251902\n\
+01/02/2013,3082\n\
+02/02/2013,3682\n\
+04/02/2013,5919\n\
+07/02/2013,665\n\
+10/02/2013,232\n\
+15/02/2013,137\n\
+18/02/2013,2045\n\
+19/02/2013,2049\n\
+20/02/2013,731\n\
+22/02/2013,594\n\
+23/02/2013,4627\n\
+24/02/2013,355\n\
+05/03/2013,284\
+";
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-    var formatPercent = d3.format(".0%");
+    var dateInputFormat = d3.time.format("%d/%m/%Y");
+    var valueFormat = function(n) {
+        var s = d3.format(",")(n);
+        return s.length < 6 ? s : d3.format("s")(n);
+    };
 
-    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+    var x = d3.time.scale().range([0, width]);
     var y = d3.scale.linear().range([height, 0]);
     var xAxis = d3.svg.axis().scale(x).orient("bottom");
-    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -70,11 +92,14 @@ Z	.00074\n\
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var data = d3.tsv.parse(rawData);
-    data.forEach(function (d) { d.frequency = +d.frequency; });
+    var data = d3.csv.parse(rawData);
+    data.forEach(function (d) {
+        d.date = dateInputFormat.parse(d.date);
+        d["changeSize"] = parseInt(d["changeSize"]);
+    });
 
-    x.domain(data.map(function (d) { return d.letter; }));
-    y.domain([0, d3.max(data, function (d) { return d.frequency; })]);
+    x.domain(d3.extent(data, function (d) { return d.date; }));
+    y.domain([0, d3.max(data, function (d) { return d["changeSize"]; })]);
 
     svg.append("g")
             .attr("class", "x axis")
@@ -89,16 +114,16 @@ Z	.00074\n\
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Frequency");
+            .text("Change size");
 
     svg.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
-            .attr("x", function (d) { return x(d.letter); })
-            .attr("width", x.rangeBand())
-            .attr("y", function (d) { return y(d.frequency); })
-            .attr("height", function (d) { return height - y(d.frequency); });
+            .attr("x", function (d) { return x(d.date); })
+            .attr("width", 4)
+            .attr("y", function (d) { return y(d["changeSize"]); })
+            .attr("height", function (d) { return height - y(d["changeSize"]); });
 
 </script>
 </body>

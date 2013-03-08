@@ -5,11 +5,29 @@ import static java.lang.System.getenv
 class Analysis {
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/intellij_eval-events.csv")
-		def aa = events.groupBy { it.revision }
-		println(aa.entrySet().collect{[it.key, it.value[0].commitMessage]}.join("\n"))
-		def amountByDate = aa.collect{ /*println(it.value[0].commitMessage);*/ it.value[0] }
-				.groupBy{ resetToDays(it.revisionDate) }.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		println(amountByDate.join("\n"))
+		def commitsAmountByDate = events
+						.groupBy{ it.revision }.collect{ it.value[0] }
+						.groupBy{ resetToDays(it.revisionDate) }
+						.collect{ [it.key, it.value.size()] }.sort{it[0]}
+//		println(commitsAmountByDate.join("\n"))
+
+		def totalChangeSizeByDate = events
+						.groupBy{ resetToDays(it.revisionDate) }
+						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
+
+		println(asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changeSize"]))
+	}
+
+	static String asJavaScriptLiteral(List list, List header) {
+		def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
+
+		def jsNewLine = "\\n\\\n"
+		def jsHeader = header.join(",") + jsNewLine
+		def jsBody = list
+				.collect{ it.collect{it instanceof Date ? formatDate(it) : it} }
+				.collect{it.join(",")}
+				.join(jsNewLine)
+		"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
 	}
 
 	static loadAllEvents(String eventsFileName) {
