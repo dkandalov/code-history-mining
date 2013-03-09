@@ -28,22 +28,30 @@
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
+    var date1 = d3.time.day.floor(new Date());
+    var date2 = d3.time.day.floor(d3.time.day.offset(new Date(), 1));
+    var data = [
+        [ { x: date1, y: 1.3039056945991474, y0: 0 },
+          { x: date2, y: 0.18966095285544118, y0: 0 } ],
+        [ { x: date1, y: 1.9847434876777645, y0: 1.3039056945991474 },
+          { x: date2, y: 0.16857198156906453, y0: 0.18966095285544118} ]
+    ];
 
-    var numberOfLayers = 10,
-        samplesPerLayer = 58,
-        stack = d3.layout.stack(),
-        layers = stack(d3.range(numberOfLayers).map(function() { return bumpLayer(samplesPerLayer, .1); })),
-        yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
-        yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+    var stack = d3.layout.stack();
+    var layers = stack(data);
+    var yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
     var margin = {top: 40, right: 10, bottom: 20, left: 10},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.ordinal().domain(d3.range(samplesPerLayer)).rangeRoundBands([0, width], .08);
-    var y = d3.scale.linear().domain([0, yStackMax]).range([height, 0]);
-    var xAxis = d3.svg.axis().scale(x).tickSize(0).tickPadding(6).orient("bottom");
-    var color = d3.scale.category20(); //d3.scale.linear().domain([0, numberOfLayers - 1]).range(["#aad", "#556"]);
+    var x = d3.time.scale().nice().rangeRound([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var color = d3.scale.category20();
+
+    x.domain(d3.extent(d3.time.days(date1, d3.time.day.offset(date2, 2))));
+    y.domain([0, yStackMax]);
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -62,7 +70,7 @@
             .enter().append("rect")
             .attr("x", function(d) { return x(d.x); })
             .attr("y", function(d) { return y(d.y0 + d.y); })
-            .attr("width", x.rangeBand())
+            .attr("width", 350)
             .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
 
     svg.append("g")

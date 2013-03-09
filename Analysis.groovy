@@ -8,16 +8,23 @@ class Analysis {
 
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
-		def commitsAmountByDate = events
-						.groupBy{ it.revision }.collect{ it.value[0] }
-						.groupBy{ resetToDays(it.revisionDate) }
-						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		println(asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+		def changeSize = { it.toOffset - it.fromOffset }
 
-		def totalChangeSizeByDate = events
-						.groupBy{ resetToDays(it.revisionDate) }
-						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
+//		def commitsAmountByDate = events
+//						.groupBy{ it.revision }.collect{ it.value[0] }
+//						.groupBy{ resetToDays(it.revisionDate) }
+//						.collect{ [it.key, it.value.size()] }.sort{it[0]}
+//		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+//
+//		def totalChangeSizeByDate = events
+//						.groupBy{ resetToDays(it.revisionDate) }
+//						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
 //		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+
+		def aa = events
+			.groupBy{ resetToDays(it.revisionDate) }
+			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
+		println(aa.entrySet().join("\n"))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
