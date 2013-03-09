@@ -22,8 +22,8 @@
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData = "\
-date,changeSize\n\
+    var rawData = /*data_placeholder*/"\
+date,changes size\n\
 11/08/2012,14218\n\
 13/08/2012,12977\n\
 14/08/2012,19705\n\
@@ -69,7 +69,7 @@ date,changeSize\n\
 23/02/2013,4627\n\
 24/02/2013,355\n\
 05/03/2013,284\
-";
+"/*data_placeholder*/;
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
@@ -95,11 +95,11 @@ date,changeSize\n\
     var data = d3.csv.parse(rawData);
     data.forEach(function (d) {
         d.date = dateFormat.parse(d.date);
-        d["changeSize"] = parseInt(d["changeSize"]);
+        d["changes size"] = parseInt(d["changes size"]);
     });
 
     x.domain(d3.extent(data, function (d) { return d.date; }));
-    y.domain([0, d3.max(data, function (d) { return d["changeSize"]; })]);
+    y.domain([0, d3.max(data, function (d) { return d["changes size"]; })]);
     var days = d3.time.days(data[0].date, data[data.length - 1].date).length;
     var barWidth = Math.floor((width / days) - 0.5);
 
@@ -116,7 +116,7 @@ date,changeSize\n\
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Change size");
+            .text("changes size per day");
 
     svg.selectAll(".bar")
             .data(data)
@@ -124,11 +124,10 @@ date,changeSize\n\
             .attr("class", "bar")
             .attr("x", function (d) { return x(d.date); })
             .attr("width", barWidth)
-            .attr("y", function (d) { return y(d["changeSize"]); })
-            .attr("height", function (d) { return height - y(d["changeSize"]); })
+            .attr("y", function (d) { return y(d["changes size"]); })
+            .attr("height", function (d) { return height - y(d["changes size"]); })
             .append("title")
-            .text(function (d) { return "date: " + dateFormat(d.date) + "\nchange size: " + d["changeSize"]; })
-    ;
+            .text(function (d) { return "date: " + dateFormat(d.date) + "\nchanges size: " + d["changes size"]; });
 
 </script>
 </body>

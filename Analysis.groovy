@@ -1,21 +1,30 @@
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
 
 import static java.lang.System.getenv
 
 class Analysis {
+	static def projectName = "idea"
+
 	static void main(String[] args) {
-		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/intellij_eval-events.csv")
+		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
 		def commitsAmountByDate = events
 						.groupBy{ it.revision }.collect{ it.value[0] }
 						.groupBy{ resetToDays(it.revisionDate) }
 						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-//		println(commitsAmountByDate.join("\n"))
+//		println(asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 
 		def totalChangeSizeByDate = events
 						.groupBy{ resetToDays(it.revisionDate) }
 						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
+		fillTemplate("bar_chart_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+	}
 
-		println(asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changeSize"]))
+	static void fillTemplate(String template, String jsValue) {
+		println(jsValue)
+		def templateText = new File("html/${template}").readLines().join("\n")
+		def text = templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
+		new File("html/${projectName}_${template.replace("_template", "")}").write(text)
 	}
 
 	static String asJavaScriptLiteral(List list, List header) {
