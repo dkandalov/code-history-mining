@@ -14,8 +14,8 @@ class Analysis {
 		def toDay = floorToDay(events.first().revisionDate)
 		def fillMissingDays = { valuesByDate, defaultValue ->
 			use(TimeCategory) {
-				def day = floorToDay(fromDay)
-				while (day.before(toDay)) {
+				def day = fromDay.clone()
+				while (!day.after(toDay)) {
 					if (!valuesByDate.containsKey(day)) valuesByDate[day] = defaultValue
 					day += 1.day
 				}
@@ -40,13 +40,14 @@ class Analysis {
 //			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
 //		println(authorContributionByDate.entrySet().join("\n"))
 
-		def aa = events
+		def changesSizeByAuthorByDate = events
 				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
 				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0); it}
-		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(
-				aa.entrySet().toList().take(3).collectMany{ entry ->
-					entry.value.sort().collect{ [it.key, entry.key, it.value] }
-				}, ["date", "author", "changes size"]))
+		def flattened = changesSizeByAuthorByDate
+				.entrySet().toList().collectMany { entry ->
+					entry.value.sort().collect { [it.key, entry.key, it.value] }
+				}
+		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
