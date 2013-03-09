@@ -4,7 +4,6 @@ import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.AbstractVcs
@@ -17,7 +16,6 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
-import com.intellij.unscramble.UnscrambleDialog
 import com.intellij.util.Consumer
 import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
@@ -144,15 +142,9 @@ static String removeEmailFrom(String committerName) {
 
 @Nullable static <T> T catchingAll_(Closure<T> closure) {
 	try {
-
 		closure.call()
-
 	} catch (Exception e) {
-		def writer = new StringWriter()
-		def message = e
-		message.printStackTrace(new PrintWriter(writer))
-		message = UnscrambleDialog.normalizeText(writer.buffer.toString())
-		ProjectManager.instance.openProjects.each{ showInNewConsole(message, e.class.simpleName, it) }
+		log(e)
 		null
 	}
 }
