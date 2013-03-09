@@ -222,6 +222,9 @@ class ProjectHistory {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {
+				// makes git notice file renames/moves (not sure but seems that otherewise intellij api doesn't do it)
+				h.addParameters("-M")
+
 				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
 				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
 			}
