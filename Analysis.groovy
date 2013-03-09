@@ -23,6 +23,7 @@ class Analysis {
 			}
 		}
 		def changeSize = { it.toOffset - it.fromOffset }
+		def changeSizeInLines = { it.toLine - it.fromLine }
 
 //		def commitsAmountByDate = events
 //						.groupBy{ it.revision }.collect{ it.value[0] }
@@ -40,14 +41,15 @@ class Analysis {
 //			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
 //		println(authorContributionByDate.entrySet().join("\n"))
 
-		def changesSizeByAuthorByDate = events
-				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
-				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0).sort(); it}
-		def flattened = changesSizeByAuthorByDate
-				.entrySet().toList().collectMany { entry ->
-					entry.value.collect { [it.key, entry.key, it.value] }
-				}
-		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
+//		def changesSizeByAuthorByDate = events
+//				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
+//				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0).sort(); it}
+//		def authorsContributions = changesSizeByAuthorByDate.entrySet().collectEntries{ [it.key, it.value.entrySet().count{it.value > 0}] }
+//		def flattened = changesSizeByAuthorByDate
+//				.entrySet().toList().sort{ -authorsContributions[it.key] }.take(5).collectMany { entry ->
+//					entry.value.collect { [it.key, entry.key, it.value] }
+//				}
+//		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
