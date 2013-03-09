@@ -1,3 +1,5 @@
+import groovy.time.TimeCategory
+
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
 
@@ -8,29 +10,41 @@ class Analysis {
 
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
-		def fromDate = events.first().revisionDate
-		def toDate = events.last().revisionDate
+		def fromDay = floorToDay(events.last().revisionDate)
+		def toDay = floorToDay(events.first().revisionDate)
+		println(fromDay)
+		println(toDay)
+		def fillMissingDays = { valuesByDate, defaultValue ->
+			use(TimeCategory) {
+				def day = floorToDay(fromDay)
+				while (day.before(toDay)) {
+					if (!valuesByDate.containsKey(day)) valuesByDate[day] = defaultValue
+					day += 1.day
+				}
+				valuesByDate
+			}
+		}
 		def changeSize = { it.toOffset - it.fromOffset }
 
 //		def commitsAmountByDate = events
 //						.groupBy{ it.revision }.collect{ it.value[0] }
-//						.groupBy{ resetToDays(it.revisionDate) }
+//						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.size()] }.sort{it[0]}
 //		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 //
 //		def totalChangeSizeByDate = events
-//						.groupBy{ resetToDays(it.revisionDate) }
+//						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
 //		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 
 //		def authorContributionByDate = events
-//			.groupBy{ resetToDays(it.revisionDate) }
+//			.groupBy{ floorToDay(it.revisionDate) }
 //			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
 //		println(authorContributionByDate.entrySet().join("\n"))
 
 		def aa = events
-				.groupBy({ it.author }, { resetToDays(it.revisionDate) })
-				.collectEntries{ it.value = it.value.collectEntries{ it.value = it.value.collect{changeSize(it)}; it } ;it}
+				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
+				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0); it}
 		println(aa.entrySet().join("\n"))
 	}
 
@@ -71,7 +85,7 @@ class Analysis {
 		events
 	}
 
-	static Date resetToDays(Date date) {
+	static Date floorToDay(Date date) {
 		date[Calendar.MILLISECOND] = 0
 		date[Calendar.SECOND] = 0
 		date[Calendar.MINUTE] = 0
