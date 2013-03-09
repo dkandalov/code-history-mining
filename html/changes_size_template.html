@@ -131,7 +131,10 @@ date,changes size\n\
             .attr("y", function (d) { return y(d[value]); })
             .attr("height", function (d) { return height - y(d[value]); })
             .append("title")
-            .text(function (d) { return "date: " + dateFormat(d.date) + "\n" + yAxisLabel + ": " + d[value]; });
+            .text(function (d) {
+                return "date: " + dateFormat(d.date) + "\n" +
+                        yAxisLabel + ": " + valueFormat(d[value]);
+            });
 
 </script>
 </body>

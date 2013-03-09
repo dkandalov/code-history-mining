@@ -42,10 +42,10 @@ class Analysis {
 
 		def changesSizeByAuthorByDate = events
 				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
-				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0); it}
+				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0).sort(); it}
 		def flattened = changesSizeByAuthorByDate
 				.entrySet().toList().collectMany { entry ->
-					entry.value.sort().collect { [it.key, entry.key, it.value] }
+					entry.value.collect { [it.key, entry.key, it.value] }
 				}
 		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
 	}
