@@ -72,16 +72,16 @@ date,changeSize\n\
 ";
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-    var dateInputFormat = d3.time.format("%d/%m/%Y");
+    var dateFormat = d3.time.format("%d/%m/%Y");
     var valueFormat = function(n) {
         var s = d3.format(",")(n);
         return s.length < 6 ? s : d3.format("s")(n);
     };
 
-    var x = d3.time.scale().range([0, width]);
+    var x = d3.time.scale().nice().rangeRound([0, width]);
     var y = d3.scale.linear().range([height, 0]);
     var xAxis = d3.svg.axis().scale(x).orient("bottom");
     var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
@@ -94,12 +94,14 @@ date,changeSize\n\
 
     var data = d3.csv.parse(rawData);
     data.forEach(function (d) {
-        d.date = dateInputFormat.parse(d.date);
+        d.date = dateFormat.parse(d.date);
         d["changeSize"] = parseInt(d["changeSize"]);
     });
 
     x.domain(d3.extent(data, function (d) { return d.date; }));
     y.domain([0, d3.max(data, function (d) { return d["changeSize"]; })]);
+    var days = d3.time.days(data[0].date, data[data.length - 1].date).length;
+    var barWidth = Math.floor((width / days) - 0.5);
 
     svg.append("g")
             .attr("class", "x axis")
@@ -121,9 +123,12 @@ date,changeSize\n\
             .enter().append("rect")
             .attr("class", "bar")
             .attr("x", function (d) { return x(d.date); })
-            .attr("width", 4)
+            .attr("width", barWidth)
             .attr("y", function (d) { return y(d["changeSize"]); })
-            .attr("height", function (d) { return height - y(d["changeSize"]); });
+            .attr("height", function (d) { return height - y(d["changeSize"]); })
+            .append("title")
+            .text(function (d) { return "date: " + dateFormat(d.date) + "\nchange size: " + d["changeSize"]; })
+    ;
 
 </script>
 </body>
