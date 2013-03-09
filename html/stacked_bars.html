@@ -28,18 +28,28 @@
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
+    var rawData = "\
+date,author,changes size\n\
+18/01/2013,Mee,18\n\
+19/01/2013,Mee,5\n\
+20/01/2013,Mee,3\n\
+18/01/2013,Ooo,18\n\
+20/01/2013,Ooo,11\n\
+";
+
     var date1 = d3.time.day.floor(new Date());
-    var date2 = d3.time.day.floor(d3.time.day.offset(new Date(), 1));
+    var date2 = d3.time.day.floor(d3.time.day.offset(date1, 1));
+    var date3 = d3.time.day.floor(d3.time.day.offset(date2, 1));
     var data = [
         [ { x: date1, y: 1.3039056945991474, y0: 0 },
           { x: date2, y: 0.18966095285544118, y0: 0 } ],
-        [ { x: date1, y: 1.9847434876777645, y0: 1.3039056945991474 },
-          { x: date2, y: 0.16857198156906453, y0: 0.18966095285544118} ]
+        [ { x: date1, y: 1.9847434876777645, y0: 0 },
+          { x: date2, y: 0.46857198156906453, y0: 0 },
+          { x: date3, y: 2.46857198156906453, y0: 0 } ]
     ];
 
-    var stack = d3.layout.stack();
-    var layers = stack(data);
-    var yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+    var stackedData = d3.layout.stack()(data);
+    var yStackMax = d3.max(stackedData, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
     var margin = {top: 40, right: 10, bottom: 20, left: 10},
         width = 960 - margin.left - margin.right,
@@ -50,7 +60,9 @@
     var xAxis = d3.svg.axis().scale(x).orient("bottom");
     var color = d3.scale.category20();
 
-    x.domain(d3.extent(d3.time.days(date1, d3.time.day.offset(date2, 2))));
+    var fromDate = d3.min(data, function (d) { return d3.min(d, function (dd) { return dd.x; }); })
+    var toDate = d3.max(data, function (d) { return d3.max(d, function (dd) { return dd.x; }); })
+    x.domain(d3.extent(d3.time.days(fromDate, d3.time.day.offset(toDate, 2))));
     y.domain([0, yStackMax]);
 
     var svg = d3.select("body").append("svg")
@@ -60,7 +72,7 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var layer = svg.selectAll(".layer")
-            .data(layers)
+            .data(stackedData)
             .enter().append("g")
             .attr("class", "layer")
             .style("fill", function(d, i) { return color(i); });
@@ -70,7 +82,7 @@
             .enter().append("rect")
             .attr("x", function(d) { return x(d.x); })
             .attr("y", function(d) { return y(d.y0 + d.y); })
-            .attr("width", 350)
+            .attr("width", 150) // TODO
             .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
 
     svg.append("g")
