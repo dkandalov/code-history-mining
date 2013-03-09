@@ -12,12 +12,12 @@ class Analysis {
 						.groupBy{ it.revision }.collect{ it.value[0] }
 						.groupBy{ resetToDays(it.revisionDate) }
 						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-//		println(asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+		println(asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 
 		def totalChangeSizeByDate = events
 						.groupBy{ resetToDays(it.revisionDate) }
 						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
-		fillTemplate("bar_chart_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+//		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
