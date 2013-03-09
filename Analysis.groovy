@@ -12,8 +12,6 @@ class Analysis {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
 		def fromDay = floorToDay(events.last().revisionDate)
 		def toDay = floorToDay(events.first().revisionDate)
-		println(fromDay)
-		println(toDay)
 		def fillMissingDays = { valuesByDate, defaultValue ->
 			use(TimeCategory) {
 				def day = floorToDay(fromDay)
@@ -45,7 +43,10 @@ class Analysis {
 		def aa = events
 				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
 				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0); it}
-		println(aa.entrySet().join("\n"))
+		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(
+				aa.entrySet().toList().take(3).collectMany{ entry ->
+					entry.value.sort().collect{ [it.key, entry.key, it.value] }
+				}, ["date", "author", "changes size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
@@ -55,12 +56,12 @@ class Analysis {
 		new File("html/${projectName}_${template.replace("_template", "")}").write(text)
 	}
 
-	static String asJavaScriptLiteral(List list, List header) {
+	static String asJavaScriptLiteral(Collection values, List header) {
 		def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
 
 		def jsNewLine = "\\n\\\n"
 		def jsHeader = header.join(",") + jsNewLine
-		def jsBody = list
+		def jsBody = values
 				.collect{ it.collect{it instanceof Date ? formatDate(it) : it} }
 				.collect{it.join(",")}
 				.join(jsNewLine)
