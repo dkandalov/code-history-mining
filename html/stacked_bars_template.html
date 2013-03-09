@@ -38,12 +38,18 @@ date,author,changes size\n\
 20/01/2013,Ooo,11\n\
 "/*data_placeholder*/;
     var dateFormat = d3.time.format("%d/%m/%Y");
+    var valueFormat = function(n) {
+        var s = d3.format(",")(n);
+        return s.length < 6 ? s : d3.format("s")(n);
+    };
+
     var data = d3.csv.parse(rawData);
     data = d3.nest().key(function (d) { return d["author"]; }).entries(data)
         .map(function (entry) { return entry.values.map(function (d) {
                 return {
                     x: dateFormat.parse(d.date),
                     y: parseInt(d["changes size"]),
+                    author: d["author"],
                     y0: 0
                 };
             });
@@ -63,8 +69,10 @@ date,author,changes size\n\
 
     var fromDate = d3.min(data, function (d) { return d3.min(d, function (dd) { return dd.x; }); })
     var toDate = d3.max(data, function (d) { return d3.max(d, function (dd) { return dd.x; }); })
-    x.domain(d3.extent(d3.time.days(fromDate, d3.time.day.offset(toDate, 2))));
+    toDate = d3.time.day.offset(toDate, 2);
+    x.domain(d3.extent(d3.time.days(fromDate, toDate)));
     y.domain([0, yStackMax]);
+    var barWidth = Math.floor((width / d3.time.days(fromDate, toDate).length) - 0.5);
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -83,32 +91,19 @@ date,author,changes size\n\
             .enter().append("rect")
             .attr("x", function(d) { return x(d.x); })
             .attr("y", function(d) { return y(d.y0 + d.y); })
-            .attr("width", 20) // TODO
-            .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+            .attr("width", barWidth)
+            .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+            .append("title")
+            .text(function (d) {
+                return "date: " + dateFormat(d.x) + "\n" +
+                       "changes size: " + valueFormat(d.y) + "\n" +
+                       "author: " + d["author"];
+            });
 
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
-
-    // Inspired by Lee Byron's test data generator.
-    function bumpLayer(n, o) {
-
-        function bump(a) {
-            var x = 1 / (.1 + Math.random()),
-                y = 2 * Math.random() - .5,
-                z = 10 / (.1 + Math.random());
-            for (var i = 0; i < n; i++) {
-                var w = (i / n - y) * z;
-                a[i] += x * Math.exp(-w * w);
-            }
-        }
-
-        var a = [], i;
-        for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
-        for (i = 0; i < 5; ++i) bump(a);
-        return a.map(function(d, i) { return { x: i, y: Math.max(0, d)}; });
-    }
 
 </script>
 </body>
