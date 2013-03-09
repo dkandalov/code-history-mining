@@ -8,6 +8,8 @@ class Analysis {
 
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
+		def fromDate = events.first().revisionDate
+		def toDate = events.last().revisionDate
 		def changeSize = { it.toOffset - it.fromOffset }
 
 //		def commitsAmountByDate = events
@@ -21,9 +23,14 @@ class Analysis {
 //						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
 //		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 
+//		def authorContributionByDate = events
+//			.groupBy{ resetToDays(it.revisionDate) }
+//			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
+//		println(authorContributionByDate.entrySet().join("\n"))
+
 		def aa = events
-			.groupBy{ resetToDays(it.revisionDate) }
-			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
+				.groupBy({ it.author }, { resetToDays(it.revisionDate) })
+				.collectEntries{ it.value = it.value.collectEntries{ it.value = it.value.collect{changeSize(it)}; it } ;it}
 		println(aa.entrySet().join("\n"))
 	}
 

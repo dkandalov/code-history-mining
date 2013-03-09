@@ -34,6 +34,7 @@ date,author,changes size\n\
 19/01/2013,Mee,5\n\
 20/01/2013,Mee,3\n\
 18/01/2013,Ooo,18\n\
+19/01/2013,Ooo,3\n\
 20/01/2013,Ooo,11\n\
 ";
     var dateFormat = d3.time.format("%d/%m/%Y");
@@ -47,17 +48,6 @@ date,author,changes size\n\
                 };
             });
         });
-
-//    var date1 = d3.time.day.floor(new Date());
-//    var date2 = d3.time.day.floor(d3.time.day.offset(date1, 1));
-//    var date3 = d3.time.day.floor(d3.time.day.offset(date2, 1));
-//    var data = [
-//        [ { x: date1, y: 1.3039056945991474, y0: 0 },
-//          { x: date2, y: 0.18966095285544118, y0: 0 } ],
-//        [ { x: date1, y: 1.9847434876777645, y0: 0 },
-//          { x: date2, y: 0.46857198156906453, y0: 0 },
-//          { x: date3, y: 2.46857198156906453, y0: 0 } ]
-//    ];
 
     var stackedData = d3.layout.stack()(data);
     var yStackMax = d3.max(stackedData, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
