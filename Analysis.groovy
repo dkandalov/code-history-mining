@@ -50,6 +50,9 @@ class Analysis {
 //					entry.value.collect { [it.key, entry.key, it.value] }
 //				}
 //		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
+
+		def commitSizes = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
+		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes , ["commit size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {

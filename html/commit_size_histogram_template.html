@@ -22,20 +22,50 @@
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
-    var values = d3.range(100).map(d3.random.logNormal(Math.log(30), .4));
+    const rawData = /*data_placeholder*/"\
+commit size\n\
+1549\n\
+198\n\
+550\n\
+65\n\
+2419\n\
+75\n\
+4783\n\
+796\n\
+790\n\
+3170\n\
+1139\n\
+2659\n\
+1251\n\
+1054\n\
+4098\n\
+79\n\
+387\n\
+64\n\
+277\n\
+1580\n\
+632\n\
+3017\n\
+104\n\
+278\n\
+127\n\
+1040\n\
+1552\n\
+360\n\
+"/*data_placeholder*/;
 
-    var formatCount = d3.format(",.0f"),
-        formatTime = d3.time.format("%H:%M"),
-        formatMinutes = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); };
+    var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d["commit size"]); });
+
+    var formatCount = d3.format(",.0f");
 
     var margin = {top: 10, right: 30, bottom: 30, left: 30},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
-    var x = d3.scale.linear().domain([0, 120]).range([0, width]);
-    var data = d3.layout.histogram().bins(x.ticks(20))(values);
-    var y = d3.scale.linear().domain([0, d3.max(data, function(d) { return d.y; })]).range([height, 0]);
-    var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(formatMinutes);
+    var x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
+    var binnedData = d3.layout.histogram().bins(x.ticks(100))(data);
+    var y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -44,20 +74,20 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var bar = svg.selectAll(".bar")
-            .data(data)
+            .data(binnedData)
             .enter().append("g")
             .attr("class", "bar")
             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
 
     bar.append("rect")
             .attr("x", 1)
-            .attr("width", x(data[0].dx) - 1)
+            .attr("width", x(binnedData[0].dx) - 1)
             .attr("height", function(d) { return height - y(d.y); });
 
     bar.append("text")
             .attr("dy", ".75em")
             .attr("y", 6)
-            .attr("x", x(data[0].dx) / 2)
+            .attr("x", x(binnedData[0].dx) / 2)
             .attr("text-anchor", "middle")
             .text(function(d) { return formatCount(d.y); });
 
