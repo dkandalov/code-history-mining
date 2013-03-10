@@ -51,8 +51,12 @@ class Analysis {
 //				}
 //		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
 
-		def commitSizes = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
-		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes , ["commit size"]))
+//		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
+//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InOffsets , ["commit size"]))
+//		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLines(it)}] }
+//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InLines , ["commit size"]))
+//		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
+//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
