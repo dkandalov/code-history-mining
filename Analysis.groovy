@@ -61,11 +61,12 @@ class Analysis {
 
 		def totalChangeSizeByDate = events
 				.groupBy{ floorToDay(it.revisionDate) }
-				.collectEntries{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{ it.key }
+				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
 		def (min, max) = [totalChangeSizeByDate.min{it.value}.value, totalChangeSizeByDate.max{it.value}.value]
-		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collectEntries{ [it.key, ((it.value - min + 0.000001) / (max - min))] }
+		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] } // TODO try log scale
 		fillTemplate("calendar_view_template.html",
-				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate.entrySet().collect{[it.key, it.value]}, ["date", "value"]))
+				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 //		def changesSizeRelativeToPrev_ByDate = pairs(totalChangeSizeByDate.entrySet()).collectEntries{ [it[1].key, (it[1].value - it[0].value) / it[0].value] }
 //		println(changesSizeRelativeToPrev_ByDate.entrySet().join("\n")) // <-- this seems to be totally pointless for commit size
 

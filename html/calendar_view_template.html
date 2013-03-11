@@ -27,39 +27,39 @@
 <script src="d3.v3.min.js"></script>
 <script>
     var rawData = /*data_placeholder*/"\
-date,value\n\
-12/02/2013,0.1538559765\n\
-13/02/2013,0.3591838398\n\
-14/02/2013,0.7923464605\n\
-15/02/2013,0.5301264722\n\
-16/02/2013,0.0018121799\n\
-17/02/2013,0.0069254072\n\
-18/02/2013,0.4175593985\n\
-19/02/2013,1.0000000000\n\
-20/02/2013,0.6739353103\n\
-21/02/2013,0.4665154253\n\
-22/02/2013,0.3058970562\n\
-23/02/2013,0.0344178338\n\
-24/02/2013,0E-10\n\
-25/02/2013,0.3901674976\n\
-26/02/2013,0.5331123579\n\
-27/02/2013,0.3979215628\n\
-28/02/2013,0.2520234198\n\
-01/03/2013,0.3103392064\n\
-02/03/2013,0.0209392363\n\
-03/03/2013,0.0209093503\n\
-04/03/2013,0.6013421542\n\
-05/03/2013,0.3713827721\n\
-06/03/2013,0.1826090500\n\
-07/03/2013,0.3736541100\n\
-08/03/2013,0.1507097931\n\
-09/03/2013,0.0024778232\n\
+date,value,actualValue\n\
+12/02/2013,0.1538559765,57464\n\
+13/02/2013,0.3591838398,133038\n\
+14/02/2013,0.7923464605,292470\n\
+15/02/2013,0.5301264722,195956\n\
+16/02/2013,0.0018121799,1502\n\
+17/02/2013,0.0069254072,3384\n\
+18/02/2013,0.4175593985,154524\n\
+19/02/2013,1.0000000000,368900\n\
+20/02/2013,0.6739353103,248887\n\
+21/02/2013,0.4665154253,172543\n\
+22/02/2013,0.3058970562,113425\n\
+23/02/2013,0.0344178338,13503\n\
+24/02/2013,0E-10,835\n\
+25/02/2013,0.3901674976,144442\n\
+26/02/2013,0.5331123579,197055\n\
+27/02/2013,0.3979215628,147296\n\
+28/02/2013,0.2520234198,93596\n\
+01/03/2013,0.3103392064,115060\n\
+02/03/2013,0.0209392363,8542\n\
+03/03/2013,0.0209093503,8531\n\
+04/03/2013,0.6013421542,222168\n\
+05/03/2013,0.3713827721,137528\n\
+06/03/2013,0.1826090500,68047\n\
+07/03/2013,0.3736541100,138364\n\
+08/03/2013,0.1507097931,56306\n\
+09/03/2013,0.0024778232,1747\n\
 "/*data_placeholder*/;
 
     var data = d3.csv.parse(rawData);
     data = d3.nest()
             .key(function(d) { return d.date; })
-            .rollup(function(d) { return parseFloat(d[0].value); })
+            .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: parseInt(d[0].actualValue)}; })
             .map(data);
 
     var width = 960,
@@ -70,9 +70,12 @@ date,value\n\
         week = d3.time.format("%U"),
         percent = d3.format(".1%");
     var dateFormat = d3.time.format("%d/%m/%Y");
+    var valueFormat = function(n) {
+        var s = d3.format(",")(n);
+        return s.length < 6 ? s : d3.format("s")(n);
+    };
 
-    var color = d3.scale.quantize()
-            .domain([0.0, 1.0])
+    var color = d3.scale.quantize().domain([0.0, 1.0])
             .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
     var svg = d3.select("body").selectAll("svg")
@@ -108,9 +111,9 @@ date,value\n\
             .attr("d", monthPath);
 
     rect.filter(function(d) { return d in data; })
-            .attr("class", function(d) { return "day " + color(data[d]); })
+            .attr("class", function(d) { return "day " + color(data[d].value); })
             .select("title")
-            .text(function(d) { return d + ": " + percent(data[d]); }); // TODO show number of commits/change size here
+            .text(function(d) { return d + ", change size: " + valueFormat(data[d].actualValue); });
 
     function monthPath(t0) {
         var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
