@@ -12,21 +12,55 @@
         stroke: #000;
         stroke-width: 2px;
     }
-    .RdYlGn .q0-11{fill:rgb(165,0,38)}
-    .RdYlGn .q1-11{fill:rgb(215,48,39)}
-    .RdYlGn .q2-11{fill:rgb(244,109,67)}
-    .RdYlGn .q3-11{fill:rgb(253,174,97)}
-    .RdYlGn .q4-11{fill:rgb(254,224,139)}
-    .RdYlGn .q5-11{fill:rgb(255,255,191)}
-    .RdYlGn .q6-11{fill:rgb(217,239,139)}
-    .RdYlGn .q7-11{fill:rgb(166,217,106)}
-    .RdYlGn .q8-11{fill:rgb(102,189,99)}
-    .RdYlGn .q9-11{fill:rgb(26,152,80)}
-    .RdYlGn .q10-11{fill:rgb(0,104,55)}
+    .RdYlGn .q0-10{fill: rgb(255, 255, 255)}
+    .RdYlGn .q1-10{fill: rgb(234,241,247)}
+    .RdYlGn .q2-10{fill: rgb(214,227,238)}
+    .RdYlGn .q3-10{fill: rgb(193,213,230)}
+    .RdYlGn .q4-10{fill: rgb(173,199,222)}
+    .RdYlGn .q5-10{fill: rgb(152,186,213)}
+    .RdYlGn .q6-10{fill: rgb(132,172,205)}
+    .RdYlGn .q7-10{fill: rgb(111,158,197)}
+    .RdYlGn .q8-10{fill: rgb(91,144,188)}
+    .RdYlGn .q9-10{fill: rgb(70,130,180)} /*steelblue*/
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
+    var rawData = /*data_placeholder*/"\
+date,value\n\
+12/02/2013,0.1538559765\n\
+13/02/2013,0.3591838398\n\
+14/02/2013,0.7923464605\n\
+15/02/2013,0.5301264722\n\
+16/02/2013,0.0018121799\n\
+17/02/2013,0.0069254072\n\
+18/02/2013,0.4175593985\n\
+19/02/2013,1.0000000000\n\
+20/02/2013,0.6739353103\n\
+21/02/2013,0.4665154253\n\
+22/02/2013,0.3058970562\n\
+23/02/2013,0.0344178338\n\
+24/02/2013,0E-10\n\
+25/02/2013,0.3901674976\n\
+26/02/2013,0.5331123579\n\
+27/02/2013,0.3979215628\n\
+28/02/2013,0.2520234198\n\
+01/03/2013,0.3103392064\n\
+02/03/2013,0.0209392363\n\
+03/03/2013,0.0209093503\n\
+04/03/2013,0.6013421542\n\
+05/03/2013,0.3713827721\n\
+06/03/2013,0.1826090500\n\
+07/03/2013,0.3736541100\n\
+08/03/2013,0.1507097931\n\
+09/03/2013,0.0024778232\n\
+"/*data_placeholder*/;
+
+    var data = d3.csv.parse(rawData);
+    data = d3.nest()
+            .key(function(d) { return d.date; })
+            .rollup(function(d) { return parseFloat(d[0].value); })
+            .map(data);
 
     var width = 960,
         height = 136,
@@ -34,15 +68,15 @@
 
     var day = d3.time.format("%w"),
         week = d3.time.format("%U"),
-        percent = d3.format(".1%"),
-        format = d3.time.format("%Y-%m-%d");
+        percent = d3.format(".1%");
+    var dateFormat = d3.time.format("%d/%m/%Y");
 
     var color = d3.scale.quantize()
-            .domain([-.5, .5])
-            .range(d3.range(11).map(function(d) { return "q" + d + "-11"; }));
+            .domain([0.0, 1.0])
+            .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
     var svg = d3.select("body").selectAll("svg")
-            .data(d3.range(2010, 2014))
+            .data(d3.range(2012, 2014))
             .enter().append("svg")
             .attr("width", width)
             .attr("height", height)
@@ -63,7 +97,7 @@
             .attr("height", cellSize)
             .attr("x", function(d) { return week(d) * cellSize; })
             .attr("y", function(d) { return day(d) * cellSize; })
-            .datum(format);
+            .datum(dateFormat);
 
     rect.append("title").text(function(d) { return d; });
 
@@ -73,46 +107,20 @@
             .attr("class", "month")
             .attr("d", monthPath);
 
-    var rawData = "\
-Date,value\n\
-2011-09-10,0.04585689308027569\n\
-2011-09-13,0.08177958809018305\n\
-2011-09-14,-0.0173734756719179\n\
-2011-09-15,0.04399406445876137\n\
-2011-09-16,0.02183176862865649\n\
-2011-09-17,0.01171258579162342\n\
-2011-09-20,0.13719730620432809\n\
-2011-09-21,0.00710473627386455\n\
-2011-09-22,-0.0202581332223173\n\
-2011-09-23,-0.0708293911242554\n\
-2011-09-24,0.18366732649499954\n\
-2011-09-27,-0.0441895648538722\n\
-2011-09-28,0.04467222024357327\n\
-2011-09-29,-0.0209062827524078\n\
-2011-09-30,-0.0442138952155599\n\
-2011-10-01,0.03703525207327062\n\
-";
-
-    var data = d3.csv.parse(rawData);
-    data = d3.nest()
-            .key(function(d) { return d.Date; })
-            .rollup(function(d) { return d[0].value; })
-            .map(data);
-
     rect.filter(function(d) { return d in data; })
             .attr("class", function(d) { return "day " + color(data[d]); })
             .select("title")
-            .text(function(d) { return d + ": " + percent(data[d]); });
+            .text(function(d) { return d + ": " + percent(data[d]); }); // TODO show number of commits/change size here
 
     function monthPath(t0) {
         var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
             d0 = +day(t0), w0 = +week(t0),
             d1 = +day(t1), w1 = +week(t1);
         return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
-                + "H" + w0 * cellSize + "V" + 7 * cellSize
-                + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
-                + "H" + (w1 + 1) * cellSize + "V" + 0
-                + "H" + (w0 + 1) * cellSize + "Z";
+             + "H" + w0 * cellSize + "V" + 7 * cellSize
+             + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
+             + "H" + (w1 + 1) * cellSize + "V" + 0
+             + "H" + (w0 + 1) * cellSize + "Z";
     }
 
     d3.select(self.frameElement).style("height", "2910px");

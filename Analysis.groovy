@@ -1,4 +1,5 @@
 import groovy.time.TimeCategory
+import org.junit.Test
 
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
@@ -55,8 +56,20 @@ class Analysis {
 //		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InOffsets , ["commit size"]))
 //		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLines(it)}] }
 //		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InLines , ["commit size"]))
-		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
-		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
+//		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
+//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
+
+		def totalChangeSizeByDate = events
+				.groupBy{ floorToDay(it.revisionDate) }
+				.collectEntries{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{ it.key }
+		def (min, max) = [totalChangeSizeByDate.min{it.value}.value, totalChangeSizeByDate.max{it.value}.value]
+		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collectEntries{ [it.key, ((it.value - min + 0.000001) / (max - min))] }
+		fillTemplate("calendar_view_template.html",
+				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate.entrySet().collect{[it.key, it.value]}, ["date", "value"]))
+//		def changesSizeRelativeToPrev_ByDate = pairs(totalChangeSizeByDate.entrySet()).collectEntries{ [it[1].key, (it[1].value - it[0].value) / it[0].value] }
+//		println(changesSizeRelativeToPrev_ByDate.entrySet().join("\n")) // <-- this seems to be totally pointless for commit size
+
+
 	}
 
 	static void fillTemplate(String template, String jsValue) {
@@ -102,6 +115,49 @@ class Analysis {
 		date[Calendar.MINUTE] = 0
 		date[Calendar.HOUR_OF_DAY] = 0
 		date
+	}
+
+	static <T> Collection<T> pairs(Collection<T> collection) {
+		Collection<T> result = collection.inject([]) { acc, value ->
+			if (!acc.empty) acc.last() << value
+			acc + [[value]]
+		}
+		if (!result.empty) result.remove(result.size() - 1)
+		result
+	}
+
+	@Test void pairs_shouldGroupCollectionElementsIntoPairs() {
+		assert pairs([]) == []
+		assert pairs([1]) == []
+		assert pairs([1, 2]) == [[1, 2]]
+		assert pairs([1, 2, 3, 4, 5]) == [[1, 2], [2, 3], [3, 4], [4, 5]]
+		assert pairs([a: 1, b: 2, c: 3, d: 4].entrySet()) == [[a: 1, b: 2], [b: 2, c: 3], [c: 3, d: 4]]*.entrySet()*.toList()
+	}
+
+	@Test void rgbGradient() {
+		def from = [255, 255, 255]
+		def to = [70, 130, 180]
+		def points = 10
+
+		def rgbStep = (0..2).collect{ (to[it] - from[it]) / (points - 1) }
+		def addRgb = { rgb1, rgb2 -> (0..2).collect{ i -> rgb1[i] + rgb2[i] }}
+
+		def interpolatedRgb =
+			(0..<points-1).inject([from]) { acc, rgb -> acc + [addRgb(acc.last(), rgbStep)] }
+				.collectNested{Math.round(it)}*.join(",").join("\n")
+
+		assert interpolatedRgb == """
+						|255,255,255
+						|234,241,247
+						|214,227,238
+						|193,213,230
+						|173,199,222
+						|152,186,213
+						|132,172,205
+						|111,158,197
+						|91,144,188
+						|70,130,180
+					""".stripMargin().trim()
 	}
 }
 
