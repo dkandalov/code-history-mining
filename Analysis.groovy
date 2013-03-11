@@ -59,18 +59,18 @@ class Analysis {
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
 //		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
 
-		def totalChangeSizeByDate = events
-				.groupBy{ floorToDay(it.revisionDate) }
-				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
-		def (min, max) = [totalChangeSizeByDate.min{it.value}.value, totalChangeSizeByDate.max{it.value}.value]
-		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] } // TODO try log scale
-		fillTemplate("calendar_view_template.html",
-				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
-//		def changesSizeRelativeToPrev_ByDate = pairs(totalChangeSizeByDate.entrySet()).collectEntries{ [it[1].key, (it[1].value - it[0].value) / it[0].value] }
-//		println(changesSizeRelativeToPrev_ByDate.entrySet().join("\n")) // <-- this seems to be totally pointless for commit size
+//		def totalChangeSizeByDate = events
+//				.groupBy{ floorToDay(it.revisionDate) }
+//				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
+//		def (min, max) = [totalChangeSizeByDate.min{it.value}.value, totalChangeSizeByDate.max{it.value}.value]
+//		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] } // TODO try log scale
+//		fillTemplate("calendar_view_template.html",
+//				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 
-
+		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
+		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
+		println(pairCoOccurrences.entrySet().findAll{it.value > 2}.sort{it.value}.join("\n"))
 	}
 
 	static void fillTemplate(String template, String jsValue) {
@@ -118,8 +118,8 @@ class Analysis {
 		date
 	}
 
-	static <T> Collection<T> pairs(Collection<T> collection) {
-		Collection<T> result = collection.inject([]) { acc, value ->
+	static <T> Collection<Collection<T>> pairs(Collection<T> collection) {
+		Collection<Collection<T>> result = collection.inject([]) { acc, value ->
 			if (!acc.empty) acc.last() << value
 			acc + [[value]]
 		}
