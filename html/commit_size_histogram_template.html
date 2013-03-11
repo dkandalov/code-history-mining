@@ -1263,7 +1263,13 @@ commit size\n\
     bar.append("rect")
             .attr("x", 1)
             .attr("width", x(binnedData[0].dx) - 1)
-            .attr("height", function(d) { return height - y(d.y); });
+            .attr("height", function(d) { return height - y(d.y); })
+            .append("title")
+            .text(function(d) {
+                var from = d.x * d.dx;
+                var to = (d.x + 1) * d.dx - 1;
+                return "amount: " + d.length + "; commit size: " + (from == to ? from : from + ".." + to)
+            });
 
     svg.append("g")
             .attr("class", "x axis")
