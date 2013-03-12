@@ -34,6 +34,7 @@ import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
+import static ChangeExtractor.*
 
 if (isIdeStartup) return
 
@@ -93,52 +94,6 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
-
-static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
-	try {
-		(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
-			change.with {
-				long timeBeforeGettingGitContent = System.currentTimeMillis()
-
-				def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
-				def afterText = (afterRevision == null ? "" : afterRevision.content)
-				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
-				if (nonEmptyRevision.file.fileType.isBinary()) return []
-
-				def commitInfo = new CommitInfo(
-						revisionNumberOf(changeList),
-						removeEmailFrom(changeList.committerName),
-						changeList.commitDate, changeList.comment.trim()
-				)
-				def parseAsPsi = { String text ->
-					runReadAction {
-						def fileFactory = PsiFileFactory.getInstance(project)
-						fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-					}
-				}
-
-				record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
-
-				ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
-			}
-		}
-	} catch (ProcessCanceledException ignore) {
-		[]
-	}
-}
-
-static String revisionNumberOf(CommittedChangeList changeList) {
-	// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
-	if (changeList.class.simpleName == "GitCommittedChangeList") {
-		changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
-	} else {
-		changeList.number.toString()
-	}
-}
-
-static String removeEmailFrom(String committerName) {
-	committerName.replaceAll(/\s+<.+@.+>/, "").trim()
-}
 
 @Nullable static <T> T catchingAll_(Closure<T> closure) {
 	try {
@@ -369,7 +324,53 @@ class EventStorage {
 }
 
 
-class ChangeFinder {
+class ChangeExtractor {
+
+	static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
+		try {
+			(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
+				change.with {
+					long timeBeforeGettingGitContent = System.currentTimeMillis()
+
+					def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
+					def afterText = (afterRevision == null ? "" : afterRevision.content)
+					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+					if (nonEmptyRevision.file.fileType.isBinary()) return []
+
+					def commitInfo = new CommitInfo(
+							revisionNumberOf(changeList),
+							removeEmailFrom(changeList.committerName),
+							changeList.commitDate, changeList.comment.trim()
+					)
+					def parseAsPsi = { String text ->
+						runReadAction {
+							def fileFactory = PsiFileFactory.getInstance(project)
+							fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+						}
+					}
+
+					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
+
+					ChangeExtractor.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+				}
+			}
+		} catch (ProcessCanceledException ignore) {
+			[]
+		}
+	}
+
+	static String revisionNumberOf(CommittedChangeList changeList) {
+		// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
+		if (changeList.class.simpleName == "GitCommittedChangeList") {
+			changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
+		} else {
+			changeList.number.toString()
+		}
+	}
+
+	static String removeEmailFrom(String committerName) {
+		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
+	}
 
 	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, Closure<PsiFile> parseAsPsi) {
 		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
@@ -568,7 +569,7 @@ class CurrentFileHistory {
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
 			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-			ChangeFinder.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+			ChangeExtractor.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
 		}
 	}
 }
