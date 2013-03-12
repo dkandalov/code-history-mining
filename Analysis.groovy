@@ -70,7 +70,13 @@ class Analysis {
 
 		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-		println(pairCoOccurrences.entrySet().findAll{it.value > 2}.sort{it.value}.join("\n"))
+															.findAll{ it.value > 2 }.sort{-it.value}
+		println(pairCoOccurrences.entrySet().join("\n"))
+
+		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
+		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
+		println(nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n"))
+		println(relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n"))
 	}
 
 	static void fillTemplate(String template, String jsValue) {

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .node {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .link {
+        stroke: #999;
+        stroke-opacity: .6;
+    }
+
+</style>
+<body>
+<script src="d3.v3.min.js"></script>
+<script>
+const graph = {
+    "nodes": [
+        {"name": "MyArtifactRepository.java", "group": 1},
+        {"name": "AbstractGradleUserProjectChange.java", "group": 1},
+        {"name": "MavenExternalParameters.java", "group": 1},
+        {"name": "resource.h", "group": 1},
+        {"name": "MavenArtifactResolvedM2RtMarker.java", "group": 1},
+        {"name": "PsiResolveHelperImpl.java", "group": 1},
+        {"name": "WinLauncher.vcxproj.filters", "group": 1},
+        {"name": "GradleLocalSettings.java", "group": 1},
+        {"name": "HgUpdateToDialog.java", "group": 1},
+        {"name": "modules.xml", "group": 1},
+        {"name": "GraphInferencePolicy.java", "group": 1},
+        {"name": "ProcessCandidateParameterTypeInferencePolicy.java", "group": 1},
+        {"name": "MavenArtifactResolvedM3RtMarker.java", "group": 1},
+        {"name": "ExtensionPointCandidate.java", "group": 1},
+        {"name": "GradleUserProjectChange.java", "group": 1},
+        {"name": "WinLauncher.cpp", "group": 1},
+        {"name": "NameUtilTest.java", "group": 1},
+        {"name": "components.xml", "group": 1},
+        {"name": "IconResourceInjector.java", "group": 1},
+        {"name": "MavenModuleMap.java", "group": 1},
+        {"name": "ToolWindowHeadlessManagerImpl.java", "group": 1},
+        {"name": "GroovyAnnotator.java", "group": 1},
+        {"name": "MavenRunnerParametersConfigurable.form", "group": 1},
+        {"name": "GroovyHighlightingTest.groovy", "group": 1},
+        {"name": "layouts.gant", "group": 1},
+        {"name": "MinusculeMatcher.java", "group": 1},
+        {"name": "LauncherGeneratorMain.java", "group": 1},
+        {"name": "LauncherGenerator.java", "group": 1},
+        {"name": "EncodingUtil.java", "group": 1},
+        {"name": "JavaFxPsiUtil.java", "group": 1},
+        {"name": "WinLauncher.vcxproj", "group": 1},
+        {"name": "GradleUserProjectChangesCalculator.java", "group": 1},
+        {"name": "maven-artifact-resolver-m2.iml", "group": 1},
+        {"name": "JavaFXHighlightingTest.java", "group": 1},
+        {"name": "ToolWindow.java", "group": 1},
+        {"name": "MyArtifactResolver.java", "group": 1},
+        {"name": "GroovyBundle.properties", "group": 1},
+        {"name": "MavenRunnerParameters.java", "group": 1},
+        {"name": "MavenRunnerParametersConfigurable.java", "group": 1},
+        {"name": "maven.iml", "group": 1},
+        {"name": "EncodingProjectManagerImpl.java", "group": 1},
+        {"name": "WinLauncher.rc", "group": 1},
+        {"name": "MyWorkspaceReader.java", "group": 1},
+        {"name": "MavenUtil.java", "group": 1},
+        {"name": "RegisterExtensionFix.java", "group": 1},
+        {"name": "HgMergeDialog.java", "group": 1},
+        {"name": "maven-artifact-resolver-m3.iml", "group": 1}
+    ],
+    "links": [
+        {"source": 41, "target": 30, "value": 7},
+        {"source": 25, "target": 16, "value": 6},
+        {"source": 11, "target": 5, "value": 6},
+        {"source": 15, "target": 41, "value": 6},
+        {"source": 21, "target": 23, "value": 5},
+        {"source": 30, "target": 6, "value": 5},
+        {"source": 21, "target": 36, "value": 4},
+        {"source": 7, "target": 31, "value": 4},
+        {"source": 27, "target": 26, "value": 4},
+        {"source": 6, "target": 3, "value": 4},
+        {"source": 24, "target": 9, "value": 3},
+        {"source": 33, "target": 29, "value": 3},
+        {"source": 1, "target": 14, "value": 3},
+        {"source": 40, "target": 28, "value": 3},
+        {"source": 10, "target": 11, "value": 3},
+        {"source": 45, "target": 8, "value": 3},
+        {"source": 34, "target": 20, "value": 3},
+        {"source": 18, "target": 27, "value": 3},
+        {"source": 24, "target": 32, "value": 3},
+        {"source": 17, "target": 32, "value": 3},
+        {"source": 4, "target": 17, "value": 3},
+        {"source": 4, "target": 35, "value": 3},
+        {"source": 19, "target": 35, "value": 3},
+        {"source": 19, "target": 46, "value": 3},
+        {"source": 12, "target": 46, "value": 3},
+        {"source": 12, "target": 0, "value": 3},
+        {"source": 0, "target": 42, "value": 3},
+        {"source": 42, "target": 39, "value": 3},
+        {"source": 2, "target": 37, "value": 3},
+        {"source": 37, "target": 22, "value": 3},
+        {"source": 22, "target": 38, "value": 3},
+        {"source": 38, "target": 43, "value": 3},
+        {"source": 41, "target": 3, "value": 3},
+        {"source": 13, "target": 44, "value": 3}
+    ]
+};
+
+var width = 960,
+    height = 500;
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+        .charge(-120)
+        .linkDistance(30)
+        .size([width, height]);
+
+var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+force.nodes(graph.nodes)
+    .links(graph.links)
+    .start();
+
+var link = svg.selectAll(".link")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("stroke-width", function (d) {
+            return Math.sqrt(d.value);
+        });
+
+var node = svg.selectAll(".node")
+        .data(graph.nodes)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", 5)
+        .style("fill", function (d) { return color(d.group); })
+        .call(force.drag);
+
+node.append("title").text(function (d) { return d.name; });
+
+force.on("tick", function () {
+    link.attr("x1", function (d) { return d.source.x; })
+        .attr("y1", function (d) { return d.source.y; })
+        .attr("x2", function (d) { return d.target.x; })
+        .attr("y2", function (d) { return d.target.y; });
+    node.attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; });
+});
+
+</script>
