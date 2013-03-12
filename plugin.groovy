@@ -494,6 +494,15 @@ final class ChangeEvent {
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
+class FileCommitInfo { // TODO use it
+	@Delegate CommitInfo commitInfo
+	String fileName
+	String fileChangeType
+	int linesChanged
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+@groovy.transform.Immutable
 class CommitInfo {
 	String revision
 	String author
