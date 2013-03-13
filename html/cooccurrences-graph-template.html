@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
     .node {
         stroke: #fff;
         stroke-width: 1.5px;
     }
-
     .link {
         stroke: #999;
         stroke-opacity: .6;
     }
-
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        height: 15px;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+    }
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
@@ -130,13 +138,27 @@ var link = svg.selectAll(".link")
             return Math.sqrt(d.value);
         });
 
+var div = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+
 var node = svg.selectAll(".node")
         .data(graph.nodes)
         .enter().append("circle")
         .attr("class", "node")
         .attr("r", 5)
         .style("fill", function (d) { return color(d.group); })
-        .call(force.drag);
+        .call(force.drag)
+        .on("mouseover", function(d) {
+            div.html(d.name)
+                .style("opacity", .9)
+                .style("position", "absolute")
+                .style("left", parseInt(d.x + 18) + "px")
+                .style("top", parseInt(d.y - 12) + "px");
+        })
+        .on("mouseout", function(d) {
+            div.style("opacity", .0);
+        });
 
 node.append("title").text(function (d) { return d.name; });
 
