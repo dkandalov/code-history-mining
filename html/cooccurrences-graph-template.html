@@ -24,6 +24,25 @@
 <body>
 <script src="d3.v3.min.js"></script>
 <script>
+function QuickFind(size) {
+    this.size = size;
+    this.connections = new Array(size);
+    for (var i = 0; i < this.connections.length; i++) {
+        this.connections[i] = i;
+    }
+}
+QuickFind.prototype.connect =  function (p1, p2) {
+    var value = this.connections[p1];
+    for (var i = 0; i < this.connections.length; i++) {
+        if (this.connections[i] == value) {
+            this.connections[i] = this.connections[p2];
+        }
+    }
+};
+QuickFind.prototype.areConnected = function(p1, p2) {
+    return this.connections[p1] == this.connections[p2];
+};
+
 const graph = {
     "nodes": [
         {"name": "MyArtifactRepository.java", "group": 1},
@@ -111,6 +130,11 @@ const graph = {
         {"source": 13, "target": 44, "value": 3}
     ]
 };
+const quickFind = new QuickFind(graph.nodes.length);
+graph.links.forEach(function (link) {
+    quickFind.connect(link.source, link.target);
+});
+
 
 var width = 960,
     height = 500;
@@ -158,6 +182,12 @@ var node = svg.selectAll(".node")
         })
         .on("mouseout", function(d) {
             div.style("opacity", .0);
+        })
+        .on("click", function (d) {
+            console.log(
+                    graph.nodes.filter(function(node) { return quickFind.areConnected(node.index, d.index); })
+                    .map(function (d) { return d.name; })
+            );
         });
 
 node.append("title").text(function (d) { return d.name; });
