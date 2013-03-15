@@ -20,6 +20,17 @@
         border-radius: 8px;
         pointer-events: none;
     }
+    div.selectionList {
+        position: absolute;
+        text-align: left;
+        height: auto;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+    }
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
@@ -162,8 +173,14 @@ var link = svg.selectAll(".link")
             return Math.sqrt(d.value);
         });
 
-var div = d3.select("body").append("div")
+var tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
+        .style("opacity", 0);
+var selectionList = d3.select("body").append("div")
+        .attr("class", "selectionList")
+        .style("position", "absolute")
+        .style("left", "20px")
+        .style("top", "20px")
         .style("opacity", 0);
 
 var node = svg.selectAll(".node")
@@ -174,23 +191,25 @@ var node = svg.selectAll(".node")
         .style("fill", function (d) { return color(d.group); })
         .call(force.drag)
         .on("mouseover", function(d) {
-            div.html(d.name)
+            tooltip.html(d.name)
                 .style("opacity", .9)
                 .style("position", "absolute")
                 .style("left", parseInt(d.x + 18) + "px")
                 .style("top", parseInt(d.y - 12) + "px");
         })
         .on("mouseout", function(d) {
-            div.style("opacity", .0);
+            tooltip.style("opacity", .0);
         })
         .on("click", function (d) {
             var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+
             graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
             connectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
-
             node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
 
-            console.log(connectedNodes.map(function (d) { return d.name; }));
+            selectionList
+                    .html(connectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
+                    .style("opacity", 1);
         });
 
 node.append("title").text(function (d) { return d.name; });
