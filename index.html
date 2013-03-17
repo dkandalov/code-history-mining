@@ -10,10 +10,9 @@
 
     <title>Delta-flora for IntelliJ</title>
     <style>
-        /*body {
+        #commit-calendar {
             font: 10px sans-serif;
-            shape-rendering: crispEdges;
-        }*/
+        }
         .day {
             fill: #fff;
             stroke: #ccc;
@@ -51,34 +50,35 @@
     <section id="main_content" class="inner">
         <h3>What is this?</h3>
         <p>
-        This is a plugin for IntelliJ to gather historical data from VCS for java projects.
-        It's a remake of <a href="https://github.com/michaelfeathers/delta-flora">Delta Flora</a> by Michael Feathers.
+            This is a plugin for IntelliJ to analyze project source code history.
+            It has two parts:
         </p>
+        <ul>
+            <li>transforming VCS history into .csv format (csv because it's easy to read and analyze afterwards)</li>
+            <li>analyzing history and displaying results using d3.js (requires a browser)</li>
+        </ul>
+        It is <b>work-in-progress</b>.
+        Original idea is taken from <a href="https://github.com/michaelfeathers/delta-flora">Delta Flora</a> by Michael Feathers.
 
+        <h3>Why?</h3>
         <p>
-        It decomposes project history down to method level and saves it in csv format (csv because it's easier to read and analyze afterwards).
-        Looks like this:
+            There seems to be a lot of interesting data captured in version control systems, yet we don't tend to use it that much.
+            This is an attempt to make looking at project history easier.
+            (It is not meant to be used as "metrics" but rather as a tool to get insight/alternative view on project and how it evolves over time.)
         </p>
-        <pre><code>
-ConfigImportHelper::getLaunchFilesCandidates,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportHelper.java,changed,275,276,10955,11043,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportHelper::isInstallationHomeOrConfig,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportHelper.java,changed,416,417,15867,15952,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,32,32,993,995,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportSettings::getExecutableName,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,32,34,995,1076,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,34,36,1076,1080,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportSettings::getMainJarName,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,36,38,1080,1158,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,38,40,1158,1160,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
-,60c05b6aa0d8a71c8fa7c8d7d6a90b4ad50b2c37,Konstantin Bulenkov,2013-03-01 17:36:07 +0000,NavBarListener.java,changed,1,2,3,43,"IDEA-96105 Put focus to the editor after file deletion from navigation bar"
-,60c05b6aa0d8a71c8fa7c8d7d6a90b4ad50b2c37,Konstantin Bulenkov,2013-03-01 17:36:07 +0000,NavBarListener.java,added,20,21,768,808,"IDEA-96105 Put focus to the editor after file deletion from navigation bar"
-        </code></pre>
-
         <p>
-            The idea is to later analyze this csv to discover something about the project.
-            E.g. "what are the most often changed parts of the project?", "which classes change together?", etc.
+            Things in project history that might be interesting to look at:
+            <ul>
+                <li>people interaction over time</li>
+                <li>how code changes over time</li>
+                <li>how people interact with code</li>
+            </ul>
         </p>
 
         <h3>Examples</h3>
         <h6>Commits calendar view (GitHub-style)</h6>
         <p id="commit-calendar"></p>
+
 
         <h3>How to use?</h3>
         <p>
@@ -93,10 +93,25 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
         <p>
         To configure how much history to analyze or change output format please look at source code :)
         </p>
+        <p>
+            Output csv looks like this:
+        </p>
+        <pre><code>
+ConfigImportHelper::getLaunchFilesCandidates,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportHelper.java,changed,275,276,10955,11043,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportHelper::isInstallationHomeOrConfig,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportHelper.java,changed,416,417,15867,15952,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,32,32,993,995,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportSettings::getExecutableName,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,32,34,995,1076,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,34,36,1076,1080,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportSettings::getMainJarName,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,36,38,1080,1158,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,2013-03-01 17:49:45 +0000,ConfigImportSettings.java,added,38,40,1158,1160,"WEB-6724 Installation home of a previous WebStorm version is not accepted during start-up settings import"
+,60c05b6aa0d8a71c8fa7c8d7d6a90b4ad50b2c37,Konstantin Bulenkov,2013-03-01 17:36:07 +0000,NavBarListener.java,changed,1,2,3,43,"IDEA-96105 Put focus to the editor after file deletion from navigation bar"
+,60c05b6aa0d8a71c8fa7c8d7d6a90b4ad50b2c37,Konstantin Bulenkov,2013-03-01 17:36:07 +0000,NavBarListener.java,added,20,21,768,808,"IDEA-96105 Put focus to the editor after file deletion from navigation bar"
+        </code></pre>
+
 
         <h3>What can be improved</h3>
         <ul>
-            <li>in theory should work with any version control setup in IntelliJ project but was only
+            <li>in theory it should work with any version control setup in IntelliJ project but was only
                 tested with Git. Potential problems might be that it's too slow with SVN or API works in a different way.</li>
             <li>it's a bit slow even with Git and the bottleneck is.. Git. There must be a way to speed it up.</li>
             <li>at the moment it only looks at Java (Groovy) syntax tree to figure out method name for a change.
@@ -142,7 +157,7 @@ date,value,actualValue\n\
                     .map(data);
 
             var width = 800,
-                height = 136,
+                height = 116,
                 cellSize = 14;
 
             var day = d3.time.format("%w"),
