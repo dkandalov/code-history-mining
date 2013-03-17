@@ -8,6 +8,7 @@ import static java.lang.System.getenv
 
 class Analysis {
 	static def projectName = "idea"
+//	static def projectName = "delta-flora-for-intellij"
 
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
@@ -26,11 +27,11 @@ class Analysis {
 		def changeSize = { it.toOffset - it.fromOffset }
 		def changeSizeInLines = { it.toLine - it.fromLine }
 
-//		def commitsAmountByDate = events
-//						.groupBy{ it.revision }.collect{ it.value[0] }
-//						.groupBy{ floorToDay(it.revisionDate) }
-//						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-//		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+		def commitsAmountByDate = events
+						.groupBy{ it.revision }.collect{ it.value[0] }
+						.groupBy{ floorToDay(it.revisionDate) }
+						.collect{ [it.key, it.value.size()] }.sort{it[0]}
+		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 //
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
@@ -68,15 +69,20 @@ class Analysis {
 //		fillTemplate("calendar_view_template.html",
 //				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 
-		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
-		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-															.findAll{ it.value > 2 }.sort{-it.value}
-		println(pairCoOccurrences.entrySet().join("\n"))
+//		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
+//		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
+//															.findAll{ it.value > 2 }.sort{-it.value}
+//		println(pairCoOccurrences.entrySet().join("\n"))
+//
+//		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
+//		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
+//		println(nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n"))
+//		println(relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n"))
 
-		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
-		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
-		println(nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n"))
-		println(relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n"))
+		// TODO word cloud for commit messages
+//		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
+//		println(commitMessages.join("\n"))
+
 	}
 
 	static void fillTemplate(String template, String jsValue) {
@@ -101,17 +107,21 @@ class Analysis {
 	static loadAllEvents(String eventsFileName) {
 		def events = []
 		new File(eventsFileName).withReader { reader ->
-			def line
-			while ((line = reader.readLine()) != null) {
-				def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
-				time = new SimpleDateFormat(EventStorage.CSV_DATE_FORMAT).parse(time)
-				def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
+			def line = null
+				while ((line = reader.readLine()) != null) {
+					try {
+						def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
+						time = new SimpleDateFormat(EventStorage.CSV_DATE_FORMAT).parse(time)
+						def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 
-				events << new ChangeEvent(
-						new PartialChangeEvent(method, fileName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger()),
-						new CommitInfo(revision, author, time, commitMessage)
-				)
-			}
+						events << new ChangeEvent(
+								new PartialChangeEvent(method, fileName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger()),
+								new CommitInfo(revision, author, time, commitMessage)
+						)
+					} catch (Exception ignored) {
+						println("Failed to parse line '${line}'")
+					}
+				}
 		}
 		events
 	}
