@@ -27,11 +27,11 @@ class Analysis {
 		def changeSize = { it.toOffset - it.fromOffset }
 		def changeSizeInLines = { it.toLine - it.fromLine }
 
-		def commitsAmountByDate = events
-						.groupBy{ it.revision }.collect{ it.value[0] }
-						.groupBy{ floorToDay(it.revisionDate) }
-						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+//		def commitsAmountByDate = events
+//						.groupBy{ it.revision }.collect{ it.value[0] }
+//						.groupBy{ floorToDay(it.revisionDate) }
+//						.collect{ [it.key, it.value.size()] }.sort{it[0]}
+//		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 //
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
@@ -39,10 +39,10 @@ class Analysis {
 //		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 
 //		def authorContributionByDate = events
-//			.groupBy{ floorToDay(it.revisionDate) }
-//			.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
+//				.groupBy{ floorToDay(it.revisionDate) }
+//				.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
 //		println(authorContributionByDate.entrySet().join("\n"))
-
+//
 //		def changesSizeByAuthorByDate = events
 //				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
 //				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0).sort(); it}
@@ -69,15 +69,16 @@ class Analysis {
 //		fillTemplate("calendar_view_template.html",
 //				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 
-//		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
-//		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-//															.findAll{ it.value > 2 }.sort{-it.value}
-//		println(pairCoOccurrences.entrySet().join("\n"))
-//
-//		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
-//		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
-//		println(nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n"))
-//		println(relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n"))
+		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
+		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
+															.findAll{ it.value > 3 }.sort{-it.value}
+		println(pairCoOccurrences.entrySet().join("\n"))
+
+		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
+		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
+		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
 
 		// TODO word cloud for commit messages
 //		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
@@ -86,7 +87,6 @@ class Analysis {
 	}
 
 	static void fillTemplate(String template, String jsValue) {
-		println(jsValue)
 		def templateText = new File("html/${template}").readLines().join("\n")
 		def text = templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
 		new File("html/${projectName}_${template.replace("_template", "")}").write(text)
