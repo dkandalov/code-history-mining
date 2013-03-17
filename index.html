@@ -33,6 +33,23 @@
         .RdYlGn .q8-10{fill: rgb(91,144,188)}
         .RdYlGn .q9-10{fill: rgb(70,130,180)} /*steelblue*/
     </style>
+    <style>
+        #amount-of-commits {
+            font: 10px sans-serif;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        rect:hover {
+            fill: rgb(62, 104, 146);
+        }
+    </style>
 </head>
 
 <body>
@@ -78,6 +95,9 @@
         <h3>Examples</h3>
         <h6>Commits calendar view (GitHub-style)</h6>
         <p id="commit-calendar"></p>
+        <br/>
+        <h6>Amount of commits per day</h6>
+        <p id="amount-of-commits"></p>
 
 
         <h3>How to use?</h3>
@@ -117,10 +137,20 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
             <li>at the moment it only looks at Java (Groovy) syntax tree to figure out method name for a change.
                 It shouldn't be difficult to support other languages (those that have IntelliJ plugins).</li>
         </ul>
+    </section>
+</div>
 
-        <script src="html/d3.v3.min.js"></script>
-        <script>
-            var rawData = "\
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p class="copyright">Delta-flora for IntelliJ maintained by <a href="https://github.com/dkandalov">Dmitry Kandalov</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+    </footer>
+</div>
+
+<script src="html/d3.v3.min.js"></script>
+<script>
+    var rawData = "\
 date,value,actualValue\n\
 12/02/2013,0.1538559765,57464\n\
 13/02/2013,0.3591838398,133038\n\
@@ -150,85 +180,297 @@ date,value,actualValue\n\
 09/03/2013,0.0024778232,1747\n\
 ";
 
-            var data = d3.csv.parse(rawData);
-            data = d3.nest()
-                    .key(function(d) { return d.date; })
-                    .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: parseInt(d[0].actualValue)}; })
-                    .map(data);
+    var data = d3.csv.parse(rawData);
+    data = d3.nest()
+            .key(function(d) { return d.date; })
+            .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: parseInt(d[0].actualValue)}; })
+            .map(data);
 
-            var width = 800,
-                height = 116,
-                cellSize = 14;
+    var width = 800,
+            height = 116,
+            cellSize = 14;
 
-            var day = d3.time.format("%w"),
-                week = d3.time.format("%U"),
-                percent = d3.format(".1%");
-            var dateFormat = d3.time.format("%d/%m/%Y");
+    var day = d3.time.format("%w"),
+            week = d3.time.format("%U"),
+            percent = d3.format(".1%");
+    var dateFormat = d3.time.format("%d/%m/%Y");
 
-            var color = d3.scale.quantize().domain([0.0, 1.0])
-                    .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
+    var color = d3.scale.quantize().domain([0.0, 1.0])
+            .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
-            var svg = d3.select("#commit-calendar").selectAll("svg")
-                    .data(d3.range(2012, 2014))
-                    .enter().append("svg")
-                    .attr("width", width)
-                    .attr("height", height)
-                    .attr("class", "RdYlGn")
-                    .append("g")
-                    .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
+    var svg = d3.select("#commit-calendar").selectAll("svg")
+            .data(d3.range(2012, 2014))
+            .enter().append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("class", "RdYlGn")
+            .append("g")
+            .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
 
-            svg.append("text")
-                    .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
-                    .style("text-anchor", "middle")
-                    .text(function(d) { return d; });
+    svg.append("text")
+            .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+            .style("text-anchor", "middle")
+            .text(function(d) { return d; });
 
-            var rect = svg.selectAll(".day")
-                    .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-                    .enter().append("rect")
-                    .attr("class", "day")
-                    .attr("width", cellSize)
-                    .attr("height", cellSize)
-                    .attr("x", function(d) { return week(d) * cellSize; })
-                    .attr("y", function(d) { return day(d) * cellSize; })
-                    .datum(dateFormat);
+    var rect = svg.selectAll(".day")
+            .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+            .enter().append("rect")
+            .attr("class", "day")
+            .attr("width", cellSize)
+            .attr("height", cellSize)
+            .attr("x", function(d) { return week(d) * cellSize; })
+            .attr("y", function(d) { return day(d) * cellSize; })
+            .datum(dateFormat);
 
-            rect.append("title").text(function(d) { return d; });
+    rect.append("title").text(function(d) { return d; });
 
-            svg.selectAll(".month")
-                    .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-                    .enter().append("path")
-                    .attr("class", "month")
-                    .attr("d", monthPath);
+    svg.selectAll(".month")
+            .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+            .enter().append("path")
+            .attr("class", "month")
+            .attr("d", monthPath);
 
-            rect.filter(function(d) { return d in data; })
-                    .attr("class", function(d) { return "day " + color(data[d].value); })
-                    .select("title")
-                    .text(function(d) { return d + ", change size: " + data[d].actualValue; });
+    rect.filter(function(d) { return d in data; })
+            .attr("class", function(d) { return "day " + color(data[d].value); })
+            .select("title")
+            .text(function(d) { return d + ", change size: " + data[d].actualValue; });
 
-            function monthPath(t0) {
-                var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
-                        d0 = +day(t0), w0 = +week(t0),
-                        d1 = +day(t1), w1 = +week(t1);
-                return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
-                        + "H" + w0 * cellSize + "V" + 7 * cellSize
-                        + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
-                        + "H" + (w1 + 1) * cellSize + "V" + 0
-                        + "H" + (w0 + 1) * cellSize + "Z";
-            }
+    function monthPath(t0) {
+        var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
+                d0 = +day(t0), w0 = +week(t0),
+                d1 = +day(t1), w1 = +week(t1);
+        return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
+                + "H" + w0 * cellSize + "V" + 7 * cellSize
+                + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
+                + "H" + (w1 + 1) * cellSize + "V" + 0
+                + "H" + (w0 + 1) * cellSize + "Z";
+    }
 
-            d3.select(self.frameElement).style("height", "2910px");
+    d3.select(self.frameElement).style("height", "2910px");
 
-        </script>
+</script>
+<script>
+var rawData = "\
+date,amount of commits\n\
+09/10/2012,58\n\
+10/10/2012,86\n\
+11/10/2012,75\n\
+12/10/2012,58\n\
+13/10/2012,41\n\
+14/10/2012,22\n\
+15/10/2012,57\n\
+16/10/2012,57\n\
+17/10/2012,57\n\
+18/10/2012,64\n\
+19/10/2012,67\n\
+20/10/2012,11\n\
+21/10/2012,14\n\
+22/10/2012,64\n\
+23/10/2012,95\n\
+24/10/2012,78\n\
+25/10/2012,61\n\
+26/10/2012,68\n\
+27/10/2012,11\n\
+28/10/2012,14\n\
+29/10/2012,90\n\
+30/10/2012,96\n\
+31/10/2012,91\n\
+01/11/2012,79\n\
+02/11/2012,85\n\
+03/11/2012,8\n\
+04/11/2012,35\n\
+05/11/2012,31\n\
+06/11/2012,77\n\
+07/11/2012,83\n\
+08/11/2012,81\n\
+09/11/2012,99\n\
+10/11/2012,13\n\
+11/11/2012,27\n\
+12/11/2012,102\n\
+13/11/2012,76\n\
+14/11/2012,91\n\
+15/11/2012,83\n\
+16/11/2012,69\n\
+17/11/2012,4\n\
+18/11/2012,11\n\
+19/11/2012,70\n\
+20/11/2012,83\n\
+21/11/2012,88\n\
+22/11/2012,37\n\
+23/11/2012,96\n\
+24/11/2012,3\n\
+25/11/2012,6\n\
+26/11/2012,63\n\
+27/11/2012,51\n\
+28/11/2012,67\n\
+29/11/2012,62\n\
+30/11/2012,73\n\
+01/12/2012,16\n\
+02/12/2012,4\n\
+03/12/2012,77\n\
+04/12/2012,45\n\
+05/12/2012,59\n\
+06/12/2012,65\n\
+07/12/2012,52\n\
+08/12/2012,2\n\
+09/12/2012,1\n\
+10/12/2012,63\n\
+11/12/2012,62\n\
+12/12/2012,59\n\
+13/12/2012,51\n\
+14/12/2012,51\n\
+15/12/2012,3\n\
+16/12/2012,3\n\
+17/12/2012,50\n\
+18/12/2012,44\n\
+19/12/2012,46\n\
+20/12/2012,28\n\
+21/12/2012,12\n\
+22/12/2012,12\n\
+23/12/2012,2\n\
+24/12/2012,50\n\
+25/12/2012,63\n\
+26/12/2012,26\n\
+27/12/2012,46\n\
+28/12/2012,36\n\
+29/12/2012,17\n\
+30/12/2012,2\n\
+31/12/2012,14\n\
+02/01/2013,32\n\
+03/01/2013,18\n\
+04/01/2013,12\n\
+05/01/2013,10\n\
+06/01/2013,1\n\
+07/01/2013,23\n\
+08/01/2013,19\n\
+09/01/2013,35\n\
+10/01/2013,31\n\
+11/01/2013,45\n\
+12/01/2013,1\n\
+13/01/2013,1\n\
+14/01/2013,54\n\
+15/01/2013,68\n\
+16/01/2013,49\n\
+17/01/2013,55\n\
+18/01/2013,57\n\
+19/01/2013,5\n\
+20/01/2013,18\n\
+21/01/2013,50\n\
+22/01/2013,55\n\
+23/01/2013,35\n\
+24/01/2013,50\n\
+25/01/2013,67\n\
+26/01/2013,4\n\
+27/01/2013,5\n\
+28/01/2013,55\n\
+29/01/2013,65\n\
+30/01/2013,61\n\
+31/01/2013,62\n\
+01/02/2013,45\n\
+02/02/2013,6\n\
+03/02/2013,13\n\
+04/02/2013,53\n\
+05/02/2013,56\n\
+06/02/2013,49\n\
+07/02/2013,57\n\
+08/02/2013,49\n\
+09/02/2013,21\n\
+10/02/2013,8\n\
+11/02/2013,98\n\
+12/02/2013,67\n\
+13/02/2013,48\n\
+14/02/2013,71\n\
+15/02/2013,63\n\
+16/02/2013,3\n\
+17/02/2013,4\n\
+18/02/2013,85\n\
+19/02/2013,84\n\
+20/02/2013,72\n\
+21/02/2013,59\n\
+22/02/2013,53\n\
+23/02/2013,8\n\
+24/02/2013,5\n\
+25/02/2013,65\n\
+26/02/2013,76\n\
+27/02/2013,78\n\
+28/02/2013,95\n\
+01/03/2013,62\n\
+02/03/2013,8\n\
+03/03/2013,6\n\
+04/03/2013,53\n\
+05/03/2013,59\n\
+06/03/2013,45\n\
+07/03/2013,70\n\
+08/03/2013,17\n\
+09/03/2013,19\n\
+10/03/2013,7\n\
+11/03/2013,39\n\
+12/03/2013,31\n\
+13/03/2013,36\n\
+";
+const value = "amount of commits";
+const yAxisLabel = "amount of commits";
 
-    </section>
-</div>
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 800 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-<!-- FOOTER  -->
-<div id="footer_wrap" class="outer">
-    <footer class="inner">
-        <p class="copyright">Delta-flora for IntelliJ maintained by <a href="https://github.com/dkandalov">Dmitry Kandalov</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-    </footer>
-</div>
+var dateFormat = d3.time.format("%d/%m/%Y");
+var valueFormat = function(n) {
+    var s = d3.format(",")(n);
+    return s.length < 6 ? s : d3.format("s")(n);
+};
+
+var x = d3.time.scale().nice().rangeRound([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+var xAxis = d3.svg.axis().scale(x).orient("bottom");
+var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
+
+var svg = d3.select("#amount-of-commits").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var data = d3.csv.parse(rawData);
+data.forEach(function (d) {
+    d.date = dateFormat.parse(d.date);
+    d[value] = parseInt(d[value]);
+});
+
+var fromDate = data[0].date;
+var toDate = data[data.length - 1].date;
+x.domain([fromDate, d3.time.day.offset(toDate, 1)]);
+y.domain([0, d3.max(data, function (d) { return d[value]; })]);
+var barWidth = width / d3.time.days(fromDate, toDate).length;
+barWidth = Math.floor(barWidth - (barWidth * 0.1));
+
+svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(yAxisLabel);
+
+svg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) { return x(d.date); })
+        .attr("width", barWidth)
+        .attr("y", function (d) { return y(d[value]); })
+        .attr("height", function (d) { return height - y(d[value]); })
+        .append("title")
+        .text(function (d) { return "date: " + dateFormat(d.date) + "\n" + yAxisLabel + ": " + d[value]; });
+
+</script>
 </body>
 </html>
