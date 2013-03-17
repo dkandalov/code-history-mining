@@ -9,6 +9,31 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Delta-flora for IntelliJ</title>
+    <style>
+        /*body {
+            font: 10px sans-serif;
+            shape-rendering: crispEdges;
+        }*/
+        .day {
+            fill: #fff;
+            stroke: #ccc;
+        }
+        .month {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2px;
+        }
+        .RdYlGn .q0-10{fill: rgb(255, 255, 255)}
+        .RdYlGn .q1-10{fill: rgb(234,241,247)}
+        .RdYlGn .q2-10{fill: rgb(214,227,238)}
+        .RdYlGn .q3-10{fill: rgb(193,213,230)}
+        .RdYlGn .q4-10{fill: rgb(173,199,222)}
+        .RdYlGn .q5-10{fill: rgb(152,186,213)}
+        .RdYlGn .q6-10{fill: rgb(132,172,205)}
+        .RdYlGn .q7-10{fill: rgb(111,158,197)}
+        .RdYlGn .q8-10{fill: rgb(91,144,188)}
+        .RdYlGn .q9-10{fill: rgb(70,130,180)} /*steelblue*/
+    </style>
 </head>
 
 <body>
@@ -51,8 +76,11 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
             E.g. "what are the most often changed parts of the project?", "which classes change together?", etc.
         </p>
 
-        <h3>How to use?</h3>
+        <h3>Examples</h3>
+        <h6>    Commits calendar view</h6>
+        <p id="commit-calendar"></p>
 
+        <h3>How to use?</h3>
         <p>
             To use this plugin you'll need to install host-plugin <a href="https://github.com/dkandalov/intellij_eval">intellij-eval</a>.
             In "Plugins" toolwindow use "Add -> Plugin from Git" and then run it. It will start analyzing history for currently open project.
@@ -74,6 +102,109 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
             <li>at the moment it only looks at Java (Groovy) syntax tree to figure out method name for a change.
                 It shouldn't be difficult to support other languages (those that have IntelliJ plugins).</li>
         </ul>
+
+        <script src="html/d3.v3.min.js"></script>
+        <script>
+            var rawData = "\
+date,value,actualValue\n\
+12/02/2013,0.1538559765,57464\n\
+13/02/2013,0.3591838398,133038\n\
+14/02/2013,0.7923464605,292470\n\
+15/02/2013,0.5301264722,195956\n\
+16/02/2013,0.0018121799,1502\n\
+17/02/2013,0.0069254072,3384\n\
+18/02/2013,0.4175593985,154524\n\
+19/02/2013,1.0000000000,368900\n\
+20/02/2013,0.6739353103,248887\n\
+21/02/2013,0.4665154253,172543\n\
+22/02/2013,0.3058970562,113425\n\
+23/02/2013,0.0344178338,13503\n\
+24/02/2013,0E-10,835\n\
+25/02/2013,0.3901674976,144442\n\
+26/02/2013,0.5331123579,197055\n\
+27/02/2013,0.3979215628,147296\n\
+28/02/2013,0.2520234198,93596\n\
+01/03/2013,0.3103392064,115060\n\
+02/03/2013,0.0209392363,8542\n\
+03/03/2013,0.0209093503,8531\n\
+04/03/2013,0.6013421542,222168\n\
+05/03/2013,0.3713827721,137528\n\
+06/03/2013,0.1826090500,68047\n\
+07/03/2013,0.3736541100,138364\n\
+08/03/2013,0.1507097931,56306\n\
+09/03/2013,0.0024778232,1747\n\
+";
+
+            var data = d3.csv.parse(rawData);
+            data = d3.nest()
+                    .key(function(d) { return d.date; })
+                    .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: parseInt(d[0].actualValue)}; })
+                    .map(data);
+
+            var width = 800,
+                height = 136,
+                cellSize = 14;
+
+            var day = d3.time.format("%w"),
+                week = d3.time.format("%U"),
+                percent = d3.format(".1%");
+            var dateFormat = d3.time.format("%d/%m/%Y");
+
+            var color = d3.scale.quantize().domain([0.0, 1.0])
+                    .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
+
+            var svg = d3.select("#commit-calendar").selectAll("svg")
+                    .data(d3.range(2012, 2014))
+                    .enter().append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("class", "RdYlGn")
+                    .append("g")
+                    .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
+
+            svg.append("text")
+                    .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+                    .style("text-anchor", "middle")
+                    .text(function(d) { return d; });
+
+            var rect = svg.selectAll(".day")
+                    .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+                    .enter().append("rect")
+                    .attr("class", "day")
+                    .attr("width", cellSize)
+                    .attr("height", cellSize)
+                    .attr("x", function(d) { return week(d) * cellSize; })
+                    .attr("y", function(d) { return day(d) * cellSize; })
+                    .datum(dateFormat);
+
+            rect.append("title").text(function(d) { return d; });
+
+            svg.selectAll(".month")
+                    .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+                    .enter().append("path")
+                    .attr("class", "month")
+                    .attr("d", monthPath);
+
+            rect.filter(function(d) { return d in data; })
+                    .attr("class", function(d) { return "day " + color(data[d].value); })
+                    .select("title")
+                    .text(function(d) { return d + ", change size: " + data[d].actualValue; });
+
+            function monthPath(t0) {
+                var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
+                        d0 = +day(t0), w0 = +week(t0),
+                        d1 = +day(t1), w1 = +week(t1);
+                return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
+                        + "H" + w0 * cellSize + "V" + 7 * cellSize
+                        + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
+                        + "H" + (w1 + 1) * cellSize + "V" + 0
+                        + "H" + (w0 + 1) * cellSize + "Z";
+            }
+
+            d3.select(self.frameElement).style("height", "2910px");
+
+        </script>
+
     </section>
 </div>
 
