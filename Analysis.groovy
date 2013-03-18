@@ -31,12 +31,12 @@ class Analysis {
 //						.groupBy{ it.revision }.collect{ it.value[0] }
 //						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-//		fillTemplate("commit_count_template.html", asJavaScriptLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+//		fillTemplate("commit_count_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 //
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
-//		fillTemplate("changes_size_template.html", asJavaScriptLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+//		fillTemplate("changes_size_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 
 //		def authorContributionByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
@@ -51,14 +51,14 @@ class Analysis {
 //				.entrySet().toList().sort{ -authorsContributions[it.key] }.take(5).collectMany { entry ->
 //					entry.value.collect { [it.key, entry.key, it.value] }
 //				}
-//		fillTemplate("stacked_bars_template.html", asJavaScriptLiteral(flattened, ["date", "author", "changes size"]))
+//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changes size"]))
 
 //		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
-//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InOffsets , ["commit size"]))
+//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InOffsets , ["commit size"]))
 //		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLines(it)}] }
-//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InLines , ["commit size"]))
+//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InLines , ["commit size"]))
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
-//		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
+//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InFiles , ["commit size"]))
 
 		createCalendarViewOn(events)
 
@@ -102,7 +102,7 @@ class Analysis {
 //		def changesSizeRelativeToAll_ByDate = commitsAmountByDate
 //				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
 		fillTemplate("calendar_view_template.html",
-				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
+				asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 	}
 
 	static def changeSize(event) { event.toOffset - event.fromOffset }
@@ -114,7 +114,7 @@ class Analysis {
 		new File("html/${projectName}_${template.replace("_template", "")}").write(text)
 	}
 
-	static String asJavaScriptLiteral(Collection values, List header) {
+	static String asCsvStringLiteral(Collection values, List header) {
 		def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
 
 		def jsNewLine = "\\n\\\n"
