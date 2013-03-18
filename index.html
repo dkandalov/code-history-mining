@@ -46,7 +46,24 @@
         .bar {
             fill: steelblue;
         }
-        rect:hover {
+        .bar:hover {
+            fill: rgb(62, 104, 146);
+        }
+    </style>
+    <style>
+        #changes-size {
+            font: 10px sans-serif;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        .bar:hover {
             fill: rgb(62, 104, 146);
         }
     </style>
@@ -85,12 +102,12 @@
         </p>
         <p>
             Things in project history that might be interesting to look at:
-            <ul>
-                <li>people interaction over time</li>
-                <li>how code changes over time</li>
-                <li>how people interact with code</li>
-            </ul>
         </p>
+        <ul>
+            <li>people interaction over time</li>
+            <li>how code changes over time</li>
+            <li>how people interact with code</li>
+        </ul>
 
         <h3>Examples</h3>
         <h6>Commits calendar view (GitHub-style)</h6>
@@ -98,6 +115,9 @@
         <br/>
         <h6>Amount of commits per day</h6>
         <p id="amount-of-commits"></p>
+        <br/>
+        <h6>Changes size  per day</h6>
+        <p id="changes-size"></p>
 
 
         <h3>How to use?</h3>
@@ -470,6 +490,208 @@ svg.selectAll(".bar")
         .attr("height", function (d) { return height - y(d[value]); })
         .append("title")
         .text(function (d) { return "date: " + dateFormat(d.date) + "\n" + yAxisLabel + ": " + d[value]; });
+
+</script>
+<script>
+    var rawData = "\
+date,changes size\n\
+05/11/2012,26893\n\
+06/11/2012,285633\n\
+07/11/2012,1126720\n\
+08/11/2012,151567\n\
+09/11/2012,203989\n\
+10/11/2012,41274\n\
+11/11/2012,124987\n\
+12/11/2012,242950\n\
+13/11/2012,128968\n\
+14/11/2012,288641\n\
+15/11/2012,202707\n\
+16/11/2012,194117\n\
+17/11/2012,11986\n\
+18/11/2012,4362\n\
+19/11/2012,170815\n\
+20/11/2012,112045\n\
+21/11/2012,244707\n\
+22/11/2012,234665\n\
+23/11/2012,122151\n\
+24/11/2012,2967\n\
+25/11/2012,23889\n\
+26/11/2012,105738\n\
+27/11/2012,174974\n\
+28/11/2012,172209\n\
+29/11/2012,108916\n\
+30/11/2012,76431\n\
+01/12/2012,18038\n\
+02/12/2012,655\n\
+03/12/2012,137326\n\
+04/12/2012,109327\n\
+05/12/2012,108390\n\
+06/12/2012,121215\n\
+07/12/2012,1316487\n\
+08/12/2012,2368\n\
+09/12/2012,103\n\
+10/12/2012,160869\n\
+11/12/2012,511611\n\
+12/12/2012,82993\n\
+13/12/2012,118802\n\
+14/12/2012,123325\n\
+15/12/2012,594\n\
+16/12/2012,1930\n\
+17/12/2012,152607\n\
+18/12/2012,65051\n\
+19/12/2012,62517\n\
+20/12/2012,34727\n\
+21/12/2012,8436\n\
+22/12/2012,39188\n\
+23/12/2012,340\n\
+24/12/2012,74388\n\
+25/12/2012,94875\n\
+26/12/2012,165384\n\
+27/12/2012,87233\n\
+28/12/2012,69824\n\
+29/12/2012,46838\n\
+30/12/2012,1716\n\
+31/12/2012,11036\n\
+02/01/2013,199323\n\
+03/01/2013,50099\n\
+04/01/2013,128237\n\
+05/01/2013,37195\n\
+06/01/2013,1500\n\
+07/01/2013,10817\n\
+08/01/2013,22566\n\
+09/01/2013,245137\n\
+10/01/2013,67270\n\
+11/01/2013,71715\n\
+12/01/2013,2831\n\
+13/01/2013,1227\n\
+14/01/2013,80845\n\
+15/01/2013,195463\n\
+16/01/2013,139552\n\
+17/01/2013,125125\n\
+18/01/2013,199971\n\
+19/01/2013,16408\n\
+20/01/2013,36377\n\
+21/01/2013,42039\n\
+22/01/2013,126576\n\
+23/01/2013,127566\n\
+24/01/2013,184782\n\
+25/01/2013,204485\n\
+26/01/2013,6793\n\
+27/01/2013,30485\n\
+28/01/2013,149075\n\
+29/01/2013,107818\n\
+30/01/2013,118861\n\
+31/01/2013,178110\n\
+01/02/2013,91486\n\
+02/02/2013,9089\n\
+03/02/2013,40303\n\
+04/02/2013,165617\n\
+05/02/2013,176754\n\
+06/02/2013,52703\n\
+07/02/2013,60291\n\
+08/02/2013,100211\n\
+09/02/2013,39611\n\
+10/02/2013,7823\n\
+11/02/2013,165176\n\
+12/02/2013,154475\n\
+13/02/2013,133038\n\
+14/02/2013,292470\n\
+15/02/2013,195956\n\
+16/02/2013,1502\n\
+17/02/2013,3384\n\
+18/02/2013,154524\n\
+19/02/2013,368900\n\
+20/02/2013,248887\n\
+21/02/2013,172543\n\
+22/02/2013,113425\n\
+23/02/2013,13503\n\
+24/02/2013,835\n\
+25/02/2013,144442\n\
+26/02/2013,197055\n\
+27/02/2013,147296\n\
+28/02/2013,93596\n\
+01/03/2013,115060\n\
+02/03/2013,8542\n\
+03/03/2013,8531\n\
+04/03/2013,222168\n\
+05/03/2013,137528\n\
+06/03/2013,68047\n\
+07/03/2013,138364\n\
+08/03/2013,56306\n\
+09/03/2013,73329\n\
+10/03/2013,6720\n\
+11/03/2013,96491\n\
+12/03/2013,70530\n\
+13/03/2013,132528\n\
+";
+    function createChangesSizeBarChart() {
+        const value = "changes size";
+        const yAxisLabel = "changes size";
+
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+                width = 800 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+        var dateFormat = d3.time.format("%d/%m/%Y");
+        var valueFormat = function(n) {
+            var s = d3.format(",")(n);
+            return s.length < 6 ? s : d3.format("s")(n);
+        };
+
+        var x = d3.time.scale().nice().rangeRound([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+        var xAxis = d3.svg.axis().scale(x).orient("bottom");
+        var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
+
+        var svg = d3.select("#changes-size").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var data = d3.csv.parse(rawData);
+        data.forEach(function (d) {
+            d.date = dateFormat.parse(d.date);
+            d[value] = parseInt(d[value]);
+        });
+
+        var fromDate = data[0].date;
+        var toDate = data[data.length - 1].date;
+        x.domain([fromDate, d3.time.day.offset(toDate, 1)]);
+        y.domain([0, d3.max(data, function (d) { return d[value]; })]);
+        var barWidth = width / d3.time.days(fromDate, toDate).length;
+        barWidth = Math.floor(barWidth - (barWidth * 0.1));
+
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(yAxisLabel);
+
+        svg.selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function (d) { return x(d.date); })
+                .attr("width", barWidth)
+                .attr("y", function (d) { return y(d[value]); })
+                .attr("height", function (d) { return height - y(d[value]); })
+                .append("title")
+                .text(function (d) {
+                    return "date: " + dateFormat(d.date) + "\n" +
+                            yAxisLabel + ": " + valueFormat(d[value]);
+                });
+    }
+    createChangesSizeBarChart();
 
 </script>
 </body>
