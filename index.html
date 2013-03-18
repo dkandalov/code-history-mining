@@ -67,6 +67,38 @@
             fill: rgb(62, 104, 146);
         }
     </style>
+    <style>
+        .node {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+        .link {
+            stroke: #999;
+            stroke-opacity: .6;
+        }
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            height: 15px;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        div.selectionList {
+            position: absolute;
+            text-align: left;
+            height: auto;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -116,8 +148,11 @@
         <h6>Amount of commits per day</h6>
         <p id="amount-of-commits"></p>
         <br/>
-        <h6>Changes size  per day</h6>
+        <h6>Changes size per day</h6>
         <p id="changes-size"></p>
+        <br/>
+        <h6>Files changed in the same commits</h6>
+        <section id="changes-in-same-commit-graph" class="inner"></section>
 
 
         <h3>How to use?</h3>
@@ -163,7 +198,7 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
     <footer class="inner">
-        <p class="copyright">Delta-flora for IntelliJ maintained by <a href="https://github.com/dkandalov">Dmitry Kandalov</a></p>
+        <p class="copyright">Delta-flora for IntelliJ is being developed by <a href="https://github.com/dkandalov">Dmitry Kandalov</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
     </footer>
 </div>
@@ -692,6 +727,408 @@ date,changes size\n\
                 });
     }
     createChangesSizeBarChart();
+
+</script>
+<script>
+function QuickFind(size) {
+    this.size = size;
+    this.connections = new Array(size);
+    for (var i = 0; i < this.connections.length; i++) {
+        this.connections[i] = i;
+    }
+}
+QuickFind.prototype.connect =  function (p1, p2) {
+    var value = this.connections[p1];
+    for (var i = 0; i < this.connections.length; i++) {
+        if (this.connections[i] == value) {
+            this.connections[i] = this.connections[p2];
+        }
+    }
+};
+QuickFind.prototype.areConnected = function(p1, p2) {
+    return this.connections[p1] == this.connections[p2];
+};
+
+const graph = {
+    "nodes": [{"name": "ProjectTemplateParameterFactory.java", "group": 1},
+        {"name": "DarculaTest.java", "group": 1},
+        {"name": "PsiResolveHelperImpl.java", "group": 1},
+        {"name": "GeneralStepdefs.java", "group": 1},
+        {"name": "MavenProjectsManager.java", "group": 1},
+        {"name": "modules.xml", "group": 1},
+        {"name": "ArtifactBuildTarget.java", "group": 1},
+        {"name": "GradleSettings.java", "group": 1},
+        {"name": "RegExpCompletionTest.java", "group": 1},
+        {"name": "MulOperationNode.java", "group": 1},
+        {"name": "JavaFxClassBackedElementDescriptor.java", "group": 1},
+        {"name": "GradleProjectStructureChangesModel.java", "group": 1},
+        {"name": "GradleModuleManager.java", "group": 1},
+        {"name": "GroovyAnnotator.java", "group": 1},
+        {"name": "MoreOperationNode.java", "group": 1},
+        {"name": "JavaFxCommonClassNames.java", "group": 1},
+        {"name": "LauncherGeneratorMain.java", "group": 1},
+        {"name": "MavenProjectConfiguration.java", "group": 1},
+        {"name": "AbstractGradleTest.groovy", "group": 1},
+        {"name": "MavenProjectsTree.java", "group": 1},
+        {"name": "HighlightVisitorImpl.java", "group": 1},
+        {"name": "NormalCompletionOrderingTest.groovy", "group": 1},
+        {"name": "JavaFxLocationReferenceProvider.java", "group": 1},
+        {"name": "DefaultLanguageColorsPage.java", "group": 1},
+        {"name": "JavaFXNSDescriptor.java", "group": 1},
+        {"name": "WizardInputField.java", "group": 1},
+        {"name": "Tool.java", "group": 1},
+        {"name": "WebServerManagerImpl.java", "group": 1},
+        {"name": "RegExpPropertyNameProvider.java", "group": 1},
+        {"name": "ColorAndFontDescriptionPanel.java", "group": 1},
+        {"name": "OptionsBundle.properties", "group": 1},
+        {"name": "JavaFXHighlightingTest.java", "group": 1},
+        {"name": "rails_casts.xml", "group": 1},
+        {"name": "FontPreferences.java", "group": 1},
+        {"name": "RegExpCompletionContributor.java", "group": 1},
+        {"name": "EditorColorsScheme.java", "group": 1},
+        {"name": "JavaBuilder.java", "group": 1},
+        {"name": "JavaFxEventHandlerReferenceProvider.java", "group": 1},
+        {"name": "GradleConfigurable.java", "group": 1},
+        {"name": "JavaFxCompletionTest.java", "group": 1},
+        {"name": "GenerationUtil.java", "group": 1},
+        {"name": "ZenCodingNode.java", "group": 1},
+        {"name": "GitCherryPickStepdefs.java", "group": 1},
+        {"name": "WinLauncher.rc", "group": 1},
+        {"name": "GradleToolWindowPanel.java", "group": 1},
+        {"name": "GradleProjectStructureChangesDetector.java", "group": 1},
+        {"name": "JavaFxEventHandlerReference.java", "group": 1},
+        {"name": "CardActionsPanel.java", "group": 1},
+        {"name": "IdeaSpecificSettings.java", "group": 1},
+        {"name": "PlatformExtensions.xml", "group": 1},
+        {"name": "ArrangementAnimationManager.java", "group": 1},
+        {"name": "ArrangementGroupingMatchConditionComponent.java", "group": 1},
+        {"name": "ModuleBuildTarget.java", "group": 1},
+        {"name": "resource.h", "group": 1},
+        {"name": "UnaryMulOperationNode.java", "group": 1},
+        {"name": "WinLauncher.vcxproj.filters", "group": 1},
+        {"name": "expected.xml", "group": 1},
+        {"name": "JavaFxPropertyElementDescriptor.java", "group": 1},
+        {"name": "Responses.java", "group": 1},
+        {"name": "ExpressionGenerator.java", "group": 1},
+        {"name": "GrIndexPropertyImpl.java", "group": 1},
+        {"name": "MavenCommonParamReferenceProviders.java", "group": 1},
+        {"name": "SmartTypeCompletionOrderingTest.groovy", "group": 1},
+        {"name": "layouts.gant", "group": 1},
+        {"name": "MinusculeMatcher.java", "group": 1},
+        {"name": "ActionsBundle.properties", "group": 1},
+        {"name": "LossyEncodingInspection.java", "group": 1},
+        {"name": "TaskManagerImpl.java", "group": 1},
+        {"name": "BuildOperations.java", "group": 1},
+        {"name": "ArrangementAtomMatchConditionComponent.java", "group": 1},
+        {"name": "ToolAction.java", "group": 1},
+        {"name": "ResourceRootDescriptor.java", "group": 1},
+        {"name": "SvnStatusHandler.java", "group": 1},
+        {"name": "ArrangementAnimationPanel.java", "group": 1},
+        {"name": "HighlightUtil.java", "group": 1},
+        {"name": "EncodingFileTreeTable.java", "group": 1},
+        {"name": "DefaultLanguageHighlighterColors.java", "group": 1},
+        {"name": "JpsEclipseClasspathSerializer.java", "group": 1},
+        {"name": "GdkMethodUtil.java", "group": 1},
+        {"name": "plugin.xml", "group": 1},
+        {"name": "JavaFxDefaultAttributeDescriptor.java", "group": 1},
+        {"name": "ClosureAsAnonymousParameterEnhancer.java", "group": 1},
+        {"name": "ImportModuleAction.java", "group": 1},
+        {"name": "GitOutgoingCommitsCollector.java", "group": 1},
+        {"name": "TemplateModuleBuilder.java", "group": 1},
+        {"name": "twilight.xml", "group": 1},
+        {"name": "ArrangementMatchingRulesControl.java", "group": 1},
+        {"name": "PlatformExtensionPoints.xml", "group": 1},
+        {"name": "PlatformActions.xml", "group": 1},
+        {"name": "Test.java", "group": 1},
+        {"name": "ProcessCandidateParameterTypeInferencePolicy.java", "group": 1},
+        {"name": "RichPlatformActions.xml", "group": 1},
+        {"name": "AddModuleWizard.java", "group": 1},
+        {"name": "WinLauncher.cpp", "group": 1},
+        {"name": "GradleProjectStructureChangesModelTest.groovy", "group": 1},
+        {"name": "Darcula.xml", "group": 1},
+        {"name": "NameUtilTest.java", "group": 1},
+        {"name": "TextNode.java", "group": 1},
+        {"name": "RegExpDocumentationProvider.java", "group": 1},
+        {"name": "GradleLocalNodeManageHelperTest.groovy", "group": 1},
+        {"name": "IncProjectBuilder.java", "group": 1},
+        {"name": "ArrangementAndMatchConditionComponent.java", "group": 1},
+        {"name": "ComplementaryFontsRegistry.java", "group": 1},
+        {"name": "LauncherGenerator.java", "group": 1},
+        {"name": "JavaFxPsiUtil.java", "group": 1},
+        {"name": "GradleProjectStructureHelper.java", "group": 1},
+        {"name": "GradleUserProjectChangesCalculator.java", "group": 1},
+        {"name": "WelcomeFrame.java", "group": 1},
+        {"name": "GitBranchUiUtil.java", "group": 1},
+        {"name": "TaskVcsTest.java", "group": 1},
+        {"name": "TasksToolWindowPanel.java", "group": 1},
+        {"name": "GradleBundle.properties", "group": 1},
+        {"name": "GradleConfigNotifier.java", "group": 1},
+        {"name": "LocalTaskImpl.java", "group": 1},
+        {"name": "XmlBundle.properties", "group": 1},
+        {"name": "DefaultColorSchemesManager.xml", "group": 1},
+        {"name": "CompileScope.java", "group": 1},
+        {"name": "required_for_dist.txt", "group": 1},
+        {"name": "CompileContextImpl.java", "group": 1},
+        {"name": "GitPushUtil.java", "group": 1},
+        {"name": "cobalt.xml", "group": 1},
+        {"name": "CmdlineProtoUtil.java", "group": 1},
+        {"name": "ZenCodingTemplate.java", "group": 1},
+        {"name": "ArrangementMatchConditionComponent.java", "group": 1},
+        {"name": "GitBranchWidget.java", "group": 1},
+        {"name": "CompileScopeImpl.java", "group": 1},
+        {"name": "SelectTemplateStep.java", "group": 1},
+        {"name": "TypesUtil.java", "group": 1},
+        {"name": "CompileContext.java", "group": 1},
+        {"name": "DirectoryInfo.java", "group": 1},
+        {"name": "FSOperations.java", "group": 1},
+        {"name": "ArrangementEditorComponent.java", "group": 1},
+        {"name": "BuildRunner.java", "group": 1},
+        {"name": "GradleLibraryManager.java", "group": 1},
+        {"name": "GitPusher.java", "group": 1},
+        {"name": "BaseInstrumentingBuilder.java", "group": 1},
+        {"name": "CmdlineRemoteProto.java", "group": 1},
+        {"name": "ResourcesTarget.java", "group": 1},
+        {"name": "SvnParseCommandLineParseTest.java", "group": 1},
+        {"name": "monokai.xml", "group": 1},
+        {"name": "RemoteTemplatesFactory.java", "group": 1},
+        {"name": "GradleLocalSettings.java", "group": 1},
+        {"name": "EmmetParser.java", "group": 1},
+        {"name": "GradleLocalNodeManageHelper.java", "group": 1},
+        {"name": "EditorImpl.java", "group": 1},
+        {"name": "ArrangementEditIconMatchConditionComponent.java", "group": 1},
+        {"name": "GradleProjectStructureTreeModel.java", "group": 1},
+        {"name": "BasePackageParameterFactory.java", "group": 1},
+        {"name": "GradleDependencyManager.java", "group": 1},
+        {"name": "GroovyHighlightingTest.groovy", "group": 1},
+        {"name": "ArrangementMatchingRuleEditor.java", "group": 1},
+        {"name": "ClassProcessingBuilder.java", "group": 1},
+        {"name": "RegExpPropertyImpl.java", "group": 1},
+        {"name": "ColorAndFontOptions.java", "group": 1},
+        {"name": "GradleConfigNotifierAdapter.java", "group": 1},
+        {"name": "TasksToolWindowFactory.java", "group": 1},
+        {"name": "DelegateColorScheme.java", "group": 1},
+        {"name": "WinLauncher.vcxproj", "group": 1},
+        {"name": "JavaSourceRootDescriptor.java", "group": 1},
+        {"name": "WebServer.java", "group": 1},
+        {"name": "libLicenses.gant", "group": 1},
+        {"name": "SelectTemplateStep.form", "group": 1},
+        {"name": "ImportProjectAction.java", "group": 1},
+        {"name": "GitPushDialog.java", "group": 1},
+        {"name": "DarculaTest.form", "group": 1},
+        {"name": "TemplateNode.java", "group": 1},
+        {"name": "IdeFrameImpl.java", "group": 1},
+        {"name": "MavenPluginParamInfo.java", "group": 1},
+        {"name": "GitBranchesAction.java", "group": 1},
+        {"name": "RegExpAnnotator.java", "group": 1},
+        {"name": "OutputFilesSink.java", "group": 1},
+        {"name": "GroovyBundle.properties", "group": 1},
+        {"name": "XmlPlugin.xml", "group": 1},
+        {"name": "BuildSession.java", "group": 1},
+        {"name": "NewWelcomeScreen.java", "group": 1},
+        {"name": "GitPushSpecs.java", "group": 1},
+        {"name": "FxmlReferencesContributor.java", "group": 1},
+        {"name": "LocalArchivedTemplate.java", "group": 1},
+        {"name": "MavenResourceRootDescriptor.java", "group": 1},
+        {"name": "blackboard.xml", "group": 1},
+        {"name": "DirectoryIndexImpl.java", "group": 1},
+        {"name": "JpsIdeaSpecificSettings.java", "group": 1},
+        {"name": "GradleUtil.java", "group": 1},
+        {"name": "AbstractColorsScheme.java", "group": 1},
+        {"name": "MavenPluginDescriptor.java", "group": 1}],
+    "links": [{"source": 13, "target": 171, "value": 11},
+        {"source": 64, "target": 96, "value": 11},
+        {"source": 130, "target": 100, "value": 9},
+        {"source": 23, "target": 76, "value": 9},
+        {"source": 13, "target": 149, "value": 8},
+        {"source": 111, "target": 79, "value": 8},
+        {"source": 31, "target": 39, "value": 7},
+        {"source": 63, "target": 5, "value": 7},
+        {"source": 4, "target": 19, "value": 7},
+        {"source": 90, "target": 2, "value": 7},
+        {"source": 43, "target": 157, "value": 7},
+        {"source": 133, "target": 143, "value": 7},
+        {"source": 67, "target": 109, "value": 6},
+        {"source": 52, "target": 137, "value": 6},
+        {"source": 93, "target": 43, "value": 6},
+        {"source": 160, "target": 117, "value": 6},
+        {"source": 34, "target": 98, "value": 6},
+        {"source": 169, "target": 152, "value": 6},
+        {"source": 10, "target": 104, "value": 6},
+        {"source": 29, "target": 153, "value": 6},
+        {"source": 99, "target": 182, "value": 6},
+        {"source": 83, "target": 163, "value": 6},
+        {"source": 119, "target": 134, "value": 6},
+        {"source": 150, "target": 86, "value": 6},
+        {"source": 101, "target": 69, "value": 6},
+        {"source": 132, "target": 173, "value": 5},
+        {"source": 128, "target": 118, "value": 5},
+        {"source": 161, "target": 126, "value": 5},
+        {"source": 15, "target": 104, "value": 5},
+        {"source": 140, "target": 84, "value": 5},
+        {"source": 59, "target": 40, "value": 5},
+        {"source": 180, "target": 129, "value": 5},
+        {"source": 157, "target": 55, "value": 5},
+        {"source": 142, "target": 122, "value": 5},
+        {"source": 65, "target": 88, "value": 5},
+        {"source": 169, "target": 8, "value": 5},
+        {"source": 23, "target": 30, "value": 5},
+        {"source": 115, "target": 30, "value": 5},
+        {"source": 10, "target": 57, "value": 5},
+        {"source": 158, "target": 71, "value": 5},
+        {"source": 3, "target": 42, "value": 5},
+        {"source": 175, "target": 119, "value": 5},
+        {"source": 67, "target": 110, "value": 5},
+        {"source": 113, "target": 67, "value": 5},
+        {"source": 67, "target": 155, "value": 5},
+        {"source": 82, "target": 162, "value": 5},
+        {"source": 50, "target": 73, "value": 5},
+        {"source": 121, "target": 136, "value": 4},
+        {"source": 116, "target": 125, "value": 4},
+        {"source": 77, "target": 181, "value": 4},
+        {"source": 48, "target": 181, "value": 4},
+        {"source": 21, "target": 62, "value": 4},
+        {"source": 114, "target": 172, "value": 4},
+        {"source": 0, "target": 25, "value": 4},
+        {"source": 141, "target": 106, "value": 4},
+        {"source": 26, "target": 70, "value": 4},
+        {"source": 6, "target": 137, "value": 4},
+        {"source": 68, "target": 100, "value": 4},
+        {"source": 147, "target": 0, "value": 4},
+        {"source": 24, "target": 104, "value": 4},
+        {"source": 112, "target": 154, "value": 4},
+        {"source": 154, "target": 38, "value": 4},
+        {"source": 38, "target": 7, "value": 4},
+        {"source": 7, "target": 44, "value": 4},
+        {"source": 45, "target": 11, "value": 4},
+        {"source": 105, "target": 146, "value": 4},
+        {"source": 74, "target": 20, "value": 4},
+        {"source": 103, "target": 16, "value": 4},
+        {"source": 55, "target": 53, "value": 4},
+        {"source": 143, "target": 12, "value": 4},
+        {"source": 179, "target": 120, "value": 4},
+        {"source": 139, "target": 32, "value": 4},
+        {"source": 32, "target": 85, "value": 4},
+        {"source": 138, "target": 72, "value": 4},
+        {"source": 75, "target": 66, "value": 4},
+        {"source": 88, "target": 91, "value": 4},
+        {"source": 176, "target": 22, "value": 4},
+        {"source": 58, "target": 159, "value": 4},
+        {"source": 159, "target": 27, "value": 4},
+        {"source": 87, "target": 49, "value": 4},
+        {"source": 152, "target": 28, "value": 4},
+        {"source": 177, "target": 140, "value": 4},
+        {"source": 14, "target": 9, "value": 4},
+        {"source": 9, "target": 165, "value": 4},
+        {"source": 165, "target": 97, "value": 4},
+        {"source": 97, "target": 54, "value": 4},
+        {"source": 54, "target": 41, "value": 4},
+        {"source": 10, "target": 80, "value": 4},
+        {"source": 35, "target": 33, "value": 4},
+        {"source": 183, "target": 156, "value": 4},
+        {"source": 102, "target": 144, "value": 4},
+        {"source": 46, "target": 37, "value": 4},
+        {"source": 166, "target": 107, "value": 4},
+        {"source": 148, "target": 133, "value": 4},
+        {"source": 18, "target": 94, "value": 4},
+        {"source": 184, "target": 167, "value": 4},
+        {"source": 95, "target": 76, "value": 4},
+        {"source": 36, "target": 170, "value": 4},
+        {"source": 17, "target": 178, "value": 4},
+        {"source": 164, "target": 1, "value": 4},
+        {"source": 61, "target": 79, "value": 4},
+        {"source": 108, "target": 124, "value": 4},
+        {"source": 124, "target": 168, "value": 4},
+        {"source": 89, "target": 56, "value": 4},
+        {"source": 135, "target": 151, "value": 4},
+        {"source": 60, "target": 127, "value": 4},
+        {"source": 81, "target": 78, "value": 4},
+        {"source": 47, "target": 174, "value": 4},
+        {"source": 92, "target": 162, "value": 4},
+        {"source": 69, "target": 131, "value": 4},
+        {"source": 51, "target": 123, "value": 4},
+        {"source": 69, "target": 145, "value": 4}]
+};
+const quickFind = new QuickFind(graph.nodes.length);
+graph.links.forEach(function (link) {
+    quickFind.connect(link.source, link.target);
+});
+
+
+var width = 800,
+    height = 500;
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+        .charge(-120)
+        .linkDistance(30)
+        .size([width, height]);
+
+var svg = d3.select("#changes-in-same-commit-graph")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g");
+
+force.nodes(graph.nodes)
+        .links(graph.links)
+        .start();
+
+var link = svg.selectAll(".link")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("stroke-width", function (d) {
+            return Math.sqrt(d.value);
+        });
+
+var tooltip = d3.select("#changes-in-same-commit-graph").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("opacity", 0);
+var selectionList = d3.select("#changes-in-same-commit-graph").append("div")
+        .attr("class", "selectionList")
+        .style("position", "absolute")
+        .style("left", "20px")
+        .style("top", "20px")
+        .style("opacity", 0);
+
+var node = svg.selectAll(".node")
+        .data(graph.nodes)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", function(d){ return d.selected ? 7 : 5; })
+        .style("fill", function (d) { return color(d.group); })
+        .call(force.drag)
+        .on("mouseover", function(d) {
+            tooltip.html(d.name)
+                .style("opacity", .9)
+                .style("left", parseInt(d.x + 18) + "px")
+                .style("top", parseInt(d.y - 12) + "px");
+        })
+        .on("mouseout", function(d) {
+            tooltip.style("opacity", .0);
+        })
+        .on("click", function (d) {
+            var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+
+            graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
+            connectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
+            node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+
+            selectionList
+                    .html(connectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
+                    .style("opacity", 0.9);
+        });
+
+force.on("tick", function () {
+    link.attr("x1", function (d) { return d.source.x; })
+            .attr("y1", function (d) { return d.source.y; })
+            .attr("x2", function (d) { return d.target.x; })
+            .attr("y2", function (d) { return d.target.y; });
+    node.attr("cx", function (d) { return d.x; })
+            .attr("cy", function (d) { return d.y; });
+});
 
 </script>
 </body>
