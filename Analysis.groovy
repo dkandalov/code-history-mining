@@ -10,6 +10,8 @@ class Analysis {
 	static def projectName = "idea"
 //	static def projectName = "delta-flora-for-intellij"
 
+
+
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
 		def fromDay = floorToDay(events.last().revisionDate)
@@ -24,8 +26,6 @@ class Analysis {
 				valuesByDate
 			}
 		}
-		def changeSize = { it.toOffset - it.fromOffset }
-		def changeSizeInLines = { it.toLine - it.fromLine }
 
 //		def commitsAmountByDate = events
 //						.groupBy{ it.revision }.collect{ it.value[0] }
@@ -60,15 +60,7 @@ class Analysis {
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
 //		fillTemplate("commit_size_histogram_template.html", asJavaScriptLiteral(commitSizes_InFiles , ["commit size"]))
 
-//		def totalChangeSizeByDate = events
-//				.groupBy{ floorToDay(it.revisionDate) }
-//				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
-//
-//		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
-//		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
-//		fillTemplate("calendar_view_template.html",
-//				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
+		createCalendarViewOn(events)
 
 //		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 //		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
@@ -86,6 +78,35 @@ class Analysis {
 //		println(commitMessages.join("\n"))
 
 	}
+
+	static void createCalendarViewOn(List events) {
+		def totalChangeSizeByDate = events
+				.groupBy{ floorToDay(it.revisionDate) }
+				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
+		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] } }
+		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
+
+//		def totalChangeSizeByDate = events
+//				.groupBy{ floorToDay(it.revisionDate) }
+//				.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
+//		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
+//		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
+
+//		def commitsAmountByDate = events
+//						.groupBy{ it.revision }.collect{ it.value.first() }
+//						.groupBy{ floorToDay(it.revisionDate) }
+//						.collectEntries{ [it.key, it.value.size()] }.sort()
+//		def (min, max) = commitsAmountByDate.with{ [it.entrySet().min{it.value}.value, it.entrySet().max{it.value}.value] }
+//		def changesSizeRelativeToAll_ByDate = commitsAmountByDate
+//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
+		fillTemplate("calendar_view_template.html",
+				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
+	}
+
+	static def changeSize(event) { event.toOffset - event.fromOffset }
+	static def changeSizeInLines(event) { event.toLine - event.fromLine }
 
 	static void fillTemplate(String template, String jsValue) {
 		def templateText = new File("html/${template}").readLines().join("\n")
