@@ -63,22 +63,23 @@ class Analysis {
 //		def totalChangeSizeByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
 //				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
-//		def (min, max) = [totalChangeSizeByDate.min{it.value}.value, totalChangeSizeByDate.max{it.value}.value]
+//
+//		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
 //		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] } // TODO try log scale
+//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
 //		fillTemplate("calendar_view_template.html",
 //				asJavaScriptLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
 
-		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
-		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-															.findAll{ it.value > 3 }.sort{-it.value}
-		println(pairCoOccurrences.entrySet().join("\n"))
-
-		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
-		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
-		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
-		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
-		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
+//		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
+//		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
+//															.findAll{ it.value > 3 }.sort{-it.value}
+//		println(pairCoOccurrences.entrySet().join("\n"))
+//
+//		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
+//		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
+//		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
+//		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+//		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
 
 		// TODO word cloud for commit messages
 //		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
