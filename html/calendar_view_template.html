@@ -12,16 +12,16 @@
         stroke: #000;
         stroke-width: 2px;
     }
-    .RdYlGn .q0-10{fill: rgb(255, 255, 255)}
-    .RdYlGn .q1-10{fill: rgb(234,241,247)}
-    .RdYlGn .q2-10{fill: rgb(214,227,238)}
-    .RdYlGn .q3-10{fill: rgb(193,213,230)}
-    .RdYlGn .q4-10{fill: rgb(173,199,222)}
-    .RdYlGn .q5-10{fill: rgb(152,186,213)}
-    .RdYlGn .q6-10{fill: rgb(132,172,205)}
-    .RdYlGn .q7-10{fill: rgb(111,158,197)}
-    .RdYlGn .q8-10{fill: rgb(91,144,188)}
-    .RdYlGn .q9-10{fill: rgb(70,130,180)} /*steelblue*/
+    .calendar-view .q0-10{fill: rgb(255, 255, 255)}
+    .calendar-view .q1-10{fill: rgb(234,241,247)}
+    .calendar-view .q2-10{fill: rgb(214,227,238)}
+    .calendar-view .q3-10{fill: rgb(193,213,230)}
+    .calendar-view .q4-10{fill: rgb(173,199,222)}
+    .calendar-view .q5-10{fill: rgb(152,186,213)}
+    .calendar-view .q6-10{fill: rgb(132,172,205)}
+    .calendar-view .q7-10{fill: rgb(111,158,197)}
+    .calendar-view .q8-10{fill: rgb(91,144,188)}
+    .calendar-view .q9-10{fill: rgb(70,130,180)} /*steelblue*/
 </style>
 <body>
 <span id="calendar-view"></span>
@@ -111,7 +111,7 @@ date,value,actualValue\n\
                 .enter().append("svg")
                 .attr("width", width)
                 .attr("height", height)
-                .attr("class", "RdYlGn")
+                .attr("class", "calendar-view")
                 .append("g")
                 .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
 
