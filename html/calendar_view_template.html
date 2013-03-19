@@ -89,11 +89,7 @@ date,value,actualValue\n\
 /*data_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
-        var data = d3.csv.parse(rawData[0]);
-        data = d3.nest()
-                .key(function(d) { return d.date; })
-                .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
-                .map(data);
+        var data = parseRawData(rawData[0]);
 
         var width = 960,
             height = 136,
@@ -124,7 +120,7 @@ date,value,actualValue\n\
                 .style("text-anchor", "middle")
                 .text(function(d) { return d; });
 
-        var rect = svg.selectAll(".day")
+        var dayRects = svg.selectAll(".day")
                 .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
                 .enter().append("rect")
                 .attr("class", "day")
@@ -133,7 +129,6 @@ date,value,actualValue\n\
                 .attr("x", function(d) { return week(d) * cellSize; })
                 .attr("y", function(d) { return day(d) * cellSize; })
                 .datum(dateFormat);
-        rect.append("title").text(function(d) { return d; });
 
         svg.selectAll(".month")
                 .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -141,10 +136,33 @@ date,value,actualValue\n\
                 .attr("class", "month")
                 .attr("d", monthPath);
 
-        rect.filter(function(d) { return d in data; })
-                .attr("class", function(d) { return "day " + color(data[d].value); })
-                .select("title")
-                .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
+        var dropDown = d3.select("#" + elementId).append("select");
+        dropDown.append("option").attr("value", "0").html("aaaa");
+        dropDown.append("option").attr("value", "1").html("bbbb");
+        dropDown.on("change", function() {
+            data = parseRawData(rawData[+this.value]);
+            updateDaysColor(dayRects, data);
+        });
+
+
+        updateDaysColor(dayRects, data);
+
+
+        function updateDaysColor(dayRects, data) {
+            dayRects.selectAll("title").text(function(d) { return d; });
+            dayRects.filter(function(d){ return d in data; })
+                    .attr("class", function(d) { return "day " + color(data[d].value); })
+                    .select("title")
+                    .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
+        }
+
+        function parseRawData(rawData) {
+            var data = d3.csv.parse(rawData);
+            return d3.nest()
+                   .key(function(d) { return d.date; })
+                   .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
+                   .map(data);
+        }
 
         function monthPath(t0) {
             var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
@@ -156,24 +174,6 @@ date,value,actualValue\n\
                     + "H" + (w1 + 1) * cellSize + "V" + 0
                     + "H" + (w0 + 1) * cellSize + "Z";
         }
-
-        var dropDown = d3.select("#" + elementId).append("select");
-        dropDown.append("option").attr("value", "0").html("aaaa");
-        dropDown.append("option").attr("value", "1").html("bbbb");
-        dropDown.on("change", function() {
-            data = d3.csv.parse(rawData[+this.value]);
-            data = d3.nest()
-                    .key(function(d) { return d.date; })
-                    .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
-                    .map(data);
-
-            rect.selectAll("title").text(function(d) { return d; });
-            rect.filter(function(d){ return d in data; })
-                    .attr("class", function(d) { return "day " + color(data[d].value); })
-                    .select("title")
-                    .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
-
-        })
     }
 
     drawCalendarChart("calendar-view", rawData);
