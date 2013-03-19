@@ -169,7 +169,7 @@ date,value,actualValue\n\
 
         var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
         var span = footerSpan.append("span").style({float: "right"});
-        span.append("label").html("Change size is measured in: ");
+        span.append("label").html("Change size measured in: ");
         var dropDown = span.append("select");
         dropDown.append("option").attr("value", "0").html("commits");
         dropDown.append("option").attr("value", "1").html("lines");

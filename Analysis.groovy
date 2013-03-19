@@ -80,29 +80,38 @@ class Analysis {
 	}
 
 	static void createCalendarViewOn(List events) {
-		def totalChangeSizeByDate = events
-				.groupBy{ floorToDay(it.revisionDate) }
-				.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
-		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] } }
-		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
+		def changeSizeInChars = {
+			def totalChangeSizeByDate = events
+					.groupBy{ floorToDay(it.revisionDate) }
+					.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
+			def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] } }
+			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+		}()
 
-//		def totalChangeSizeByDate = events
-//				.groupBy{ floorToDay(it.revisionDate) }
-//				.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
-//		def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
-//		def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
+		def changeSizeInLines = {
+			def totalChangeSizeByDate = events
+					.groupBy{ floorToDay(it.revisionDate) }
+			.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
+			def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
+			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
+					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+		}()
 
-//		def commitsAmountByDate = events
-//						.groupBy{ it.revision }.collect{ it.value.first() }
-//						.groupBy{ floorToDay(it.revisionDate) }
-//						.collectEntries{ [it.key, it.value.size()] }.sort()
-//		def (min, max) = commitsAmountByDate.with{ [it.entrySet().min{it.value}.value, it.entrySet().max{it.value}.value] }
-//		def changesSizeRelativeToAll_ByDate = commitsAmountByDate
-//				.collect{ [it.key, ((it.value - min + 0.000001) / (max - min)), it.value] }
-		fillTemplate("calendar_view_template.html",
-				asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"]))
+		def changeSizeInCommits = {
+			def commitsAmountByDate = events
+					.groupBy{ it.revision }.collect{ it.value.first() }
+			.groupBy{ floorToDay(it.revisionDate) }
+			.collectEntries{ [it.key, it.value.size()] }.sort()
+			def (min, max) = commitsAmountByDate.with{ [it.entrySet().min{it.value}.value, it.entrySet().max{it.value}.value] }
+			def changesSizeRelativeToAll_ByDate = commitsAmountByDate
+					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+		}()
+
+		fillTemplate("calendar_view_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
 	}
 
 	static def changeSize(event) { event.toOffset - event.fromOffset }
