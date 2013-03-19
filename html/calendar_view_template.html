@@ -119,7 +119,8 @@ date,value,actualValue\n\
 /*data_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
-        var data = parseRawData(rawData[0]);
+        var threshold = 100;
+        var data = parseRawData(rawData[0], threshold);
 
         var width = 960,
             height = 136,
@@ -170,13 +171,35 @@ date,value,actualValue\n\
 
         var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
         var span = footerSpan.append("span").style({float: "right"});
+        span.append("label").html("Color threshold: ");
+        span.append("button").text("-").on("click", function () {
+            threshold -= 5;
+            if (threshold < 0) threshold = 0;
+            console.log("threshold=" + threshold);
+            data = parseRawData(rawData[+this.value], threshold);
+            updateDaysColor(dayRects, data);
+        });
+        span.append("button").text("+").on("click", function () {
+            threshold += 5;
+            if (threshold > 100) threshold = 100;
+            console.log("threshold=" + threshold);
+            data = parseRawData(rawData[+this.value], threshold);
+            updateDaysColor(dayRects, data);
+        });
+        span.append("button").text("reset").on("click", function () {
+            threshold = 100;
+            console.log("threshold=" + threshold);
+            data = parseRawData(rawData[+this.value], threshold);
+            updateDaysColor(dayRects, data);
+        });
+        span.append("span").style({width: "20px", display: "inline-block"});
         span.append("label").html("Change size measured in: ");
         var dropDown = span.append("select");
         dropDown.append("option").attr("value", "0").html("commits");
         dropDown.append("option").attr("value", "1").html("lines");
         dropDown.append("option").attr("value", "2").html("characters");
         dropDown.on("change", function() {
-            data = parseRawData(rawData[+this.value]);
+            data = parseRawData(rawData[+this.value], threshold);
             updateDaysColor(dayRects, data);
         });
 
@@ -192,7 +215,7 @@ date,value,actualValue\n\
                     .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
         }
 
-        function parseRawData(rawData) {
+        function parseRawData(rawData, threshold) {
             var data = d3.csv.parse(rawData);
             return d3.nest()
                    .key(function(d) { return d.date; })
