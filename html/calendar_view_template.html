@@ -85,7 +85,37 @@ date,value,actualValue\n\
 07/03/2013,0.3736541100,138364\n\
 08/03/2013,0.1507097931,56306\n\
 09/03/2013,0.0024778232,1747\n\
-"]
+",
+"\
+date,value,actualValue\n\
+12/02/2013,1.0,123\n\
+13/02/2013,1.0,133038\n\
+14/02/2013,1.0,292470\n\
+15/02/2013,1.0,195956\n\
+16/02/2013,1.0,1502\n\
+17/02/2013,1.0,3384\n\
+18/02/2013,1.0,154524\n\
+19/02/2013,1.0000000000,0\n\
+20/02/2013,1.0,0\n\
+21/02/2013,1.0,172543\n\
+22/02/2013,0.1,113425\n\
+23/02/2013,0.1,13503\n\
+24/02/2013,0E-10,835\n\
+25/02/2013,0.3901674976,144442\n\
+26/02/2013,0.5331123579,197055\n\
+27/02/2013,0.3979215628,147296\n\
+28/02/2013,0.2520234198,93596\n\
+01/03/2013,0.3103392064,115060\n\
+02/03/2013,0.0209392363,8542\n\
+03/03/2013,0.0209093503,8531\n\
+04/03/2013,0.6013421542,222168\n\
+05/03/2013,0.3713827721,137528\n\
+06/03/2013,0.1826090500,68047\n\
+07/03/2013,0.3736541100,138364\n\
+08/03/2013,0.1507097931,56306\n\
+09/03/2013,0.0024778232,1747\n\
+"
+]
 /*data_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
@@ -106,7 +136,8 @@ date,value,actualValue\n\
         var color = d3.scale.quantize().domain([0.0, 1.0])
                 .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
-        var svg = d3.select("#" + elementId).selectAll("svg")
+        const rootElement = d3.select("#" + elementId);
+        var svg = rootElement.selectAll("svg")
                 .data(d3.range(2012, 2014))
                 .enter().append("svg")
                 .attr("width", width)
@@ -136,9 +167,13 @@ date,value,actualValue\n\
                 .attr("class", "month")
                 .attr("d", monthPath);
 
-        var dropDown = d3.select("#" + elementId).append("select");
-        dropDown.append("option").attr("value", "0").html("aaaa");
-        dropDown.append("option").attr("value", "1").html("bbbb");
+        var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
+        var span = footerSpan.append("span").style({float: "right"});
+        span.append("label").html("Change size is measured in: ");
+        var dropDown = span.append("select");
+        dropDown.append("option").attr("value", "0").html("commits");
+        dropDown.append("option").attr("value", "1").html("lines");
+        dropDown.append("option").attr("value", "2").html("characters");
         dropDown.on("change", function() {
             data = parseRawData(rawData[+this.value]);
             updateDaysColor(dayRects, data);
