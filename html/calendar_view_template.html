@@ -24,9 +24,10 @@
     .RdYlGn .q9-10{fill: rgb(70,130,180)} /*steelblue*/
 </style>
 <body>
+<span id="calendar-view"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData = /*data_placeholder*/"\
+    var rawData1 = /*data_placeholder*/"\
 date,value,actualValue\n\
 12/02/2013,0.1538559765,57464\n\
 13/02/2013,0.3591838398,133038\n\
@@ -56,76 +57,78 @@ date,value,actualValue\n\
 09/03/2013,0.0024778232,1747\n\
 "/*data_placeholder*/;
 
-    var data = d3.csv.parse(rawData);
-    data = d3.nest()
-            .key(function(d) { return d.date; })
-            .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: parseInt(d[0].actualValue)}; })
-            .map(data);
+    function drawCalendarChart(elementId, rawData) {
+        var data = d3.csv.parse(rawData);
+        data = d3.nest()
+                .key(function(d) { return d.date; })
+                .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
+                .map(data);
 
-    var width = 960,
-        height = 136,
-        cellSize = 17;
+        var width = 960,
+            height = 136,
+            cellSize = 17;
 
-    var day = d3.time.format("%w"),
-        week = d3.time.format("%U"),
-        percent = d3.format(".1%");
-    var dateFormat = d3.time.format("%d/%m/%Y");
-    var valueFormat = function(n) {
-        var s = d3.format(",")(n);
-        return s.length < 6 ? s : d3.format("s")(n);
-    };
+        var day = d3.time.format("%w"),
+            week = d3.time.format("%U"),
+            percent = d3.format(".1%");
+        var dateFormat = d3.time.format("%d/%m/%Y");
+        var valueFormat = function(n) {
+            var s = d3.format(",")(n);
+            return s.length < 6 ? s : d3.format("s")(n);
+        };
 
-    var color = d3.scale.quantize().domain([0.0, 1.0])
-            .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
+        var color = d3.scale.quantize().domain([0.0, 1.0])
+                .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
-    var svg = d3.select("body").selectAll("svg")
-            .data(d3.range(2012, 2014))
-            .enter().append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("class", "RdYlGn")
-            .append("g")
-            .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
+        var svg = d3.select("#" + elementId).selectAll("svg")
+                .data(d3.range(2012, 2014))
+                .enter().append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("class", "RdYlGn")
+                .append("g")
+                .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
 
-    svg.append("text")
-            .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
-            .style("text-anchor", "middle")
-            .text(function(d) { return d; });
+        svg.append("text")
+                .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+                .style("text-anchor", "middle")
+                .text(function(d) { return d; });
 
-    var rect = svg.selectAll(".day")
-            .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-            .enter().append("rect")
-            .attr("class", "day")
-            .attr("width", cellSize)
-            .attr("height", cellSize)
-            .attr("x", function(d) { return week(d) * cellSize; })
-            .attr("y", function(d) { return day(d) * cellSize; })
-            .datum(dateFormat);
+        var rect = svg.selectAll(".day")
+                .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+                .enter().append("rect")
+                .attr("class", "day")
+                .attr("width", cellSize)
+                .attr("height", cellSize)
+                .attr("x", function(d) { return week(d) * cellSize; })
+                .attr("y", function(d) { return day(d) * cellSize; })
+                .datum(dateFormat);
 
-    rect.append("title").text(function(d) { return d; });
+        rect.append("title").text(function(d) { return d; });
 
-    svg.selectAll(".month")
-            .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
-            .enter().append("path")
-            .attr("class", "month")
-            .attr("d", monthPath);
+        svg.selectAll(".month")
+                .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+                .enter().append("path")
+                .attr("class", "month")
+                .attr("d", monthPath);
 
-    rect.filter(function(d) { return d in data; })
-            .attr("class", function(d) { return "day " + color(data[d].value); })
-            .select("title")
-            .text(function(d) { return d + ", change size: " + valueFormat(data[d].actualValue); });
+        rect.filter(function(d) { return d in data; })
+                .attr("class", function(d) { return "day " + color(data[d].value); })
+                .select("title")
+                .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
 
-    function monthPath(t0) {
-        var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
-            d0 = +day(t0), w0 = +week(t0),
-            d1 = +day(t1), w1 = +week(t1);
-        return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
-             + "H" + w0 * cellSize + "V" + 7 * cellSize
-             + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
-             + "H" + (w1 + 1) * cellSize + "V" + 0
-             + "H" + (w0 + 1) * cellSize + "Z";
+        function monthPath(t0) {
+            var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
+                    d0 = +day(t0), w0 = +week(t0),
+                    d1 = +day(t1), w1 = +week(t1);
+            return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
+                    + "H" + w0 * cellSize + "V" + 7 * cellSize
+                    + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
+                    + "H" + (w1 + 1) * cellSize + "V" + 0
+                    + "H" + (w0 + 1) * cellSize + "Z";
+        }
     }
 
-    d3.select(self.frameElement).style("height", "2910px");
+    drawCalendarChart("calendar-view", rawData1);
 
 </script>
