@@ -160,6 +160,7 @@ date,value,actualValue\n\
                 .attr("x", function(d) { return week(d) * cellSize; })
                 .attr("y", function(d) { return day(d) * cellSize; })
                 .datum(dateFormat);
+        dayRects.append("title").text(function(d) { return d; });
 
         svg.selectAll(".month")
                 .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
