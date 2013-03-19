@@ -27,7 +27,8 @@
 <span id="calendar-view"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData1 = /*data_placeholder*/"\
+    var rawData = /*data_placeholder*/
+["\
 date,value,actualValue\n\
 12/02/2013,0.1538559765,57464\n\
 13/02/2013,0.3591838398,133038\n\
@@ -55,10 +56,40 @@ date,value,actualValue\n\
 07/03/2013,0.3736541100,138364\n\
 08/03/2013,0.1507097931,56306\n\
 09/03/2013,0.0024778232,1747\n\
-"/*data_placeholder*/;
+",
+"\
+date,value,actualValue\n\
+12/02/2013,0.0,123\n\
+13/02/2013,0.1,133038\n\
+14/02/2013,0.1,292470\n\
+15/02/2013,0.1,195956\n\
+16/02/2013,0.1,1502\n\
+17/02/2013,0.1,3384\n\
+18/02/2013,0.1,154524\n\
+19/02/2013,1.0000000000,0\n\
+20/02/2013,0.1,0\n\
+21/02/2013,0.1,172543\n\
+22/02/2013,0.1,113425\n\
+23/02/2013,0.1,13503\n\
+24/02/2013,0E-10,835\n\
+25/02/2013,0.3901674976,144442\n\
+26/02/2013,0.5331123579,197055\n\
+27/02/2013,0.3979215628,147296\n\
+28/02/2013,0.2520234198,93596\n\
+01/03/2013,0.3103392064,115060\n\
+02/03/2013,0.0209392363,8542\n\
+03/03/2013,0.0209093503,8531\n\
+04/03/2013,0.6013421542,222168\n\
+05/03/2013,0.3713827721,137528\n\
+06/03/2013,0.1826090500,68047\n\
+07/03/2013,0.3736541100,138364\n\
+08/03/2013,0.1507097931,56306\n\
+09/03/2013,0.0024778232,1747\n\
+"]
+/*data_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
-        var data = d3.csv.parse(rawData);
+        var data = d3.csv.parse(rawData[0]);
         data = d3.nest()
                 .key(function(d) { return d.date; })
                 .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
@@ -69,8 +100,7 @@ date,value,actualValue\n\
             cellSize = 17;
 
         var day = d3.time.format("%w"),
-            week = d3.time.format("%U"),
-            percent = d3.format(".1%");
+            week = d3.time.format("%U");
         var dateFormat = d3.time.format("%d/%m/%Y");
         var valueFormat = function(n) {
             var s = d3.format(",")(n);
@@ -103,7 +133,6 @@ date,value,actualValue\n\
                 .attr("x", function(d) { return week(d) * cellSize; })
                 .attr("y", function(d) { return day(d) * cellSize; })
                 .datum(dateFormat);
-
         rect.append("title").text(function(d) { return d; });
 
         svg.selectAll(".month")
@@ -127,8 +156,26 @@ date,value,actualValue\n\
                     + "H" + (w1 + 1) * cellSize + "V" + 0
                     + "H" + (w0 + 1) * cellSize + "Z";
         }
+
+        var dropDown = d3.select("#" + elementId).append("select");
+        dropDown.append("option").attr("value", "0").html("aaaa");
+        dropDown.append("option").attr("value", "1").html("bbbb");
+        dropDown.on("change", function() {
+            data = d3.csv.parse(rawData[+this.value]);
+            data = d3.nest()
+                    .key(function(d) { return d.date; })
+                    .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
+                    .map(data);
+
+            rect.selectAll("title").text(function(d) { return d; });
+            rect.filter(function(d){ return d in data; })
+                    .attr("class", function(d) { return "day " + color(data[d].value); })
+                    .select("title")
+                    .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
+
+        })
     }
 
-    drawCalendarChart("calendar-view", rawData1);
+    drawCalendarChart("calendar-view", rawData);
 
 </script>
