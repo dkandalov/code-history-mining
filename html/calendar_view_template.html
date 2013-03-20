@@ -217,10 +217,26 @@ date,value,actualValue\n\
 
         function parseRawData(rawData, threshold) {
             var data = d3.csv.parse(rawData);
+            data.forEach(function (d) { d.actualValue = +d.actualValue; });
+            var toPercents = toPercentsFunction(data, threshold);
+
             return d3.nest()
                    .key(function(d) { return d.date; })
-                   .rollup(function(d) { return {value: parseFloat(d[0].value), actualValue: +d[0].actualValue}; })
+                   .rollup(function(d) { return {value: toPercents(d[0].actualValue), actualValue: d[0].actualValue}; })
                    .map(data);
+        }
+
+        function toPercentsFunction(data, threshold) {
+            var sortedData = data.sort(function (a, b) { return a.actualValue < b.actualValue ? 1 : -1; });
+            var length = sortedData.length * (threshold / 100);
+            while (sortedData.length > length) sortedData.shift();
+
+            var min = d3.min(sortedData, function (d) { return d.actualValue; });
+            var max = d3.max(sortedData, function (d) { return d.actualValue; });
+            var rangeSize = (max - min > 0 ? max - min : 0.0000001);
+            return function (value) {
+                return (value - min) / rangeSize;
+            };
         }
 
         function monthPath(t0) {

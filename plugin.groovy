@@ -63,7 +63,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 		}
 
 		def now = new Date()
-		def daysOfHistory = 400
+		def daysOfHistory = 450
 		def historyRequestSizeInDays = 1
 
 		if (storage.hasNoEvents()) {
