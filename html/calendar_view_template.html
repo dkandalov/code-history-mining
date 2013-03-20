@@ -120,7 +120,8 @@ date,actualValue\n\
 
     function drawCalendarChart(elementId, rawData) {
         var threshold = 95;
-        var data = parseRawData(rawData[0], threshold);
+        var rawDataIndex = 0;
+        var data = parseRawData(rawData[rawDataIndex], threshold);
 
         var width = 960,
             height = 136,
@@ -176,20 +177,20 @@ date,actualValue\n\
             threshold -= 5;
             if (threshold < 0) threshold = 0;
             console.log("threshold=" + threshold);
-            data = parseRawData(rawData[+this.value], threshold);
+            data = parseRawData(rawData[rawDataIndex], threshold);
             updateDaysColor(dayRects, data);
         });
         span.append("button").text("+").on("click", function () {
             threshold += 5;
             if (threshold > 100) threshold = 100;
             console.log("threshold=" + threshold);
-            data = parseRawData(rawData[+this.value], threshold);
+            data = parseRawData(rawData[rawDataIndex], threshold);
             updateDaysColor(dayRects, data);
         });
         span.append("button").text("reset").on("click", function () {
             threshold = 95;
             console.log("threshold=" + threshold);
-            data = parseRawData(rawData[+this.value], threshold);
+            data = parseRawData(rawData[rawDataIndex], threshold);
             updateDaysColor(dayRects, data);
         });
         span.append("span").style({width: "20px", display: "inline-block"});
@@ -199,7 +200,8 @@ date,actualValue\n\
         dropDown.append("option").attr("value", "1").html("lines");
         dropDown.append("option").attr("value", "2").html("characters");
         dropDown.on("change", function() {
-            data = parseRawData(rawData[+this.value], threshold);
+            rawDataIndex = +this.value;
+            data = parseRawData(rawData[rawDataIndex], threshold);
             updateDaysColor(dayRects, data);
         });
 
