@@ -229,12 +229,12 @@ date,actualValue\n\
         }
 
         function toPercentsFunction(data, threshold) {
-            var sortedData = data.sort(function (a, b) { return a.actualValue < b.actualValue ? 1 : -1; });
-            var length = sortedData.length * (threshold / 100);
-            while (sortedData.length > length) sortedData.shift();
+            data.sort(function (a, b) { return a.actualValue < b.actualValue ? 1 : -1; });
+            var length = data.length * (threshold / 100);
+            var slicedData = data.slice(data.length - length, data.length);
 
-            var min = d3.min(sortedData, function (d) { return d.actualValue; });
-            var max = d3.max(sortedData, function (d) { return d.actualValue; });
+            var min = d3.min(slicedData, function (d) { return d.actualValue; });
+            var max = d3.max(slicedData, function (d) { return d.actualValue; });
             var rangeSize = (max - min > 0 ? max - min : 0.0000001);
             return function (value) {
                 return (value - min) / rangeSize;
