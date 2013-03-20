@@ -121,10 +121,12 @@
         </p>
         <ul>
             <li>transforming VCS history into .csv format (csv because it's easy to read and analyze afterwards)</li>
-            <li>analyzing history and displaying results using d3.js (requires a browser)</li>
+            <li>analyzing history and displaying results using d3.js (requires a browser).
+                This part is currently a separate Groovy script.</li>
         </ul>
-        It is <b>work-in-progress</b>.
         Original idea is taken from <a href="https://github.com/michaelfeathers/delta-flora">Delta Flora</a> by Michael Feathers.
+        <br/>
+        WARNING: this is work-in-progress.
 
         <h3>Why?</h3>
         <p>
@@ -186,9 +188,10 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
 
         <h3>What can be improved</h3>
         <ul>
-            <li>in theory it should work with any version control setup in IntelliJ project but was only
-                tested with Git. Potential problems might be that it's too slow with SVN or API works in a different way.</li>
-            <li>it's a bit slow even with Git and the bottleneck is.. Git. There must be a way to speed it up.</li>
+            <li>it's quite slow at transforming project history into .csv event with Git. Doing for a big project takes a lot of time.</li>
+            <li>there seems to be a memory leak somewhere, either this plugin, intellij-eval or in IntelliJ itself.</li>
+            <li>in theory it should work with any version control setup in IntelliJ project but was only tested with Git.
+                Potential problems might be that it's too slow with SVN or API works in a different way.</li>
             <li>at the moment it only looks at Java (Groovy) syntax tree to figure out method name for a change.
                 It shouldn't be difficult to support other languages (those that have IntelliJ plugins).</li>
         </ul>
@@ -198,7 +201,8 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
     <footer class="inner">
-        <p class="copyright">Delta-flora for IntelliJ is being developed by <a href="https://github.com/dkandalov">Dmitry Kandalov</a></p>
+        <p class="copyright">Please feel free to drop <a href="https://twitter.com/dmitrykandalov">me</a> a line or add on
+            <a href="https://github.com/dkandalov">GitHub</a></p>
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
     </footer>
 </div>
