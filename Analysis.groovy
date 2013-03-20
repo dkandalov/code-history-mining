@@ -84,31 +84,25 @@ class Analysis {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
 					.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
-			def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] } }
-			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
 		}()
 
 		def changeSizeInLines = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-			.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
-			def (min, max) = totalChangeSizeByDate.values().sort().with{ it.take((int) it.size() * 0.95).with{ [it.min(), it.max()] }}
-			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate
-					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+					.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
+			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
 		}()
 
 		def changeSizeInCommits = {
 			def commitsAmountByDate = events
 					.groupBy{ it.revision }.collect{ it.value.first() }
-			.groupBy{ floorToDay(it.revisionDate) }
-			.collectEntries{ [it.key, it.value.size()] }.sort()
-			def (min, max) = commitsAmountByDate.with{ [it.entrySet().min{it.value}.value, it.entrySet().max{it.value}.value] }
-			def changesSizeRelativeToAll_ByDate = commitsAmountByDate
-					.collect{ [it.key, ((it.value - min + 0.000001) / (max - min + 0.000001)), it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "value", "actualValue"])
+					.groupBy{ floorToDay(it.revisionDate) }
+					.collectEntries{ [it.key, it.value.size()] }.sort()
+			def changesSizeRelativeToAll_ByDate = commitsAmountByDate.collect{ [it.key, it.value] }
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
 		}()
 
 		fillTemplate("calendar_view_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
