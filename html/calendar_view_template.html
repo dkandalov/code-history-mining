@@ -119,7 +119,7 @@ date,actualValue\n\
 /*data_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
-        var threshold = 100;
+        var threshold = 95;
         var data = parseRawData(rawData[0], threshold);
 
         var width = 960,
@@ -187,7 +187,7 @@ date,actualValue\n\
             updateDaysColor(dayRects, data);
         });
         span.append("button").text("reset").on("click", function () {
-            threshold = 100;
+            threshold = 95;
             console.log("threshold=" + threshold);
             data = parseRawData(rawData[+this.value], threshold);
             updateDaysColor(dayRects, data);
