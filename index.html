@@ -144,7 +144,8 @@
         </ul>
 
         <h3>Examples</h3>
-        <h6>Commits calendar view (GitHub-style)</h6>
+        These examples are based on <a href="https://github.com/JetBrains/intellij-community">IntelliJ CE</a> source code.
+        <h6>Changes calendar view (almost GitHub-style)</h6>
         <p id="calendar-view"></p>
         <br/>
         <h6>Amount of commits per day</h6>
@@ -1450,7 +1451,7 @@ function drawCalendarChart(elementId, rawData) {
     var data = parseRawData(rawData[rawDataIndex], threshold);
 
     var width = 800,
-            height = 136,
+            height = 116,
             cellSize = 14;
 
     var day = d3.time.format("%w"),
