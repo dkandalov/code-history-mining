@@ -27,11 +27,11 @@ class Analysis {
 			}
 		}
 
-//		def commitsAmountByDate = events
-//						.groupBy{ it.revision }.collect{ it.value[0] }
-//						.groupBy{ floorToDay(it.revisionDate) }
-//						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-//		fillTemplate("commit_count_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "amount of commits"]))
+		def commitsAmountByDate = events
+						.groupBy{ it.revision }.collect{ it.value[0] }
+						.groupBy{ floorToDay(it.revisionDate) }
+						.collect{ [it.key, it.value.size()] }.sort{it[0]}
+		fillTemplate("commit_count_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "amount of commits"]))
 //
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
@@ -60,7 +60,7 @@ class Analysis {
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InFiles , ["commit size"]))
 
-		createCalendarViewOn(events)
+//		createCalendarViewOn(events)
 
 //		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 //		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
