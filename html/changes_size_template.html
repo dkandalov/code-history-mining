@@ -98,13 +98,14 @@ date,changes size\n\
 
     var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("body").append("svg") // TODO use targetElementId
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     svg.append("defs").append("clipPath").attr("id", "chartClip")
             .append("rect").attr("width", width).attr("height", height);
+
+    var zoomedView = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var data = d3.csv.parse(rawData);
     data.forEach(function (d) {
@@ -123,12 +124,12 @@ date,changes size\n\
     barWidth = Math.floor(barWidth);
 
 
-    svg.append("g")
+    zoomedView.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
 
-    svg.append("g")
+    zoomedView.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
@@ -138,7 +139,7 @@ date,changes size\n\
             .style("text-anchor", "end")
             .text(yAxisLabel);
 
-    svg.selectAll(".bar")
+    zoomedView.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
@@ -153,8 +154,10 @@ date,changes size\n\
                         yAxisLabel + ": " + valueFormat(d[value]);
             });
 
-    svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
+    var brushFooter = svg.append("g")
+            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+    brushFooter.append("g")
         .selectAll(".bar2")
             .data(data)
             .enter().append("rect")
@@ -165,11 +168,9 @@ date,changes size\n\
             .attr("height", function (d) { return height2 - y2(d[value]); })
             .append("title");
 
-    var context = svg.append("g")
-            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-    context.append("g")
+    brushFooter.append("g")
         .attr("class", "x brush")
-        .call(brush) // TODO not aligned with ".bar2"
+        .call(brush)
         .selectAll("rect")
         .attr("y", -6)
         .attr("height", height2 + 7);
@@ -180,11 +181,11 @@ date,changes size\n\
         x.domain(dom);
         barWidth = width / d3.time.days(dom[0], dom[1]).length;
         barWidth = Math.floor(barWidth);
-        svg.selectAll(".bar")
+        zoomedView.selectAll(".bar")
                 .data(data)
                 .attr("x", function (d) { return x(d.date); })
                 .attr("width", barWidth);
-        svg.select(".x.axis").call(xAxis);
+        zoomedView.select(".x.axis").call(xAxis);
     }
 
 </script>
