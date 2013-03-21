@@ -31,12 +31,12 @@ class Analysis {
 						.groupBy{ it.revision }.collect{ it.value[0] }
 						.groupBy{ floorToDay(it.revisionDate) }
 						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		fillTemplate("commit_count_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "amount of commits"]))
-//
+		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "changes size"]))
+
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
-//		fillTemplate("changes_size_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+//		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changes size"]))
 
 //		def authorContributionByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
