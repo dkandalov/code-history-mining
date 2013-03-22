@@ -75,7 +75,6 @@ date,changeSize\n\
 "/*data_placeholder*/;
 
     function drawChangeSizeChart(rawData) {
-        const value = "changeSize";  // TODO use property instead?
         const xAxisLabel = "Date";
         const yAxisLabel = "Change size";
 
@@ -113,13 +112,13 @@ date,changeSize\n\
         var data = d3.csv.parse(rawData);
         data.forEach(function (d) {
             d.date = dateFormat.parse(d.date);
-            d[value] = parseInt(d[value]);
+            d.changeSize = parseInt(d.changeSize);
         });
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
         x.domain([fromDate, d3.time.day.offset(toDate, 1)]);
-        y.domain([0, d3.max(data, function (d) { return d[value]; })]);
+        y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
         x2.domain(x.domain());
         y2.domain(y.domain());
 
@@ -149,12 +148,12 @@ date,changeSize\n\
                 .attr("clip-path", "url(#chartClip)")
                 .attr("x", function (d) { return x(d.date); })
                 .attr("width", barWidth)
-                .attr("y", function (d) { return y(d[value]); })
-                .attr("height", function (d) { return height - y(d[value]); })
+                .attr("y", function (d) { return y(d.changeSize); })
+                .attr("height", function (d) { return height - y(d.changeSize); })
                 .append("title")
                 .text(function (d) {
                     return xAxisLabel + ": " + dateFormat(d.date) + "\n" +
-                            yAxisLabel + ": " + valueFormat(d[value]);
+                            yAxisLabel + ": " + valueFormat(d.changeSize);
                 });
 
         var brushFooter = svg.append("g")
@@ -167,8 +166,8 @@ date,changeSize\n\
                 .attr("class", "bar")
                 .attr("x", function (d) { return x2(d.date); })
                 .attr("width", barWidth)
-                .attr("y", function (d) { return y2(d[value]); })
-                .attr("height", function (d) { return height2 - y2(d[value]); })
+                .attr("y", function (d) { return y2(d.changeSize); })
+                .attr("height", function (d) { return height2 - y2(d.changeSize); })
                 .append("title");
 
         brushFooter.append("g")
