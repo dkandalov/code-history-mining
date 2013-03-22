@@ -109,10 +109,9 @@ date,changeSize\n\
         var zoomedView = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var data = d3.csv.parse(rawData);
-        data.forEach(function (d) {
-            d.date = dateFormat.parse(d.date);
-            d.changeSize = parseInt(d.changeSize);
+        var data = d3.csv.parse(rawData).map(function(d) { return {
+            date: dateFormat.parse(d.date),
+            changeSize: parseInt(d.changeSize)};
         });
 
         var fromDate = data[0].date;
@@ -153,7 +152,7 @@ date,changeSize\n\
                 .append("title")
                 .text(function (d) {
                     return xAxisLabel + ": " + dateFormat(d.date) + "\n" +
-                            yAxisLabel + ": " + valueFormat(d.changeSize);
+                           yAxisLabel + ": " + valueFormat(d.changeSize);
                 });
 
         var brushFooter = svg.append("g")
@@ -179,15 +178,18 @@ date,changeSize\n\
 
 
         function onBrush() {
-            var dom = brush.empty() ? x2.domain() : brush.extent();
-            x.domain(dom);
-            barWidth = width / d3.time.days(dom[0], dom[1]).length;
+            var domain = brush.empty() ? x2.domain() : brush.extent();
+            x.domain(domain);
+            barWidth = width / nonZero(d3.time.days(domain[0], domain[1]).length); // could be "Infinity" on brush start
             barWidth = Math.floor(barWidth);
             zoomedView.selectAll(".bar")
                     .data(data)
                     .attr("x", function (d) { return x(d.date); })
                     .attr("width", barWidth);
             zoomedView.select(".x.axis").call(xAxis);
+        }
+        function nonZero(length) {
+            return (length > 0 ? length : 0.0000001);
         }
     }
 
