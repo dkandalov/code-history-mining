@@ -134,13 +134,15 @@ date,changeSize\n\
             var s = d3.format(",")(n);
             return s.length < 6 ? s : d3.format("s")(n);
         };
+        var minYear = d3.min(Object.keys(data), function(d) { return dateFormat.parse(d).getFullYear(); });
+        var maxYear = d3.max(Object.keys(data), function(d) { return dateFormat.parse(d).getFullYear(); });
 
         var color = d3.scale.quantize().domain([0.0, 1.0])
                 .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
         const rootElement = d3.select("#" + elementId);
         var svg = rootElement.selectAll("svg")
-                .data(d3.range(2012, 2014))
+                .data(d3.range(minYear, maxYear + 1))
                 .enter().append("svg")
                 .attr("width", width)
                 .attr("height", height)
