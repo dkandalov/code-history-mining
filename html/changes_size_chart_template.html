@@ -23,6 +23,7 @@
     }
 </style>
 <body>
+<span id="changes-size-view"></span>
 <script src="d3.v3.min.js"></script>
 <script>
     var rawData = /*data_placeholder*/"\
@@ -74,10 +75,7 @@ date,changeSize\n\
 05/03/2013,284\
 "/*data_placeholder*/;
 
-    function drawChangeSizeChart(rawData) {
-        const xAxisLabel = "Date";
-        const yAxisLabel = "Change size";
-
+    function drawChangeSizeChart(elementId, rawData) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
                 margin2 = {top: 430, right: 20, bottom: 30, left: 40},
                 width = 960 - margin.left - margin.right,
@@ -97,10 +95,12 @@ date,changeSize\n\
         var xAxis = d3.svg.axis().scale(x).orient("bottom");
         var xAxis2 = d3.svg.axis().scale(x2).orient("bottom");
         var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
+        var xAxisLabel = "Date";
+        var yAxisLabel = "Change size";
 
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
-        var svg = d3.select("body").append("svg") // TODO use targetElementId
+        var svg = d3.select("#" + elementId).append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
         svg.append("defs").append("clipPath").attr("id", "chartClip")
@@ -191,7 +191,7 @@ date,changeSize\n\
         }
     }
 
-    drawChangeSizeChart(rawData);
+    drawChangeSizeChart("changes-size-view", rawData);
 
 </script>
 </body>
