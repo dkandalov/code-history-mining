@@ -230,7 +230,7 @@ date,changeSize\n\
                    .map(data);
         }
 
-        function toPercentsFunction(data, threshold) {
+        function toPercentsFunction(data, threshold) { // TODO d3.quantile
             data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
             var length = data.length * (threshold / 100);
             var slicedData = data.slice(data.length - length, data.length);
