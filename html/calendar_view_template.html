@@ -29,7 +29,7 @@
 <script>
     var rawData = /*data_placeholder*/
 ["\
-date,actualValue\n\
+date,changeSize\n\
 12/02/2013,57464\n\
 13/02/2013,133038\n\
 14/02/2013,292470\n\
@@ -58,7 +58,7 @@ date,actualValue\n\
 09/03/2013,1747\n\
 ",
 "\
-date,actualValue\n\
+date,changeSize\n\
 12/02/2013,123\n\
 13/02/2013,133038\n\
 14/02/2013,292470\n\
@@ -87,7 +87,7 @@ date,actualValue\n\
 09/03/2013,1747\n\
 ",
 "\
-date,actualValue\n\
+date,changeSize\n\
 12/02/2013,123\n\
 13/02/2013,133038\n\
 14/02/2013,292470\n\
@@ -214,27 +214,27 @@ date,actualValue\n\
             dayRects.filter(function(d){ return d in data; })
                     .attr("class", function(d) { return "day " + color(data[d].value); })
                     .select("title")
-                    .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].actualValue); });
+                    .text(function(d) { return "Date: " + d + "\nChange size: " + valueFormat(data[d].changeSize); });
         }
 
         function parseRawData(rawData, threshold) {
             var data = d3.csv.parse(rawData);
-            data.forEach(function (d) { d.actualValue = +d.actualValue; });
+            data.forEach(function (d) { d.changeSize = +d.changeSize; });
             var toPercents = toPercentsFunction(data, threshold);
 
             return d3.nest()
                    .key(function(d) { return d.date; })
-                   .rollup(function(d) { return {value: toPercents(d[0].actualValue), actualValue: d[0].actualValue}; })
+                   .rollup(function(d) { return {value: toPercents(d[0].changeSize), changeSize: d[0].changeSize}; })
                    .map(data);
         }
 
         function toPercentsFunction(data, threshold) {
-            data.sort(function (a, b) { return a.actualValue < b.actualValue ? 1 : -1; });
+            data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
             var length = data.length * (threshold / 100);
             var slicedData = data.slice(data.length - length, data.length);
 
-            var min = d3.min(slicedData, function (d) { return d.actualValue; });
-            var max = d3.max(slicedData, function (d) { return d.actualValue; });
+            var min = d3.min(slicedData, function (d) { return d.changeSize; });
+            var max = d3.max(slicedData, function (d) { return d.changeSize; });
             var rangeSize = (max - min > 0 ? max - min : 0.0000001);
             return function (value) {
                 return (value - min) / rangeSize;

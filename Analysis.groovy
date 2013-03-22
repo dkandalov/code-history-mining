@@ -31,12 +31,12 @@ class Analysis {
 						.groupBy{ it.revision }.collect{ it.value[0] }
 						.groupBy{ floorToDay(it.revisionDate) }
 						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "changes size"]))
+		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"]))
 
 //		def totalChangeSizeByDate = events
 //						.groupBy{ floorToDay(it.revisionDate) }
 //						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
-//		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changes size"]))
+//		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changeSize"]))
 
 //		def authorContributionByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
@@ -51,7 +51,7 @@ class Analysis {
 //				.entrySet().toList().sort{ -authorsContributions[it.key] }.take(5).collectMany { entry ->
 //					entry.value.collect { [it.key, entry.key, it.value] }
 //				}
-//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changes size"]))
+//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changeSize"]))
 
 //		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InOffsets , ["commit size"]))
@@ -85,7 +85,7 @@ class Analysis {
 					.groupBy{ floorToDay(it.revisionDate) }
 					.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
 
 		def changeSizeInLines = {
@@ -93,7 +93,7 @@ class Analysis {
 					.groupBy{ floorToDay(it.revisionDate) }
 					.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
 
 		def changeSizeInCommits = {
@@ -102,7 +102,7 @@ class Analysis {
 					.groupBy{ floorToDay(it.revisionDate) }
 					.collectEntries{ [it.key, it.value.size()] }.sort()
 			def changesSizeRelativeToAll_ByDate = commitsAmountByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "actualValue"])
+			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
 
 		fillTemplate("calendar_view_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
