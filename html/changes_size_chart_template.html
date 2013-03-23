@@ -116,14 +116,7 @@ date,changeSize\n\
         });
 
         var timeInterval = d3.time.day;
-        var data = d3.values(d3.nest()
-                .key(function(d) { return timeInterval.floor(d.date); })
-                .rollup(function(days){
-                    var totalChangeSize = d3.sum(days, function(d){return d.changeSize;});
-                    var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                    return {date: date, changeSize: totalChangeSize };
-                })
-                .map(daysData)).filter(function(d) { return d.changeSize > 0; });
+        var data = aggregate(daysData, timeInterval);
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -131,10 +124,7 @@ date,changeSize\n\
         y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
         x2.domain(x.domain());
         y2.domain(y.domain());
-
-        var barWidth = width / timeInterval.range(fromDate, toDate).length;
-        barWidth = Math.floor(barWidth);
-
+        var barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
         zoomedView.append("g")
                 .attr("class", "x axis")
@@ -151,20 +141,7 @@ date,changeSize\n\
                 .style("text-anchor", "end")
                 .text(yAxisLabel);
 
-        zoomedView.selectAll(".bar")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("clip-path", "url(#chartClip)")
-                .attr("x", function (d) { return x(d.date); })
-                .attr("width", barWidth)
-                .attr("y", function (d) { return y(d.changeSize); })
-                .attr("height", function (d) { return height - y(d.changeSize); })
-                .append("title")
-                .text(function (d) {
-                    return xAxisLabel + ": " + dateFormat(d.date) + "\n" +
-                           yAxisLabel + ": " + valueFormat(d.changeSize);
-                });
+        createBarsOn(zoomedView);
 
         var brushFooter = svg.append("g")
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
@@ -193,23 +170,35 @@ date,changeSize\n\
         var dropDown = span.append("select");
         dropDown.append("option").attr("value", "day").html("days");
         dropDown.append("option").attr("value", "monday").html("weeks");
-        dropDown.on("change", function() {
+
+        dropDown.on("change", function() { // TODO this update ignores brush selection
             timeInterval = d3.time[this.value];
-            data = d3.values(d3.nest()
-                    .key(function(d) { return timeInterval.floor(d.date); })
-                    .rollup(function(days){
-                        var totalChangeSize = d3.sum(days, function(d){return d.changeSize;});
+
+            data = aggregate(daysData, timeInterval);
+            x.domain([fromDate, timeInterval.offset(toDate, 1)]);
+            y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
+            barWidth = barWidthFor(timeInterval, fromDate, toDate);
+
+            createBarsOn(zoomedView);
+            zoomedView.select(".y.axis").call(yAxis);
+        });
+
+        function aggregate(daysData, timeInterval) {
+            if (timeInterval == d3.time.day) return daysData;
+            return d3.values(d3.nest()
+                    .key(function (d) { return timeInterval.floor(d.date); })
+                    .rollup(function (days) {
+                        var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
                         var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
                         return {date: date, changeSize: totalChangeSize };
                     })
-                    .map(daysData)).filter(function(d) { return d.changeSize > 0; });
-            x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
-
-            barWidth = width / timeInterval.range(fromDate, toDate).length;
-            barWidth = Math.floor(barWidth);
-            zoomedView.selectAll(".bar").remove();
-            zoomedView.selectAll(".bar")
+                    .map(daysData)).filter(function (d) {
+                        return d.changeSize > 0;
+                    });
+        }
+        function createBarsOn(element) {
+            element.selectAll(".bar").remove();
+            element.selectAll(".bar")
                     .data(data)
                     .enter().append("rect")
                     .attr("class", "bar")
@@ -223,20 +212,20 @@ date,changeSize\n\
                         return xAxisLabel + ": " + dateFormat(d.date) + "\n" +
                                yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
-            zoomedView.select(".y.axis").call(yAxis);
-        });
-
-
+        }
         function onBrush() {
             var domain = brush.empty() ? x2.domain() : brush.extent();
             x.domain(domain);
-            barWidth = width / nonZero(timeInterval.range(domain[0], domain[1]).length); // could be "Infinity" on brush start
-            barWidth = Math.floor(barWidth);
+            barWidth = barWidthFor(timeInterval, domain[0], domain[1]);
             zoomedView.selectAll(".bar")
                     .data(data)
                     .attr("x", function (d) { return x(d.date); })
                     .attr("width", barWidth);
             zoomedView.select(".x.axis").call(xAxis);
+        }
+        function barWidthFor(timeInterval, fromDate, toDate) {
+            var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
+            return Math.floor(barWidth);
         }
         function nonZero(length) {
             return (length > 0 ? length : 0.0000001);
