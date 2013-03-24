@@ -217,8 +217,14 @@ date,changeSize\n\
                     .attr("height", function (d) { return height - y(d.changeSize); })
                     .append("title")
                     .text(function (d) {
-                        return xAxisLabel + ": " + dateFormat(d.date) + "\n" +
-                               yAxisLabel + ": " + valueFormat(d.changeSize);
+                        var dateAsString;
+                        if (timeInterval == d3.time.day) {
+                            dateAsString = dateFormat(d.date);
+                        } else {
+                            dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
+                        }
+                        return xAxisLabel + ": " + dateAsString + "\n" +
+                                yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
         }
         function onBrush() {
