@@ -126,10 +126,11 @@
         </p>
         <ul>
             <li>transforming VCS history into .csv format (csv because it's easy to read and analyze afterwards)</li>
-            <li>analyzing history and displaying results using d3.js (requires a browser).
+            <li>analyzing history and displaying results using <a href="http://d3js.org/">d3.js</a> (requires a browser).
                 This part is currently a separate Groovy script.</li>
         </ul>
-        Original idea is taken from <a href="https://github.com/michaelfeathers/delta-flora">Delta Flora</a> by Michael Feathers.
+        Originally inspired by <a href="https://github.com/michaelfeathers/delta-flora">Delta Flora</a> by Michael Feathers.
+        Has now diverged into something a bit different.
         <br/>
         WARNING: this is work-in-progress.
 
@@ -137,19 +138,18 @@
         <p>
             There seems to be a lot of interesting data captured in version control systems, yet we don't tend to use it that much.
             This is an attempt to make looking at project history easier.
-            (It is not meant to be used as "metrics" but rather as a tool to get insight/alternative view on project and how it evolves over time.)
         </p>
         <p>
             Things in project history that might be interesting to look at:
         </p>
         <ul>
-            <li>people interaction over time</li>
+            <li>how people interact with each other</li>
             <li>how code changes over time</li>
             <li>how people interact with code</li>
         </ul>
 
         <h3>Examples</h3>
-        These examples are based on <a href="https://github.com/JetBrains/intellij-community">IntelliJ CE</a> source code.
+        These examples are based on the last 2 years of <a href="https://github.com/JetBrains/intellij-community">IntelliJ CE</a> history.
         <h6>Changes calendar view (almost GitHub-style)</h6>
         <p id="calendar-view"></p>
         <br/>
@@ -157,7 +157,27 @@
         <p id="changes-size-view"></p>
         <br/>
         <h6>Files changed in the same commits</h6>
+        This only includes files which changed in the same commit more than 5 times.
+        Thickness of edges is correlated with the number of commits.
         <section id="files-in-same-commit-graph" class="inner"></section>
+
+        <h6>Word cloud for commit messages</h6>
+        Not here yet.
+
+        <h6>Commit heatmap (days broken into hours)</h6>
+        Not here yet.
+
+        <h6>Treemap of changes size / frequency</h6>
+        Stuck in the queue.
+
+        <h6>Some fancy graph with committers and files</h6>
+        Does not exist :(
+
+        <h6>Method complexity vs amount of changes scatterplot</h6>
+        TODO
+
+        <h6>Histograms of everything</h6>
+        Would be nice.
 
 
         <h3>How to use?</h3>
