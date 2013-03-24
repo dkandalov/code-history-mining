@@ -107,9 +107,6 @@ date,changeSize\n\
         svg.append("defs").append("clipPath").attr("id", "chartClip")
                 .append("rect").attr("width", width).attr("height", height);
 
-        var zoomedView = svg.append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
         var daysData = d3.csv.parse(rawData).map(function(d) { return {
             date: dateFormat.parse(d.date),
             changeSize: parseInt(d.changeSize)};
@@ -126,6 +123,8 @@ date,changeSize\n\
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
+        var zoomedView = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         zoomedView.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + height + ")")
@@ -140,29 +139,12 @@ date,changeSize\n\
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .text(yAxisLabel);
-
         createBarsOn(zoomedView);
 
         var brushFooter = svg.append("g")
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+        createBarsAndBrushOn(brushFooter);
 
-        brushFooter.append("g")
-                .selectAll(".bar2")
-                .data(data)
-                .enter().append("rect")
-                .attr("class", "bar")
-                .attr("x", function (d) { return x2(d.date); })
-                .attr("width", barWidth)
-                .attr("y", function (d) { return y2(d.changeSize); })
-                .attr("height", function (d) { return height2 - y2(d.changeSize); })
-                .append("title");
-
-        brushFooter.append("g")
-                .attr("class", "x brush")
-                .call(brush)
-                .selectAll("rect")
-                .attr("y", -6)
-                .attr("height", height2 + 7);
 
         var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: width + "px"});
         var span = footerSpan.append("span").style({float: "right"});
@@ -171,16 +153,23 @@ date,changeSize\n\
         dropDown.append("option").attr("value", "day").html("days");
         dropDown.append("option").attr("value", "monday").html("weeks");
 
-        dropDown.on("change", function() { // TODO this update ignores brush selection
+        dropDown.on("change", function() {
             timeInterval = d3.time[this.value];
 
             data = aggregate(daysData, timeInterval);
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
             y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
+            x2.domain(x.domain());
+            y2.domain(y.domain());
+
             barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
             createBarsOn(zoomedView);
+            createBarsAndBrushOn(brushFooter);
+
             zoomedView.select(".y.axis").call(yAxis);
+
+            onBrush();
         });
 
         function aggregate(daysData, timeInterval) {
@@ -195,6 +184,25 @@ date,changeSize\n\
                     .map(daysData)).filter(function (d) {
                         return d.changeSize > 0;
                     });
+        }
+        function createBarsAndBrushOn(element) {
+            element.selectAll("g").remove();
+            element.append("g")
+                    .selectAll(".bar2")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", function (d) { return x2(d.date); })
+                    .attr("width", barWidth)
+                    .attr("y", function (d) { return y2(d.changeSize); })
+                    .attr("height", function (d) { return height2 - y2(d.changeSize); })
+                    .append("title");
+            element.append("g")
+                    .attr("class", "x brush")
+                    .call(brush)
+                    .selectAll("rect")
+                    .attr("y", -6)
+                    .attr("height", height2 + 7);
         }
         function createBarsOn(element) {
             element.selectAll(".bar").remove();
