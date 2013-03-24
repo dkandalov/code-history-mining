@@ -42,13 +42,17 @@ function QuickFind(size) {
         this.connections[i] = i;
     }
 }
-QuickFind.prototype.connect =  function (p1, p2) {
-    var value = this.connections[p1];
+QuickFind.prototype.connect =  function(p1, p2) {
+    var p1Root = this.rootOf(this.connections[p1]);
+    var p2Root = this.rootOf(this.connections[p2]);
     for (var i = 0; i < this.connections.length; i++) {
-        if (this.connections[i] == value) {
-            this.connections[i] = this.connections[p2];
+        if (this.connections[i] == p1Root) {
+            this.connections[i] = p2Root;
         }
     }
+};
+QuickFind.prototype.rootOf = function(p) {
+    return this.connections[p] == p ? p : this.rootOf(this.connections[p]);
 };
 QuickFind.prototype.areConnected = function(p1, p2) {
     return this.connections[p1] == this.connections[p2];
