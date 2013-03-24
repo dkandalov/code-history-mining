@@ -203,10 +203,10 @@ ConfigImportSettings,4fd6cc48b6cd9ce020756ed75704dde17ebfc63c,Kirill Safonov,201
 
         <h3>What can be improved</h3>
         <ul>
-            <li>it's quite slow at transforming project history into .csv event with Git. Doing for a big project takes a lot of time.</li>
+            <li>transforming project history into .csv is REALLY slow for a big project.
+                Assuming that it can be faster, I'm not what slows it down Git or IntelliJ API.</li>
             <li>there seems to be a memory leak somewhere, either this plugin, intellij-eval or in IntelliJ itself.</li>
-            <li>in theory it should work with any version control setup in IntelliJ project but was only tested with Git.
-                Potential problems might be that it's too slow with SVN or API works in a different way.</li>
+            <li>in theory it should work with any version control setup in IntelliJ project but was only used with Git.</li>
             <li>at the moment it only looks at Java (Groovy) syntax tree to figure out method name for a change.
                 It shouldn't be difficult to support other languages (those that have IntelliJ plugins).</li>
         </ul>
