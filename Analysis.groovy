@@ -28,7 +28,8 @@ class Analysis {
 		}
 
 //		createCalendarViewOn(events)
-		createBarChartViewOn(events)
+//		createBarChartViewOn(events)
+		createCooccurrencesGraph(events)
 
 //		def authorContributionByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
@@ -52,21 +53,24 @@ class Analysis {
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InFiles , ["commit size"]))
 
-//		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
-//		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-//															.findAll{ it.value > 3 }.sort{-it.value}
-//		println(pairCoOccurrences.entrySet().join("\n"))
-//
-//		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
-//		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
-//		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
-//		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
-//		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
 
 		// TODO word cloud for commit messages
 //		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
 //		println(commitMessages.join("\n"))
 
+	}
+
+	static void createCooccurrencesGraph(events, threshold = 5) {
+		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
+		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
+															.findAll{ it.value > threshold }.sort{-it.value}
+		println(pairCoOccurrences.entrySet().join("\n"))
+
+		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
+		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
+		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
 	}
 
 	static void createBarChartViewOn(List events) {
