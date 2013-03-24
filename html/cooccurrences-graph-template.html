@@ -34,29 +34,8 @@
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
+<span id="files-in-same-commit-graph"></span>
 <script>
-function QuickFind(size) {
-    this.size = size;
-    this.connections = new Array(size);
-    for (var i = 0; i < this.connections.length; i++) {
-        this.connections[i] = i;
-    }
-}
-QuickFind.prototype.connect =  function(p1, p2) {
-    var p1Root = this.rootOf(this.connections[p1]);
-    var p2Root = this.rootOf(this.connections[p2]);
-    for (var i = 0; i < this.connections.length; i++) {
-        if (this.connections[i] == p1Root) {
-            this.connections[i] = p2Root;
-        }
-    }
-};
-QuickFind.prototype.rootOf = function(p) {
-    return this.connections[p] == p ? p : this.rootOf(this.connections[p]);
-};
-QuickFind.prototype.areConnected = function(p1, p2) {
-    return this.connections[p1] == this.connections[p2];
-};
 
 const graph = {
 /*data_placeholder*/
@@ -147,99 +126,121 @@ const graph = {
     ]
 /*data_placeholder*/
 };
-const quickFind = new QuickFind(graph.nodes.length);
-graph.links.forEach(function (link) {
-    quickFind.connect(link.source, link.target);
-});
 
-
-var width = 960,
-    height = 500;
-
-var color = d3.scale.category20();
-
-var force = d3.layout.force()
-        .charge(-120)
-        .linkDistance(30)
-        .size([width, height]);
-
-var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-force.nodes(graph.nodes)
-    .links(graph.links)
-    .start();
-
-var link = svg.selectAll(".link")
-        .data(graph.links)
-        .enter().append("line")
-        .attr("class", "link")
-        .style("stroke-width", function (d) {
-            return Math.sqrt(d.value);
-        });
-
-var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-var selectionList = d3.select("body").append("div")
-        .attr("class", "selectionList")
-        .style("position", "absolute")
-        .style("left", "20px")
-        .style("top", "20px")
-        .style("opacity", 0);
-
-var handledByNode = false;
-var node = svg.selectAll(".node")
-        .data(graph.nodes)
-        .enter().append("circle")
-        .attr("class", "node")
-        .attr("r", function(d){ return d.selected ? 7 : 5; })
-        .style("fill", function (d) { return color(d.group); })
-        .call(force.drag)
-        .on("mouseover", function(d) {
-            tooltip.html(d.name)
-                .style("opacity", .9)
-                .style("position", "absolute")
-                .style("left", parseInt(d.x + 18) + "px")
-                .style("top", parseInt(d.y - 12) + "px");
-        })
-        .on("mouseout", function(d) {
-            tooltip.style("opacity", .0);
-        })
-        .on("click", function (d) {
-            var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
-            updateSelection(connectedNodes);
-
-            handledByNode = true;
-        });
-svg.on("click", function () {
-    if (handledByNode) {
-        handledByNode = false;
-        return;
+function createForcesGraphOn(elementId, graph) {
+    function QuickFind(size) {
+        this.size = size;
+        this.connections = new Array(size);
+        for (var i = 0; i < this.connections.length; i++) {
+            this.connections[i] = i;
+        }
     }
-    updateSelection([]);
-});
+    QuickFind.prototype.connect =  function(p1, p2) {
+        var p1Root = this.rootOf(this.connections[p1]);
+        var p2Root = this.rootOf(this.connections[p2]);
+        for (var i = 0; i < this.connections.length; i++) {
+            if (this.connections[i] == p1Root) this.connections[i] = p2Root;
+        }
+    };
+    QuickFind.prototype.rootOf = function(p) { return this.connections[p] == p ? p : this.rootOf(this.connections[p]); };
+    QuickFind.prototype.areConnected = function(p1, p2) { return this.connections[p1] == this.connections[p2]; };
+    const quickFind = new QuickFind(graph.nodes.length);
+    graph.links.forEach(function (link) {
+        quickFind.connect(link.source, link.target);
+    });
 
-function updateSelection(selectedNodes) {
-    graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
-    selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
-    node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
 
-    selectionList
-            .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
-            .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+    var width = 960,
+            height = 500;
+
+    var color = d3.scale.category20();
+
+    var force = d3.layout.force()
+            .charge(-120)
+            .linkDistance(30)
+            .size([width, height]);
+
+    var svg = d3.select("#" + elementId).append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    force.nodes(graph.nodes)
+            .links(graph.links)
+            .start();
+
+    var link = svg.selectAll(".link")
+            .data(graph.links)
+            .enter().append("line")
+            .attr("class", "link")
+            .style("stroke-width", function (d) {
+                return Math.sqrt(d.value);
+            });
+
+    var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+    var selectionList = d3.select("body").append("div")
+            .attr("class", "selectionList")
+            .style("position", "absolute")
+            .style("left", "20px")
+            .style("top", "20px")
+            .style("opacity", 0);
+
+    var handledByNode = false;
+    var node = svg.selectAll(".node")
+            .data(graph.nodes)
+            .enter().append("circle")
+            .attr("class", "node")
+            .attr("r", function(d){ return d.selected ? 7 : 5; })
+            .style("fill", function (d) { return color(d.group); })
+            .call(force.drag)
+            .on("mouseover", function(d) {
+                tooltip.html(d.name)
+                        .style("opacity", .9)
+                        .style("position", "absolute")
+                        .style("left", parseInt(d.x + 18) + "px")
+                        .style("top", parseInt(d.y - 12) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.style("opacity", .0);
+            })
+            .on("click", function (d) {
+                var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+                updateSelection(connectedNodes);
+
+                handledByNode = true;
+            });
+    svg.on("click", function () {
+        if (handledByNode) {
+            handledByNode = false;
+            return;
+        }
+        updateSelection([]);
+    });
+
+    node.append("title").text(function (d) { return d.name; });
+
+    force.on("tick", function () {
+        link.attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+        node.attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
+    });
+
+
+    function updateSelection(selectedNodes) {
+        graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
+        selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
+        node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+
+        selectionList
+                .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
+                .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+    }
 }
 
-node.append("title").text(function (d) { return d.name; });
-
-force.on("tick", function () {
-    link.attr("x1", function (d) { return d.source.x; })
-        .attr("y1", function (d) { return d.source.y; })
-        .attr("x2", function (d) { return d.target.x; })
-        .attr("y2", function (d) { return d.target.y; });
-    node.attr("cx", function (d) { return d.x; })
-        .attr("cy", function (d) { return d.y; });
-});
+createForcesGraphOn("files-in-same-commit-graph", graph);
 
 </script>
