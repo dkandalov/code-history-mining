@@ -26,7 +26,8 @@
 <span id="changes-size-view"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData = /*data_placeholder*/"\
+    var rawData = /*data_placeholder*/
+["\
 date,changeSize\n\
 11/08/2012,14218\n\
 13/08/2012,12977\n\
@@ -73,7 +74,57 @@ date,changeSize\n\
 23/02/2013,4627\n\
 24/02/2013,355\n\
 05/03/2013,284\
-"/*data_placeholder*/;
+",
+"\
+date,changeSize\n\
+11/08/2012,114218\n\
+13/08/2012,12977\n\
+14/08/2012,19705\n\
+15/08/2012,243553\n\
+16/08/2012,3527\n\
+17/08/2012,21786\n\
+19/08/2012,41839\n\
+20/08/2012,404475\n\
+21/08/2012,1388\n\
+23/08/2012,10796\n\
+25/08/2012,19911\n\
+26/08/2012,259407\n\
+21/09/2012,4145\n\
+07/10/2012,4892\n\
+08/10/2012,250\n\
+09/10/2012,316\n\
+15/11/2012,491\n\
+22/11/2012,36125\n\
+06/12/2012,306\n\
+07/12/2012,966\n\
+20/01/2013,30956\n\
+21/01/2013,934\n\
+22/01/2013,16863\n\
+23/01/2013,1795\n\
+24/01/2013,834\n\
+25/01/2013,1955\n\
+26/01/2013,2913\n\
+27/01/2013,42995\n\
+28/01/2013,5739\n\
+29/01/2013,11892\n\
+30/01/2013,18014\n\
+31/01/2013,251902\n\
+01/02/2013,3082\n\
+02/02/2013,3682\n\
+04/02/2013,5919\n\
+07/02/2013,665\n\
+10/02/2013,232\n\
+15/02/2013,137\n\
+18/02/2013,2045\n\
+19/02/2013,2049\n\
+20/02/2013,731\n\
+22/02/2013,594\n\
+23/02/2013,4627\n\
+24/02/2013,355\n\
+05/03/2013,284\
+"
+
+]/*data_placeholder*/;
 
     function drawChangeSizeChart(elementId, rawData) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
@@ -107,7 +158,8 @@ date,changeSize\n\
         svg.append("defs").append("clipPath").attr("id", "chartClip")
                 .append("rect").attr("width", width).attr("height", height);
 
-        var daysData = d3.csv.parse(rawData).map(function(d) { return {
+        var rawDataIndex = 0;
+        var daysData = d3.csv.parse(rawData[rawDataIndex]).map(function(d) { return {
             date: dateFormat.parse(d.date),
             changeSize: parseInt(d.changeSize)};
         });
@@ -149,16 +201,30 @@ date,changeSize\n\
         var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: width + "px"});
         var span = footerSpan.append("span").style({float: "right"});
         span.append("label").html("Group by: ");
-        var dropDown = span.append("select");
-        dropDown.append("option").attr("value", "day").html("days");
-        dropDown.append("option").attr("value", "monday").html("weeks");
+        var groupByDropDown = span.append("select");
+        groupByDropDown.append("option").attr("value", "day").html("days");
+        groupByDropDown.append("option").attr("value", "monday").html("weeks");
 
-        dropDown.on("change", function() {
+        groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
+            updateChart();
+        });
+        span.append("span").style({width: "20px", display: "inline-block"});
+        span.append("label").html("Change size measured in: ");
+        var dropDown = span.append("select");
+        dropDown.append("option").attr("value", "0").html("commits");
+        dropDown.append("option").attr("value", "1").html("lines");
+        dropDown.append("option").attr("value", "2").html("characters");
+        dropDown.on("change", function() {
 
+        });
+
+        function updateChart() {
             data = aggregate(daysData, timeInterval);
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
+            y.domain([0, d3.max(data, function (d) {
+                return d.changeSize;
+            })]);
             x2.domain(x.domain());
             y2.domain(y.domain());
 
@@ -170,8 +236,7 @@ date,changeSize\n\
             zoomedView.select(".y.axis").call(yAxis);
 
             onBrush();
-        });
-
+        }
         function aggregate(daysData, timeInterval) {
             if (timeInterval == d3.time.day) return daysData;
             return d3.values(d3.nest()
