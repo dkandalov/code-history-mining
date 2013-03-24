@@ -171,7 +171,6 @@ date,changeSize\n\
 24/02/2013,355\n\
 05/03/2013,284\
 "
-
 ]/*data_placeholder*/;
 
     function drawChangeSizeChart(elementId, rawData) {
@@ -202,7 +201,7 @@ date,changeSize\n\
         var rootElement = d3.select("#" + elementId);
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom);
         svg.append("defs").append("clipPath").attr("id", "chartClip")
                 .append("rect").attr("width", width).attr("height", height);
 

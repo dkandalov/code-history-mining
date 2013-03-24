@@ -27,40 +27,30 @@ class Analysis {
 			}
 		}
 
-		def commitsAmountByDate = events
-						.groupBy{ it.revision }.collect{ it.value[0] }
-						.groupBy{ floorToDay(it.revisionDate) }
-						.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"]))
-
-//		def totalChangeSizeByDate = events
-//						.groupBy{ floorToDay(it.revisionDate) }
-//						.collect{ [it.key, it.value.sum{ (it.toOffset - it.fromOffset).abs() }] }.sort{it[0]}
-//		fillTemplate("changes_size_chart_template.html", asCsvStringLiteral(totalChangeSizeByDate, ["date", "changeSize"]))
+//		createCalendarViewOn(events)
+		createBarChartViewOn(events)
 
 //		def authorContributionByDate = events
 //				.groupBy{ floorToDay(it.revisionDate) }
-//				.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSize)]}; it }
+//				.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSizeOf)]}; it }
 //		println(authorContributionByDate.entrySet().join("\n"))
 //
 //		def changesSizeByAuthorByDate = events
 //				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
-//				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSize); it }, 0).sort(); it}
+//				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSizeOf); it }, 0).sort(); it}
 //		def authorsContributions = changesSizeByAuthorByDate.entrySet().collectEntries{ [it.key, it.value.entrySet().count{it.value > 0}] }
 //		def flattened = changesSizeByAuthorByDate
 //				.entrySet().toList().sort{ -authorsContributions[it.key] }.take(5).collectMany { entry ->
 //					entry.value.collect { [it.key, entry.key, it.value] }
 //				}
-//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changeSize"]))
+//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changeSizeOf"]))
 
-//		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSize(it)}] }
+//		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeOf(it)}] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InOffsets , ["commit size"]))
-//		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLines(it)}] }
+//		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLinesOf(it)}] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InLines , ["commit size"]))
 //		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
 //		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InFiles , ["commit size"]))
-
-//		createCalendarViewOn(events)
 
 //		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 //		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
@@ -79,11 +69,29 @@ class Analysis {
 
 	}
 
+	static void createBarChartViewOn(List events) {
+		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
+
+		def commitsAmountByDate = eventsByDay
+						.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
+		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"])
+
+		def totalChangeSizeInCharsByDate = eventsByDay
+						.collect{ [it.key, it.value.sum{ changeSizeOf(it) }] }.sort{it[0]}
+		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "changeSize"])
+
+		def totalChangeInLinesSizeByDate = eventsByDay
+						.collect{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{it[0]}
+		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "changeSize"])
+
+		fillTemplate("changes_size_chart_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
+	}
+
 	static void createCalendarViewOn(List events) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSize(it) }] }.sort{ it.key }
+					.collectEntries{ [it.key, it.value.sum{ changeSizeOf(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
@@ -91,7 +99,7 @@ class Analysis {
 		def changeSizeInLines = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
+					.collectEntries{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
@@ -108,8 +116,8 @@ class Analysis {
 		fillTemplate("calendar_view_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
 	}
 
-	static def changeSize(event) { event.toOffset - event.fromOffset }
-	static def changeSizeInLines(event) { event.toLine - event.fromLine }
+	static def changeSizeOf(event) { event.toOffset - event.fromOffset }
+	static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
 
 	static void fillTemplate(String template, String jsValue) {
 		def templateText = new File("html/${template}").readLines().join("\n")
