@@ -176,10 +176,10 @@ function createForcesGraphOn(elementId, graph) {
                 return Math.sqrt(d.value);
             });
 
-    var tooltip = d3.select("body").append("div")
+    var tooltip = d3.select("#" + elementId).append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-    var selectionList = d3.select("body").append("div")
+    var selectionList = d3.select("#" + elementId).append("div")
             .attr("class", "selectionList")
             .style("position", "absolute")
             .style("left", "20px")
@@ -244,3 +244,4 @@ function createForcesGraphOn(elementId, graph) {
 createForcesGraphOn("files-in-same-commit-graph", graph);
 
 </script>
+</body>

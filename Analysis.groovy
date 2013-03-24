@@ -60,7 +60,7 @@ class Analysis {
 
 	}
 
-	static void createCooccurrencesGraph(events, threshold = 5) {
+	static void createCooccurrencesGraph(events, threshold = 7) {
 		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
 															.findAll{ it.value > threshold }.sort{-it.value}
