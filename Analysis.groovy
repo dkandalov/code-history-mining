@@ -27,8 +27,8 @@ class Analysis {
 			}
 		}
 
-//		createCalendarViewOn(events)
-//		createBarChartViewOn(events)
+		createCalendarViewOn(events)
+		createBarChartViewOn(events)
 		createCooccurrencesGraph(events)
 
 //		def authorContributionByDate = events
