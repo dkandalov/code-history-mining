@@ -189,6 +189,7 @@ var selectionList = d3.select("body").append("div")
         .style("top", "20px")
         .style("opacity", 0);
 
+var handledByNode = false;
 var node = svg.selectAll(".node")
         .data(graph.nodes)
         .enter().append("circle")
@@ -208,15 +209,27 @@ var node = svg.selectAll(".node")
         })
         .on("click", function (d) {
             var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+            updateSelection(connectedNodes);
 
-            graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
-            connectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
-            node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
-
-            selectionList
-                    .html(connectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
-                    .style("opacity", 1);
+            handledByNode = true;
         });
+svg.on("click", function () {
+    if (handledByNode) {
+        handledByNode = false;
+        return;
+    }
+    updateSelection([]);
+});
+
+function updateSelection(selectedNodes) {
+    graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
+    selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
+    node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+
+    selectionList
+            .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
+            .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+}
 
 node.append("title").text(function (d) { return d.name; });
 
