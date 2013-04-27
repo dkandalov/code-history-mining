@@ -64,26 +64,32 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 		def now = new Date()
 		def daysOfHistory = 900
-		def historyRequestSizeInDays = 1
+		def sizeOfVCSRequestInDays = 1
 
 		if (storage.hasNoEvents()) {
-			def fromDate = now - daysOfHistory
-			def toDate = now
-			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
+			def historyStart = now - daysOfHistory
+			def historyEnd = now
+
+			log("Loading project history from $historyStart to $historyEnd")
+			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
 		} else {
-			def fromDate = storage.mostRecentEventTime
-			def toDate = now
+			def historyStart = storage.mostRecentEventTime
+			def historyEnd = now
+			log("Loading project history from $historyStart to $historyEnd")
+
 			def recentChangeEvents = []
-			def changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
+			def changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
 			processChangeLists(changeLists) { changeEvents -> recentChangeEvents += changeEvents }
 			storage.prependToEventsFile(recentChangeEvents)
 
-			fromDate = now - daysOfHistory
-			toDate = storage.oldestEventTime
-			changeLists = ProjectHistory.changeListsFor(project, fromDate, toDate, historyRequestSizeInDays)
+			historyStart = now - daysOfHistory
+			historyEnd = storage.oldestEventTime
+			log("Loading project history from $historyStart to $historyEnd")
+
+			changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
 			processChangeLists(changeLists) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
@@ -106,35 +112,33 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 class ProjectHistory {
 
-	static Iterator<CommittedChangeList> changeListsFor(Project project, Date fromDate = new Date(), Date toDate = null,
-	                                                    int historyRequestSizeInDays = 30) {
+	static Iterator<CommittedChangeList> changeListsFor(Project project, Date historyStart, Date historyEnd,
+	                                                    int sizeOfVCSRequestInDays = 30) {
 		use(TimeCategory) {
 			List<CommittedChangeList> changes = []
-			Date beginningOfHistory = (fromDate == null ? (toDate - 10.years) : fromDate)
-			Date date = toDate
+			Date date = historyEnd
 
 			new Iterator<CommittedChangeList>() {
 				@Override boolean hasNext() {
-					!changes.empty || date.after(beginningOfHistory)
+					!changes.empty || date.after(historyStart)
 				}
 
 				@Override CommittedChangeList next() {
 					if (!changes.empty) return changes.remove(0)
 
 					measure("git request time") {
-						while (changes.empty && date.after(beginningOfHistory)) {
+						while (changes.empty && date.after(historyStart)) {
 							use(TimeCategory) {
-								def newDate = chooseLatest(date - historyRequestSizeInDays, beginningOfHistory)
-								changes = requestChangeListsFor(project, newDate, date)
-								date = newDate
+								def dateInThePast = chooseMostRecent(date - sizeOfVCSRequestInDays, historyStart)
+								changes = requestChangeListsFor(project, dateInThePast, date)
+								date = dateInThePast
 							}
 						}
 					}
-
 					changes.empty ? null : changes.remove(0)
 				}
 
-				private Date chooseLatest(Date date1, Date date2) {
+				private Date chooseMostRecent(Date date1, Date date2) {
 					date1.after(date2) ? date1 : date2
 				}
 
