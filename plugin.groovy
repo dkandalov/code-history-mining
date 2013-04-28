@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat
 import static ChangeExtractor.*
 import static Measure.measure
 import static Measure.record
+import static ProjectHistory.fetchChangeListsFor
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
@@ -43,23 +44,7 @@ if (isIdeStartup) return
 
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
-
 		def storage = new EventStorage(project.name)
-		def processChangeLists = { changeLists, callback ->
-			for (changeList in changeLists) {
-				if (changeList == null) break
-				if (indicator.canceled) break
-				log(changeList.name)
-
-				def date = dateFormat.format((Date) changeList.commitDate)
-				indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
-				catchingAll_ {
-					Collection<ChangeEvent> changeEvents = decomposeIntoChangeEvents((CommittedChangeList) changeList, project)
-					callback(changeEvents)
-				}
-				indicator.text = "Analyzing project history (${date} - looking for next commit...)"
-			}
-		}
 
 		def now = new Date()
 		def daysOfHistory = 900
@@ -70,8 +55,8 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			def historyEnd = now
 
 			log("Loading project history from $historyStart to $historyEnd")
-			Iterator<CommittedChangeList> changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
-			processChangeLists(changeLists) { changeEvents ->
+			Iterator<CommittedChangeList> changeLists = fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+			processChangeLists(changeLists, indicator) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
 		} else {
@@ -79,8 +64,8 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			def historyEnd = now
 			log("Loading project history from $historyStart to $historyEnd")
 
-			def changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays, false)
-			processChangeLists(changeLists) { changeEvents ->
+			def changeLists = fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays, false)
+			processChangeLists(changeLists, indicator) { changeEvents ->
 				storage.prependToEventsFile(changeEvents)
 			}
 
@@ -88,8 +73,8 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			historyEnd = storage.oldestEventTime
 			log("Loading project history from $historyStart to $historyEnd")
 
-			changeLists = ProjectHistory.changeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
-			processChangeLists(changeLists) { changeEvents ->
+			changeLists = fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+			processChangeLists(changeLists, indicator) { changeEvents ->
 				storage.appendToEventsFile(changeEvents)
 			}
 		}
@@ -99,6 +84,22 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
 }, {})
+
+def processChangeLists(changeLists, indicator, callback) {
+	for (changeList in changeLists) {
+		if (changeList == null) break
+		if (indicator.canceled) break
+		log(changeList.name)
+
+		def date = dateFormat.format((Date) changeList.commitDate)
+		indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
+		catchingAll_ {
+			Collection<ChangeEvent> changeEvents = decomposeIntoChangeEvents((CommittedChangeList) changeList, project)
+			callback(changeEvents)
+		}
+		indicator.text = "Analyzing project history (${date} - looking for next commit...)"
+	}
+}
 
 @Nullable static <T> T catchingAll_(Closure<T> closure) {
 	try {
@@ -111,7 +112,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 
 class ProjectHistory {
 
-	static Iterator<CommittedChangeList> changeListsFor(Project project, Date historyStart, Date historyEnd,
+	static Iterator<CommittedChangeList> fetchChangeListsFor(Project project, Date historyStart, Date historyEnd,
 	                                                    int sizeOfVCSRequestInDays = 30, boolean presentToPast = true) {
 		def dateIterator = (presentToPast ?
 				new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
