@@ -238,10 +238,10 @@ class EventStorage {
 		def line = readLastLine(filePath)
 		if (line == null) null
 		else {
-			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
 			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
 			// (it means that if processing stops between two commits that happened on the same second,
 			// we will miss one of them.. considered this to be insignificant)
+			def date = fromCsv(line).revisionDate
 			date.time -= 1000
 			date
 		}
@@ -251,7 +251,7 @@ class EventStorage {
 		def line = readFirstLine(filePath)
 		if (line == null) new Date()
 		else {
-			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
+			def date = fromCsv(line).revisionDate
 			date.time += 1000 // plus one second (see comments in getOldestEventTime())
 			date
 		}
@@ -269,20 +269,23 @@ class EventStorage {
 	private static String toCsv(ChangeEvent changeEvent) {
 		changeEvent.with {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
-			[elementName.replaceAll(",", ""), revision, author, format(revisionDate), fileName,
+			[format(revisionDate), revision, author, elementName.replaceAll(",", ""),
+					fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore, linesInFileAfter,
 					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
 		}
 	}
 
 	private static ChangeEvent fromCsv(String line) {
-		def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
-		time = new SimpleDateFormat(CSV_DATE_FORMAT).parse(time)
+		def (revisionDate, revision, author, elementName,
+				fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore, linesInFileAfter,
+				changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
+		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 
 		def event = new ChangeEvent(
-				new CommitInfo(revision, author, time, commitMessage),
-				new FileChangeInfo(fileName, "", "", ""), // TODO
-				new ElementChangeInfo(method, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
+				new CommitInfo(revision, author, revisionDate, commitMessage),
+				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore.toInteger(), linesInFileAfter.toInteger()),
+				new ElementChangeInfo(elementName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
 		)
 		event
 	}
@@ -357,8 +360,8 @@ class ChangeExtractor {
 				change.with {
 					long timeBeforeGettingGitContent = System.currentTimeMillis()
 
-					def beforeText = nullAsEmptyString(beforeRevision?.content)
-					def afterText = nullAsEmptyString(afterRevision?.content)
+					def beforeText = withDefault("", beforeRevision?.content)
+					def afterText = withDefault("", afterRevision?.content)
 					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
 					if (nonEmptyRevision.file.fileType.isBinary()) return []
 
@@ -367,11 +370,15 @@ class ChangeExtractor {
 							removeEmailFrom(changeList.committerName),
 							changeList.commitDate, changeList.comment.trim()
 					)
+					def packageBefore = withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "")
+					def packageAfter = withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "")
 					def fileChangeInfo = new FileChangeInfo(
 							nonEmptyRevision.file.name,
 							type.toString(),
-							nullAsEmptyString(afterRevision?.file?.parentPath?.path),
-							nullAsEmptyString(beforeRevision?.file?.parentPath?.path)
+							packageBefore,
+							packageAfter == packageBefore ? "" : packageAfter,
+							beforeText.split("\n").length,
+							afterText.split("\n").length
 					)
 					def parseAsPsi = { String text ->
 						runReadAction {
@@ -512,7 +519,7 @@ class ChangeExtractor {
 		else parentMethodOrClassOf(psiElement.parent)
 	}
 
-	private static String nullAsEmptyString(value) { value == null ? "" : value.toString() }
+	private static String withDefault(defaultValue, value) { value == null ? defaultValue : value }
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -537,8 +544,10 @@ class CommitInfo {
 class FileChangeInfo {
 	String fileName
 	String fileChangeType
-	String filePackage
-	String oldFilePackage
+	String packageBefore
+	String packageAfter
+	int linesInFileBefore
+	int linesInFileAfter
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
