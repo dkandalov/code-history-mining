@@ -382,7 +382,7 @@ class ChangeExtractor {
 
 					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
 
-					ChangeExtractor.changesEventsBetween(beforeText, afterText, parseAsPsi).collect{
+					ChangeExtractor.changeEventsBetween(beforeText, afterText, parseAsPsi).collect{
 						new ChangeEvent(commitInfo, fileChangeInfo, it)
 					}
 				}
@@ -392,22 +392,7 @@ class ChangeExtractor {
 		}
 	}
 
-	static String nullAsEmptyString(value) { value == null ? "" : value.toString() }
-
-	static String revisionNumberOf(CommittedChangeList changeList) {
-		// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
-		if (changeList.class.simpleName == "GitCommittedChangeList") {
-			changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
-		} else {
-			changeList.number.toString()
-		}
-	}
-
-	static String removeEmailFrom(String committerName) {
-		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
-	}
-
-	static List<ElementChangeInfo> changesEventsBetween(String beforeText, String afterText, Closure<PsiFile> parseAsPsi) {
+	static List<ElementChangeInfo> changeEventsBetween(String beforeText, String afterText, Closure<PsiFile> parseAsPsi) {
 		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
 		PsiFile psiAfter = measure("parsing time"){ parseAsPsi(afterText) }
 
@@ -456,6 +441,19 @@ class ChangeExtractor {
 				changeEvents
 			}
 		}
+	}
+
+	private static String revisionNumberOf(CommittedChangeList changeList) {
+		// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
+		if (changeList.class.simpleName == "GitCommittedChangeList") {
+			changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
+		} else {
+			changeList.number.toString()
+		}
+	}
+
+	private static String removeEmailFrom(String committerName) {
+		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
 	}
 
 	private static String diffTypeOf(LineFragment fragment) {
@@ -513,6 +511,8 @@ class ChangeExtractor {
 		else if (psiElement instanceof PsiFile) psiElement as PsiNamedElement
 		else parentMethodOrClassOf(psiElement.parent)
 	}
+
+	private static String nullAsEmptyString(value) { value == null ? "" : value.toString() }
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -608,7 +608,7 @@ class CurrentFileHistory {
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
 			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-			ChangeExtractor.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+			ChangeExtractor.changeEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
 		}
 	}
 }
