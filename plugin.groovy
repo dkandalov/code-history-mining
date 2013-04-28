@@ -79,7 +79,7 @@ doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 			}
 		}
 
-		showInConsole("Saved change events to ${storage.fileName}", "output", project)
+		showInConsole("Saved change events to ${storage.filePath}", "output", project)
 		showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 	}
 	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
@@ -234,16 +234,16 @@ class EventStorage {
 
 	def appendToEventsFile(Collection<ChangeEvent> changeEvents) {
 		if (changeEvents.empty) return
-		appendTo(fileName, toCsv(changeEvents))
+		appendTo(filePath, toCsv(changeEvents))
 	}
 
 	def prependToEventsFile(Collection<ChangeEvent> changeEvents) {
 		if (changeEvents.empty) return
-		prependTo(fileName, toCsv(changeEvents))
+		prependTo(filePath, toCsv(changeEvents))
 	}
 
 	Date getOldestEventTime() {
-		def line = readLastLine(fileName)
+		def line = readLastLine(filePath)
 		if (line == null) null
 		else {
 			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
@@ -256,7 +256,7 @@ class EventStorage {
 	}
 
 	Date getMostRecentEventTime() {
-		def line = readFirstLine(fileName)
+		def line = readFirstLine(filePath)
 		if (line == null) new Date()
 		else {
 			def date = new SimpleDateFormat(CSV_DATE_FORMAT).parse(line.split(",")[3])
@@ -266,7 +266,7 @@ class EventStorage {
 	}
 
 	boolean hasNoEvents() {
-		def file = new File(fileName)
+		def file = new File(filePath)
 		!file.exists() || file.length() == 0
 	}
 
@@ -286,14 +286,14 @@ class EventStorage {
 		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)
 	}
 
-	private static String readFirstLine(String fileName) {
-		def file = new File(fileName)
+	private static String readFirstLine(String filePath) {
+		def file = new File(filePath)
 		if (!file.exists() || file.length() == 0) return null
 		file.withReader{ it.readLine() }
 	}
 
-	private static String readLastLine(String fileName) {
-		def file = new File(fileName)
+	private static String readLastLine(String filePath) {
+		def file = new File(filePath)
 		if (!file.exists() || file.length() == 0) return null
 
 		def randomAccess = new RandomAccessFile(file, "r")
@@ -315,15 +315,15 @@ class EventStorage {
 		}
 	}
 
-	private static appendTo(String fileName, String text) {
-		def file = new File(fileName)
+	private static appendTo(String filePath, String text) {
+		def file = new File(filePath)
 		FileUtil.createParentDirs(file)
 		file.append(text)
 	}
 
-	private static prependTo(String fileName, String text) {
+	private static prependTo(String filePath, String text) {
 		def tempFile = FileUtil.createTempFile("delta_flora", "_${new Random().nextInt(10000)}")
-		def file = new File(fileName)
+		def file = new File(filePath)
 
 		tempFile.withOutputStream { output ->
 			output.write(text.bytes)
