@@ -398,7 +398,6 @@ class ChangeExtractor {
 				def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
 					def partialChangeEvent = new ElementChangeInfo(
 							fullNameOf(psiElement),
-							containingFileName(psiElement), // TODO remove
 							diffTypeOf(fragment),
 							offsetToLineNumber(fromOffset),
 							offsetToLineNumber(toOffset),
@@ -520,7 +519,6 @@ class FileChangeInfo {
 @groovy.transform.Immutable
 final class ElementChangeInfo {
 	String elementName
-	String fileName
 	String changeType
 	int fromLine
 	int toLine
