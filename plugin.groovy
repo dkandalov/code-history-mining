@@ -215,15 +215,7 @@ class EventStorage {
 			def line = null
 			while ((line = reader.readLine()) != null) {
 				try {
-					def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
-					time = new SimpleDateFormat(CSV_DATE_FORMAT).parse(time)
-					def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
-
-					events << new ChangeEvent(
-							new CommitInfo(revision, author, time, commitMessage),
-							new FileChangeInfo(fileName, "", "", ""), // TODO
-							new ElementChangeInfo(method, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
-					)
+					events << fromCsv(line)
 				} catch (Exception ignored) {
 					println("Failed to parse line '${line}'")
 				}
@@ -280,6 +272,19 @@ class EventStorage {
 			[elementName.replaceAll(",", ""), revision, author, format(revisionDate), fileName,
 					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
 		}
+	}
+
+	private static ChangeEvent fromCsv(String line) {
+		def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
+		time = new SimpleDateFormat(CSV_DATE_FORMAT).parse(time)
+		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
+
+		def event = new ChangeEvent(
+				new CommitInfo(revision, author, time, commitMessage),
+				new FileChangeInfo(fileName, "", "", ""), // TODO
+				new ElementChangeInfo(method, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
+		)
+		event
 	}
 
 	private static String format(Date date) {
