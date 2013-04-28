@@ -106,7 +106,7 @@ class Analysis {
 		"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
 	}
 
-	static loadAllEvents(String eventsFileName) {
+	static loadAllEvents(String eventsFileName) { // TODO move to EventStorage
 		def events = []
 		new File(eventsFileName).withReader { reader ->
 			def line = null
@@ -117,8 +117,9 @@ class Analysis {
 						def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 
 						events << new ChangeEvent(
-								new PartialChangeEvent(method, fileName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger()),
-								new CommitInfo(revision, author, time, commitMessage)
+								new CommitInfo(revision, author, time, commitMessage),
+//								new FileChangeInfo(), TODO
+								new ElementChangeInfo(method, fileName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
 						)
 					} catch (Exception ignored) {
 						println("Failed to parse line '${line}'")

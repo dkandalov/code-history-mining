@@ -331,8 +331,8 @@ class ChangeExtractor {
 				change.with {
 					long timeBeforeGettingGitContent = System.currentTimeMillis()
 
-					def beforeText = (beforeRevision == null ? "" : beforeRevision.content)
-					def afterText = (afterRevision == null ? "" : afterRevision.content)
+					def beforeText = nullAsEmptyString(beforeRevision?.content)
+					def afterText = nullAsEmptyString(afterRevision?.content)
 					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
 					if (nonEmptyRevision.file.fileType.isBinary()) return []
 
@@ -340,6 +340,12 @@ class ChangeExtractor {
 							revisionNumberOf(changeList),
 							removeEmailFrom(changeList.committerName),
 							changeList.commitDate, changeList.comment.trim()
+					)
+					def fileChangeInfo = new FileChangeInfo(
+							nonEmptyRevision.file.name,
+							type.toString(),
+							nullAsEmptyString(afterRevision?.file?.parentPath?.path),
+							nullAsEmptyString(beforeRevision?.file?.parentPath?.path)
 					)
 					def parseAsPsi = { String text ->
 						runReadAction {
@@ -350,13 +356,17 @@ class ChangeExtractor {
 
 					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
 
-					ChangeExtractor.changesEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+					ChangeExtractor.changesEventsBetween(beforeText, afterText, parseAsPsi).collect{
+						new ChangeEvent(commitInfo, fileChangeInfo, it)
+					}
 				}
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
 	}
+
+	static String nullAsEmptyString(value) { value == null ? "" : value.toString() }
 
 	static String revisionNumberOf(CommittedChangeList changeList) {
 		// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
@@ -371,42 +381,38 @@ class ChangeExtractor {
 		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
 	}
 
-	static List<ChangeEvent> changesEventsBetween(String beforeText, String afterText, CommitInfo commitInfo, Closure<PsiFile> parseAsPsi) {
+	static List<ElementChangeInfo> changesEventsBetween(String beforeText, String afterText, Closure<PsiFile> parseAsPsi) {
 		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
 		PsiFile psiAfter = measure("parsing time"){ parseAsPsi(afterText) }
 
 		def changedFragments = measure("diff time") { new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
 
-		(List<ChangeEvent>) changedFragments.collectMany { LineFragment fragment ->
+		(List<ElementChangeInfo>) changedFragments.collectMany { LineFragment fragment ->
 			measure("change events time") {
 				def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
 				def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
 				def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
-				List<ChangeEvent> changeEvents = []
+				List<ElementChangeInfo> changeEvents = []
 				def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
-					def partialChangeEvent = new PartialChangeEvent(
+					def partialChangeEvent = new ElementChangeInfo(
 							fullNameOf(psiElement),
-							containingFileName(psiElement),
+							containingFileName(psiElement), // TODO remove
 							diffTypeOf(fragment),
 							offsetToLineNumber(fromOffset),
 							offsetToLineNumber(toOffset),
 							fromOffset,
 							toOffset
 					)
-					def changeEvent = new ChangeEvent(
-							partialChangeEvent,
-							commitInfo
-					)
-					changeEvents << changeEvent
+					changeEvents << partialChangeEvent
 				}
 
 				PsiNamedElement prevPsiElement = null
 				int fromOffset = range.startOffset
 				for (int offset = range.startOffset; offset < range.endOffset; offset++) {
 					// running read action on fine-grained level because this seems to improve UI responsiveness
-					// even though it does make the whole processing a bit slower
+					// even though it will make the whole processing slower
 					runReadAction {
 						PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
 						if (psiElement != prevPsiElement) {
@@ -487,17 +493,9 @@ class ChangeExtractor {
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
 final class ChangeEvent {
-	@Delegate PartialChangeEvent partialChangeEvent
 	@Delegate CommitInfo commitInfo
-}
-
-@SuppressWarnings("GroovyUnusedDeclaration")
-@groovy.transform.Immutable
-class FileCommitInfo { // TODO use it
-	@Delegate CommitInfo commitInfo
-	String fileName
-	String fileChangeType
-	int linesChanged
+	@Delegate FileChangeInfo fileChangeInfo
+	@Delegate ElementChangeInfo partialChangeEvent
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -511,7 +509,16 @@ class CommitInfo {
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
-final class PartialChangeEvent {
+class FileChangeInfo {
+	String fileName
+	String fileChangeType
+	String filePackage
+	String oldFilePackage
+}
+
+@SuppressWarnings("GroovyUnusedDeclaration")
+@groovy.transform.Immutable
+final class ElementChangeInfo {
 	String elementName
 	String fileName
 	String changeType
