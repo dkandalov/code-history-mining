@@ -44,7 +44,7 @@ if (isIdeStartup) return
 
 doInBackground("Analyzing project history", { ProgressIndicator indicator ->
 	measure("time") {
-		def storage = new EventStorage(project.name)
+		def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
 
 		def now = new Date()
 		def daysOfHistory = 900
@@ -203,12 +203,33 @@ class ProjectHistory {
 class EventStorage {
 	static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
 
-	private final String name
-	final String fileName
+	final String filePath
 
-	EventStorage(String name) {
-		this.name = name
-		this.fileName = "${PathManager.pluginsPath}/delta-flora/${name}-events.csv"
+	EventStorage(String filePath) {
+		this.filePath = filePath
+	}
+
+	List<ChangeEvent> readAllEvents() {
+		def events = []
+		new File(filePath).withReader { reader ->
+			def line = null
+			while ((line = reader.readLine()) != null) {
+				try {
+					def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
+					time = new SimpleDateFormat(CSV_DATE_FORMAT).parse(time)
+					def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
+
+					events << new ChangeEvent(
+							new CommitInfo(revision, author, time, commitMessage),
+							new FileChangeInfo(fileName, "", "", ""), // TODO
+							new ElementChangeInfo(method, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
+					)
+				} catch (Exception ignored) {
+					println("Failed to parse line '${line}'")
+				}
+			}
+		}
+		events
 	}
 
 	def appendToEventsFile(Collection<ChangeEvent> changeEvents) {

@@ -9,7 +9,8 @@ class Analysis {
 	static def projectName = "idea"
 
 	static void main(String[] args) {
-		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
+		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
+		def events = new EventStorage(filePath).readAllEvents()
 
 //		createCalendarViewOn(events)
 //		createBarChartViewOn(events)
@@ -104,29 +105,6 @@ class Analysis {
 				.collect{it.join(",")}
 				.join(jsNewLine)
 		"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
-	}
-
-	static loadAllEvents(String eventsFileName) { // TODO move to EventStorage
-		def events = []
-		new File(eventsFileName).withReader { reader ->
-			def line = null
-				while ((line = reader.readLine()) != null) {
-					try {
-						def (method, revision, author, time, fileName, changeType, fromLine, toLine, fromOffset, toOffset) = line.split(",")
-						time = new SimpleDateFormat(EventStorage.CSV_DATE_FORMAT).parse(time)
-						def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
-
-						events << new ChangeEvent(
-								new CommitInfo(revision, author, time, commitMessage),
-//								new FileChangeInfo(), TODO
-								new ElementChangeInfo(method, fileName, changeType, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
-						)
-					} catch (Exception ignored) {
-						println("Failed to parse line '${line}'")
-					}
-				}
-		}
-		events
 	}
 
 	static Date floorToDay(Date date) {
