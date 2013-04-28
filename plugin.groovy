@@ -21,11 +21,11 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
-import groovy.time.TimeCategory
 import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
+import static ChangeExtractor.*
 import static Measure.measure
 import static Measure.record
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
@@ -34,7 +34,6 @@ import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
-import static ChangeExtractor.*
 
 if (isIdeStartup) return
 
@@ -114,37 +113,28 @@ class ProjectHistory {
 
 	static Iterator<CommittedChangeList> changeListsFor(Project project, Date historyStart, Date historyEnd,
 	                                                    int sizeOfVCSRequestInDays = 30) {
-		use(TimeCategory) {
-			List<CommittedChangeList> changes = []
-			Date date = historyEnd
+		def dateIterator = new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
+		List<CommittedChangeList> changes = []
 
-			new Iterator<CommittedChangeList>() {
-				@Override boolean hasNext() {
-					!changes.empty || date.after(historyStart)
-				}
+		new Iterator<CommittedChangeList>() {
+			@Override boolean hasNext() {
+				!changes.empty || dateIterator.hasNext()
+			}
 
-				@Override CommittedChangeList next() {
-					if (!changes.empty) return changes.remove(0)
+			@Override CommittedChangeList next() {
+				if (!changes.empty) return changes.remove(0)
 
-					measure("git request time") {
-						while (changes.empty && date.after(historyStart)) {
-							use(TimeCategory) {
-								def dateInThePast = chooseMostRecent(date - sizeOfVCSRequestInDays, historyStart)
-								changes = requestChangeListsFor(project, dateInThePast, date)
-								date = dateInThePast
-							}
-						}
+				measure("git request time") {
+					while (changes.empty && dateIterator.hasNext()) {
+						def dates = dateIterator.next()
+						changes = requestChangeListsFor(project, dates.from, dates.to)
 					}
-					changes.empty ? null : changes.remove(0)
 				}
+				changes.empty ? null : changes.remove(0)
+			}
 
-				private Date chooseMostRecent(Date date1, Date date2) {
-					date1.after(date2) ? date1 : date2
-				}
-
-				@Override void remove() {
-					throw new UnsupportedOperationException()
-				}
+			@Override void remove() {
+				throw new UnsupportedOperationException()
 			}
 		}
 	}
