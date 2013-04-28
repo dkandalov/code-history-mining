@@ -1,4 +1,3 @@
-import groovy.time.TimeCategory
 import org.junit.Test
 
 import java.text.SimpleDateFormat
@@ -8,56 +7,22 @@ import static java.lang.System.getenv
 
 class Analysis {
 	static def projectName = "idea"
-//	static def projectName = "delta-flora-for-intellij"
-
-
 
 	static void main(String[] args) {
 		def events = loadAllEvents("${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv")
-		def fromDay = floorToDay(events.last().revisionDate)
-		def toDay = floorToDay(events.first().revisionDate)
-		def fillMissingDays = { valuesByDate, defaultValue ->
-			use(TimeCategory) {
-				def day = fromDay.clone()
-				while (!day.after(toDay)) {
-					if (!valuesByDate.containsKey(day)) valuesByDate[day] = defaultValue
-					day += 1.day
-				}
-				valuesByDate
-			}
-		}
 
-		createCalendarViewOn(events)
-		createBarChartViewOn(events)
-		createCooccurrencesGraph(events)
-
-//		def authorContributionByDate = events
-//				.groupBy{ floorToDay(it.revisionDate) }
-//				.collectEntries{ it.value = it.value.groupBy{it.author}.collect{[it.key, it.value.sum(changeSizeOf)]}; it }
-//		println(authorContributionByDate.entrySet().join("\n"))
-//
-//		def changesSizeByAuthorByDate = events
-//				.groupBy({ it.author }, { floorToDay(it.revisionDate) })
-//				.collectEntries{ it.value = fillMissingDays(it.value.collectEntries{ it.value = it.value.sum(changeSizeOf); it }, 0).sort(); it}
-//		def authorsContributions = changesSizeByAuthorByDate.entrySet().collectEntries{ [it.key, it.value.entrySet().count{it.value > 0}] }
-//		def flattened = changesSizeByAuthorByDate
-//				.entrySet().toList().sort{ -authorsContributions[it.key] }.take(5).collectMany { entry ->
-//					entry.value.collect { [it.key, entry.key, it.value] }
-//				}
-//		fillTemplate("stacked_bars_template.html", asCsvStringLiteral(flattened, ["date", "author", "changeSizeOf"]))
-
-//		def commitSizes_InOffsets = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeOf(it)}] }
-//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InOffsets , ["commit size"]))
-//		def commitSizes_InLines = events.groupBy{ it.revision }.entrySet().collect{ [it.value.sum{changeSizeInLinesOf(it)}] }
-//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InLines , ["commit size"]))
-//		def commitSizes_InFiles = events.groupBy{ it.revision }.entrySet().collect{ [it.value.collect{it.fileName}.unique().size()] }
-//		fillTemplate("commit_size_histogram_template.html", asCsvStringLiteral(commitSizes_InFiles , ["commit size"]))
-
+//		createCalendarViewOn(events)
+//		createBarChartViewOn(events)
+//		createCooccurrencesGraph(events)
+		createChangeSizeTreeMapFor(events)
 
 		// TODO word cloud for commit messages
 //		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
 //		println(commitMessages.join("\n"))
+	}
 
+	static void createChangeSizeTreeMapFor(events) {
+		// TODO
 	}
 
 	static void createCooccurrencesGraph(events, threshold = 7) {
