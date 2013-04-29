@@ -360,8 +360,8 @@ class ChangeExtractor {
 					def fileChangeInfo = fileChangeInfoOf(change, project)
 					if (fileChangeInfo == null) return []
 
-					// TODO create CommitInfo, FileChangeInfo even if there are no element changes
-					elementChangesOf(change, project).collect{ new ChangeEvent(commitInfo, fileChangeInfo, it) }
+					def elementChanges = withDefault([null], elementChangesOf(change, project))
+					elementChanges.collect{ new ChangeEvent(commitInfo, fileChangeInfo, it) }
 				}
 			} as Collection<ChangeEvent>
 		} catch (ProcessCanceledException ignore) {
@@ -379,8 +379,9 @@ class ChangeExtractor {
 
 	private static FileChangeInfo fileChangeInfoOf(Change change, Project project) {
 		change.with {
-			def (beforeText, afterText, nonEmptyRevision) = contentOf(change)
-			if (nonEmptyRevision.file.fileType.isBinary()) return null
+			def nonEmptyRevision = nonEmptyRevisionOf(change)
+			if (nonEmptyRevision.file.fileType.binary) return null
+			def (beforeText, afterText) = contentOf(change)
 
 			def packageBefore = measure("VCS content time"){ withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
 			def packageAfter = measure("VCS content time"){ withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
@@ -397,8 +398,9 @@ class ChangeExtractor {
 
 	private static Collection<ElementChangeInfo> elementChangesOf(Change change, Project project) {
 		change.with{
-			def (beforeText, afterText, nonEmptyRevision) = contentOf(change)
-			if (nonEmptyRevision.file.fileType.isBinary()) return []
+			def nonEmptyRevision = nonEmptyRevisionOf(change)
+			if (nonEmptyRevision.file.fileType.binary) return []
+			def (beforeText, afterText) = contentOf(change)
 
 			elementChangesBetween(beforeText, afterText) { String text ->
 				runReadAction {
@@ -409,13 +411,16 @@ class ChangeExtractor {
 		}
 	}
 
+	private static def nonEmptyRevisionOf(Change change) {
+		change.with{ afterRevision == null ? beforeRevision : afterRevision }
+	}
+
 	private static def contentOf(Change change) {
 		change.with{
 			measure("VCS content time") {
 				def beforeText = withDefault("", beforeRevision?.content)
 				def afterText = withDefault("", afterRevision?.content)
-				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
-				[beforeText, afterText, nonEmptyRevision]
+				[beforeText, afterText]
 			}
 		}
 	}
@@ -540,7 +545,7 @@ class ChangeExtractor {
 		else parentMethodOrClassOf(psiElement.parent)
 	}
 
-	private static String withDefault(defaultValue, value) { value == null ? defaultValue : value }
+	private static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
