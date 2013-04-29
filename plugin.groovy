@@ -93,6 +93,7 @@ def processChangeLists(changeLists, indicator, callback) {
 		def date = dateFormat.format((Date) changeList.commitDate)
 		indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
 		catchingAll_ {
+//			Collection<ChangeEvent> changeEvents = fileChangeEventsFrom((CommittedChangeList) changeList, project)
 			Collection<ChangeEvent> changeEvents = changeEventsFrom((CommittedChangeList) changeList, project)
 			callback(changeEvents)
 		}
@@ -356,7 +357,7 @@ class ChangeExtractor {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collect { Change change ->
-				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false), null)
+				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false), ElementChangeInfo.EMPTY)
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]
@@ -582,6 +583,8 @@ class FileChangeInfo {
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
 final class ElementChangeInfo {
+	static ElementChangeInfo EMPTY = new ElementChangeInfo("", "", 0, 0, 0, 0)
+
 	String elementName
 	String changeType
 	int fromLine      // TODO use instead linesBefore/After
