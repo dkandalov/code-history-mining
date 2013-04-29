@@ -116,8 +116,7 @@ class ProjectHistory {
 	                                                    int sizeOfVCSRequestInDays = 30, boolean presentToPast = true) {
 		def dateIterator = (presentToPast ?
 				new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
-				new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
-		)
+				new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays))
 		List<CommittedChangeList> changes = []
 
 		new Iterator<CommittedChangeList>() {
@@ -356,7 +355,7 @@ class ChangeExtractor {
 
 	static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
 		try {
-			(Collection<ChangeEvent>) changeList.changes.collectMany { Change change ->
+			changeList.changes.collectMany { Change change ->
 				change.with {
 					long timeBeforeGettingGitContent = System.currentTimeMillis()
 
@@ -384,28 +383,28 @@ class ChangeExtractor {
 						runReadAction {
 							def fileFactory = PsiFileFactory.getInstance(project)
 							fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-						}
+						} as PsiFile
 					}
 
 					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
 
-					ChangeExtractor.changeEventsBetween(beforeText, afterText, parseAsPsi).collect{
+					elementChangesBetween(beforeText, afterText, parseAsPsi).collect{
 						new ChangeEvent(commitInfo, fileChangeInfo, it)
 					}
 				}
-			}
+			} as Collection<ChangeEvent>
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
 	}
 
-	static List<ElementChangeInfo> changeEventsBetween(String beforeText, String afterText, Closure<PsiFile> parseAsPsi) {
-		PsiFile psiBefore = measure("parsing time"){ parseAsPsi(beforeText) }
-		PsiFile psiAfter = measure("parsing time"){ parseAsPsi(afterText) }
+	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> parseToPsi) {
+		PsiFile psiBefore = measure("parsing time"){ parseToPsi(beforeText) }
+		PsiFile psiAfter = measure("parsing time"){ parseToPsi(afterText) }
 
 		def changedFragments = measure("diff time") { new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
 
-		(List<ElementChangeInfo>) changedFragments.collectMany { LineFragment fragment ->
+		changedFragments.collectMany { LineFragment fragment ->
 			measure("change events time") {
 				def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
@@ -447,11 +446,11 @@ class ChangeExtractor {
 
 				changeEvents
 			}
-		}
+		} as Collection<ElementChangeInfo>
 	}
 
 	private static String revisionNumberOf(CommittedChangeList changeList) {
-		// this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
+		// TODO this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
 		if (changeList.class.simpleName == "GitCommittedChangeList") {
 			changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
 		} else {
@@ -617,7 +616,7 @@ class CurrentFileHistory {
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
 			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-			ChangeExtractor.changeEventsBetween(beforeText, afterText, commitInfo, parseAsPsi)
+			ChangeExtractor.elementChangesBetween(beforeText, afterText, commitInfo, parseAsPsi)
 		}
 	}
 }
