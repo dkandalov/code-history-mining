@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat
 
 import static ChangeExtractor.*
 import static Measure.measure
-import static Measure.record
 import static ProjectHistory.fetchChangeListsFor
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
@@ -355,47 +354,66 @@ class ChangeExtractor {
 
 	static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
 		try {
+			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collectMany { Change change ->
 				change.with {
-					long timeBeforeGettingGitContent = System.currentTimeMillis()
+//					long timeBeforeGettingGitContent = System.currentTimeMillis() // TODO
+//					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
 
-					def beforeText = withDefault("", beforeRevision?.content)
-					def afterText = withDefault("", afterRevision?.content)
-					def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
-					if (nonEmptyRevision.file.fileType.isBinary()) return []
+					def fileChangeInfo = fileChangeInfoOf(change, project)
+					if (fileChangeInfo == null) return []
 
-					def commitInfo = new CommitInfo(
-							revisionNumberOf(changeList),
-							removeEmailFrom(changeList.committerName),
-							changeList.commitDate, changeList.comment.trim()
-					)
-					def packageBefore = withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "")
-					def packageAfter = withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "")
-					def fileChangeInfo = new FileChangeInfo(
-							nonEmptyRevision.file.name,
-							type.toString(),
-							packageBefore,
-							packageAfter == packageBefore ? "" : packageAfter,
-							beforeText.split("\n").length,
-							afterText.split("\n").length
-					)
-					def parseAsPsi = { String text ->
-						runReadAction {
-							def fileFactory = PsiFileFactory.getInstance(project)
-							fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-						} as PsiFile
-					}
-
-					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
-
-					elementChangesBetween(beforeText, afterText, parseAsPsi).collect{
-						new ChangeEvent(commitInfo, fileChangeInfo, it)
-					}
+					elementChangesOf(change, project).collect{ new ChangeEvent(commitInfo, fileChangeInfo, it) }
 				}
 			} as Collection<ChangeEvent>
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
+	}
+
+	private static Collection<ElementChangeInfo> elementChangesOf(Change change, Project project) {
+		change.with{
+			def beforeText = withDefault("", beforeRevision?.content)
+			def afterText = withDefault("", afterRevision?.content)
+			def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+			if (nonEmptyRevision.file.fileType.isBinary()) return []
+
+			def parseAsPsi = { String text ->
+				runReadAction {
+					def fileFactory = PsiFileFactory.getInstance(project)
+					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+				} as PsiFile
+			}
+			elementChangesBetween(beforeText, afterText, parseAsPsi)
+		}
+	}
+
+	private static FileChangeInfo fileChangeInfoOf(Change change, Project project) {
+		change.with {
+			def beforeText = withDefault("", beforeRevision?.content)
+			def afterText = withDefault("", afterRevision?.content)
+			def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+			if (nonEmptyRevision.file.fileType.isBinary()) return null
+
+			def packageBefore = withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "")
+			def packageAfter = withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "")
+			new FileChangeInfo(
+					nonEmptyRevision.file.name,
+					type.toString(),
+					packageBefore,
+					packageAfter == packageBefore ? "" : packageAfter,
+					beforeText.split("\n").length,
+					afterText.split("\n").length
+			)
+		} as FileChangeInfo
+	}
+
+	private static CommitInfo commitInfoOf(CommittedChangeList changeList) {
+		new CommitInfo(
+				revisionNumberOf(changeList),
+				removeEmailFrom(changeList.committerName),
+				changeList.commitDate, changeList.comment.trim()
+		)
 	}
 
 	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> parseToPsi) {
