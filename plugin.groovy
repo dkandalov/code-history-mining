@@ -356,7 +356,7 @@ class ChangeExtractor {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collect { Change change ->
-				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project), null)
+				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false), null)
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]
@@ -379,57 +379,52 @@ class ChangeExtractor {
 
 	private static CommitInfo commitInfoOf(CommittedChangeList changeList) {
 		new CommitInfo(
-				revisionNumberOf(changeList),
-				removeEmailFrom(changeList.committerName),
-				changeList.commitDate, changeList.comment.trim()
+			revisionNumberOf(changeList),
+			removeEmailFrom(changeList.committerName),
+			changeList.commitDate, changeList.comment.trim()
 		)
 	}
 
 	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean countFileLines = true) {
-		change.with {
-			def nonEmptyRevision = nonEmptyRevisionOf(change)
-			if (nonEmptyRevision.file.fileType.binary) countFileLines = false
-			def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
+		def nonEmptyRevision = nonEmptyRevisionOf(change)
+		if (nonEmptyRevision.file.fileType.binary) countFileLines = false
+		def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
 
-			def packageBefore = measure("VCS content time"){ withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
-			def packageAfter = measure("VCS content time"){ withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
-			new FileChangeInfo(
-					nonEmptyRevision.file.name,
-					type.toString(),
-					packageBefore,
-					packageAfter == packageBefore ? "" : packageAfter,
-					beforeText.split("\n").length,
-					afterText.split("\n").length
-			)
-		} as FileChangeInfo
+		def packageBefore = measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
+		def packageAfter = measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
+
+		new FileChangeInfo(
+				nonEmptyRevision.file.name,
+				change.type.toString(),
+				packageBefore,
+				packageAfter == packageBefore ? "" : packageAfter,
+				beforeText.split("\n").length,
+				afterText.split("\n").length
+		)
 	}
 
 	private static Collection<ElementChangeInfo> elementChangesOf(Change change, Project project) {
-		change.with{
-			def nonEmptyRevision = nonEmptyRevisionOf(change)
-			if (nonEmptyRevision.file.fileType.binary) return []
-			def (beforeText, afterText) = contentOf(change)
+		def nonEmptyRevision = nonEmptyRevisionOf(change)
+		if (nonEmptyRevision.file.fileType.binary) return []
+		def (beforeText, afterText) = contentOf(change)
 
-			elementChangesBetween(beforeText, afterText) { String text ->
-				runReadAction {
-					def fileFactory = PsiFileFactory.getInstance(project)
-					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-				} as PsiFile
-			}
+		elementChangesBetween(beforeText, afterText) { String text ->
+			runReadAction {
+				def fileFactory = PsiFileFactory.getInstance(project)
+				fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+			} as PsiFile
 		}
 	}
 
 	private static def nonEmptyRevisionOf(Change change) {
-		change.with{ afterRevision == null ? beforeRevision : afterRevision }
+		change.afterRevision == null ? change.beforeRevision : change.afterRevision
 	}
 
 	private static def contentOf(Change change) {
-		change.with{
-			measure("VCS content time") {
-				def beforeText = withDefault("", beforeRevision?.content)
-				def afterText = withDefault("", afterRevision?.content)
-				[beforeText, afterText]
-			}
+		measure("VCS content time") {
+			def beforeText = withDefault("", change.beforeRevision?.content)
+			def afterText = withDefault("", change.afterRevision?.content)
+			[beforeText, afterText]
 		}
 	}
 
