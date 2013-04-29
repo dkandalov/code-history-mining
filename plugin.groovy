@@ -93,7 +93,7 @@ def processChangeLists(changeLists, indicator, callback) {
 		def date = dateFormat.format((Date) changeList.commitDate)
 		indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
 		catchingAll_ {
-			Collection<ChangeEvent> changeEvents = decomposeIntoChangeEvents((CommittedChangeList) changeList, project)
+			Collection<ChangeEvent> changeEvents = changeEventsFrom((CommittedChangeList) changeList, project)
 			callback(changeEvents)
 		}
 		indicator.text = "Analyzing project history (${date} - looking for next commit...)"
@@ -126,7 +126,7 @@ class ProjectHistory {
 			@Override CommittedChangeList next() {
 				if (!changes.empty) return changes.remove(0)
 
-				measure("git request time") {
+				measure("VCS request time") {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
 						changes = requestChangeListsFor(project, dates.from, dates.to)
@@ -352,17 +352,15 @@ class EventStorage {
 
 class ChangeExtractor {
 
-	static Collection<ChangeEvent> decomposeIntoChangeEvents(CommittedChangeList changeList, Project project) {
+	static Collection<ChangeEvent> changeEventsFrom(CommittedChangeList changeList, Project project) {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collectMany { Change change ->
 				change.with {
-//					long timeBeforeGettingGitContent = System.currentTimeMillis() // TODO
-//					record("git content time", System.currentTimeMillis() - timeBeforeGettingGitContent)
-
 					def fileChangeInfo = fileChangeInfoOf(change, project)
 					if (fileChangeInfo == null) return []
 
+					// TODO create CommitInfo, FileChangeInfo even if there are no element changes
 					elementChangesOf(change, project).collect{ new ChangeEvent(commitInfo, fileChangeInfo, it) }
 				}
 			} as Collection<ChangeEvent>
@@ -371,32 +369,21 @@ class ChangeExtractor {
 		}
 	}
 
-	private static Collection<ElementChangeInfo> elementChangesOf(Change change, Project project) {
-		change.with{
-			def beforeText = withDefault("", beforeRevision?.content)
-			def afterText = withDefault("", afterRevision?.content)
-			def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
-			if (nonEmptyRevision.file.fileType.isBinary()) return []
-
-			def parseAsPsi = { String text ->
-				runReadAction {
-					def fileFactory = PsiFileFactory.getInstance(project)
-					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
-				} as PsiFile
-			}
-			elementChangesBetween(beforeText, afterText, parseAsPsi)
-		}
+	private static CommitInfo commitInfoOf(CommittedChangeList changeList) {
+		new CommitInfo(
+				revisionNumberOf(changeList),
+				removeEmailFrom(changeList.committerName),
+				changeList.commitDate, changeList.comment.trim()
+		)
 	}
 
 	private static FileChangeInfo fileChangeInfoOf(Change change, Project project) {
 		change.with {
-			def beforeText = withDefault("", beforeRevision?.content)
-			def afterText = withDefault("", afterRevision?.content)
-			def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+			def (beforeText, afterText, nonEmptyRevision) = contentOf(change)
 			if (nonEmptyRevision.file.fileType.isBinary()) return null
 
-			def packageBefore = withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "")
-			def packageAfter = withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "")
+			def packageBefore = measure("VCS content time"){ withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
+			def packageAfter = measure("VCS content time"){ withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
 			new FileChangeInfo(
 					nonEmptyRevision.file.name,
 					type.toString(),
@@ -408,17 +395,34 @@ class ChangeExtractor {
 		} as FileChangeInfo
 	}
 
-	private static CommitInfo commitInfoOf(CommittedChangeList changeList) {
-		new CommitInfo(
-				revisionNumberOf(changeList),
-				removeEmailFrom(changeList.committerName),
-				changeList.commitDate, changeList.comment.trim()
-		)
+	private static Collection<ElementChangeInfo> elementChangesOf(Change change, Project project) {
+		change.with{
+			def (beforeText, afterText, nonEmptyRevision) = contentOf(change)
+			if (nonEmptyRevision.file.fileType.isBinary()) return []
+
+			elementChangesBetween(beforeText, afterText) { String text ->
+				runReadAction {
+					def fileFactory = PsiFileFactory.getInstance(project)
+					fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
+				} as PsiFile
+			}
+		}
 	}
 
-	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> parseToPsi) {
-		PsiFile psiBefore = measure("parsing time"){ parseToPsi(beforeText) }
-		PsiFile psiAfter = measure("parsing time"){ parseToPsi(afterText) }
+	private static def contentOf(Change change) {
+		change.with{
+			measure("VCS content time") {
+				def beforeText = withDefault("", beforeRevision?.content)
+				def afterText = withDefault("", afterRevision?.content)
+				def nonEmptyRevision = (afterRevision == null ? beforeRevision : afterRevision)
+				[beforeText, afterText, nonEmptyRevision]
+			}
+		}
+	}
+
+	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> psiParser) {
+		PsiFile psiBefore = measure("parsing time"){ psiParser(beforeText) }
+		PsiFile psiAfter = measure("parsing time"){ psiParser(afterText) }
 
 		def changedFragments = measure("diff time") { new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
 
@@ -572,7 +576,7 @@ class FileChangeInfo {
 final class ElementChangeInfo {
 	String elementName
 	String changeType
-	int fromLine
+	int fromLine      // TODO use instead linesBefore/After
 	int toLine
 	int fromOffset
 	int toOffset
