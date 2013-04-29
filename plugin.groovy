@@ -352,16 +352,24 @@ class EventStorage {
 
 class ChangeExtractor {
 
+	static Collection<ChangeEvent> fileChangeEventsFrom(CommittedChangeList changeList, Project project) {
+		try {
+			def commitInfo = commitInfoOf(changeList)
+			changeList.changes.collect { Change change ->
+				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project), null)
+			}
+		} catch (ProcessCanceledException ignore) {
+			[]
+		}
+	}
+
 	static Collection<ChangeEvent> changeEventsFrom(CommittedChangeList changeList, Project project) {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collectMany { Change change ->
-				change.with {
-					def fileChangeInfo = fileChangeInfoOf(change, project)
-					if (fileChangeInfo == null) return []
-
-					def elementChanges = withDefault([null], elementChangesOf(change, project))
-					elementChanges.collect{ new ChangeEvent(commitInfo, fileChangeInfo, it) }
+				def fileChangeInfo = fileChangeInfoOf(change, project)
+				withDefault([null], elementChangesOf(change, project)).collect{
+					new ChangeEvent(commitInfo, fileChangeInfo, it)
 				}
 			} as Collection<ChangeEvent>
 		} catch (ProcessCanceledException ignore) {
@@ -377,11 +385,11 @@ class ChangeExtractor {
 		)
 	}
 
-	private static FileChangeInfo fileChangeInfoOf(Change change, Project project) {
+	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean countFileLines = true) {
 		change.with {
 			def nonEmptyRevision = nonEmptyRevisionOf(change)
-			if (nonEmptyRevision.file.fileType.binary) return null
-			def (beforeText, afterText) = contentOf(change)
+			if (nonEmptyRevision.file.fileType.binary) countFileLines = false
+			def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
 
 			def packageBefore = measure("VCS content time"){ withDefault("", beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
 			def packageAfter = measure("VCS content time"){ withDefault("", afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
