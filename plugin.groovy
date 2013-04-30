@@ -34,6 +34,7 @@ import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
+import static history.Events.*
 
 if (isIdeStartup) return
 
@@ -552,46 +553,6 @@ class ChangeExtractor {
 	private static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }
 
-@SuppressWarnings("GroovyUnusedDeclaration")
-@groovy.transform.Immutable
-final class ChangeEvent {
-	@Delegate CommitInfo commitInfo
-	@Delegate FileChangeInfo fileChangeInfo
-	@Delegate ElementChangeInfo partialChangeEvent
-}
-
-@SuppressWarnings("GroovyUnusedDeclaration")
-@groovy.transform.Immutable
-class CommitInfo {
-	String revision
-	String author
-	Date revisionDate
-	String commitMessage
-}
-
-@SuppressWarnings("GroovyUnusedDeclaration")
-@groovy.transform.Immutable
-class FileChangeInfo {
-	String fileName
-	String fileChangeType
-	String packageBefore
-	String packageAfter
-	int linesInFileBefore
-	int linesInFileAfter
-}
-
-@SuppressWarnings("GroovyUnusedDeclaration")
-@groovy.transform.Immutable
-final class ElementChangeInfo {
-	static ElementChangeInfo EMPTY = new ElementChangeInfo("", "", 0, 0, 0, 0)
-
-	String elementName
-	String changeType
-	int fromLine      // TODO use instead linesBefore/After
-	int toLine
-	int fromOffset
-	int toOffset
-}
 
 class Measure {
 	static Map<String, Long> durations = [:].withDefault{ 0 }
