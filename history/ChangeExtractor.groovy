@@ -20,6 +20,7 @@ import history.events.ChangeEvent
 import history.events.CommitInfo
 import history.events.ElementChangeInfo
 import history.events.FileChangeInfo
+import history.util.Measure
 import intellijeval.PluginUtil
 
 

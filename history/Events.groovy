@@ -1,6 +1,0 @@
-package history
-
-class Events {
-
-
-}

@@ -2,14 +2,14 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import history.EventStorage
-import history.Measure
+import history.util.Measure
 import history.ProjectHistory
 import history.events.ChangeEvent
 import org.jetbrains.annotations.Nullable
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.ChangeExtractor.changeEventsFrom
-import static history.Measure.measure
+import static Measure.measure
 import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return

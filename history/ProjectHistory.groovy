@@ -13,8 +13,10 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
+import history.util.PastToPresentIterator
+import history.util.PresentToPastIterator
 
-import static history.Measure.measure
+import static history.util.Measure.measure
 
 
 class ProjectHistory {

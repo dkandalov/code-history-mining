@@ -1,4 +1,4 @@
-package history
+package history.util
 
 import groovy.time.TimeCategory
 import org.junit.Test
