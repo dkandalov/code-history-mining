@@ -35,6 +35,8 @@ import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.Events.*
 import static history.Measure.measure
 import static intellijeval.PluginUtil.*
+import static history.TimeIterators.*
+
 
 if (isIdeStartup) return
 
