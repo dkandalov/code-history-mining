@@ -6,12 +6,10 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.util.io.FileUtil
-import com.intellij.openapi.vcs.AbstractVcs
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.changes.Change
-import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -34,9 +32,9 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.Events.*
 import static history.Measure.measure
+import static history.TimeIterators.PastToPresentIterator
+import static history.TimeIterators.PresentToPastIterator
 import static intellijeval.PluginUtil.*
-import static history.TimeIterators.*
-
 
 if (isIdeStartup) return
 
@@ -553,50 +551,4 @@ class ChangeExtractor {
 	}
 
 	private static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
-}
-
-
-class CurrentFileHistory {
-
-	static showChangeEventsForCurrentFileHistory(Project project) {
-		def file = currentFileIn(project)
-		def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
-		if (errorMessage != null) {
-			show(errorMessage)
-			return
-		}
-		show("good to go")
-
-		def changeEvents = extractChangeEvents(file, revisions, project)
-		showInConsole(toCsv(changeEvents.take(12)), "output", project)
-
-		show("done")
-	}
-
-	private static tryToGetHistoryFor(VirtualFile file, Project project) {
-		if (file == null) return ["Virtual file was null"]
-
-		AbstractVcs activeVcs = ProjectLevelVcsManager.getInstance(project).getVcsFor(file)
-		if (activeVcs == null) return ["There is no history for '${file.name}'"]
-
-		def historySession = activeVcs.vcsHistoryProvider.createSessionFor(new FilePathImpl(file))
-		def revisions = historySession.revisionList.sort{ it.revisionDate }
-		if (revisions.size() < 1) return ["There are no committed revisions for '${file.name}'"]
-
-		def noErrors = null
-		[noErrors, revisions]
-	}
-
-	private static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
-		def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
-		def psiFileFactory = PsiFileFactory.getInstance(project)
-		def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, text) }
-
-		(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
-			def beforeText = (before == null ? "" : new String(before.content))
-			def afterText = new String(after.content)
-			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-			ChangeExtractor.elementChangesBetween(beforeText, afterText, commitInfo, parseAsPsi)
-		}
-	}
 }
