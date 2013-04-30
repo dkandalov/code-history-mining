@@ -9,7 +9,7 @@ class TimeIteratorsTest {
 		def toDate = use(TimeCategory){ fromDate + 10.days }
 		def stepSizeInDays = 7
 
-		def iterator = new TimeIterators.PresentToPastIterator(fromDate, toDate, stepSizeInDays)
+		def iterator = new PresentToPastIterator(fromDate, toDate, stepSizeInDays)
 
 		assert iterator.hasNext()
 		assert iterator.next() == [from: date(1970, 1, 4), to: date(1970, 1, 11)]
@@ -23,7 +23,7 @@ class TimeIteratorsTest {
 		def toDate = use(TimeCategory){ fromDate + 10.days }
 		def stepSizeInDays = 7
 
-		def iterator = new TimeIterators.PastToPresentIterator(fromDate, toDate, stepSizeInDays)
+		def iterator = new PastToPresentIterator(fromDate, toDate, stepSizeInDays)
 
 		assert iterator.hasNext()
 		assert iterator.next() == [from: date(1970, 1, 1), to: date(1970, 1, 8)]
