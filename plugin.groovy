@@ -26,15 +26,15 @@ import org.jetbrains.annotations.Nullable
 import java.text.SimpleDateFormat
 
 import static ChangeExtractor.*
-import static Measure.measure
 import static ProjectHistory.fetchChangeListsFor
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static intellijeval.PluginUtil.*
 import static history.Events.*
+import static history.Measure.measure
+import static intellijeval.PluginUtil.*
 
 if (isIdeStartup) return
 
@@ -553,22 +553,6 @@ class ChangeExtractor {
 	private static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }
 
-
-class Measure {
-	static Map<String, Long> durations = [:].withDefault{ 0 }
-
-	static <T> T measure(String id, Closure<T> closure) {
-		long start = System.currentTimeMillis()
-		T result = closure()
-		long time = System.currentTimeMillis() - start
-		durations[id] += time
-		result
-	}
-
-	static record(String id, long duration) {
-		durations[id] += duration
-	}
-}
 
 class CurrentFileHistory {
 
