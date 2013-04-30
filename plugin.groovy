@@ -439,12 +439,9 @@ class ChangeExtractor {
 			measure("change events time") {
 				def offsetToLineNumber = { int offset -> fragment.type == DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
 
-				def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
-				def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
-
-				List<ElementChangeInfo> changeEvents = []
+				List<ElementChangeInfo> elementChanges = []
 				def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
-					def partialChangeEvent = new ElementChangeInfo(
+					def elementChange = new ElementChangeInfo(
 							fullNameOf(psiElement),
 							diffTypeOf(fragment),
 							offsetToLineNumber(fromOffset),
@@ -452,8 +449,11 @@ class ChangeExtractor {
 							fromOffset,
 							toOffset
 					)
-					changeEvents << partialChangeEvent
+					elementChanges << elementChange
 				}
+
+				def revisionWithCode = (fragment.type == DELETED ? psiBefore : psiAfter)
+				def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
 				PsiNamedElement prevPsiElement = null
 				int fromOffset = range.startOffset
@@ -475,7 +475,7 @@ class ChangeExtractor {
 						addChangeEvent(prevPsiElement, fromOffset, range.endOffset)
 				}
 
-				changeEvents
+				elementChanges
 			}
 		} as Collection<ElementChangeInfo>
 	}
