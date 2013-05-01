@@ -1,67 +1,96 @@
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import history.EventStorage
-import history.util.Measure
 import history.ProjectHistory
 import history.events.ChangeEvent
+import history.util.Measure
 import org.jetbrains.annotations.Nullable
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.ChangeExtractor.changeEventsFrom
-import static Measure.measure
+import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 
-if (isIdeStartup) return
 
-//new TextCompareProcessorTestSuite(project).run()
-//if (true) return
+registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
+	JBPopupFactory.instance.createActionGroupPopup(
+			"Delta Flora",
+			new DefaultActionGroup().with {
+				add(new AnAction("Grab Project History") {
+					@Override void actionPerformed(AnActionEvent event) {
+						grabHistoryOf(event.project)
+					}
+				})
+				add(new Separator())
+				add(new AnAction("some.csv") {
+					@Override void actionPerformed(AnActionEvent event) {
+						show("oooo") // TODO list existing .csv files with actions on them
+					}
+				})
+				it
+			},
+			actionEvent.dataContext,
+			JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+			true
+	).showCenteredInCurrentWindow(actionEvent.project)
+}
+show("loaded DeltaFlora plugin")
 
 
-doInBackground("Analyzing project history", { ProgressIndicator indicator ->
-	measure("time") {
-		def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
+def grabHistoryOf(Project project) {
+	doInBackground("Collecting project history", { ProgressIndicator indicator ->
+		measure("time") {
+			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
 
-		def now = new Date()
-		def daysOfHistory = 900
-		def sizeOfVCSRequestInDays = 1
+			def now = new Date()
+			def daysOfHistory = 900
+			def sizeOfVCSRequestInDays = 1
 
-		if (storage.hasNoEvents()) {
-			def historyStart = now - daysOfHistory
-			def historyEnd = now
+			if (storage.hasNoEvents()) {
+				def historyStart = now - daysOfHistory
+				def historyEnd = now
 
-			log("Loading project history from $historyStart to $historyEnd")
-			Iterator<CommittedChangeList> changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
-			processChangeLists(changeLists, indicator) { changeEvents ->
-				storage.appendToEventsFile(changeEvents)
+				log("Loading project history from $historyStart to $historyEnd")
+				Iterator<CommittedChangeList> changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+				processChangeLists(changeLists, indicator, project) { changeEvents ->
+					storage.appendToEventsFile(changeEvents)
+				}
+			} else {
+				def historyStart = storage.mostRecentEventTime
+				def historyEnd = now
+				log("Loading project history from $historyStart to $historyEnd")
+
+				def changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays, false)
+				processChangeLists(changeLists, indicator, project) { changeEvents ->
+					storage.prependToEventsFile(changeEvents)
+				}
+
+				historyStart = now - daysOfHistory
+				historyEnd = storage.oldestEventTime
+				log("Loading project history from $historyStart to $historyEnd")
+
+				changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+				processChangeLists(changeLists, indicator, project) { changeEvents ->
+					storage.appendToEventsFile(changeEvents)
+				}
 			}
-		} else {
-			def historyStart = storage.mostRecentEventTime
-			def historyEnd = now
-			log("Loading project history from $historyStart to $historyEnd")
 
-			def changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays, false)
-			processChangeLists(changeLists, indicator) { changeEvents ->
-				storage.prependToEventsFile(changeEvents)
-			}
-
-			historyStart = now - daysOfHistory
-			historyEnd = storage.oldestEventTime
-			log("Loading project history from $historyStart to $historyEnd")
-
-			changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
-			processChangeLists(changeLists, indicator) { changeEvents ->
-				storage.appendToEventsFile(changeEvents)
-			}
+			showInConsole("Saved change events to ${storage.filePath}", "output", project)
+			showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 		}
+		Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
+	}, {})
+}
 
-		showInConsole("Saved change events to ${storage.filePath}", "output", project)
-		showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
-	}
-	Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
-}, {})
 
-def processChangeLists(changeLists, indicator, callback) {
+static def processChangeLists(changeLists, indicator, project, callback) {
 	for (changeList in changeLists) {
 		if (changeList == null) break
 		if (indicator.canceled) break

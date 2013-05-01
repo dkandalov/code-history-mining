@@ -7,7 +7,7 @@ class ElementChangeInfo {
 
 	String elementName
 	String changeType
-	int fromLine      // TODO use instead linesBefore/After
+	int fromLine      // TODO change to linesBefore/After
 	int toLine
 	int fromOffset
 	int toOffset
