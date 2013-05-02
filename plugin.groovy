@@ -55,7 +55,7 @@ def grabHistoryOf(Project project) {
 			def eventsExtractor = new ChangeEventsExtractor(project)
 			def sourceOfChangeEvents = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor)
 
-			def indicatorUpdater = { changeList, callback ->
+			def updateIndicatorText = { changeList, callback ->
 				log(changeList.name)
 				def date = dateFormat.format((Date) changeList.commitDate)
 				indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
@@ -64,31 +64,26 @@ def grabHistoryOf(Project project) {
 
 				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 			}
+			def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
+			def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
+
 
 			if (storage.hasNoEvents()) {
 				def historyStart = now - daysOfHistory
 				def historyEnd = now
-
 				log("Loading project history from $historyStart to $historyEnd")
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
-					storage.appendToEventsFile(batchOfChangeEvents)
-				}
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+
 			} else {
 				def historyStart = storage.mostRecentEventTime
 				def historyEnd = now
 				log("Loading project history from $historyStart to $historyEnd")
-
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
-					storage.prependToEventsFile(batchOfChangeEvents)
-				}
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 
 				historyStart = now - daysOfHistory
 				historyEnd = storage.oldestEventTime
 				log("Loading project history from $historyStart to $historyEnd")
-
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
-					storage.appendToEventsFile(batchOfChangeEvents)
-				}
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
 			}
 
 			showInConsole("Saved change events to ${storage.filePath}", "output", project)
