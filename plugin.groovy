@@ -8,16 +8,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import history.EventStorage
-import history.ProjectHistory
+import history.SourceOfChangeLists
 import history.events.ChangeEvent
 import history.util.Measure
-import org.jetbrains.annotations.Nullable
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.ChangeExtractor.changeEventsFrom
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
-
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -45,20 +43,22 @@ show("loaded DeltaFlora plugin")
 
 
 def grabHistoryOf(Project project) {
-	doInBackground("Collecting project history", { ProgressIndicator indicator ->
+
+	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 		measure("time") {
 			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
 
 			def now = new Date()
 			def daysOfHistory = 900
 			def sizeOfVCSRequestInDays = 1
+			def sourceOfChangeLists = new SourceOfChangeLists(project, sizeOfVCSRequestInDays)
 
 			if (storage.hasNoEvents()) {
 				def historyStart = now - daysOfHistory
 				def historyEnd = now
 
 				log("Loading project history from $historyStart to $historyEnd")
-				Iterator<CommittedChangeList> changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+				Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
 				processChangeLists(changeLists, indicator, project) { changeEvents ->
 					storage.appendToEventsFile(changeEvents)
 				}
@@ -67,7 +67,7 @@ def grabHistoryOf(Project project) {
 				def historyEnd = now
 				log("Loading project history from $historyStart to $historyEnd")
 
-				def changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays, false)
+				def changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd, false)
 				processChangeLists(changeLists, indicator, project) { changeEvents ->
 					storage.prependToEventsFile(changeEvents)
 				}
@@ -76,7 +76,7 @@ def grabHistoryOf(Project project) {
 				historyEnd = storage.oldestEventTime
 				log("Loading project history from $historyStart to $historyEnd")
 
-				changeLists = ProjectHistory.fetchChangeListsFor(project, historyStart, historyEnd, sizeOfVCSRequestInDays)
+				changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
 				processChangeLists(changeLists, indicator, project) { changeEvents ->
 					storage.appendToEventsFile(changeEvents)
 				}
@@ -97,22 +97,13 @@ static def processChangeLists(changeLists, indicator, project, callback) {
 		log(changeList.name)
 
 		def date = dateFormat.format((Date) changeList.commitDate)
-		indicator.text = "Analyzing project history (${date} - '${changeList.comment.trim()}')"
-		catchingAll_ {
+		indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
+		catchingAll {
 //			Collection<ChangeEvent> changeEvents = fileChangeEventsFrom((CommittedChangeList) changeList, project)
 			Collection<ChangeEvent> changeEvents = changeEventsFrom((CommittedChangeList) changeList, project)
 			callback(changeEvents)
 		}
-		indicator.text = "Analyzing project history (${date} - looking for next commit...)"
-	}
-}
-
-@Nullable static <T> T catchingAll_(Closure<T> closure) {
-	try {
-		closure.call()
-	} catch (Exception e) {
-		log(e)
-		null
+		indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 	}
 }
 

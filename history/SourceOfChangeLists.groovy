@@ -19,15 +19,23 @@ import history.util.PresentToPastIterator
 import static history.util.Measure.measure
 
 
-class ProjectHistory {
+class SourceOfChangeLists {
+	private final Project project
+	private final int sizeOfVCSRequestInDays
 
-	static Iterator<CommittedChangeList> fetchChangeListsFor(Project project, Date historyStart, Date historyEnd,
-	                                                    int sizeOfVCSRequestInDays = 30, boolean presentToPast = true) {
-		Iterator dateIterator
-		if (presentToPast) dateIterator = new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
-		else dateIterator = new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
+	SourceOfChangeLists(Project project, int sizeOfVCSRequestInDays = 30) {
+		this.project = project
+		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
+	}
+
+	Iterator<CommittedChangeList> fetchChangeLists(Date historyStart, Date historyEnd, boolean presentToPast = true) {
+		assert historyStart.time < historyEnd.time
+
+		Iterator dateIterator = (presentToPast ?
+			new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
+			new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
+		)
 		List<CommittedChangeList> changes = []
-
 		new Iterator<CommittedChangeList>() {
 			@Override boolean hasNext() {
 				!changes.empty || dateIterator.hasNext()
@@ -51,6 +59,7 @@ class ProjectHistory {
 			}
 		}
 	}
+
 
 	private static List<CommittedChangeList> requestChangeListsFor(Project project, Date fromDate = null, Date toDate = null) {
 		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
