@@ -7,24 +7,28 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFileFactory
+import history.events.ChangeEvent
+import history.events.CommitInfo
 import intellijeval.PluginUtil
 
+import static intellijeval.PluginUtil.show
 
-class CurrentFileHistory {
+
+class CurrentFileHistory { // TODO this class is broken
 
 	static showChangeEventsForCurrentFileHistory(Project project) {
 		def file = PluginUtil.currentFileIn(project)
 		def (errorMessage, List<VcsFileRevision> revisions) = tryToGetHistoryFor(file, project)
 		if (errorMessage != null) {
-			PluginUtil.show(errorMessage)
+			show(errorMessage)
 			return
 		}
-		PluginUtil.show("good to go")
+		show("good to go")
 
 		def changeEvents = extractChangeEvents(file, revisions, project)
 		PluginUtil.showInConsole(toCsv(changeEvents.take(12)), "output", project)
 
-		PluginUtil.show("done")
+		show("done")
 	}
 
 	private static tryToGetHistoryFor(VirtualFile file, Project project) {
@@ -41,15 +45,15 @@ class CurrentFileHistory {
 		[noErrors, revisions]
 	}
 
-	private static List<Events.ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
+	private static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 		def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 		def psiFileFactory = PsiFileFactory.getInstance(project)
 		def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, text) }
 
-		(List<Events.ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+		(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
-			def commitInfo = new Events.CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
+			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
 			ChangeEventsExtractor.elementChangesBetween(beforeText, afterText, commitInfo, parseAsPsi)
 		}
 	}

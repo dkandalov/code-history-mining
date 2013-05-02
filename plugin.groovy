@@ -1,3 +1,4 @@
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -8,11 +9,14 @@ import history.ChangeEventsExtractor
 import history.EventStorage
 import history.SourceOfChangeLists
 import history.util.Measure
+import http.HttpUtil
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.SourceOfChangeLists.getNO_MORE_CHANGE_LISTS
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
+
+String thisPluginPath = pluginPath // TODO remove when templates are self-contained
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -28,7 +32,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 				def eventFiles = new File("${PathManager.pluginsPath}/delta-flora").listFiles(new FileFilter() {
 					@Override boolean accept(File pathname) { pathname.name.endsWith(".csv") }
 				})
-				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file) })
+				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, thisPluginPath) })
 				it
 			},
 			actionEvent.dataContext,
@@ -40,11 +44,18 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 show("loaded DeltaFlora plugin")
 
 
-static ActionGroup createEventStorageActionGroup(File file) {
+static ActionGroup createEventStorageActionGroup(File file, String pluginPath) {
 	new DefaultActionGroup(file.name, true).with {
+		String projectName = file.name.replace(".csv", "")
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
-				show(file.name)
+				doInBackground("Creating calendar view", {
+					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
+					def events = new EventStorage(filePath).readAllEvents()
+					def json = Analysis.createJsonForCalendarView(events)
+					def server = HttpUtil.loadIntoHttpServer(projectName, pluginPath + "/html", "calendar_view_template.html", json)
+					BrowserUtil.launchBrowser("http://localhost:${server.port}/calendar_view_template.html")
+				}, {})
 			}
 		})
 		add(new AnAction("Change Size History") {

@@ -6,11 +6,11 @@ import java.util.regex.Matcher
 import static intellijeval.PluginUtil.changeGlobalVar
 import static intellijeval.PluginUtil.log
 
-class Util {
-	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToHttpFiles, String templateName, String json) {
-		def tempDir = FileUtil.createTempDirectory(projectId + "_", "_treemap")
+class HttpUtil {
+	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToHttpFiles, String templateFileName, String json) {
+		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 		FileUtil.copyDirContent(new File(pathToHttpFiles), tempDir) // TODO make templates self-contained
-		fillTemplate("$pathToHttpFiles/$templateName", json, tempDir.absolutePath + "/treemap.html")
+		fillTemplate("$pathToHttpFiles/$templateFileName", json, "$tempDir.absolutePath/$templateFileName")
 
 		log("Saved tree map into: " + tempDir.absolutePath)
 

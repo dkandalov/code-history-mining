@@ -1,3 +1,4 @@
+import history.EventStorage
 import org.junit.Test
 
 import java.text.SimpleDateFormat
@@ -6,16 +7,16 @@ import java.util.regex.Matcher
 import static java.lang.System.getenv
 
 class Analysis {
-	static def projectName = "idea"
+	static def projectName = "scratch"
 
 	static void main(String[] args) {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
 		def events = new EventStorage(filePath).readAllEvents()
 
-//		createCalendarViewOn(events)
+		fillTemplate("calendar_view_template.html", createJsonForCalendarView(events))
 //		createBarChartViewOn(events)
 //		createCooccurrencesGraph(events)
-		createChangeSizeTreeMapFor(events)
+//		createChangeSizeTreeMapFor(events)
 
 		// TODO word cloud for commit messages
 //		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
@@ -57,7 +58,7 @@ class Analysis {
 		fillTemplate("changes_size_chart_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
 	}
 
-	static void createCalendarViewOn(List events) {
+	static String createJsonForCalendarView(List events) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
@@ -83,7 +84,7 @@ class Analysis {
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
 
-		fillTemplate("calendar_view_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
+		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
 	static def changeSizeOf(event) { event.toOffset - event.fromOffset }
