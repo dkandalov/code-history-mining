@@ -14,6 +14,7 @@ import history.events.ChangeEvent
 import history.util.Measure
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
+import static history.SourceOfChangeLists.getNO_MORE_CHANGE_LISTS
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 
@@ -110,7 +111,7 @@ class SourceOfChangeEvents {
 
 static def processChangeLists(changeLists, indicator, project, callback) {
 	for (changeList in changeLists) {
-		if (changeList == null) break
+		if (changeList == NO_MORE_CHANGE_LISTS) break
 		if (indicator.canceled) break
 		log(changeList.name)
 

@@ -20,6 +20,8 @@ import static history.util.Measure.measure
 
 
 class SourceOfChangeLists {
+	static CommittedChangeList NO_MORE_CHANGE_LISTS = null
+
 	private final Project project
 	private final int sizeOfVCSRequestInDays
 
@@ -51,7 +53,7 @@ class SourceOfChangeLists {
 						if (!presentToPast) changes = changes.reverse()
 					}
 				}
-				changes.empty ? null : changes.remove(0)
+				changes.empty ? NO_MORE_CHANGE_LISTS : changes.remove(0)
 			}
 
 			@Override void remove() {
