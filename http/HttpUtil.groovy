@@ -10,17 +10,27 @@ class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToHttpFiles, String templateFileName, String json) {
 		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 		FileUtil.copyDirContent(new File(pathToHttpFiles), tempDir) // TODO make templates self-contained
-		fillTemplate("$pathToHttpFiles/$templateFileName", json, "$tempDir.absolutePath/$templateFileName")
 
-		log("Saved tree map into: " + tempDir.absolutePath)
+		def text = readFile("$pathToHttpFiles/$templateFileName")
+		text = inlineD3js(text, readFile(pathToHttpFiles + "/d3.v3.min.js"))
+		text = fillDataPlaceholder(text, json)
+		new File("$tempDir.absolutePath/$templateFileName").write(text)
+
+		log("Saved tree map into: " + tempDir.absolutePath + "/" + templateFileName)
 
 		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log(it)})
 	}
 
-	private static void fillTemplate(String template, String jsValue, String pathToNewFile) {
-		def templateText = new File(template).readLines().join("\n")
-		def text = templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
-		new File(pathToNewFile).write(text)
+	private static String fillDataPlaceholder(String templateText, String jsValue) {
+		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
+	}
+
+	private static String inlineD3js(String templateText, String d3js) {
+		templateText.replace("<script src=\"d3.v3.min.js\"></script>", "<script>$d3js</script>")
+	}
+
+	private static String readFile(String template) {
+		new File(template).readLines().join("\n")
 	}
 
 	private static SimpleHttpServer restartHttpServer(String id, String webRootPath, Closure handler = {null}, Closure errorListener = {}) {
