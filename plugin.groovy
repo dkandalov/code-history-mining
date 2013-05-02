@@ -1,7 +1,4 @@
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
@@ -21,17 +18,17 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Delta Flora",
 			new DefaultActionGroup().with {
-				add(new AnAction("Grab Project History") {
+				add(new AnAction("Grab Current Project History") {
 					@Override void actionPerformed(AnActionEvent event) {
 						grabHistoryOf(event.project)
 					}
 				})
 				add(new Separator())
-				add(new AnAction("some.csv") {
-					@Override void actionPerformed(AnActionEvent event) {
-						show("oooo") // TODO list existing .csv files with actions on them
-					}
+
+				def eventFiles = new File("${PathManager.pluginsPath}/delta-flora").listFiles(new FileFilter() {
+					@Override boolean accept(File pathname) { pathname.name.endsWith(".csv") }
 				})
+				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file) })
 				it
 			},
 			actionEvent.dataContext,
@@ -39,11 +36,33 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 			true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
+
 show("loaded DeltaFlora plugin")
 
 
-def grabHistoryOf(Project project) {
+static ActionGroup createEventStorageActionGroup(File file) {
+	new DefaultActionGroup(file.name, true).with {
+		add(new AnAction("Change Size Calendar View") {
+			@Override void actionPerformed(AnActionEvent event) {
+				show(file.name)
+			}
+		})
+		add(new AnAction("Change Size History") {
+			@Override void actionPerformed(AnActionEvent event) {
+				show(file.name)
+			}
+		})
+		add(new AnAction("Files In The Same Commit Graph") {
+			@Override void actionPerformed(AnActionEvent event) {
+				show(file.name)
+			}
+		})
+		it
+	}
+}
 
+
+def grabHistoryOf(Project project) {
 	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 		measure("time") {
 			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
