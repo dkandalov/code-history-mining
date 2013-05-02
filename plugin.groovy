@@ -52,6 +52,8 @@ def grabHistoryOf(Project project) {
 			def daysOfHistory = 900
 			def sizeOfVCSRequestInDays = 1
 			def sourceOfChangeLists = new SourceOfChangeLists(project, sizeOfVCSRequestInDays)
+			def eventsExtractor = new ChangeEventsExtractor(project)
+			def sourceOfChangeEvents = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor)
 
 			if (storage.hasNoEvents()) {
 				def historyStart = now - daysOfHistory
@@ -89,6 +91,22 @@ def grabHistoryOf(Project project) {
 	}, {})
 }
 
+class SourceOfChangeEvents {
+	private final SourceOfChangeLists sourceOfChangeLists
+	private final ChangeEventsExtractor eventsExtractor
+
+	SourceOfChangeEvents(SourceOfChangeLists sourceOfChangeLists, ChangeEventsExtractor eventsExtractor) {
+		this.sourceOfChangeLists = sourceOfChangeLists
+		this.eventsExtractor = eventsExtractor
+	}
+
+	def request(Date historyStart, Date historyEnd, Closure callback) {
+		Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
+		for (changeList in changeLists) {
+			callback(eventsExtractor.changeEventsFrom(changeList))
+		}
+	}
+}
 
 static def processChangeLists(changeLists, indicator, project, callback) {
 	for (changeList in changeLists) {
