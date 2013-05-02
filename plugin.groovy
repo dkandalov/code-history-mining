@@ -10,7 +10,6 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import history.ChangeEventsExtractor
 import history.EventStorage
 import history.SourceOfChangeLists
-import history.events.ChangeEvent
 import history.util.Measure
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
@@ -56,32 +55,39 @@ def grabHistoryOf(Project project) {
 			def eventsExtractor = new ChangeEventsExtractor(project)
 			def sourceOfChangeEvents = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor)
 
+			def indicatorUpdater = { changeList, callback ->
+				log(changeList.name)
+				def date = dateFormat.format((Date) changeList.commitDate)
+				indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
+
+				callback()
+
+				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
+			}
+
 			if (storage.hasNoEvents()) {
 				def historyStart = now - daysOfHistory
 				def historyEnd = now
 
 				log("Loading project history from $historyStart to $historyEnd")
-				Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
-				processChangeLists(changeLists, indicator, project) { changeEvents ->
-					storage.appendToEventsFile(changeEvents)
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
+					storage.appendToEventsFile(batchOfChangeEvents)
 				}
 			} else {
 				def historyStart = storage.mostRecentEventTime
 				def historyEnd = now
 				log("Loading project history from $historyStart to $historyEnd")
 
-				def changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd, false)
-				processChangeLists(changeLists, indicator, project) { changeEvents ->
-					storage.prependToEventsFile(changeEvents)
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
+					storage.prependToEventsFile(batchOfChangeEvents)
 				}
 
 				historyStart = now - daysOfHistory
 				historyEnd = storage.oldestEventTime
 				log("Loading project history from $historyStart to $historyEnd")
 
-				changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
-				processChangeLists(changeLists, indicator, project) { changeEvents ->
-					storage.appendToEventsFile(changeEvents)
+				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, indicatorUpdater) { batchOfChangeEvents ->
+					storage.appendToEventsFile(batchOfChangeEvents)
 				}
 			}
 
@@ -101,30 +107,20 @@ class SourceOfChangeEvents {
 		this.eventsExtractor = eventsExtractor
 	}
 
-	def request(Date historyStart, Date historyEnd, Closure callback) {
+	def request(Date historyStart, Date historyEnd, indicator = null, Closure callbackWrapper = {it()}, Closure callback) {
 		Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
 		for (changeList in changeLists) {
-			callback(eventsExtractor.changeEventsFrom(changeList))
+			if (changeList == NO_MORE_CHANGE_LISTS) break
+			if (indicator?.canceled) break
+
+			callbackWrapper(changeList) {
+				catchingAll {
+					def changeEvents = eventsExtractor.changeEventsFrom(changeList)
+					callback(changeEvents)
+				}
+			}
 		}
 	}
 }
-
-static def processChangeLists(changeLists, indicator, project, callback) {
-	for (changeList in changeLists) {
-		if (changeList == NO_MORE_CHANGE_LISTS) break
-		if (indicator.canceled) break
-		log(changeList.name)
-
-		def date = dateFormat.format((Date) changeList.commitDate)
-		indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
-		catchingAll {
-//			Collection<ChangeEvent> changeEvents = new ChangeEventsExtractor(project).fileChangeEventsFrom((CommittedChangeList) changeList)
-			Collection<ChangeEvent> changeEvents = new ChangeEventsExtractor(project).changeEventsFrom((CommittedChangeList) changeList)
-			callback(changeEvents)
-		}
-		indicator.text = "Grabbing project history (${date} - looking for next commit...)"
-	}
-}
-
 
 
