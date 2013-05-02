@@ -7,13 +7,13 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import history.ChangeEventsExtractor
 import history.EventStorage
 import history.SourceOfChangeLists
 import history.events.ChangeEvent
 import history.util.Measure
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static history.ChangeExtractor.changeEventsFrom
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 
@@ -99,8 +99,8 @@ static def processChangeLists(changeLists, indicator, project, callback) {
 		def date = dateFormat.format((Date) changeList.commitDate)
 		indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
 		catchingAll {
-//			Collection<ChangeEvent> changeEvents = fileChangeEventsFrom((CommittedChangeList) changeList, project)
-			Collection<ChangeEvent> changeEvents = changeEventsFrom((CommittedChangeList) changeList, project)
+//			Collection<ChangeEvent> changeEvents = new ChangeEventsExtractor(project).fileChangeEventsFrom((CommittedChangeList) changeList)
+			Collection<ChangeEvent> changeEvents = new ChangeEventsExtractor(project).changeEventsFrom((CommittedChangeList) changeList)
 			callback(changeEvents)
 		}
 		indicator.text = "Grabbing project history (${date} - looking for next commit...)"

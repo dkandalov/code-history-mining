@@ -50,7 +50,7 @@ class CurrentFileHistory {
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
 			def commitInfo = new Events.CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)
-			ChangeExtractor.elementChangesBetween(beforeText, afterText, commitInfo, parseAsPsi)
+			ChangeEventsExtractor.elementChangesBetween(beforeText, afterText, commitInfo, parseAsPsi)
 		}
 	}
 }

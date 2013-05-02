@@ -25,9 +25,14 @@ import intellijeval.PluginUtil
 
 
 
-class ChangeExtractor {
+class ChangeEventsExtractor {
+	private final Project project
 
-	static Collection<ChangeEvent> fileChangeEventsFrom(CommittedChangeList changeList, Project project) {
+	ChangeEventsExtractor(Project project) {
+		this.project = project
+	}
+
+	Collection<ChangeEvent> fileChangeEventsFrom(CommittedChangeList changeList) {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collect { Change change ->
@@ -38,7 +43,7 @@ class ChangeExtractor {
 		}
 	}
 
-	static Collection<ChangeEvent> changeEventsFrom(CommittedChangeList changeList, Project project) {
+	Collection<ChangeEvent> changeEventsFrom(CommittedChangeList changeList) {
 		try {
 			def commitInfo = commitInfoOf(changeList)
 			changeList.changes.collectMany { Change change ->
