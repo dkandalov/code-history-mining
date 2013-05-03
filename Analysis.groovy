@@ -15,7 +15,7 @@ class Analysis {
 
 		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
-//		createCooccurrencesGraph(events)
+		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createChangeSizeTreeMapFor(events)
 
 		// TODO word cloud for commit messages
@@ -27,7 +27,7 @@ class Analysis {
 		// TODO
 	}
 
-	static void createCooccurrencesGraph(events, threshold = 7) {
+	static String createJsonForCooccurrencesGraph(events, threshold = 7) {
 		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
 															.findAll{ it.value > threshold }.sort{-it.value}
@@ -37,7 +37,8 @@ class Analysis {
 		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
 		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
 		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
-		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
 	static String createJsonForBarChartView(List events) {

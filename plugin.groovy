@@ -61,7 +61,7 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 		})
 		add(new AnAction("Change Size History") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating calendar view", {
+				doInBackground("Creating change size history", {
 					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
 					def events = new EventStorage(filePath).readAllEvents()
 					def json = Analysis.createJsonForBarChartView(events)
@@ -72,7 +72,13 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 		})
 		add(new AnAction("Files In The Same Commit Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
-				show(file.name)
+				doInBackground("Files in the same commit graph", {
+					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
+					def events = new EventStorage(filePath).readAllEvents()
+					def json = Analysis.createJsonForCooccurrencesGraph(events)
+					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "cooccurrences-graph.html", json)
+					BrowserUtil.launchBrowser("http://localhost:${server.port}/cooccurrences-graph.html")
+				}, {})
 			}
 		})
 		it
