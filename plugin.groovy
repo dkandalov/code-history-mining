@@ -46,38 +46,33 @@ show("loaded DeltaFlora plugin")
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
 	String projectName = file.name.replace(".csv", "")
+	def showInBroswer = { template, eventsToJson ->
+		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
+		def events = new EventStorage(filePath).readAllEvents()
+		def json = eventsToJson(events)
+		def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, template, json)
+		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
+	}
 
 	new DefaultActionGroup(file.name, true).with {
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating calendar view", {
-					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
-					def events = new EventStorage(filePath).readAllEvents()
-					def json = Analysis.createJsonForCalendarView(events)
-					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "calendar_view.html", json)
-					BrowserUtil.launchBrowser("http://localhost:${server.port}/calendar_view.html")
+					showInBroswer("calendar_view.html", Analysis.&createJsonForCalendarView)
 				}, {})
 			}
 		})
 		add(new AnAction("Change Size History") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating change size history", {
-					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
-					def events = new EventStorage(filePath).readAllEvents()
-					def json = Analysis.createJsonForBarChartView(events)
-					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "changes_size_chart.html", json)
-					BrowserUtil.launchBrowser("http://localhost:${server.port}/changes_size_chart.html")
+					showInBroswer("changes_size_chart.html", Analysis.&createJsonForBarChartView)
 				}, {})
 			}
 		})
 		add(new AnAction("Files In The Same Commit Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Files in the same commit graph", {
-					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
-					def events = new EventStorage(filePath).readAllEvents()
-					def json = Analysis.createJsonForCooccurrencesGraph(events)
-					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "cooccurrences-graph.html", json)
-					BrowserUtil.launchBrowser("http://localhost:${server.port}/cooccurrences-graph.html")
+					showInBroswer("cooccurrences-graph.html", Analysis.&createJsonForCooccurrencesGraph)
 				}, {})
 			}
 		})
