@@ -14,7 +14,7 @@ class Analysis {
 		def events = new EventStorage(filePath).readAllEvents()
 
 		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
-//		createBarChartViewOn(events)
+		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		createCooccurrencesGraph(events)
 //		createChangeSizeTreeMapFor(events)
 
@@ -40,7 +40,7 @@ class Analysis {
 		fillTemplate("cooccurrences-graph-template.html", '"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']')
 	}
 
-	static void createBarChartViewOn(List events) {
+	static String createJsonForBarChartView(List events) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
 		def commitsAmountByDate = eventsByDay
@@ -55,7 +55,7 @@ class Analysis {
 						.collect{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{it[0]}
 		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "changeSize"])
 
-		fillTemplate("changes_size_chart_template.html", "[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]")
+		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
 	static String createJsonForCalendarView(List events) {

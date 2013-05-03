@@ -61,7 +61,13 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 		})
 		add(new AnAction("Change Size History") {
 			@Override void actionPerformed(AnActionEvent event) {
-				show(file.name)
+				doInBackground("Creating calendar view", {
+					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
+					def events = new EventStorage(filePath).readAllEvents()
+					def json = Analysis.createJsonForBarChartView(events)
+					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "changes_size_chart.html", json)
+					BrowserUtil.launchBrowser("http://localhost:${server.port}/changes_size_chart.html")
+				}, {})
 			}
 		})
 		add(new AnAction("Files In The Same Commit Graph") {
