@@ -16,7 +16,7 @@ import static history.SourceOfChangeLists.getNO_MORE_CHANGE_LISTS
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 
-String pathToThisPlugin = pluginPath
+String pathToTemplates = pluginPath + "/html"
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -32,7 +32,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 				def eventFiles = new File("${PathManager.pluginsPath}/delta-flora").listFiles(new FileFilter() {
 					@Override boolean accept(File pathname) { pathname.name.endsWith(".csv") }
 				})
-				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, pathToThisPlugin) })
+				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, pathToTemplates) })
 				it
 			},
 			actionEvent.dataContext,
@@ -44,16 +44,17 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 show("loaded DeltaFlora plugin")
 
 
-static ActionGroup createEventStorageActionGroup(File file, String pluginPath) {
+static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
+	String projectName = file.name.replace(".csv", "")
+
 	new DefaultActionGroup(file.name, true).with {
-		String projectName = file.name.replace(".csv", "")
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating calendar view", {
 					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
 					def events = new EventStorage(filePath).readAllEvents()
 					def json = Analysis.createJsonForCalendarView(events)
-					def server = HttpUtil.loadIntoHttpServer(projectName, pluginPath + "/html", "calendar_view.html", json)
+					def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, "calendar_view.html", json)
 					BrowserUtil.launchBrowser("http://localhost:${server.port}/calendar_view.html")
 				}, {})
 			}

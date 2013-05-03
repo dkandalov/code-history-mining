@@ -7,11 +7,11 @@ import static intellijeval.PluginUtil.changeGlobalVar
 import static intellijeval.PluginUtil.log
 
 class HttpUtil {
-	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToHttpFiles, String templateFileName, String json) {
+	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToTemplates, String templateFileName, String json) {
 		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 
-		def text = readFile("$pathToHttpFiles/$templateFileName")
-		text = inlineD3js(text, readFile(pathToHttpFiles + "/d3.v3.min.js"))
+		def text = readFile("$pathToTemplates/$templateFileName")
+		text = inlineD3js(text, readFile(pathToTemplates + "/d3.v3.min.js"))
 		text = fillDataPlaceholder(text, json)
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
