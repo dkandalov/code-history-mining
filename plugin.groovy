@@ -16,7 +16,7 @@ import static history.SourceOfChangeLists.getNO_MORE_CHANGE_LISTS
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 
-String thisPluginPath = pluginPath // TODO remove when templates are self-contained
+String pathToThisPlugin = pluginPath
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -32,7 +32,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 				def eventFiles = new File("${PathManager.pluginsPath}/delta-flora").listFiles(new FileFilter() {
 					@Override boolean accept(File pathname) { pathname.name.endsWith(".csv") }
 				})
-				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, thisPluginPath) })
+				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, pathToThisPlugin) })
 				it
 			},
 			actionEvent.dataContext,
@@ -53,8 +53,8 @@ static ActionGroup createEventStorageActionGroup(File file, String pluginPath) {
 					def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
 					def events = new EventStorage(filePath).readAllEvents()
 					def json = Analysis.createJsonForCalendarView(events)
-					def server = HttpUtil.loadIntoHttpServer(projectName, pluginPath + "/html", "calendar_view_template.html", json)
-					BrowserUtil.launchBrowser("http://localhost:${server.port}/calendar_view_template.html")
+					def server = HttpUtil.loadIntoHttpServer(projectName, pluginPath + "/html", "calendar_view.html", json)
+					BrowserUtil.launchBrowser("http://localhost:${server.port}/calendar_view.html")
 				}, {})
 			}
 		})

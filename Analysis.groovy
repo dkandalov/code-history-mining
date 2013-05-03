@@ -13,7 +13,7 @@ class Analysis {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
 		def events = new EventStorage(filePath).readAllEvents()
 
-		fillTemplate("calendar_view_template.html", createJsonForCalendarView(events))
+		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 //		createBarChartViewOn(events)
 //		createCooccurrencesGraph(events)
 //		createChangeSizeTreeMapFor(events)

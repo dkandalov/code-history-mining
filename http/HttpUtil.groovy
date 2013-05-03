@@ -9,7 +9,6 @@ import static intellijeval.PluginUtil.log
 class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToHttpFiles, String templateFileName, String json) {
 		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
-		FileUtil.copyDirContent(new File(pathToHttpFiles), tempDir) // TODO make templates self-contained
 
 		def text = readFile("$pathToHttpFiles/$templateFileName")
 		text = inlineD3js(text, readFile(pathToHttpFiles + "/d3.v3.min.js"))
