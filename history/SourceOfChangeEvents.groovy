@@ -1,17 +1,18 @@
 package history
 
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import history.events.ChangeEvent
 import intellijeval.PluginUtil
 
 import static history.SourceOfChangeLists.getNO_MORE_CHANGE_LISTS
 
 class SourceOfChangeEvents {
 	private final SourceOfChangeLists sourceOfChangeLists
-	private final ChangeEventsExtractor eventsExtractor
+	private final def extractChangeEvents
 
-	SourceOfChangeEvents(SourceOfChangeLists sourceOfChangeLists, ChangeEventsExtractor eventsExtractor) {
+	SourceOfChangeEvents(SourceOfChangeLists sourceOfChangeLists, Closure<Collection<ChangeEvent>> extractChangeEvents) {
 		this.sourceOfChangeLists = sourceOfChangeLists
-		this.eventsExtractor = eventsExtractor
+		this.extractChangeEvents = extractChangeEvents
 	}
 
 	def request(Date historyStart, Date historyEnd, indicator = null, Closure callbackWrapper = {it()}, Closure callback) {
@@ -22,7 +23,7 @@ class SourceOfChangeEvents {
 
 			callbackWrapper(changeList) {
 				PluginUtil.catchingAll {
-					def changeEvents = eventsExtractor.changeEventsFrom(changeList)
+					def changeEvents = extractChangeEvents(changeList)
 					callback(changeEvents)
 				}
 			}

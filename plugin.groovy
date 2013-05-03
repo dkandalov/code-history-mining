@@ -21,9 +21,14 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Delta Flora",
 			new DefaultActionGroup().with {
-				add(new AnAction("Grab Current Project History") {
+				add(new AnAction("Grab Project History (on method level)") {
 					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project)
+						grabHistoryOf(event.project, sourceOfChangeEventsFor(event.project, true))
+					}
+				})
+				add(new AnAction("Grab Project History (on file level)") {
+					@Override void actionPerformed(AnActionEvent event) {
+						grabHistoryOf(event.project, sourceOfChangeEventsFor(event.project, false))
 					}
 				})
 				add(new Separator())
@@ -79,19 +84,19 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 	}
 }
 
+SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEventsOnMethodLevel) {
+	def sizeOfVCSRequestInDays = 1
+	def sourceOfChangeLists = new SourceOfChangeLists(project, sizeOfVCSRequestInDays)
+	def extractEvents = (extractEventsOnMethodLevel ?
+		new ChangeEventsExtractor(project).&changeEventsFrom :
+		new ChangeEventsExtractor(project).&fileChangeEventsFrom
+	)
+	new SourceOfChangeEvents(sourceOfChangeLists, extractEvents)
+}
 
-def grabHistoryOf(Project project) {
+def grabHistoryOf(Project project, SourceOfChangeEvents sourceOfChangeEvents) {
 	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 		measure("time") {
-			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
-
-			def now = new Date()
-			def daysOfHistory = 900
-			def sizeOfVCSRequestInDays = 1
-			def sourceOfChangeLists = new SourceOfChangeLists(project, sizeOfVCSRequestInDays)
-			def eventsExtractor = new ChangeEventsExtractor(project)
-			def sourceOfChangeEvents = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor)
-
 			def updateIndicatorText = { changeList, callback ->
 				log(changeList.name)
 				def date = dateFormat.format((Date) changeList.commitDate)
@@ -101,9 +106,12 @@ def grabHistoryOf(Project project) {
 
 				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 			}
+			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
 			def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
 			def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
 
+			def now = new Date()
+			def daysOfHistory = 900
 
 			if (storage.hasNoEvents()) {
 				def historyStart = now - daysOfHistory
