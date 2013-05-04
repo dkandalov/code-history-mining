@@ -18,8 +18,7 @@ import history.util.Measure
 import http.HttpUtil
 
 import javax.swing.*
-import java.awt.GridBagLayout
-import java.awt.Insets
+import java.awt.*
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.util.Measure.measure
@@ -28,62 +27,6 @@ import static java.awt.GridBagConstraints.*
 
 String pathToTemplates = pluginPath + "/html"
 
-showDialog(new Date(), new Date(), 1, "Grab History Of Current Project", project) { from, to, vcsRequestBatchSizeInDays ->
-	show(from)
-	show(to)
-}
-
-def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, Project project, Closure onOkCallback) {
-	def fromDatePicker = new DatePicker(from, dateFormat.delegate)
-	def toDatePicker = new DatePicker(to, dateFormat.delegate)
-	def vcsRequestSizeField = new JTextField(String.valueOf(vcsRequestBatchSizeInDays))
-
-	JPanel rootPanel = new JPanel().with{
-		layout = new GridBagLayout()
-		GridBag bag = new GridBag()
-		     .setDefaultAnchor(0, EAST)
-		     .setDefaultAnchor(1, WEST)
-		     .setDefaultWeightX(1, 1)
-		     .setDefaultFill(HORIZONTAL)
-		bag.defaultInsets = new Insets(5, 5, 5, 5)
-		
-		add(new JLabel("From:"), bag.nextLine().next())
-		add(fromDatePicker, bag.next())
-		add(new JLabel("To:"), bag.next())
-		add(toDatePicker, bag.next())
-		add(new JLabel("VCS Request batch size:"), bag.nextLine().next())
-		add(vcsRequestSizeField, bag.next())
-		add(new JLabel("day(s)"), bag.next().coverLine())
-
-
-		def text = "(Please note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
-		def textArea = new JTextArea(text).with {
-			lineWrap = true
-			wrapStyleWord = true
-			editable = false
-			it
-		}
-		textArea.background = background
-		add(textArea, bag.nextLine().coverLine())
-		it
-	}
-
-	DialogBuilder builder = new DialogBuilder(project)
-	builder.title = title
-	builder.okActionEnabled = true
-	builder.okOperation = {
-		def toInteger = {
-			String s = it.trim().replaceAll("\\D", "")
-			s.empty ? 1 : s.toInteger()
-		}
-		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text))
-		builder.dialogWrapper.close(0)
-	} as Runnable
-	builder.centerPanel = rootPanel
-
-	ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
-}
-return
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -172,48 +115,95 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	def sourceOfChangeEvents = sourceOfChangeEventsFor(project, extractEventsOnMethodLevel)
 
-	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
-		measure("time") {
-			def updateIndicatorText = { changeList, callback ->
-				log(changeList.name)
-				def date = dateFormat.format((Date) changeList.commitDate)
-				indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
+	showDialog(new Date() - 300, new Date(), 1, "Grab History Of Current Project", project) { fromDate, toDate, vcsRequestBatchSizeInDays ->
+		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
+			measure("time") {
+				def updateIndicatorText = { changeList, callback ->
+					log(changeList.name)
+					def date = dateFormat.format((Date) changeList.commitDate)
+					indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
 
-				callback()
+					callback()
 
-				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
+					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
+				}
+				def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
+				def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${outputFile}")
+				def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
+				def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
+
+				if (storage.hasNoEvents()) {
+					log("Loading project history from ${fromDate} to ${toDate}")
+					sourceOfChangeEvents.request(fromDate, toDate, indicator, updateIndicatorText, appendToStorage)
+
+				} else {
+					def historyStart = storage.mostRecentEventTime
+					def historyEnd = toDate
+					log("Loading project history from $historyStart to $historyEnd")
+					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
+
+					historyStart = fromDate
+					historyEnd = storage.oldestEventTime
+					log("Loading project history from $historyStart to $historyEnd")
+					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+				}
+
+				showInConsole("Saved change events to ${storage.filePath}", "output", project)
+				showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 			}
-			def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
-			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${outputFile}")
-			def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
-			def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
-
-			def now = new Date()
-			def daysOfHistory = 900
-
-			if (storage.hasNoEvents()) {
-				def historyStart = now - daysOfHistory
-				def historyEnd = now
-				log("Loading project history from $historyStart to $historyEnd")
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
-
-			} else {
-				def historyStart = storage.mostRecentEventTime
-				def historyEnd = now
-				log("Loading project history from $historyStart to $historyEnd")
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
-
-				historyStart = now - daysOfHistory
-				historyEnd = storage.oldestEventTime
-				log("Loading project history from $historyStart to $historyEnd")
-				sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
-			}
-
-			showInConsole("Saved change events to ${storage.filePath}", "output", project)
-			showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
-		}
-		Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
-	}, {})
+			Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
+		}, {})
+	}
 }
 
+def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, Project project, Closure onOkCallback) {
+	def fromDatePicker = new DatePicker(from, dateFormat.delegate)
+	def toDatePicker = new DatePicker(to, dateFormat.delegate)
+	def vcsRequestSizeField = new JTextField(String.valueOf(vcsRequestBatchSizeInDays))
+
+	JPanel rootPanel = new JPanel().with{
+		layout = new GridBagLayout()
+		GridBag bag = new GridBag()
+				.setDefaultAnchor(0, EAST)
+				.setDefaultAnchor(1, WEST)
+				.setDefaultWeightX(1, 1)
+				.setDefaultFill(HORIZONTAL)
+		bag.defaultInsets = new Insets(5, 5, 5, 5)
+
+		add(new JLabel("From:"), bag.nextLine().next())
+		add(fromDatePicker, bag.next())
+		add(new JLabel("To:"), bag.next())
+		add(toDatePicker, bag.next())
+		add(new JLabel("VCS Request batch size:"), bag.nextLine().next())
+		add(vcsRequestSizeField, bag.next())
+		add(new JLabel("day(s)"), bag.next().coverLine())
+
+
+		def text = "(Please note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
+		def textArea = new JTextArea(text).with {
+			lineWrap = true
+			wrapStyleWord = true
+			editable = false
+			it
+		}
+		textArea.background = background
+		add(textArea, bag.nextLine().coverLine())
+		it
+	}
+
+	DialogBuilder builder = new DialogBuilder(project)
+	builder.title = title
+	builder.okActionEnabled = true
+	builder.okOperation = {
+		def toInteger = {
+			String s = it.trim().replaceAll("\\D", "")
+			s.empty ? 1 : s.toInteger()
+		}
+		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text))
+		builder.dialogWrapper.close(0)
+	} as Runnable
+	builder.centerPanel = rootPanel
+
+	ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
+}
 
