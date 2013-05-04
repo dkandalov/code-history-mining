@@ -17,8 +17,7 @@ class Analysis {
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createJsonForCommitCommentWordCloud(events)
-		createJsonForChangeSizeTreeMap(events)
-
+		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
 	}
 
 	static String createJsonForChangeSizeTreeMap(events) {
@@ -89,7 +88,7 @@ class Analysis {
 			String childrenAsJSON = "\"children\": [\n" + children.collect { it.toJSON() }.join(',\n') + "]"
 			"{" +
 			"\"name\": \"$name\", " +
-			"\"commits\": \"$commits\", " +
+			"\"size\": \"$commits\", " +
 			childrenAsJSON +
 			"}"
 		}
