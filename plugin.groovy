@@ -3,7 +3,9 @@ import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.util.ui.UIUtil
 import history.ChangeEventsExtractor
 import history.EventStorage
 import history.SourceOfChangeEvents
@@ -80,6 +82,13 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 				}, {})
 			}
 		})
+		add(new Separator())
+		add(new AnAction("Delete") {
+			@Override void actionPerformed(AnActionEvent event) {
+				int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
+				if (userAnswer == Messages.OK) file.delete()
+			}
+		})
 		it
 	}
 }
@@ -108,7 +117,7 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 
 				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 			}
-			def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-event-min.csv")
+			def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
 			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${outputFile}")
 			def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
 			def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
