@@ -23,12 +23,12 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 			new DefaultActionGroup().with {
 				add(new AnAction("Grab Project History (on method level)") {
 					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project, sourceOfChangeEventsFor(event.project, true))
+						grabHistoryOf(event.project, true)
 					}
 				})
 				add(new AnAction("Grab Project History (on file level)") {
 					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project, sourceOfChangeEventsFor(event.project, false))
+						grabHistoryOf(event.project, false)
 					}
 				})
 				add(new Separator())
@@ -94,9 +94,11 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 	new SourceOfChangeEvents(sourceOfChangeLists, extractEvents)
 }
 
-def grabHistoryOf(Project project, SourceOfChangeEvents sourceOfChangeEvents) {
+def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 		measure("time") {
+			def sourceOfChangeEvents = sourceOfChangeEventsFor(event.project, extractEventsOnMethodLevel)
+
 			def updateIndicatorText = { changeList, callback ->
 				log(changeList.name)
 				def date = dateFormat.format((Date) changeList.commitDate)
@@ -106,7 +108,8 @@ def grabHistoryOf(Project project, SourceOfChangeEvents sourceOfChangeEvents) {
 
 				indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 			}
-			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${project.name}-events.csv")
+			def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-event-min.csv")
+			def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${outputFile}")
 			def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
 			def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
 
