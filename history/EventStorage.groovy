@@ -17,15 +17,15 @@ class EventStorage {
 		this.filePath = filePath
 	}
 
-	List<ChangeEvent> readAllEvents() {
+	List<ChangeEvent> readAllEvents(whenFiledToParseLine = {}) {
 		def events = []
 		new File(filePath).withReader { reader ->
-			def line = null
+			def line
 			while ((line = reader.readLine()) != null) {
 				try {
 					events << fromCsv(line)
-				} catch (Exception ignored) {
-					println("Failed to parse line '${line}'")
+				} catch (Exception e) {
+					whenFiledToParseLine(line, e)
 				}
 			}
 		}

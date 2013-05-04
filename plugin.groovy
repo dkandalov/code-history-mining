@@ -63,7 +63,7 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 	String projectName = file.name.replace(".csv", "")
 	def showInBroswer = { template, eventsToJson ->
 		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
-		def events = new EventStorage(filePath).readAllEvents()
+		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 		def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, template, json)
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
@@ -196,7 +196,7 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, 
 	builder.okActionEnabled = true
 	builder.okOperation = {
 		def toInteger = {
-			String s = it.trim().replaceAll("\\D", "")
+			String s = it.replaceAll("\\D", "")
 			s.empty ? 1 : s.toInteger()
 		}
 		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text))

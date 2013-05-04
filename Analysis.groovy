@@ -11,11 +11,11 @@ class Analysis {
 
 	static void main(String[] args) {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
-		def events = new EventStorage(filePath).readAllEvents()
+		def events = new EventStorage(filePath).readAllEvents { println("Failed to parse line '${it}'") }
 
-		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
-		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
-		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
+//		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
+//		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
+//		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createChangeSizeTreeMapFor(events)
 
 		// TODO word cloud for commit messages
