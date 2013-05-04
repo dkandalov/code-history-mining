@@ -95,10 +95,10 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 }
 
 def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
+	def sourceOfChangeEvents = sourceOfChangeEventsFor(project, extractEventsOnMethodLevel)
+
 	doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 		measure("time") {
-			def sourceOfChangeEvents = sourceOfChangeEventsFor(event.project, extractEventsOnMethodLevel)
-
 			def updateIndicatorText = { changeList, callback ->
 				log(changeList.name)
 				def date = dateFormat.format((Date) changeList.commitDate)
