@@ -7,25 +7,95 @@ import java.util.regex.Matcher
 import static java.lang.System.getenv
 
 class Analysis {
-	static def projectName = "idea"
+	static def projectName = "scratch"
 
 	static void main(String[] args) {
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events-min.csv"
+		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
 //		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createJsonForCommitCommentWordCloud(events)
-//		createChangeSizeTreeMapFor(events)
+		createJsonForChangeSizeTreeMap(events)
 
 	}
 
-	static def createChangeSizeTreeMapFor(events) {
-		// TODO
+	static String createJsonForChangeSizeTreeMap(events) {
+		events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
+				.collect{ it.value.first() }
+				.collectMany{
+					if (!it.packageBefore.empty && !it.packageAfter.empty && it.packageBefore != it.packageAfter) {
+						[it.packageBefore + "/" + it.fileName, it.packageAfter + "/" + it.fileName]
+					} else {
+						[(!it.packageBefore.empty ? it.packageBefore : it.packageAfter) + "/" + it.fileName]
+					}
+				}
+//		println(events.join("\n"))
+
+		def containerTreeBuilder = new ContainerTreeBuilder()
+		events.inject(containerTreeBuilder) { builder, filePath -> builder.updateTree(filePath) }
+		def json = containerTreeBuilder.root.toJSON()
+		println(json)
+		json
 	}
 
-	static def createJsonForCommitCommentWordCloud(events) {
+	static class ContainerTreeBuilder {
+		Container root = new Container("", 0)
+
+		ContainerTreeBuilder updateTree(String filePath) {
+			doUpdateTree(filePath.split("/").toList(), root)
+			this
+		}
+
+		private static doUpdateTree(List<String> filePath, Container container) {
+			container.plusCommit()
+
+			if (filePath.empty) return
+
+			def matchingChild = container.children.find{ it.name == filePath.first() }
+			if (matchingChild == null)
+				matchingChild = container.addChild(new Container(filePath.first(), 0))
+
+			doUpdateTree(filePath.tail(), matchingChild)
+		}
+	}
+
+	static class Container {
+		final String name
+		final Collection<Container> children
+		int commits
+		Container parent = null
+
+		Container(String name, Collection<Container> children = new ArrayList(), int commits) {
+			this.name = name
+			this.children = children.findAll{ it.commits > 0 }
+			this.commits = commits
+
+			for (child in this.children) child.parent = this
+		}
+
+		Container addChild(Container container) {
+			children.add(container)
+			container.parent = this
+			container
+		}
+
+		def plusCommit() {
+			commits++
+		}
+
+		String toJSON() {
+			String childrenAsJSON = "\"children\": [\n" + children.collect { it.toJSON() }.join(',\n') + "]"
+			"{" +
+			"\"name\": \"$name\", " +
+			"\"commits\": \"$commits\", " +
+			childrenAsJSON +
+			"}"
+		}
+	}
+
+	static String createJsonForCommitCommentWordCloud(events) {
 		Map commitMessages = events.groupBy{ it.revision }.entrySet()
 				.collect{ it.value.first().commitMessage }.toList()
 				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !it.empty }.collect{it.toLowerCase()} }
