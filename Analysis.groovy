@@ -7,24 +7,34 @@ import java.util.regex.Matcher
 import static java.lang.System.getenv
 
 class Analysis {
-	static def projectName = "scratch"
+	static def projectName = "idea"
 
 	static void main(String[] args) {
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
-		def events = new EventStorage(filePath).readAllEvents { println("Failed to parse line '${it}'") }
+		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events-min.csv"
+		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
 //		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
+//		createJsonForCommitCommentWordCloud(events)
 //		createChangeSizeTreeMapFor(events)
 
-		// TODO word cloud for commit messages
-//		def commitMessages = events.groupBy{ it.revision }.entrySet().collect{ it.value.first().commitMessage }.toList()
-//		println(commitMessages.join("\n"))
 	}
 
-	static void createChangeSizeTreeMapFor(events) {
+	static def createChangeSizeTreeMapFor(events) {
 		// TODO
+	}
+
+	static def createJsonForCommitCommentWordCloud(events) {
+		Map commitMessages = events.groupBy{ it.revision }.entrySet()
+				.collect{ it.value.first().commitMessage }.toList()
+				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !it.empty }.collect{it.toLowerCase()} }
+				.inject([:].withDefault{0}) { wordFrequency, word ->
+			wordFrequency.put(word, wordFrequency[word] + 1)
+			wordFrequency
+		}
+		println(commitMessages.entrySet().sort{-it.value}.join("\n"))
+		"" // TODO
 	}
 
 	static String createJsonForCooccurrencesGraph(events, threshold = 7) {
