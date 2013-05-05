@@ -91,6 +91,13 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 				}, {})
 			}
 		})
+		add(new AnAction("Changes By Package Tree Map") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Changes By Package Tree Map", {
+					showInBroswer("treemap.html", Analysis.&createJsonForChangeSizeTreeMap)
+				}, {})
+			}
+		})
 		add(new Separator())
 		add(new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
