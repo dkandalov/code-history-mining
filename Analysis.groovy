@@ -17,7 +17,9 @@ class Analysis {
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createJsonForCommitCommentWordCloud(events)
-		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
+		def json = createJsonForChangeSizeTreeMap(events)
+		println(json)
+		fillTemplate("treemap.html", json)
 	}
 
 	static String createJsonForChangeSizeTreeMap(events) {
@@ -30,18 +32,25 @@ class Analysis {
 						[(!it.packageBefore.empty ? it.packageBefore : it.packageAfter) + "/" + it.fileName]
 					}
 				}
-//		println(events.join("\n"))
 
-		def containerTreeBuilder = new ContainerTreeBuilder()
-		events.inject(containerTreeBuilder) { builder, filePath -> builder.updateTree(filePath) }
-		containerTreeBuilder.root.toJSON()
+		def containerTree = new Container("", 0)
+		events.inject(containerTree) { tree, filePath -> tree.updateTree(filePath) }
+		containerTree.toJSON()
 	}
 
-	static class ContainerTreeBuilder {
-		Container root = new Container("", 0)
+	static class Container {
+		private final String name
+		private final Collection<Container> children
+		private int commits
 
-		ContainerTreeBuilder updateTree(String filePath) {
-			doUpdateTree(filePath.split("/").toList(), root)
+		Container(String name, Collection<Container> children = new ArrayList(), int commits) {
+			this.name = name
+			this.children = children.findAll{ it.commits > 0 }
+			this.commits = commits
+		}
+
+		Container updateTree(String filePath) {
+			doUpdateTree(filePath.split("/").toList(), this)
 			this
 		}
 
@@ -56,29 +65,13 @@ class Analysis {
 
 			doUpdateTree(filePath.tail(), matchingChild)
 		}
-	}
 
-	static class Container {
-		final String name
-		final Collection<Container> children
-		int commits
-		Container parent = null
-
-		Container(String name, Collection<Container> children = new ArrayList(), int commits) {
-			this.name = name
-			this.children = children.findAll{ it.commits > 0 }
-			this.commits = commits
-
-			for (child in this.children) child.parent = this
-		}
-
-		Container addChild(Container container) {
+		private Container addChild(Container container) {
 			children.add(container)
-			container.parent = this
 			container
 		}
 
-		def plusCommit() {
+		private def plusCommit() {
 			commits++
 		}
 
