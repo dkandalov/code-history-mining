@@ -20,7 +20,7 @@ class HttpUtil {
 		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log(it)})
 	}
 
-	private static String fillDataPlaceholder(String templateText, String jsValue) {
+	static String fillDataPlaceholder(String templateText, String jsValue) {
 		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
 	}
 

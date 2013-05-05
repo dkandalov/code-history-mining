@@ -2,8 +2,8 @@ import history.EventStorage
 import org.junit.Test
 
 import java.text.SimpleDateFormat
-import java.util.regex.Matcher
 
+import static http.HttpUtil.fillDataPlaceholder
 import static java.lang.System.getenv
 
 class Analysis {
@@ -34,9 +34,7 @@ class Analysis {
 
 		def containerTreeBuilder = new ContainerTreeBuilder()
 		events.inject(containerTreeBuilder) { builder, filePath -> builder.updateTree(filePath) }
-		def json = containerTreeBuilder.root.toJSON()
-		println(json)
-		json
+		containerTreeBuilder.root.toJSON()
 	}
 
 	static class ContainerTreeBuilder {
@@ -172,8 +170,19 @@ class Analysis {
 
 	static void fillTemplate(String template, String jsValue) {
 		def templateText = new File("html/${template}").readLines().join("\n")
-		def text = templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
-		new File("html/${projectName}_${template.replace("_template", "")}").write(text)
+		def text = inlineJSLibraries(templateText)
+		text = fillDataPlaceholder(text, jsValue)
+		new File("html/${projectName}_${template}").write(text)
+	}
+
+	static String inlineJSLibraries(String html) {
+		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
+			if (!matches()) html
+			else inlineJSLibraries(
+					html.replace("<script src=\"${group(1)}\"></script>",
+											 "<script>${new File("html/${group(1)}").readLines().join("\n")}</script>")
+			)
+		}
 	}
 
 	static String asCsvStringLiteral(Collection values, List header) {
