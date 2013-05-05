@@ -4,6 +4,7 @@ import org.junit.Test
 import java.text.SimpleDateFormat
 
 import static http.HttpUtil.fillDataPlaceholder
+import static http.HttpUtil.inlineJSLibraries
 import static java.lang.System.getenv
 
 class Analysis {
@@ -17,9 +18,7 @@ class Analysis {
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		createJsonForCommitCommentWordCloud(events)
-		def json = createJsonForChangeSizeTreeMap(events)
-		println(json)
-		fillTemplate("treemap.html", json)
+		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
 	}
 
 	static String createJsonForChangeSizeTreeMap(events) {
@@ -163,19 +162,9 @@ class Analysis {
 
 	static void fillTemplate(String template, String jsValue) {
 		def templateText = new File("html/${template}").readLines().join("\n")
-		def text = inlineJSLibraries(templateText)
+		def text = inlineJSLibraries(templateText) { fileName -> new File("html/$fileName").readLines().join("\n") }
 		text = fillDataPlaceholder(text, jsValue)
 		new File("html/${projectName}_${template}").write(text)
-	}
-
-	static String inlineJSLibraries(String html) {
-		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
-			if (!matches()) html
-			else inlineJSLibraries(
-					html.replace("<script src=\"${group(1)}\"></script>",
-											 "<script>${new File("html/${group(1)}").readLines().join("\n")}</script>")
-			)
-		}
 	}
 
 	static String asCsvStringLiteral(Collection values, List header) {

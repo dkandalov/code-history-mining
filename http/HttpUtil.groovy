@@ -11,7 +11,7 @@ class HttpUtil {
 		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 
 		def text = readFile("$pathToTemplates/$templateFileName")
-		text = inlineD3js(text, readFile(pathToTemplates + "/d3.v3.min.js"))
+		text = inlineJSLibraries(text) { jsLibFileName -> readFile(pathToTemplates + "/" + jsLibFileName) }
 		text = fillDataPlaceholder(text, json)
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
@@ -24,8 +24,14 @@ class HttpUtil {
 		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
 	}
 
-	private static String inlineD3js(String templateText, String d3js) {
-		templateText.replace("<script src=\"d3.v3.min.js\"></script>", "<script>$d3js</script>")
+	static String inlineJSLibraries(String html, Closure<String> sourceCodeReader) {
+		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
+			if (!matches()) html
+			else inlineJSLibraries(
+					html.replace("<script src=\"${group(1)}\"></script>", "<script>${sourceCodeReader(group(1))}</script>"),
+					sourceCodeReader
+			)
+		}
 	}
 
 	private static String readFile(String template) {
