@@ -2,11 +2,17 @@ import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
 import com.michaelbaranov.microba.calendar.DatePicker
@@ -19,6 +25,8 @@ import http.HttpUtil
 
 import javax.swing.*
 import java.awt.*
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.util.Measure.measure
@@ -122,7 +130,11 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	def sourceOfChangeEvents = sourceOfChangeEventsFor(project, extractEventsOnMethodLevel)
 
-	showDialog(new Date() - 300, new Date(), 1, "Grab History Of Current Project", project) { fromDate, toDate, vcsRequestBatchSizeInDays ->
+	def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
+	def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
+
+	showDialog(new Date() - 300, new Date(), 1, outputFilePath, "Grab History Of Current Project", project) {
+		fromDate, toDate, vcsRequestBatchSizeInDays, String outputPath ->
 		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 			measure("time") {
 				def updateIndicatorText = { changeList, callback ->
@@ -134,8 +146,7 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 
 					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 				}
-				def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
-				def storage = new EventStorage("${PathManager.pluginsPath}/delta-flora/${outputFile}")
+				def storage = new EventStorage(outputPath)
 				def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
 				def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
 
@@ -163,7 +174,8 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	}
 }
 
-def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, Project project, Closure onOkCallback) {
+def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputFilePath,
+               String title, Project project, Closure onOkCallback) {
 	def fromDatePicker = new DatePicker(from, dateFormat.delegate)
 	def toDatePicker = new DatePicker(to, dateFormat.delegate)
 	def vcsRequestSizeField = new JTextField(String.valueOf(vcsRequestBatchSizeInDays))
@@ -184,6 +196,22 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, 
 		add(new JLabel("VCS Request batch size:"), bag.nextLine().next())
 		add(vcsRequestSizeField, bag.next())
 		add(new JLabel("day(s)"), bag.next().coverLine())
+		add(new JLabel("File path:"), bag.nextLine().next())
+		def filePathTextField = new TextFieldWithBrowseButton(new ActionListener() {
+			@Override void actionPerformed(ActionEvent e) {
+				FileChooserDescriptor chooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor().with{
+					showFileSystemRoots = true
+					title = "Output Path"
+					description = "Select output path"
+					hideIgnored = false
+					it
+				}
+				VirtualFile file = FileChooser.chooseFile(chooserDescriptor, project, VirtualFileManager.instance.findFileByUrl("file://" + outputFilePath))
+				if (file != null) outputFilePath = file.path
+			}
+		})
+		filePathTextField.text = outputFilePath
+		add(filePathTextField, bag.next().coverLine())
 
 
 		def text = "(Please note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
@@ -206,7 +234,7 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String title, 
 			String s = it.replaceAll("\\D", "")
 			s.empty ? 1 : s.toInteger()
 		}
-		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text))
+		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), outputFilePath)
 		builder.dialogWrapper.close(0)
 	} as Runnable
 	builder.centerPanel = rootPanel
