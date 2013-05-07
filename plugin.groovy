@@ -107,6 +107,13 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 				}, {})
 			}
 		})
+		add(new AnAction("Commit Messages Word Cloud") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Commit Messages Word Cloud", {
+					showInBrowser("wordcloud.html", Analysis.&createJsonForCommitCommentWordCloud)
+				}, {})
+			}
+		})
 		add(new Separator())
 		add(new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
