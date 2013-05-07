@@ -17,8 +17,8 @@ class Analysis {
 //		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
-//		createJsonForCommitCommentWordCloud(events)
-		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
+		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
+//		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
 	}
 
 	static String createJsonForChangeSizeTreeMap(events) {
@@ -85,15 +85,29 @@ class Analysis {
 	}
 
 	static String createJsonForCommitCommentWordCloud(events) {
-		Map commitMessages = events.groupBy{ it.revision }.entrySet()
+		Map wordOccurrences = events.groupBy{ it.revision }.entrySet()
 				.collect{ it.value.first().commitMessage }.toList()
 				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !it.empty }.collect{it.toLowerCase()} }
 				.inject([:].withDefault{0}) { wordFrequency, word ->
 			wordFrequency.put(word, wordFrequency[word] + 1)
 			wordFrequency
 		}
-		println(commitMessages.entrySet().sort{-it.value}.join("\n"))
-		"" // TODO
+		def mostFrequentWords = wordOccurrences.entrySet().sort{ -it.value }.take(600)
+		println(mostFrequentWords.join("\n"))
+
+		def min = wordOccurrences.min{ it.value }.value
+		def max = wordOccurrences.max{ it.value }.value
+		def range = (max != min ? max - min : 1)
+		def adjustWordSize = { entry ->
+			def word = entry.key
+			def size = entry.value
+			if (word.size() < 5) size += (max * 0.3) // this is to make shorter words more noticeable
+			Math.round((double) 5 + ((size - min) * 75 / range))
+		}
+		"""{"words": [
+${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + adjustWordSize(it) + '}' }.join(",\n")}
+]}
+"""
 	}
 
 	static String createJsonForCooccurrencesGraph(events, threshold = 7) {

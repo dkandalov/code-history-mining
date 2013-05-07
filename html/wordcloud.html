@@ -11,13 +11,14 @@
     var lastFiles = [];
     var cloudType = window.location.search.replace( "?", "" );
 
-    var data = {
+    var data = /*data_placeholder*/
+    {
         words: [
             {text: "aaa", size: 300},
             {text: "bbb", size: 200},
             {text: "ccc", size: 100}
         ]
-    };
+    }/*data_placeholder*/;
 
     d3.layout.cloud()
             .timeInterval(10)
