@@ -70,7 +70,7 @@ show("loaded DeltaFlora plugin")
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
 	String projectName = file.name.replace(".csv", "")
-	def showInBroswer = { template, eventsToJson ->
+	def showInBrowser = { template, eventsToJson ->
 		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
@@ -82,28 +82,28 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating calendar view", {
-					showInBroswer("calendar_view.html", Analysis.&createJsonForCalendarView)
+					showInBrowser("calendar_view.html", Analysis.&createJsonForCalendarView)
 				}, {})
 			}
 		})
 		add(new AnAction("Change Size History") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating change size history", {
-					showInBroswer("changes_size_chart.html", Analysis.&createJsonForBarChartView)
+					showInBrowser("changes_size_chart.html", Analysis.&createJsonForBarChartView)
 				}, {})
 			}
 		})
 		add(new AnAction("Files In The Same Commit Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Files in the same commit graph", {
-					showInBroswer("cooccurrences-graph.html", Analysis.&createJsonForCooccurrencesGraph)
+					showInBrowser("cooccurrences-graph.html", Analysis.&createJsonForCooccurrencesGraph)
 				}, {})
 			}
 		})
 		add(new AnAction("Changes By Package Tree Map") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Changes By Package Tree Map", {
-					showInBroswer("treemap.html", Analysis.&createJsonForChangeSizeTreeMap)
+					showInBrowser("treemap.html", Analysis.&createJsonForChangeSizeTreeMap)
 				}, {})
 			}
 		})
