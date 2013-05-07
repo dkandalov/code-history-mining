@@ -1,0 +1,57 @@
+<!--TODO diff d3.v2.min-2.js with existing d3 lib-->
+<script src="d3.v2.min-2.js"></script>
+<script src="d3.layout.cloud.js"></script>
+<body>
+<script>
+    var solidFill = d3.scale.category10();
+    var mixedFill = d3.scale.category20();
+    var width = 1200;
+    var height = 900;
+
+    var lastFiles = [];
+    var cloudType = window.location.search.replace( "?", "" );
+
+    var data = {
+        words: [
+            {text: "aaa", size: 300},
+            {text: "bbb", size: 200},
+            {text: "ccc", size: 100}
+        ]
+    };
+
+    d3.layout.cloud()
+            .timeInterval(10)
+            .size([width, height])
+            .font("Impact")
+            .fontSize(function(d) { return d.size; })
+            .rotate(function(d) { return 0; })
+            .words(data.words.map(function(d) {
+                return {text: d.text, size: d.size};
+            }))
+            .on("end", draw)
+            .start();
+
+    function draw(words) {
+        d3.select("svg").remove();
+        d3.select("body").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2.5 + "," + height / 2.5 + ")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function(d) { return d.size + "px"; })
+                .style("font-family", "Impact")
+                .style("fill", function(d, i) {
+                    if (d.size > 50) return solidFill(i);
+                    else return mixedFill(i);
+                })
+                .attr("text-anchor", "middle")
+                .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function(d) { return d.text; });
+    }
+
+</script>
