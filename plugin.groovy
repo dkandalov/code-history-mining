@@ -5,6 +5,7 @@ import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
@@ -175,10 +176,11 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 }
 
 def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputFilePath,
-               String title, Project project, Closure onOkCallback) {
+               String dialogTitle, Project project, Closure onOkCallback) {
 	def fromDatePicker = new DatePicker(from, dateFormat.delegate)
 	def toDatePicker = new DatePicker(to, dateFormat.delegate)
 	def vcsRequestSizeField = new JTextField(String.valueOf(vcsRequestBatchSizeInDays))
+	def filePathTextField = new TextFieldWithBrowseButton()
 
 	JPanel rootPanel = new JPanel().with{
 		layout = new GridBagLayout()
@@ -197,19 +199,21 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputF
 		add(vcsRequestSizeField, bag.next())
 		add(new JLabel("day(s)"), bag.next().coverLine())
 		add(new JLabel("File path:"), bag.nextLine().next())
-		def filePathTextField = new TextFieldWithBrowseButton(new ActionListener() {
+		def actionListener = new ActionListener() {
 			@Override void actionPerformed(ActionEvent e) {
-				FileChooserDescriptor chooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor().with{
+				def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
+				FileChooserDescriptor chooserDescriptor = FileChooserDescriptorFactory.createSingleFileDescriptor(csvFileType).with{
 					showFileSystemRoots = true
-					title = "Output Path"
-					description = "Select output path"
+					title = "Output File"
+					description = "Select output file"
 					hideIgnored = false
 					it
 				}
-				VirtualFile file = FileChooser.chooseFile(chooserDescriptor, project, VirtualFileManager.instance.findFileByUrl("file://" + outputFilePath))
-				if (file != null) outputFilePath = file.path
+				VirtualFile file = FileChooser.chooseFile(chooserDescriptor, project, VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text))
+				if (file != null) filePathTextField.text = file.path
 			}
-		})
+		}
+		filePathTextField.addActionListener(actionListener)
 		filePathTextField.text = outputFilePath
 		add(filePathTextField, bag.next().coverLine())
 
@@ -227,14 +231,14 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputF
 	}
 
 	DialogBuilder builder = new DialogBuilder(project)
-	builder.title = title
+	builder.title = dialogTitle
 	builder.okActionEnabled = true
 	builder.okOperation = {
 		def toInteger = {
 			String s = it.replaceAll("\\D", "")
 			s.empty ? 1 : s.toInteger()
 		}
-		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), outputFilePath)
+		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), filePathTextField.text)
 		builder.dialogWrapper.close(0)
 	} as Runnable
 	builder.centerPanel = rootPanel
