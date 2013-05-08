@@ -17,8 +17,8 @@ class Analysis {
 //		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
-		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
-//		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
+//		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
+		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
 	}
 
 	static String createJsonForChangeSizeTreeMap(events) {
@@ -33,8 +33,8 @@ class Analysis {
 				}
 
 		def containerTree = new Container("", 0)
-		events.inject(containerTree) { tree, filePath -> tree.updateTree(filePath) }
-		containerTree.toJSON()
+		events.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
+		containerTree.firstChild.toJSON()
 	}
 
 	static class Container {
@@ -64,6 +64,8 @@ class Analysis {
 
 			doUpdateTree(filePath.tail(), matchingChild)
 		}
+
+		Container getFirstChild() { children.first() }
 
 		private Container addChild(Container container) {
 			children.add(container)
