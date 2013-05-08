@@ -20,6 +20,8 @@
         ]
     }/*data_placeholder*/;
 
+    normalizeWordSize(data);
+
     d3.layout.cloud()
             .timeInterval(10)
             .size([width, height])
@@ -53,6 +55,17 @@
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                 })
                 .text(function(d) { return d.text; });
+    }
+
+    function normalizeWordSize(data) {
+        var min = d3.min(data.words, function (d) { return d.size; });
+        var max = d3.max(data.words, function (d) { return d.size; });
+        var range = (max != min ? max - min : 1);
+        data.words = data.words.map(function (word) {
+            if (word.text.length < 5) word.size += (max * 0.3) // this is to make shorter words more noticeable
+            word.size = Math.round(5 + ((word.size - min) * 75 / range));
+            return word;
+        });
     }
 
 </script>
