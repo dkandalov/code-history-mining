@@ -21,40 +21,55 @@
     }/*data_placeholder*/;
 
     normalizeWordSize(data);
+    createWordCloud();
 
-    d3.layout.cloud()
-            .timeInterval(10)
-            .size([width, height])
-            .font("Impact")
-            .fontSize(function(d) { return d.size; })
-            .rotate(function(d) { return 0; })
-            .words(data.words.map(function(d) {
-                return {text: d.text, size: d.size};
-            }))
-            .on("end", draw)
-            .start();
-
-    function draw(words) {
-        d3.select("svg").remove();
-        d3.select("body").append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(" + width / 2.5 + "," + height / 2.5 + ")")
-                .selectAll("text")
-                .data(words)
-                .enter().append("text")
-                .style("font-size", function(d) { return d.size + "px"; })
-                .style("font-family", "Impact")
-                .style("fill", function(d, i) {
-                    if (d.size > 50) return solidFill(i);
-                    else return mixedFill(i);
-                })
-                .attr("text-anchor", "middle")
-                .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                .text(function(d) { return d.text; });
+    function createWordCloud() {
+        d3.layout.cloud()
+                .timeInterval(10)
+                .size([width, height])
+                .font("Impact")
+                .fontSize(function(d) { return d.size; })
+                .rotate(function(d) { return 0; })
+                .words(data.words.map(function(d) {
+                    return {text: d.text, size: d.size};
+                }))
+                .on("end", draw)
+                .start();
+        function draw(words) {
+            d3.select("svg").remove();
+            d3.select("body").append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .append("g")
+                    .attr("transform", "translate(" + width / 2.5 + "," + height / 2.5 + ")")
+                    .selectAll("text")
+                    .data(words)
+                    .enter().append("text")
+                    .style("font-size", function(d) { return d.size + "px"; })
+                    .style("font-family", "Impact")
+                    .style("fill", function(d, i) {
+                        if (d.size > 50) return solidFill(i);
+                        else return mixedFill(i);
+                    })
+                    .attr("text-anchor", "middle")
+                    .attr("transform", function(d) {
+                        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    })
+                    .text(function(d) { return d.text; })
+                    .on("click", function (d) {
+                        if (!d3.event.altKey) return;
+                        var words = data.words;
+                        for (var i = 0; i < words.length; i++) {
+                            var word = words[i];
+                            if (word.text == d.text && word.size == d.size) {
+                                words.splice(i, 1);
+//                                normalizeWordSize(data); // TODO
+                                createWordCloud();
+                                break;
+                            }
+                        }
+                    });
+        }
     }
 
     function normalizeWordSize(data) {
@@ -62,7 +77,7 @@
         var max = d3.max(data.words, function (d) { return d.size; });
         var range = (max != min ? max - min : 1);
         data.words = data.words.map(function (word) {
-            if (word.text.length < 5) word.size += (max * 0.3) // this is to make shorter words more noticeable
+            if (word.text.length < 5) word.size += (max * 0.3); // this is to make shorter words more noticeable
             word.size = Math.round(5 + ((word.size - min) * 75 / range));
             return word;
         });
