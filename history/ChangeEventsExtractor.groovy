@@ -1,5 +1,4 @@
 package history
-
 import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
@@ -9,13 +8,7 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
-import com.intellij.psi.PsiAnonymousClass
-import com.intellij.psi.PsiClass
-import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiNamedElement
+import com.intellij.psi.*
 import history.events.ChangeEvent
 import history.events.CommitInfo
 import history.events.ElementChangeInfo
@@ -23,7 +16,7 @@ import history.events.FileChangeInfo
 import history.util.Measure
 import intellijeval.PluginUtil
 
-
+import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 
 class ChangeEventsExtractor {
 	private final Project project
@@ -70,8 +63,9 @@ class ChangeEventsExtractor {
 		if (nonEmptyRevision.file.fileType.binary) countFileLines = false
 		def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
 
-		def packageBefore = Measure.measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(project.basePath, "") }
-		def packageAfter = Measure.measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(project.basePath, "") }
+		def projectPath = toCanonicalPath(project.basePath)
+		def packageBefore = Measure.measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
+		def packageAfter = Measure.measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(projectPath, "") }
 
 		new FileChangeInfo(
 				nonEmptyRevision.file.name,
