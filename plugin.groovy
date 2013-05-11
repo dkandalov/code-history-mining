@@ -141,8 +141,8 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
 	def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
 
-	showDialog(new Date() - 300, new Date(), 1, outputFilePath, "Grab History Of Current Project", project) {
-		fromDate, toDate, vcsRequestBatchSizeInDays, String outputPath ->
+	def state = new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
+	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
 		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 			measure("time") {
 				def updateIndicatorText = { changeList, callback ->
@@ -154,21 +154,21 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 
 					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 				}
-				def storage = new EventStorage(outputPath)
+				def storage = new EventStorage(userInput.outputFilePath)
 				def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
 				def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
 
 				if (storage.hasNoEvents()) {
-					log("Loading project history from ${fromDate} to ${toDate}")
-					sourceOfChangeEvents.request(fromDate, toDate, indicator, updateIndicatorText, appendToStorage)
+					log("Loading project history from ${userInput.from} to ${userInput.to}")
+					sourceOfChangeEvents.request(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
 					def historyStart = storage.mostRecentEventTime
-					def historyEnd = toDate
+					def historyEnd = userInput.to
 					log("Loading project history from $historyStart to $historyEnd")
 					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 
-					historyStart = fromDate
+					historyStart = userInput.from
 					historyEnd = storage.oldestEventTime
 					log("Loading project history from $historyStart to $historyEnd")
 					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
@@ -182,11 +182,18 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	}
 }
 
-def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputFilePath,
-               String dialogTitle, Project project, Closure onOkCallback) {
-	def fromDatePicker = new DatePicker(from, dateFormat.delegate)
-	def toDatePicker = new DatePicker(to, dateFormat.delegate)
-	def vcsRequestSizeField = new JTextField(String.valueOf(vcsRequestBatchSizeInDays))
+@groovy.transform.Immutable
+class DialogState {
+	Date from
+	Date to
+	int vcsRequestBatchSizeInDays
+	String outputFilePath
+}
+
+def showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
+	def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
+	def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
+	def vcsRequestSizeField = new JTextField(String.valueOf(state.vcsRequestBatchSizeInDays))
 	def filePathTextField = new TextFieldWithBrowseButton()
 
 	JPanel rootPanel = new JPanel().with{
@@ -221,7 +228,7 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputF
 			}
 		}
 		filePathTextField.addActionListener(actionListener)
-		filePathTextField.text = outputFilePath
+		filePathTextField.text = state.outputFilePath
 		add(filePathTextField, bag.next().coverLine())
 
 
@@ -245,7 +252,7 @@ def showDialog(Date from, Date to, int vcsRequestBatchSizeInDays, String outputF
 			String s = it.replaceAll("\\D", "")
 			s.empty ? 1 : s.toInteger()
 		}
-		onOkCallback(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), filePathTextField.text)
+		onOkCallback(new DialogState(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), filePathTextField.text))
 		builder.dialogWrapper.close(0)
 	} as Runnable
 	builder.centerPanel = rootPanel
