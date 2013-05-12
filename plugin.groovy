@@ -12,11 +12,14 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
 import com.michaelbaranov.microba.calendar.DatePicker
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import history.ChangeEventsExtractor
 import history.EventStorage
 import history.SourceOfChangeEvents
@@ -28,11 +31,14 @@ import javax.swing.*
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
+import java.text.SimpleDateFormat
 
+import static com.intellij.openapi.util.io.FileUtil.writeToFile
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static java.awt.GridBagConstraints.*
+import static java.lang.Integer.parseInt
 
 String pathToTemplates = pluginPath + "/html"
 
@@ -138,11 +144,14 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	def sourceOfChangeEvents = sourceOfChangeEventsFor(project, extractEventsOnMethodLevel)
 
-	def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
-	def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
-
-	def state = new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
+	def state = DialogState.loadDialogStateFor(project, pluginPath) {
+		def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
+		def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
+		new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
+	}
 	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
+		DialogState.saveDialogStateOf(project, pluginPath, userInput)
+
 		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
 			measure("time") {
 				def updateIndicatorText = { changeList, callback ->
@@ -188,6 +197,35 @@ class DialogState {
 	Date to
 	int vcsRequestBatchSizeInDays
 	String outputFilePath
+
+	static DialogState loadDialogStateFor(Project project, String pathToFolder, Closure<DialogState> createDefault) {
+		def stateByProject = loadStateByProject(pathToFolder)
+		def result = stateByProject.get(project.name)
+		result != null ? result : createDefault()
+	}
+
+	static saveDialogStateOf(Project project, String pathToFolder, DialogState dialogState) {
+		def stateByProject = loadStateByProject(pathToFolder)
+		stateByProject.put(project.name, dialogState)
+		writeToFile(new File(pathToFolder + "/dialog-state.json"), JsonOutput.toJson(stateByProject))
+	}
+
+	private static Map<String, DialogState> loadStateByProject(String pathToFolder) {
+		try {
+			def parseDate = { new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(it) }
+			def toDialogState = { map -> new DialogState(
+					parseDate(map.from),
+					parseDate(map.to),
+					parseInt((String) map.vcsRequestBatchSizeInDays),
+					map.outputFilePath
+			)}
+
+			def json = FileUtil.loadFile(new File(pathToFolder + "/dialog-state.json"))
+			new JsonSlurper().parseText(json).collectEntries{ [it.key, toDialogState(it.value)] }
+		} catch (IOException ignored) {
+			[:]
+		}
+	}
 }
 
 def showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
