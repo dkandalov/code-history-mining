@@ -40,7 +40,7 @@ import static intellijeval.PluginUtil.*
 import static java.awt.GridBagConstraints.*
 import static java.lang.Integer.parseInt
 
-String pathToTemplates = pluginPath + "/html"
+String pathToTemplates = pluginPath + "/templates"
 
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->

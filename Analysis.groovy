@@ -167,10 +167,10 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 	static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
 
 	static void fillTemplate(String template, String jsValue) {
-		def templateText = new File("html/${template}").readLines().join("\n")
-		def text = inlineJSLibraries(templateText) { fileName -> new File("html/$fileName").readLines().join("\n") }
+		def templateText = new File("templates/${template}").readLines().join("\n")
+		def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
 		text = fillDataPlaceholder(text, jsValue)
-		new File("html/${projectName}_${template}").write(text)
+		new File("templates/${projectName}_${template}").write(text)
 	}
 
 	static String asCsvStringLiteral(Collection values, List header) {
