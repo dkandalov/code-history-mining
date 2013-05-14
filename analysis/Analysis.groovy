@@ -5,6 +5,7 @@ import org.junit.Test
 
 import java.text.SimpleDateFormat
 
+import static analysis.Analysis.Util.*
 import static http.HttpUtil.fillDataPlaceholder
 import static http.HttpUtil.inlineJSLibraries
 import static java.lang.System.getenv
@@ -20,71 +21,73 @@ class Analysis {
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
-		fillTemplate("treemap.html", createJsonForChangeSizeTreeMap(events))
+		fillTemplate("treemap.html", TreeMap.createJsonForChangeSizeTreeMap(events))
 	}
 
-	static String createJsonForChangeSizeTreeMap(events) {
-		events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
-				.collect{ it.value.first() }
-				.collectMany{
-					if (!it.packageBefore.empty && !it.packageAfter.empty && it.packageBefore != it.packageAfter) {
-						[it.packageBefore + "/" + it.fileName, it.packageAfter + "/" + it.fileName]
-					} else {
-						[(!it.packageBefore.empty ? it.packageBefore : it.packageAfter) + "/" + it.fileName]
-					}
+	class TreeMap {
+		static String createJsonForChangeSizeTreeMap(events) {
+			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
+					.collect{ it.value.first() }
+					.collectMany{
+				if (!it.packageBefore.empty && !it.packageAfter.empty && it.packageBefore != it.packageAfter) {
+					[it.packageBefore + "/" + it.fileName, it.packageAfter + "/" + it.fileName]
+				} else {
+					[(!it.packageBefore.empty ? it.packageBefore : it.packageAfter) + "/" + it.fileName]
 				}
+			}
 
-		def containerTree = new Container("", 0)
-		events.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
-		containerTree.firstChild.toJSON()
-	}
-
-	static class Container {
-		private final String name
-		private final Collection<Container> children
-		private int commits
-
-		Container(String name, Collection<Container> children = new ArrayList(), int commits) {
-			this.name = name
-			this.children = children.findAll{ it.commits > 0 }
-			this.commits = commits
+			def containerTree = new Container("", 0)
+			events.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
+			containerTree.firstChild.toJSON()
 		}
 
-		Container updateTree(String filePath) {
-			doUpdateTree(filePath.split("/").toList(), this)
-			this
-		}
+		static class Container {
+			private final String name
+			private final Collection<Container> children
+			private int commits
 
-		private static doUpdateTree(List<String> filePath, Container container) {
-			container.plusCommit()
+			Container(String name, Collection<Container> children = new ArrayList(), int commits) {
+				this.name = name
+				this.children = children.findAll{ it.commits > 0 }
+				this.commits = commits
+			}
 
-			if (filePath.empty) return
+			Container updateTree(String filePath) {
+				doUpdateTree(filePath.split("/").toList(), this)
+				this
+			}
 
-			def matchingChild = container.children.find{ it.name == filePath.first() }
-			if (matchingChild == null)
-				matchingChild = container.addChild(new Container(filePath.first(), 0))
+			private static doUpdateTree(List<String> filePath, Container container) {
+				container.plusCommit()
 
-			doUpdateTree(filePath.tail(), matchingChild)
-		}
+				if (filePath.empty) return
 
-		Container getFirstChild() { children.first() }
+				def matchingChild = container.children.find{ it.name == filePath.first() }
+				if (matchingChild == null)
+					matchingChild = container.addChild(new Container(filePath.first(), 0))
 
-		private Container addChild(Container container) {
-			children.add(container)
-			container
-		}
+				doUpdateTree(filePath.tail(), matchingChild)
+			}
 
-		private def plusCommit() {
-			commits++
-		}
+			Container getFirstChild() { children.first() }
 
-		String toJSON() {
-			String childrenAsJSON = "\"children\": [\n" + children.collect { it.toJSON() }.join(',\n') + "]"
-			"{" +
-			"\"name\": \"$name\", " +
-			"\"size\": \"$commits\", " +
-			childrenAsJSON +
-			"}"
+			private Container addChild(Container container) {
+				children.add(container)
+				container
+			}
+
+			private def plusCommit() {
+				commits++
+			}
+
+			String toJSON() {
+				String childrenAsJSON = "\"children\": [\n" + children.collect { it.toJSON() }.join(',\n') + "]"
+				"{" +
+						"\"name\": \"$name\", " +
+						"\"size\": \"$commits\", " +
+						childrenAsJSON +
+						"}"
+			}
 		}
 	}
 
@@ -165,43 +168,45 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static def changeSizeOf(event) { event.toOffset - event.fromOffset }
-	static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
+	class Util {
+		static def changeSizeOf(event) { event.toOffset - event.fromOffset }
+		static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
 
-	static void fillTemplate(String template, String jsValue) {
-		def templateText = new File("templates/${template}").readLines().join("\n")
-		def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
-		text = fillDataPlaceholder(text, jsValue)
-		new File("templates/${projectName}_${template}").write(text)
-	}
-
-	static String asCsvStringLiteral(Collection values, List header) {
-		def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
-
-		def jsNewLine = "\\n\\\n"
-		def jsHeader = header.join(",") + jsNewLine
-		def jsBody = values
-				.collect{ it.collect{it instanceof Date ? formatDate(it) : it} }
-				.collect{it.join(",")}
-				.join(jsNewLine)
-		"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
-	}
-
-	static Date floorToDay(Date date) {
-		date[Calendar.MILLISECOND] = 0
-		date[Calendar.SECOND] = 0
-		date[Calendar.MINUTE] = 0
-		date[Calendar.HOUR_OF_DAY] = 0
-		date
-	}
-
-	static <T> Collection<Collection<T>> pairs(Collection<T> collection) {
-		Collection<Collection<T>> result = collection.inject([]) { acc, value ->
-			if (!acc.empty) acc.last() << value
-			acc + [[value]]
+		static void fillTemplate(String template, String jsValue) {
+			def templateText = new File("templates/${template}").readLines().join("\n")
+			def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
+			text = fillDataPlaceholder(text, jsValue)
+			new File("templates/${projectName}_${template}").write(text)
 		}
-		if (!result.empty) result.remove(result.size() - 1)
-		result
+
+		static String asCsvStringLiteral(Collection values, List header) {
+			def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
+
+			def jsNewLine = "\\n\\\n"
+			def jsHeader = header.join(",") + jsNewLine
+			def jsBody = values
+					.collect{ it.collect{it instanceof Date ? formatDate(it) : it} }
+					.collect{it.join(",")}
+					.join(jsNewLine)
+			"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
+		}
+
+		static Date floorToDay(Date date) {
+			date[Calendar.MILLISECOND] = 0
+			date[Calendar.SECOND] = 0
+			date[Calendar.MINUTE] = 0
+			date[Calendar.HOUR_OF_DAY] = 0
+			date
+		}
+
+		static <T> Collection<Collection<T>> pairs(Collection<T> collection) {
+			Collection<Collection<T>> result = collection.inject([]) { acc, value ->
+				if (!acc.empty) acc.last() << value
+				acc + [[value]]
+			}
+			if (!result.empty) result.remove(result.size() - 1)
+			result
+		}
 	}
 
 	@Test void pairs_shouldGroupCollectionElementsIntoPairs() {
