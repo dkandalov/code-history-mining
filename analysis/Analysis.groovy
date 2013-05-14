@@ -1,5 +1,6 @@
 package analysis
 
+import groovy.time.TimeCategory
 import history.EventStorage
 import org.junit.Test
 
@@ -11,7 +12,7 @@ import static http.HttpUtil.inlineJSLibraries
 import static java.lang.System.getenv
 
 class Analysis {
-	static def projectName = "scratch"
+	static def projectName = "scratch" // TODO refactor
 
 	static void main(String[] args) {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
@@ -21,10 +22,46 @@ class Analysis {
 //		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
 //		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
-		fillTemplate("treemap.html", TreeMap.createJsonForChangeSizeTreeMap(events))
+//		fillTemplate("treemap.html", TreeMap.createJsonForChangeSizeTreeMap(events))
+		fillTemplate("stacked_bars.html", createJsonForCommitsStackBarsChart(events))
 	}
 
-	class TreeMap {
+	static String createJsonForCommitsStackBarsChart(events) { // TODO assume change events are decomposed to method-level
+		def fromDay = floorToDay(events.last().revisionDate)
+		def toDay = floorToDay(events.first().revisionDate)
+		def fillMissingDays = { valuesByDate ->
+			use(TimeCategory) {
+				def day = fromDay.clone()
+				while (!day.after(toDay)) {
+					if (!valuesByDate.containsKey(day)) valuesByDate[day] = []
+					day += 1.day
+				}
+				valuesByDate
+			}
+		}
+
+		def changesByAuthorByDate = events
+			.groupBy({ it.author }, { floorToDay(it.revisionDate) })
+			.collectEntries {
+				def changesSizeByDate = it.value
+				it.value = fillMissingDays(changesSizeByDate).sort()
+				it
+			}
+		def authorsContributions = changesByAuthorByDate.entrySet().collectEntries{
+			def author = it.key
+			def commits = it.value.values()
+			[author, commits.size()]
+		}
+		def numberOfTopCommitters = 5
+		def flattened = changesByAuthorByDate.entrySet().toList()
+				.sort{ -authorsContributions[it.key] }.take(numberOfTopCommitters)
+				.collectMany { entry ->
+					entry.value.collect { [it.key, entry.key, it.value.size()] }
+				}
+		asCsvStringLiteral(flattened, ["date", "author", "changeSizeOf"])
+	}
+
+	static class TreeMap {
 		static String createJsonForChangeSizeTreeMap(events) {
 			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
 					.collect{ it.value.first() }
@@ -168,7 +205,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	class Util {
+	static class Util {
 		static def changeSizeOf(event) { event.toOffset - event.fromOffset }
 		static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
 
@@ -176,7 +213,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			def templateText = new File("templates/${template}").readLines().join("\n")
 			def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
 			text = fillDataPlaceholder(text, jsValue)
-			new File("templates/${projectName}_${template}").write(text)
+			new File("templates/${Analysis.projectName}_${template}").write(text)
 		}
 
 		static String asCsvStringLiteral(Collection values, List header) {
