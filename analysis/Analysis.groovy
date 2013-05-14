@@ -1,3 +1,5 @@
+package analysis
+
 import history.EventStorage
 import org.junit.Test
 

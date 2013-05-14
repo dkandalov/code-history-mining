@@ -1,3 +1,4 @@
+import analysis.Analysis
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
