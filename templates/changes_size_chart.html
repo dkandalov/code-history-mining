@@ -356,7 +356,8 @@ date,changeSize\n\
         }
         function barWidthFor(timeInterval, fromDate, toDate) {
             var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
-            return Math.floor(barWidth);
+            barWidth = Math.floor(barWidth);
+            return barWidth < 1 ? 1 : barWidth;
         }
         function nonZero(length) {
             return (length > 0 ? length : 0.0000001);
