@@ -12,7 +12,8 @@ class SourceOfChangeEvents {
 		this.extractChangeEvents = extractChangeEvents
 	}
 
-	def request(Date historyStart, Date historyEnd, indicator = null, Closure callbackWrapper = {it()}, Closure callback) {
+	def request(Date historyStart, Date historyEnd, indicator = null,
+	            Closure callbackWrapper = { changes, aCallback -> aCallback(changes) }, Closure callback) {
 		Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
 		for (changeList in changeLists) {
 			if (changeList == SourceOfChangeLists.NO_MORE_CHANGE_LISTS) break
@@ -20,7 +21,7 @@ class SourceOfChangeEvents {
 
 			callbackWrapper(changeList) {
 				PluginUtil.catchingAll {
-					def changeEvents = extractChangeEvents(changeList)
+					Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList)
 					callback(changeEvents)
 				}
 			}
