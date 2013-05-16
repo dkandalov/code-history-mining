@@ -20,7 +20,7 @@ class IntegrationTestsRunner {
 		try {
 
 			closure()
-			PluginUtil.showInConsole("${methodName} OK...", className, project)
+			PluginUtil.showInConsole("${className}: ${methodName} - OK", "Integration tests", project)
 
 		} catch (AssertionError assertionError) {
 			def writer = new StringWriter()

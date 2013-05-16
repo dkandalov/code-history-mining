@@ -7,14 +7,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import history.ChangeEventsExtractor
-import history.EventStorage
-import history.SourceOfChangeEvents
-import history.SourceOfChangeLists
+import history.*
 import history.util.Measure
 import http.HttpUtil
 import ui.DialogState
 
+import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
@@ -22,6 +20,10 @@ import static ui.Dialog.showDialog
 
 String pathToTemplates = pluginPath + "/templates"
 
+if (true) {
+	runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeEventsTest])
+	return
+}
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -51,7 +53,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
 
-show("loaded DeltaFlora plugin")
+if (!isIdeStartup) show("reloaded DeltaFlora plugin")
 
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
