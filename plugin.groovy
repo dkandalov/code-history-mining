@@ -21,7 +21,7 @@ import static ui.Dialog.showDialog
 String pathToTemplates = pluginPath + "/templates"
 
 if (true) {
-	runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeEventsTest])
+	runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeEventsGitTest])
 	return
 }
 
