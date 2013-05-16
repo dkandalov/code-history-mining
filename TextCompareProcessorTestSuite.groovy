@@ -2,18 +2,16 @@ import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.project.Project
-import org.codehaus.groovy.runtime.MethodClosure
+import org.junit.Test
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-import static intellijeval.PluginUtil.showInConsole
 
-// Can only be executed within IntelliJEval.
-// E.g. like this
-//   new TextCompareProcessorTestSuite(project).run()
-//   if (true) return
-// Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code :(
+/**
+ * Can only be executed within IntelliJEval.
+ * Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code :(
+ */
 class TextCompareProcessorTestSuite {
 	private final Project project
 
@@ -21,12 +19,7 @@ class TextCompareProcessorTestSuite {
 		this.project = project
 	}
 
-	def run() {
-		runAsConsoleTest(this.&"basic text comparisons" as MethodClosure)
-		runAsConsoleTest(this.&"differences between IGNORE_SPACE and TRIM_SPACE comparison" as MethodClosure)
-	}
-
-	private static "basic text comparisons"() {
+	@Test def "basic text comparisons"() {
 		new TextCompareProcessor(TRIM_SPACE).with {
 			process("", "").with {
 				assert size() == 0
@@ -115,7 +108,7 @@ class TextCompareProcessorTestSuite {
 		}
 	}
 
-	private static "differences between IGNORE_SPACE and TRIM_SPACE comparison"() {
+	@Test "differences between IGNORE_SPACE and TRIM_SPACE comparison"() {
 		new TextCompareProcessor(IGNORE_SPACE).with {
 			process("some expression", "some  expression").with {
 				assert size() == 1
@@ -153,19 +146,6 @@ class TextCompareProcessorTestSuite {
 					assert it[2].type == null
 				}
 			}
-		}
-	}
-
-	private runAsConsoleTest(MethodClosure closure) {
-		try {
-
-			closure()
-			showInConsole("${closure.method} OK...", "TextCompareProcessorTestSuite", project)
-
-		} catch (AssertionError assertionError) {
-			def writer = new StringWriter()
-			assertionError.printStackTrace(new PrintWriter(writer))
-			showInConsole(writer.buffer.toString(), "TextCompareProcessorTestSuite", project)
 		}
 	}
 
