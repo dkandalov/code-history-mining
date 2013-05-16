@@ -3,7 +3,7 @@ import intellijeval.PluginUtil
 import org.junit.Test
 
 class IntegrationTestsRunner {
-	static def runIntegrationTests(List testClasses, Project project) {
+	static def runIntegrationTests(Project project, List testClasses) {
 		testClasses.each{ runTestsInClass(it, project) }
 	}
 
