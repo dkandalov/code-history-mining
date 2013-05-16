@@ -1,5 +1,4 @@
 package history
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.FilePathImpl
@@ -70,7 +69,7 @@ class SourceOfChangeLists {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
-			return bug_IDEA_102084(project, location, fromDate, toDate)
+			return workarounds_for_intellij_git_api(project, location, fromDate, toDate)
 		}
 
 		def settings = changesProvider.createDefaultSettings()
@@ -86,15 +85,14 @@ class SourceOfChangeLists {
 	}
 
 	/**
-	 * see http://youtrack.jetbrains.com/issue/IDEA-102084
-	 * this issue is fixed, left this workaround anyway to have backward compatibility with IJ12 releases before the fix
+	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
-	private static List<CommittedChangeList> bug_IDEA_102084(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
+	private static List<CommittedChangeList> workarounds_for_intellij_git_api(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {
 				// makes git notice file renames/moves (not sure but seems that otherwise intellij api doesn't do it)
-				h.addParameters("-M") // TODO why it still doesn't work in the latest build without this workaround?
+				h.addParameters("-M")
 
 				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
 				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
