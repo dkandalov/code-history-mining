@@ -20,8 +20,8 @@ import static ui.Dialog.showDialog
 
 String pathToTemplates = pluginPath + "/templates"
 
-if (true) return SourceOfChangeLists_Playground.playOnIt()
-if (true) return runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeEventsGitTest])
+if (false) return SourceOfChangeLists_Playground.playOnIt()
+if (true) return runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeListsGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(

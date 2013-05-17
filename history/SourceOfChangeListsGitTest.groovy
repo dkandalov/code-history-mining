@@ -10,10 +10,10 @@ import org.junit.Test
 import static history.SourceOfChangeLists.requestChangeListsFor
 import static history.util.DateTimeUtil.dateTime
 
-class SourceOfChangeEventsGitTest {
+class SourceOfChangeListsGitTest {
 	private final Project jUnitProject
 
-	SourceOfChangeEventsGitTest() {
+	SourceOfChangeListsGitTest() {
 		jUnitProject = findJUnitProject()
 	}
 
@@ -33,6 +33,14 @@ class SourceOfChangeEventsGitTest {
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "RuleFieldValidator.java"
 		assert change.afterRevision.file.name == "RuleFieldValidator.java"
+	}
+
+	@Test "should ignore merge commits and include merge changes as separate change lists"() {
+		def changeLists = requestChangeListsFor(jUnitProject, dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
+		assert changeLists.size() == 1 : "merge commit 1ef54a1 was not ignored"
+
+		def changes = changeLists.first().changes
+		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
 	static Project findJUnitProject() {

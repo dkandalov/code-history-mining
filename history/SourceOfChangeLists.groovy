@@ -111,6 +111,8 @@ class SourceOfChangeLists {
 		boolean skipDiffsForMerge = true
 
 		GitUtil.getLocalCommittedChanges(project, root, parametersSpecifier, resultConsumer, skipDiffsForMerge)
-		result
+
+		def isNotMergeCommit = { CommittedChangeList changeList -> changeList.changes.size() > 0 }
+		result.findAll{isNotMergeCommit(it)}
 	}
 }

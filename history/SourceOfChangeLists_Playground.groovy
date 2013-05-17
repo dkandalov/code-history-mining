@@ -7,7 +7,7 @@ import static history.util.DateTimeUtil.dateTime
 
 class SourceOfChangeLists_Playground {
 	static playOnIt() {
-		def jUnitProject = SourceOfChangeEventsGitTest.findJUnitProject()
+		def jUnitProject = SourceOfChangeListsGitTest.findJUnitProject()
 		def changeLists = requestChangeListsFor(jUnitProject, dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
 
 		PluginUtil.show(changeLists.collect{
