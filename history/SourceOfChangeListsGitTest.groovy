@@ -1,10 +1,11 @@
 package history
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
 import static history.SourceOfChangeLists.requestChangeListsFor
@@ -18,8 +19,8 @@ class SourceOfChangeListsGitTest {
 	}
 
 	@Test "should interpret renamed file as a single event"() {
-		def changeLists = requestChangeListsFor(jUnitProject, dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))
-		def change = changeLists.first().changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
+		def changeList = requestSingleChangeList("43b0fe3", dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))
+		def change = changeList.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
 
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "TheoryMethod.java"
@@ -27,8 +28,8 @@ class SourceOfChangeListsGitTest {
 	}
 
 	@Test "should interpret moved file as a single event"() {
-		def changeLists = requestChangeListsFor(jUnitProject, dateTime("08:50 28/07/2011"), dateTime("09:00 28/07/2011"))
-		def change = changeLists.first().changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
+		def changeList = requestSingleChangeList("a19e98f", dateTime("08:50 28/07/2011"), dateTime("09:00 28/07/2011"))
+		def change = changeList.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
 
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "RuleFieldValidator.java"
@@ -36,11 +37,21 @@ class SourceOfChangeListsGitTest {
 	}
 
 	@Test "should ignore merge commits and include merge changes as separate change lists"() {
-		def changeLists = requestChangeListsFor(jUnitProject, dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
-		assert changeLists.size() == 1 : "merge commit 1ef54a1 was not ignored"
+		def changeLists = requestSingleChangeList("dc730e3", dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
 
-		def changes = changeLists.first().changes
+		def changes = changeLists.changes
 		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
+	}
+
+	private CommittedChangeList requestSingleChangeList(String expectedGitHash, Date from, Date to) {
+		def changeLists = requestChangeListsFor(jUnitProject, from, to)
+		assert changeLists.size() == 1 : "Excpected single change list but got ${changeLists.size()}"
+
+		def changeList = changeLists.first()
+		(changeList as VcsRevisionNumberAware ).revisionNumber.asString().with {
+			assert it.startsWith(expectedGitHash) : "Expected hash $expectedGitHash but got $it"
+		}
+		changeList
 	}
 
 	static Project findJUnitProject() {

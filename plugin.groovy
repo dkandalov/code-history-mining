@@ -50,7 +50,6 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 			true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
-
 if (!isIdeStartup) show("reloaded DeltaFlora plugin")
 
 
