@@ -105,8 +105,8 @@ class SourceOfChangeLists {
 		}
 		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
 
-		// this is another difference compared to GitCommittedChangeListProvider#getCommittedChangesImpl
-		// if "false", merge CommittedChangeList will contain all changes from merge which is NOT useful for this use-case
+		// if "false", CommittedChangeList for merge will contain all changes from merge
+		// this is NOT useful because changes will be in previous CommittedChangeLists anyway
 		// TODO (not sure how it works with other VCS)
 		boolean skipDiffsForMerge = true
 

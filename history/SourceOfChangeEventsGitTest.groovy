@@ -14,12 +14,7 @@ class SourceOfChangeEventsGitTest {
 	private final Project jUnitProject
 
 	SourceOfChangeEventsGitTest() {
-		jUnitProject = ProjectManager.instance.openProjects.find{it.name == "junit"}
-		assert jUnitProject != null : "Couldn't find open project with junit project (which is required for this test)"
-
-		def sourceRoots = ProjectRootManager.getInstance(jUnitProject).contentSourceRoots.toList()
-		def vcsRoot = ProjectLevelVcsManager.getInstance(jUnitProject).getVcsRootObjectFor(sourceRoots.first())
-		assert vcsRoot.vcs.class.simpleName == "GitVcs"
+		jUnitProject = findJUnitProject()
 	}
 
 	@Test "should interpret renamed file as a single event"() {
@@ -38,6 +33,16 @@ class SourceOfChangeEventsGitTest {
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "RuleFieldValidator.java"
 		assert change.afterRevision.file.name == "RuleFieldValidator.java"
+	}
 
+	static Project findJUnitProject() {
+		def jUnitProject = ProjectManager.instance.openProjects.find{ it.name == "junit" }
+		assert jUnitProject != null: "Couldn't find open project for junit framework"
+
+		def sourceRoots = ProjectRootManager.getInstance(jUnitProject).contentSourceRoots.toList()
+		def vcsRoot = ProjectLevelVcsManager.getInstance(jUnitProject).getVcsRootObjectFor(sourceRoots.first())
+		assert vcsRoot.vcs.class.simpleName == "GitVcs"
+
+		jUnitProject
 	}
 }

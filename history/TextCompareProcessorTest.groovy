@@ -11,10 +11,10 @@ import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 
 /**
- * This is to explore how {@link TextCompareProcessor} compares text.
+ * This test exists to explore how {@link TextCompareProcessor} compares text.
  *
  * Can only be executed within IntelliJEval.
- * Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code :(
+ * (Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code)
  */
 class TextCompareProcessorTest {
 	private final Project project
