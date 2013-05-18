@@ -148,7 +148,10 @@ class ChangeEventsExtractor {
 		for (int offset = range.startOffset; offset < range.endOffset; offset++) {
 			// running read action on fine-grained level because this seems to make UI more responsive
 			// (even though it will make the whole processing slower)
-			PluginUtil.runReadAction { result << methodOrClassAt(offset, psiFile) }
+			PluginUtil.runReadAction {
+				def element = methodOrClassAt(offset, psiFile)
+				if (element != null) result << element
+			}
 		}
 		result
 	}
