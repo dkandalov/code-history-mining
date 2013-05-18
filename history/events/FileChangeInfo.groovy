@@ -3,6 +3,8 @@ package history.events
 @SuppressWarnings("GroovyUnusedDeclaration")
 @groovy.transform.Immutable
 class FileChangeInfo {
+	static int NA = -1
+
 	String fileName
 	String fileChangeType
 	String packageBefore

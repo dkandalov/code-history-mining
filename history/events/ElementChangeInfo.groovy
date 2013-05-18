@@ -13,6 +13,6 @@ class ElementChangeInfo {
 	int toOffset
 
 	@Override String toString() {
-		"ElementChangeInfo(\"$elementName\", \"$changeType\", $fromLine, $toLine, $fromOffset, $toOffset)d"
+		"ElementChangeInfo(\"$elementName\", \"$changeType\", $fromLine, $toLine, $fromOffset, $toOffset)"
 	}
 }

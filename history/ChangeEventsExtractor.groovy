@@ -62,7 +62,14 @@ class ChangeEventsExtractor {
 	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean countFileLines = true) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) countFileLines = false
-		def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
+
+		int linesBefore = FileChangeInfo.NA
+		int linesAfter = FileChangeInfo.NA
+		if (countFileLines) {
+			def (beforeText, afterText) = (countFileLines ? contentOf(change) : ["", ""])
+			linesBefore = beforeText.empty ? 0 : beforeText.split("\n").length
+			linesAfter = afterText.empty ? 0 : afterText.split("\n").length
+		}
 
 		def projectPath = toCanonicalPath(project.basePath)
 		def packageBefore = Measure.measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
@@ -73,8 +80,8 @@ class ChangeEventsExtractor {
 				change.type.toString(),
 				packageBefore,
 				packageAfter == packageBefore ? "" : packageAfter,
-				beforeText.split("\n").length,
-				afterText.split("\n").length
+				linesBefore,
+				linesAfter
 		)
 	}
 
