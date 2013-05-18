@@ -8,6 +8,7 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import com.intellij.psi.*
 import history.events.ChangeEvent
 import history.events.CommitInfo
@@ -154,9 +155,8 @@ class ChangeEventsExtractor {
 	}
 
 	private static String revisionNumberOf(CommittedChangeList changeList) {
-		// TODO this is a hack to get git ssh (it might be worth using VcsRevisionNumberAware but it's currently not released)
-		if (changeList.class.simpleName == "GitCommittedChangeList") {
-			changeList.name.with{ it[it.lastIndexOf('(') + 1..<it.lastIndexOf(')')] }
+		if (changeList instanceof VcsRevisionNumberAware) {
+			changeList.revisionNumber.asString()
 		} else {
 			changeList.number.toString()
 		}
