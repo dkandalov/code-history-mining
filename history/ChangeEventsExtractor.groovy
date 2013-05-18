@@ -137,7 +137,7 @@ class ChangeEventsExtractor {
 					sizeInLinesOf(element, fileBeforeChange),
 					sizeInLinesOf(element, fileAfterChange),
 					sizeInCharsOf(element, fileBeforeChange),
-					sizeInCharsOf(element, fileAfterChange),
+					sizeInCharsOf(element, fileAfterChange)
 			)
 		}
 	}
