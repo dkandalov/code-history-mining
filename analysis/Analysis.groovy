@@ -207,7 +207,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 
 	static class Util {
 		static def changeSizeOf(event) { event.toOffset - event.fromOffset }
-		static def changeSizeInLinesOf(event) { event.toLine - event.fromLine }
+		static def changeSizeInLinesOf(event) { (event.linesBefore - event.linesAfter).abs() }
 
 		static void fillTemplate(String template, String jsValue) {
 			def templateText = new File("templates/${template}").readLines().join("\n")

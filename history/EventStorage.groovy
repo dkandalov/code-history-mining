@@ -79,7 +79,7 @@ class EventStorage {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
 			[format(revisionDate), revision, author, elementName.replaceAll(",", ""),
 					fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore, linesInFileAfter,
-					changeType, fromLine, toLine, fromOffset, toOffset, commitMessageEscaped].join(",")
+					changeType, linesBefore, linesAfter, fromOffset, toOffset, commitMessageEscaped].join(",")
 		}
 	}
 

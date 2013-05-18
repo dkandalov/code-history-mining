@@ -1,9 +1,6 @@
 package history
-import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.fragments.LineFragment
-import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
-import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
@@ -17,6 +14,10 @@ import history.events.FileChangeInfo
 import history.util.Measure
 import intellijeval.PluginUtil
 
+import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
+import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
+import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
+import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 
 class ChangeEventsExtractor {
@@ -112,63 +113,73 @@ class ChangeEventsExtractor {
 	}
 
 	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> psiParser) {
-		PsiFile psiBefore = Measure.measure("parsing time"){ psiParser(beforeText) }
-		PsiFile psiAfter = Measure.measure("parsing time"){ psiParser(afterText) }
+		PsiFile fileBeforeChange = Measure.measure("parsing time"){ psiParser(beforeText) }
+		PsiFile fileAfterChange = Measure.measure("parsing time"){ psiParser(afterText) }
+		def changedFragments = Measure.measure("diff time") { new TextCompareProcessor(TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
 
-		// TODO
+		def psiElements = new HashSet()
+		changedFragments.each{ fragment ->
+			if (fragment.type == CHANGED) { // TODO not 100% sure that it will be always the same method in before/after code
+				psiElements.addAll(elementsChangedBy(fragment, fileBeforeChange))
+			} else if (fragment.type == DELETED) {
+				psiElements.addAll(elementsChangedBy(fragment, fileBeforeChange))
+			} else if (fragment.type == INSERT) {
+				psiElements.addAll(elementsChangedBy(fragment, fileAfterChange))
+			} else {
+				throw new IllegalStateException()
+			}
+		}
 
-		[]
+		psiElements.collect{ PsiNamedElement element ->
+			new ElementChangeInfo(
+					fullNameOf(element),
+					"",
+					sizeInLinesOf(element, fileBeforeChange),
+					sizeInLinesOf(element, fileAfterChange),
+					sizeInCharsOf(element, fileBeforeChange),
+					sizeInCharsOf(element, fileAfterChange),
+			)
+		}
 	}
 
-	static Collection<ElementChangeInfo> elementChangesBetween_old(String beforeText, String afterText, Closure<PsiFile> psiParser) {
-		PsiFile psiBefore = Measure.measure("parsing time"){ psiParser(beforeText) }
-		PsiFile psiAfter = Measure.measure("parsing time"){ psiParser(afterText) }
+	private static Collection<PsiElement> elementsChangedBy(LineFragment fragment, PsiFile psiFile) {
+		def range = (fragment.type == DELETED ? fragment.getRange(SIDE1) : fragment.getRange(SIDE2))
 
-		def changedFragments = Measure.measure("diff time") { new TextCompareProcessor(ComparisonPolicy.TRIM_SPACE).process(beforeText, afterText).findAll { it.type != null } }
+		def result = new HashSet()
+		for (int offset = range.startOffset; offset < range.endOffset; offset++) {
+			// running read action on fine-grained level because this seems to make UI more responsive
+			// (even though it will make the whole processing slower)
+			PluginUtil.runReadAction { result << methodOrClassAt(offset, psiFile) }
+		}
+		result
+	}
 
-		changedFragments.collectMany { LineFragment fragment ->
-			Measure.measure("change events time") {
-				def offsetToLineNumber = { int offset -> fragment.type == TextDiffTypeEnum.DELETED ? toLineNumber(offset, beforeText) : toLineNumber(offset, afterText) }
-
-				List<ElementChangeInfo> elementChanges = []
-				def addChangeEvent = { PsiNamedElement psiElement, int fromOffset, int toOffset ->
-					def elementChange = new ElementChangeInfo(
-							fullNameOf(psiElement),
-							diffTypeOf(fragment),
-							offsetToLineNumber(fromOffset),
-							offsetToLineNumber(toOffset),
-							fromOffset,
-							toOffset
-					)
-					elementChanges << elementChange
+	private static int sizeInLinesOf(PsiNamedElement psiElement, PsiFile psiFile) {
+		int result = 0
+		psiFile.acceptChildren(new PsiRecursiveElementVisitor() {
+			@Override void visitElement(PsiElement element) {
+				if (element.class == psiElement.class && element.name == psiElement.name) {
+					result = element.text.empty ? 0 : element.text.split("\n").size()
+				} else {
+					super.visitElement(element)
 				}
-
-				def revisionWithCode = (fragment.type == TextDiffTypeEnum.DELETED ? psiBefore : psiAfter)
-				def range = (fragment.type == TextDiffTypeEnum.DELETED ? fragment.getRange(FragmentSide.SIDE1) : fragment.getRange(FragmentSide.SIDE2))
-
-				PsiNamedElement prevPsiElement = null
-				int fromOffset = range.startOffset
-				for (int offset = range.startOffset; offset < range.endOffset; offset++) {
-					// running read action on fine-grained level because this seems to improve UI responsiveness
-					// even though it will make the whole processing slower
-					PluginUtil.runReadAction {
-						PsiNamedElement psiElement = methodOrClassAt(offset, revisionWithCode)
-						if (psiElement != prevPsiElement) {
-							if (prevPsiElement != null)
-								addChangeEvent(prevPsiElement, fromOffset, offset)
-							prevPsiElement = psiElement
-							fromOffset = offset
-						}
-					}
-				}
-				PluginUtil.runReadAction {
-					if (prevPsiElement != null)
-						addChangeEvent(prevPsiElement, fromOffset, range.endOffset)
-				}
-
-				elementChanges
 			}
-		} as Collection<ElementChangeInfo>
+		})
+		result
+	}
+
+	private static int sizeInCharsOf(PsiNamedElement psiElement, PsiFile psiFile) {
+		int result = 0
+		psiFile.acceptChildren(new PsiRecursiveElementVisitor() {
+			@Override void visitElement(PsiElement element) {
+				if (element.class == psiElement.class && element.name == psiElement.name) {
+					result = element.textLength
+				} else {
+					super.visitElement(element)
+				}
+			}
+		})
+		result
 	}
 
 	private static String revisionNumberOf(CommittedChangeList changeList) {
@@ -181,29 +192,6 @@ class ChangeEventsExtractor {
 
 	private static String removeEmailFrom(String committerName) {
 		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
-	}
-
-	private static String diffTypeOf(LineFragment fragment) {
-		// this is because if fragment has children it infers diff type from them,
-		// which can be "INSERT/DELETED" event though from line point of view it is "CHANGED"
-		def diffType = (fragment.childrenIterator != null ? TextDiffTypeEnum.CHANGED : fragment.type)
-
-		switch (diffType) {
-			case TextDiffTypeEnum.INSERT: return "added"
-			case TextDiffTypeEnum.CHANGED: return "changed"
-			case TextDiffTypeEnum.DELETED: return "deleted"
-			case TextDiffTypeEnum.CONFLICT: return "other"
-			case TextDiffTypeEnum.NONE: return "other"
-			default: return "other"
-		}
-	}
-
-	private static int toLineNumber(int offset, String text) {
-		int counter = 0
-		for (int i = 0; i < offset; i++) {
-			if (text.charAt(i) == '\n') counter++
-		}
-		counter
 	}
 
 	private static String containingFileName(PsiElement psiElement) {
