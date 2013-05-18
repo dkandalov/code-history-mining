@@ -12,11 +12,7 @@ import static history.SourceOfChangeLists.requestChangeListsFor
 import static history.util.DateTimeUtil.dateTime
 
 class SourceOfChangeListsGitTest {
-	private final Project jUnitProject
-
-	SourceOfChangeListsGitTest() {
-		jUnitProject = findJUnitProject()
-	}
+	private final Project jUnitProject = findJUnitProject()
 
 	@Test "should interpret renamed file as a single event"() {
 		def changeList = requestSingleChangeList("43b0fe3", dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))

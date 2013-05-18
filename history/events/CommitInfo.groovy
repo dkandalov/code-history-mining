@@ -8,4 +8,8 @@ class CommitInfo {
 	String author
 	Date revisionDate
 	String commitMessage
+
+	@Override String toString() {
+		"CommitInfo(\"$revision\", \"$author\", \"$revisionDate\", \"$commitMessage\")"
+	}
 }

@@ -9,4 +9,9 @@ class FileChangeInfo {
 	String packageAfter
 	int linesInFileBefore
 	int linesInFileAfter
+
+	@Override String toString() {
+		"FileChangeInfo(\"$fileName\",\"$fileChangeType\",\"$packageBefore\",\"$packageAfter\", " +
+				"$linesInFileBefore, $linesInFileAfter)"
+	}
 }
