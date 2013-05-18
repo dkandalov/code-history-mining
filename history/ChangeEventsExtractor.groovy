@@ -133,7 +133,6 @@ class ChangeEventsExtractor {
 		psiElements.collect{ PsiNamedElement element ->
 			new ElementChangeInfo(
 					fullNameOf(element),
-					"",
 					sizeInLinesOf(element, fileBeforeChange),
 					sizeInLinesOf(element, fileAfterChange),
 					sizeInCharsOf(element, fileBeforeChange),
