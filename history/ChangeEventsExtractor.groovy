@@ -90,12 +90,13 @@ class ChangeEventsExtractor {
 		if (nonEmptyRevision.file.fileType.binary) return []
 		def (beforeText, afterText) = contentOf(change)
 
-		elementChangesBetween(beforeText, afterText) { String text ->
-			PluginUtil.runReadAction {
+		def psiParser = { String text ->
+			PluginUtil.runReadAction{
 				def fileFactory = PsiFileFactory.getInstance(project)
 				fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
 			} as PsiFile
 		}
+		elementChangesBetween(beforeText, afterText, psiParser)
 	}
 
 	private static def nonEmptyRevisionOf(Change change) {
@@ -111,6 +112,15 @@ class ChangeEventsExtractor {
 	}
 
 	static Collection<ElementChangeInfo> elementChangesBetween(String beforeText, String afterText, Closure<PsiFile> psiParser) {
+		PsiFile psiBefore = Measure.measure("parsing time"){ psiParser(beforeText) }
+		PsiFile psiAfter = Measure.measure("parsing time"){ psiParser(afterText) }
+
+		// TODO
+
+		[]
+	}
+
+	static Collection<ElementChangeInfo> elementChangesBetween_old(String beforeText, String afterText, Closure<PsiFile> psiParser) {
 		PsiFile psiBefore = Measure.measure("parsing time"){ psiParser(beforeText) }
 		PsiFile psiAfter = Measure.measure("parsing time"){ psiParser(afterText) }
 

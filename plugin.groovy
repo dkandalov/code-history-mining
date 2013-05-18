@@ -20,7 +20,7 @@ import static ui.Dialog.showDialog
 
 String pathToTemplates = pluginPath + "/templates"
 
-if (false) return SourceOfChangeLists_Playground.playOnIt()
+if (true) return SourceOfChangeLists_Playground.playOnIt()
 if (true) return runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeListsGitTest, SourceOfChangeEventsGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->

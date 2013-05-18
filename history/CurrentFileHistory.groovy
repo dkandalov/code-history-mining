@@ -14,7 +14,7 @@ import intellijeval.PluginUtil
 import static intellijeval.PluginUtil.show
 
 
-class CurrentFileHistory { // TODO this class is broken
+class CurrentFileHistory { // TODO this class is not used and probably broken; should fix it later
 
 	static showChangeEventsForCurrentFileHistory(Project project) {
 		def file = PluginUtil.currentFileIn(project)
