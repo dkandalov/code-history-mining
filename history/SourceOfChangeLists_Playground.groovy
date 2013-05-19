@@ -11,8 +11,10 @@ class SourceOfChangeLists_Playground {
 		def eventsExtractor = new ChangeEventsExtractor(jUnitProject)
 		def eventsSource = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor.&changeEventsFrom)
 
-		eventsSource.request(dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->
-			PluginUtil.show(changeEvents.join("\n"))
-		}
+		PluginUtil.doInBackground({
+			eventsSource.request(dateTime("10:00 01/03/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->
+				PluginUtil.show(changeEvents.groupBy{it.revision}.keySet().join("\n"))
+			}
+		}, {})
 	}
 }

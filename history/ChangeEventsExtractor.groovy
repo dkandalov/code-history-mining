@@ -12,13 +12,13 @@ import history.events.CommitInfo
 import history.events.ElementChangeInfo
 import history.events.FileChangeInfo
 import history.util.Measure
-import intellijeval.PluginUtil
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
+import static intellijeval.PluginUtil.runReadAction
 
 class ChangeEventsExtractor {
 	private final Project project
@@ -92,7 +92,7 @@ class ChangeEventsExtractor {
 		def (beforeText, afterText) = contentOf(change)
 
 		def psiParser = { String text ->
-			PluginUtil.runReadAction{
+			runReadAction{
 				def fileFactory = PsiFileFactory.getInstance(project)
 				fileFactory.createFileFromText(nonEmptyRevision.file.name, nonEmptyRevision.file.fileType, text)
 			} as PsiFile
@@ -133,10 +133,10 @@ class ChangeEventsExtractor {
 		psiElements.collect{ PsiNamedElement element ->
 			new ElementChangeInfo(
 					fullNameOf(element),
-					sizeInLinesOf(element, fileBeforeChange),
-					sizeInLinesOf(element, fileAfterChange),
-					sizeInCharsOf(element, fileBeforeChange),
-					sizeInCharsOf(element, fileAfterChange)
+					runReadAction{ sizeInLinesOf(element, fileBeforeChange) },
+					runReadAction{ sizeInLinesOf(element, fileAfterChange) },
+					runReadAction{ sizeInCharsOf(element, fileBeforeChange) },
+					runReadAction{ sizeInCharsOf(element, fileAfterChange) }
 			)
 		}
 	}
@@ -148,7 +148,7 @@ class ChangeEventsExtractor {
 		for (int offset = range.startOffset; offset < range.endOffset; offset++) {
 			// running read action on fine-grained level because this seems to make UI more responsive
 			// (even though it will make the whole processing slower)
-			PluginUtil.runReadAction {
+			runReadAction {
 				def element = methodOrClassAt(offset, psiFile)
 				if (element != null) result << element
 			}
