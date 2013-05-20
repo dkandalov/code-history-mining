@@ -4,7 +4,7 @@ import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
-import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import com.intellij.psi.*
 import history.events.ChangeEvent
@@ -27,10 +27,10 @@ class ChangeEventsExtractor {
 		this.project = project
 	}
 
-	Collection<ChangeEvent> fileChangeEventsFrom(CommittedChangeList changeList) {
+	Collection<ChangeEvent> fileChangeEventsFrom(Commit commit) {
 		try {
-			def commitInfo = commitInfoOf(changeList)
-			changeList.changes.collect { Change change ->
+			def commitInfo = commitInfoOf(commit)
+			commit.changes.collect { Change change ->
 				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false), ElementChangeInfo.EMPTY)
 			}
 		} catch (ProcessCanceledException ignore) {
@@ -38,10 +38,10 @@ class ChangeEventsExtractor {
 		}
 	}
 
-	Collection<ChangeEvent> changeEventsFrom(CommittedChangeList changeList) {
+	Collection<ChangeEvent> changeEventsFrom(Commit commit) {
 		try {
-			def commitInfo = commitInfoOf(changeList)
-			changeList.changes.collectMany { Change change ->
+			def commitInfo = commitInfoOf(commit)
+			commit.changes.collectMany { Change change ->
 				def fileChangeInfo = fileChangeInfoOf(change, project)
 				withDefault([null], elementChangesOf(change, project)).collect{
 					new ChangeEvent(commitInfo, fileChangeInfo, it)
@@ -52,11 +52,11 @@ class ChangeEventsExtractor {
 		}
 	}
 
-	private static CommitInfo commitInfoOf(CommittedChangeList changeList) {
+	private static CommitInfo commitInfoOf(Commit commit) {
 		new CommitInfo(
-			revisionNumberOf(changeList),
-			removeEmailFrom(changeList.committerName),
-			changeList.commitDate, changeList.comment.trim()
+			revisionNumberOf(commit),
+			removeEmailFrom(commit.committerName),
+			commit.commitDate, commit.comment.trim()
 		)
 	}
 
@@ -184,11 +184,11 @@ class ChangeEventsExtractor {
 		result
 	}
 
-	private static String revisionNumberOf(CommittedChangeList changeList) {
-		if (changeList instanceof VcsRevisionNumberAware) {
-			changeList.revisionNumber.asString()
+	private static String revisionNumberOf(Commit commit) {
+		if (commit instanceof VcsRevisionNumberAware) {
+			commit.revisionNumber.asString()
 		} else {
-			changeList.number.toString()
+			commit.number.toString()
 		}
 	}
 

@@ -8,15 +8,15 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static CommitReader.requestChangeListsFor
+import static CommitReader.requestCommitsFor
 import static history.util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()
 
 	@Test "should interpret renamed file as a single event"() {
-		def changeList = readSingleCommit("43b0fe3", dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))
-		def change = changeList.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
+		def commit = readSingleCommit("43b0fe3", dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))
+		def change = commit.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
 
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "TheoryMethod.java"
@@ -24,8 +24,8 @@ class CommitReaderGitTest {
 	}
 
 	@Test "should interpret moved file as a single event"() {
-		def changeList = readSingleCommit("a19e98f", dateTime("08:50 28/07/2011"), dateTime("09:00 28/07/2011"))
-		def change = changeList.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
+		def commit = readSingleCommit("a19e98f", dateTime("08:50 28/07/2011"), dateTime("09:00 28/07/2011"))
+		def change = commit.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
 
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "RuleFieldValidator.java"
@@ -33,21 +33,21 @@ class CommitReaderGitTest {
 	}
 
 	@Test "should ignore merge commits and include merge changes as separate change lists"() {
-		def changeLists = readSingleCommit("dc730e3", dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
+		def commits = readSingleCommit("dc730e3", dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
 
-		def changes = changeLists.changes
+		def changes = commits.changes
 		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def changeLists = requestChangeListsFor(jUnitProject, from, to)
-		assert changeLists.size() == 1 : "Excpected single change list but got ${changeLists.size()}"
+		def commits = requestCommitsFor(jUnitProject, from, to)
+		assert commits.size() == 1 : "Excpected single change list but got ${commits.size()}"
 
-		def changeList = changeLists.first()
-		(changeList as VcsRevisionNumberAware ).revisionNumber.asString().with {
+		def commit = commits.first()
+		(commit as VcsRevisionNumberAware ).revisionNumber.asString().with {
 			assert it.startsWith(expectedGitHash) : "Expected hash $expectedGitHash but got $it"
 		}
-		changeList
+		commit
 	}
 
 	static Project findJUnitProject() {

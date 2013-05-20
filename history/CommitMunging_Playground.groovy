@@ -4,7 +4,7 @@ import intellijeval.PluginUtil
 import static CommitReaderGitTest.findJUnitProject
 import static history.util.DateTimeUtil.dateTime
 
-class SourceOfChangeLists_Playground {
+class CommitMunging_Playground {
 	static playOnIt() {
 		def jUnitProject = findJUnitProject()
 		def commitReader = new CommitReader(jUnitProject, 1)

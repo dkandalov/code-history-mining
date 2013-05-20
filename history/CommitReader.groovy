@@ -29,7 +29,7 @@ class CommitReader {
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
 	}
 
-	Iterator<Commit> fetchChangeLists(Date historyStart, Date historyEnd, boolean presentToPast = true) {
+	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean presentToPast = true) {
 		assert historyStart.time < historyEnd.time
 
 		Iterator dateIterator = (presentToPast ?
@@ -48,7 +48,7 @@ class CommitReader {
 				measure("VCS request time") {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
-						changes = requestChangeListsFor(project, dates.from, dates.to)
+						changes = requestCommitsFor(project, dates.from, dates.to)
 						if (!presentToPast) changes = changes.reverse()
 					}
 				}
@@ -61,7 +61,7 @@ class CommitReader {
 		}
 	}
 
-	static List<Commit> requestChangeListsFor(Project project, Date fromDate = null, Date toDate = null) {
+	static List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
 		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
 		def sourceRoot = sourceRoots.first()
 		def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
@@ -100,8 +100,8 @@ class CommitReader {
 			}
 		}
 		def resultConsumer = new Consumer<GitCommit>() {
-			@Override void consume(GitCommit changeList) {
-				result << changeList
+			@Override void consume(GitCommit gitCommit) {
+				result << gitCommit
 			}
 		}
 		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
@@ -113,7 +113,7 @@ class CommitReader {
 
 		GitUtil.getLocalCommittedChanges(project, root, parametersSpecifier, resultConsumer, skipDiffsForMerge)
 
-		def isNotMergeCommit = { Commit changeList -> changeList.changes.size() > 0 }
+		def isNotMergeCommit = { Commit commit -> commit.changes.size() > 0 }
 		result.findAll{isNotMergeCommit(it)}
 	}
 }

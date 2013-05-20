@@ -1,27 +1,28 @@
 package history
-import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import history.events.ChangeEvent
 import intellijeval.PluginUtil
 
 class SourceOfChangeEvents {
-	private final CommitReader sourceOfChangeLists
+	private final CommitReader commitReader
 	private final def extractChangeEvents
 
-	SourceOfChangeEvents(CommitReader sourceOfChangeLists, Closure<Collection<ChangeEvent>> extractChangeEvents) {
-		this.sourceOfChangeLists = sourceOfChangeLists
+	SourceOfChangeEvents(CommitReader commitReader, Closure<Collection<ChangeEvent>> extractChangeEvents) {
+		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 	}
 
 	def request(Date historyStart, Date historyEnd, indicator = null,
 	            Closure callbackWrapper = { changes, aCallback -> aCallback(changes) }, Closure callback) {
-		Iterator<CommittedChangeList> changeLists = sourceOfChangeLists.fetchChangeLists(historyStart, historyEnd)
-		for (changeList in changeLists) {
-			if (changeList == CommitReader.NO_MORE_CHANGE_LISTS) break
+		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd)
+		for (commit in commits) {
+			if (commit == CommitReader.NO_MORE_CHANGE_LISTS) break
 			if (indicator?.canceled) break
 
-			callbackWrapper(changeList) {
+			callbackWrapper(commit) {
 				PluginUtil.catchingAll {
-					Collection<ChangeEvent> changeEvents = extractChangeEvents(changeList)
+					Collection<ChangeEvent> changeEvents = extractChangeEvents(commit)
 					callback(changeEvents)
 				}
 			}
