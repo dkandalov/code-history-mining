@@ -5,7 +5,7 @@ import history.events.CommitInfo
 import history.events.FileChangeInfo
 import org.junit.Test
 
-import static history.SourceOfChangeListsGitTest.findJUnitProject
+import static CommitReaderGitTest.findJUnitProject
 import static history.events.ElementChangeInfo.getEMPTY
 import static history.events.FileChangeInfo.getNA
 import static history.util.DateTimeUtil.dateTime
@@ -16,9 +16,9 @@ class SourceOfChangeEventsGitTest {
 
 	@Test "loading events on file level"() {
 		// setup
-		def sourceOfChangeLists = new SourceOfChangeLists(jUnitProject, 1)
+		def commitReader = new CommitReader(jUnitProject, 1)
 		def eventsExtractor = new ChangeEventsExtractor(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor.&fileChangeEventsFrom)
+		def eventsSource = new SourceOfChangeEvents(commitReader, eventsExtractor.&fileChangeEventsFrom)
 
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)

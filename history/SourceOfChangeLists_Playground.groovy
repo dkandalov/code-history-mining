@@ -1,15 +1,15 @@
 package history
 import intellijeval.PluginUtil
 
-import static history.SourceOfChangeListsGitTest.findJUnitProject
+import static CommitReaderGitTest.findJUnitProject
 import static history.util.DateTimeUtil.dateTime
 
 class SourceOfChangeLists_Playground {
 	static playOnIt() {
 		def jUnitProject = findJUnitProject()
-		def sourceOfChangeLists = new SourceOfChangeLists(jUnitProject, 1)
+		def commitReader = new CommitReader(jUnitProject, 1)
 		def eventsExtractor = new ChangeEventsExtractor(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(sourceOfChangeLists, eventsExtractor.&changeEventsFrom)
+		def eventsSource = new SourceOfChangeEvents(commitReader, eventsExtractor.&changeEventsFrom)
 
 		PluginUtil.doInBackground({
 			eventsSource.request(dateTime("10:00 01/03/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->

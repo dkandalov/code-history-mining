@@ -20,8 +20,8 @@ import static ui.Dialog.showDialog
 
 String pathToTemplates = pluginPath + "/templates"
 
-if (true) return SourceOfChangeLists_Playground.playOnIt()
-if (true) return runIntegrationTests(project, [TextCompareProcessorTest, SourceOfChangeListsGitTest, SourceOfChangeEventsGitTest])
+if (false) return SourceOfChangeLists_Playground.playOnIt()
+if (true) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, SourceOfChangeEventsGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -162,11 +162,11 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 
 SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEventsOnMethodLevel) {
 	def vcsRequestBatchSizeInDays = 1
-	def sourceOfChangeLists = new SourceOfChangeLists(project, vcsRequestBatchSizeInDays)
+	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
 	def extractEvents = (extractEventsOnMethodLevel ?
 		new ChangeEventsExtractor(project).&changeEventsFrom :
 		new ChangeEventsExtractor(project).&fileChangeEventsFrom
 	)
-	new SourceOfChangeEvents(sourceOfChangeLists, extractEvents)
+	new SourceOfChangeEvents(commitReader, extractEvents)
 }
 
