@@ -1,4 +1,4 @@
-package history
+package history.unused
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.AbstractVcs

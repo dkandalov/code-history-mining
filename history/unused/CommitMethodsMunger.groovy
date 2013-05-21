@@ -1,4 +1,4 @@
-package history
+package history.unused
 
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
@@ -7,6 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.psi.*
+import history.CommitFilesMunger
 import history.events.ChangeEvent
 import history.events.ElementChangeInfo
 import history.util.Measure
