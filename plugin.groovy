@@ -9,7 +9,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
 import history.*
 import history.events.EventStorage
-import history.unused.CommitMethodsMunger
 import history.util.Measure
 import http.HttpUtil
 import ui.DialogState
@@ -31,7 +30,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 			new DefaultActionGroup().with {
 				add(new AnAction("Grab Project History") {
 					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project, false)
+						grabHistoryOf(event.project)
 					}
 				})
 				add(new Separator())
@@ -107,11 +106,11 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 	}
 }
 
-def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
-	def eventsReader = changeEventsReaderFor(project, extractEventsOnMethodLevel)
+def grabHistoryOf(Project project) {
+	def eventsReader = changeEventsReaderFor(project)
 
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
-		def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
+		def outputFile = project.name + "-events.csv"
 		def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
 		new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
 	}
@@ -157,13 +156,9 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	}
 }
 
-ChangeEventsReader changeEventsReaderFor(Project project, boolean extractEventsOnMethodLevel) {
+ChangeEventsReader changeEventsReaderFor(Project project) {
 	def vcsRequestBatchSizeInDays = 1
 	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
-	def extractEvents = (extractEventsOnMethodLevel ?
-		new CommitMethodsMunger(project).&mungeCommit : // TODO don't use it
-		new CommitFilesMunger(project).&mungeCommit
-	)
-	new ChangeEventsReader(commitReader, extractEvents)
+	new ChangeEventsReader(commitReader, new CommitFilesMunger(project).&mungeCommit)
 }
 
