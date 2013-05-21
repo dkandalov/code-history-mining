@@ -2,7 +2,9 @@ package history
 import com.intellij.openapi.project.Project
 import history.events.ChangeEvent
 import history.events.CommitInfo
+import history.events.ElementChangeInfo
 import history.events.FileChangeInfo
+import history.unused.CommitMethodsMunger
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject
@@ -14,11 +16,10 @@ import static history.util.DateTimeUtil.exactDateTime
 class ChangeEventsReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()
 
-	@Test "loading events on file level"() {
+	@Test "events on file level"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
-		def commitFilesMunger = new CommitFilesMunger(jUnitProject)
-		def eventsReader = new ChangeEventsReader(commitReader, commitFilesMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject).&mungeCommit)
 
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)
@@ -38,6 +39,53 @@ class ChangeEventsReaderGitTest {
 			// verify
 			assert expectedChangeEvents.size() == changeEvents.size()
 			changeEvents.eachWithIndex { event, i ->
+				def expectedEvent = expectedChangeEvents[i]
+				assert event == expectedEvent
+			}
+		}
+	}
+
+	@Test "events on method level"() {
+		// setup
+		def commitReader = new CommitReader(jUnitProject, 1)
+		def eventsReader = new ChangeEventsReader(commitReader, new CommitMethodsMunger(jUnitProject).&mungeCommit)
+
+		def commitComment = "Added support for iterable datapoints"
+		def commitInfo = new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), commitComment)
+		def changedFile1 = new FileChangeInfo("AllMembersSupplier.java", "MODIFICATION", "/src/main/java/org/junit/experimental/theories/internal", "", 178, 204)
+		def changedFile2 = new FileChangeInfo("AllMembersSupplierTest.java", "MODIFICATION", "/src/test/java/org/junit/tests/experimental/theories/internal", "", 156, 209)
+		def byFileAndElement = { it.fileName + it.elementName }
+		def expectedChangeEvents = [
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addSinglePointFields", 9, 9, 380, 380)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier", 160, 185, 6121, 7143)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addArrayValues", 8, 8, 379, 379)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addMultiPointMethods", 18, 20, 934, 1049)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("", 0, 0, 0, 0)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addIterableValues", 0, 11, 0, 455)),
+				new ChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addDataPointsValues", 0, 9, 0, 380)),
+
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::allMemberValuesFor", 7, 7, 387, 387)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionFieldsShouldBeRecognized", 0, 7, 0, 286)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionShouldBeRecognizedIgnoringStrangeTypes", 0, 7, 0, 322)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionMethodShouldBeRecognized", 0, 7, 0, 287)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField", 0, 8, 0, 211)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod", 0, 10, 0, 246)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("", 0, 0, 0, 0)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes", 0, 8, 0, 243)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField::theory", 3, 3, 58, 60)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes::theory", 3, 3, 58, 60)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::getList", 0, 4, 0, 116)),
+				new ChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::theory", 3, 3, 58, 60))
+		].sort(byFileAndElement)
+
+		// exercise
+		eventsReader.request(dateTime("19:30 01/04/2013"), dateTime("19:40 01/04/2013")) { List changeEvents ->
+			// verify
+			assert expectedChangeEvents.size() == changeEvents.size()
+
+			changeEvents.sort(byFileAndElement).eachWithIndex { event, i ->
 				def expectedEvent = expectedChangeEvents[i]
 				assert event == expectedEvent
 			}

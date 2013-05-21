@@ -161,7 +161,7 @@ ChangeEventsReader changeEventsReaderFor(Project project, boolean extractEventsO
 	def vcsRequestBatchSizeInDays = 1
 	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
 	def extractEvents = (extractEventsOnMethodLevel ?
-		new CommitMethodsMunger(project).&mungeCommit :
+		new CommitMethodsMunger(project).&mungeCommit : // TODO don't use it
 		new CommitFilesMunger(project).&mungeCommit
 	)
 	new ChangeEventsReader(commitReader, extractEvents)

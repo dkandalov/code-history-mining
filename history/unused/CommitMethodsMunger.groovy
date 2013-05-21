@@ -19,7 +19,7 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static history.CommitMungingUtil.*
 import static intellijeval.PluginUtil.runReadAction
 
-class CommitMethodsMunger {
+class CommitMethodsMunger { // TODO not really used; left here to keep it up-to-date in case other code changes
 	private final Project project
 
 	CommitMethodsMunger(Project project) {
