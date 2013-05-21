@@ -27,14 +27,9 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Delta Flora",
 			new DefaultActionGroup().with {
-				add(new AnAction("Grab Project History (on file level)") {
+				add(new AnAction("Grab Project History") {
 					@Override void actionPerformed(AnActionEvent event) {
 						grabHistoryOf(event.project, false)
-					}
-				})
-				add(new AnAction("Grab Project History (on method level)") {
-					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project, true)
 					}
 				})
 				add(new Separator())
