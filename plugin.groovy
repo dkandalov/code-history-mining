@@ -159,8 +159,8 @@ SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEve
 	def vcsRequestBatchSizeInDays = 1
 	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
 	def extractEvents = (extractEventsOnMethodLevel ?
-		new ChangeEventsExtractor(project).&changeEventsFrom :
-		new ChangeEventsExtractor(project).&fileChangeEventsFrom
+		new CommitMethodsMunger(project).&mungeCommit :
+		new CommitFilesMunger(project).&mungeCommit
 	)
 	new SourceOfChangeEvents(commitReader, extractEvents)
 }

@@ -17,8 +17,8 @@ class SourceOfChangeEventsGitTest {
 	@Test "loading events on file level"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
-		def eventsExtractor = new ChangeEventsExtractor(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(commitReader, eventsExtractor.&fileChangeEventsFrom)
+		def commitFilesMunger = new CommitFilesMunger(jUnitProject)
+		def eventsSource = new SourceOfChangeEvents(commitReader, commitFilesMunger.&mungeCommit)
 
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)

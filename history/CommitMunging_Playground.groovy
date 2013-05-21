@@ -8,8 +8,8 @@ class CommitMunging_Playground {
 	static playOnIt() {
 		def jUnitProject = findJUnitProject()
 		def commitReader = new CommitReader(jUnitProject, 1)
-		def eventsExtractor = new ChangeEventsExtractor(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(commitReader, eventsExtractor.&changeEventsFrom)
+		def commitFilesMunger = new CommitFilesMunger(jUnitProject)
+		def eventsSource = new SourceOfChangeEvents(commitReader, commitFilesMunger.&mungeCommit)
 
 		PluginUtil.doInBackground({
 			eventsSource.request(dateTime("10:00 01/03/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->
