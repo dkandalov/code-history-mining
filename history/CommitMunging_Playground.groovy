@@ -9,10 +9,10 @@ class CommitMunging_Playground {
 		def jUnitProject = findJUnitProject()
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def commitFilesMunger = new CommitFilesMunger(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(commitReader, commitFilesMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(commitReader, commitFilesMunger.&mungeCommit)
 
 		PluginUtil.doInBackground({
-			eventsSource.request(dateTime("10:00 01/03/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->
+			eventsReader.request(dateTime("10:00 01/03/2013"), dateTime("17:02 09/05/2013")) { changeEvents ->
 				PluginUtil.show(changeEvents.groupBy{it.revision}.keySet().join("\n"))
 			}
 		}, {})

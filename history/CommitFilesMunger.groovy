@@ -10,7 +10,7 @@ import history.events.FileChangeInfo
 import history.util.Measure
 
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
-import static history.MungingUtil.*
+import static CommitMungingUtil.*
 
 class CommitFilesMunger {
 	private final Project project

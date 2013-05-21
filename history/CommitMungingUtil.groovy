@@ -6,7 +6,7 @@ import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import history.events.CommitInfo
 import history.util.Measure
 
-class MungingUtil {
+class CommitMungingUtil {
 	static CommitInfo commitInfoOf(CommittedChangeList commit) {
 		new CommitInfo(
 				revisionNumberOf(commit),

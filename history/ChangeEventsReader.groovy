@@ -4,11 +4,11 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import history.events.ChangeEvent
 import intellijeval.PluginUtil
 
-class SourceOfChangeEvents {
+class ChangeEventsReader {
 	private final CommitReader commitReader
 	private final def extractChangeEvents
 
-	SourceOfChangeEvents(CommitReader commitReader, Closure<Collection<ChangeEvent>> extractChangeEvents) {
+	ChangeEventsReader(CommitReader commitReader, Closure<Collection<ChangeEvent>> extractChangeEvents) {
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 	}

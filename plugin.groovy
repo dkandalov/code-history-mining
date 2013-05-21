@@ -23,7 +23,7 @@ import static ui.Dialog.showDialog
 String pathToTemplates = pluginPath + "/templates"
 
 if (false) return CommitMunging_Playground.playOnIt()
-if (true) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, SourceOfChangeEventsGitTest])
+if (true) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -108,7 +108,7 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 }
 
 def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
-	def sourceOfChangeEvents = sourceOfChangeEventsFor(project, extractEventsOnMethodLevel)
+	def eventsReader = changeEventsReaderFor(project, extractEventsOnMethodLevel)
 
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
 		def outputFile = project.name + (extractEventsOnMethodLevel ? "-events.csv" : "-events-min.csv")
@@ -135,18 +135,18 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 
 				if (storage.hasNoEvents()) {
 					log("Loading project history from ${userInput.from} to ${userInput.to}")
-					sourceOfChangeEvents.request(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
+					eventsReader.request(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
 					def historyStart = storage.mostRecentEventTime
 					def historyEnd = userInput.to
 					log("Loading project history from $historyStart to $historyEnd")
-					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
+					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 
 					historyStart = userInput.from
 					historyEnd = storage.oldestEventTime
 					log("Loading project history from $historyStart to $historyEnd")
-					sourceOfChangeEvents.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
 				}
 
 				showInConsole("Saved change events to ${storage.filePath}", "output", project)
@@ -157,13 +157,13 @@ def grabHistoryOf(Project project, boolean extractEventsOnMethodLevel) {
 	}
 }
 
-SourceOfChangeEvents sourceOfChangeEventsFor(Project project, boolean extractEventsOnMethodLevel) {
+ChangeEventsReader changeEventsReaderFor(Project project, boolean extractEventsOnMethodLevel) {
 	def vcsRequestBatchSizeInDays = 1
 	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
 	def extractEvents = (extractEventsOnMethodLevel ?
 		new CommitMethodsMunger(project).&mungeCommit :
 		new CommitFilesMunger(project).&mungeCommit
 	)
-	new SourceOfChangeEvents(commitReader, extractEvents)
+	new ChangeEventsReader(commitReader, extractEvents)
 }
 

@@ -11,14 +11,14 @@ import static history.events.FileChangeInfo.getNA
 import static history.util.DateTimeUtil.dateTime
 import static history.util.DateTimeUtil.exactDateTime
 
-class SourceOfChangeEventsGitTest {
+class ChangeEventsReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()
 
 	@Test "loading events on file level"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def commitFilesMunger = new CommitFilesMunger(jUnitProject)
-		def eventsSource = new SourceOfChangeEvents(commitReader, commitFilesMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(commitReader, commitFilesMunger.&mungeCommit)
 
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)
@@ -34,7 +34,7 @@ class SourceOfChangeEventsGitTest {
 		]
 
 		// exercise
-		eventsSource.request(dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007")) { List changeEvents ->
+		eventsReader.request(dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007")) { List changeEvents ->
 			// verify
 			assert expectedChangeEvents.size() == changeEvents.size()
 			changeEvents.eachWithIndex { event, i ->

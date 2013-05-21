@@ -16,7 +16,7 @@ import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-import static history.MungingUtil.*
+import static history.CommitMungingUtil.*
 import static intellijeval.PluginUtil.runReadAction
 
 class CommitMethodsMunger {
