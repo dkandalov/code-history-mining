@@ -1,7 +1,7 @@
 package analysis
 
 import groovy.time.TimeCategory
-import history.EventStorage
+import history.events.EventStorage
 import org.junit.Test
 
 import java.text.SimpleDateFormat

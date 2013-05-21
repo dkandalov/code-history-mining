@@ -1,10 +1,5 @@
-package history
-
+package history.events
 import com.intellij.openapi.util.io.FileUtil
-import history.events.ChangeEvent
-import history.events.CommitInfo
-import history.events.ElementChangeInfo
-import history.events.FileChangeInfo
 
 import java.text.SimpleDateFormat
 

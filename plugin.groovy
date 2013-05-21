@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
 import history.*
+import history.events.EventStorage
 import history.util.Measure
 import http.HttpUtil
 import ui.DialogState
