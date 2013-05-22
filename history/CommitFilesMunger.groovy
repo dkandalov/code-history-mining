@@ -3,7 +3,7 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
-import history.events.ChangeEvent
+import history.events.FileChangeEvent
 import history.events.FileChangeInfo
 import history.util.Measure
 
@@ -17,11 +17,11 @@ class CommitFilesMunger {
 		this.project = project
 	}
 
-	Collection<ChangeEvent> mungeCommit(CommittedChangeList commit) {
+	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false))
+				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, false))
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]

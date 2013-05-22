@@ -8,8 +8,8 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.psi.*
 import history.CommitFilesMunger
-import history.events.ChangeEvent
 import history.events.ElementChangeInfo
+import history.events.FileChangeEvent
 import history.util.Measure
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
@@ -26,15 +26,15 @@ class CommitMethodsMunger { // TODO not really used; left here to keep it up-to-
 		this.project = project
 	}
 
-	Collection<ChangeEvent> mungeCommit(CommittedChangeList commit) {
+	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collectMany { Change change ->
 				def fileChangeInfo = CommitFilesMunger.fileChangeInfoOf(change, project)
 				withDefault([null], elementChangesOf(change, project)).collect{
-					new ChangeEvent(commitInfo, fileChangeInfo, it) // TODO use MethodChangeEvent
+					new FileChangeEvent(commitInfo, fileChangeInfo, it) // TODO use MethodChangeEvent
 				}
-			} as Collection<ChangeEvent>
+			} as Collection<FileChangeEvent>
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}

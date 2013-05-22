@@ -7,7 +7,7 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFileFactory
-import history.events.ChangeEvent
+import history.events.FileChangeEvent
 import history.events.CommitInfo
 import intellijeval.PluginUtil
 
@@ -45,12 +45,12 @@ class CurrentFileHistory { // TODO this class is not used and probably broken; s
 		[noErrors, revisions]
 	}
 
-	private static List<ChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
+	private static List<FileChangeEvent> extractChangeEvents(VirtualFile file, List<VcsFileRevision> revisions, Project project) {
 		def revisionPairs = [[null, revisions.first()]] + (0..<revisions.size() - 1).collect { revisions[it, it + 1] }
 		def psiFileFactory = PsiFileFactory.getInstance(project)
 		def parseAsPsi = { String text -> psiFileFactory.createFileFromText(file.name, file.fileType, text) }
 
-		(List<ChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
+		(List<FileChangeEvent>) revisionPairs.collectMany { VcsFileRevision before, VcsFileRevision after ->
 			def beforeText = (before == null ? "" : new String(before.content))
 			def afterText = new String(after.content)
 			def commitInfo = new CommitInfo(after.revisionNumber.asString(), after.author, after.revisionDate, after.commitMessage)

@@ -1,14 +1,14 @@
 package history
 
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import history.events.ChangeEvent
+import history.events.FileChangeEvent
 import intellijeval.PluginUtil
 
 class ChangeEventsReader {
 	private final CommitReader commitReader
 	private final def extractChangeEvents
 
-	ChangeEventsReader(CommitReader commitReader, Closure<Collection<ChangeEvent>> extractChangeEvents) {
+	ChangeEventsReader(CommitReader commitReader, Closure<Collection<FileChangeEvent>> extractChangeEvents) {
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 	}
@@ -22,7 +22,7 @@ class ChangeEventsReader {
 
 			callbackWrapper(commit) {
 				PluginUtil.catchingAll {
-					Collection<ChangeEvent> changeEvents = extractChangeEvents(commit)
+					Collection<FileChangeEvent> changeEvents = extractChangeEvents(commit)
 					callback(changeEvents)
 				}
 			}

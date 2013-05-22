@@ -12,7 +12,7 @@ class EventStorage {
 		this.filePath = filePath
 	}
 
-	List<ChangeEvent> readAllEvents(whenFiledToParseLine = {}) {
+	List<FileChangeEvent> readAllEvents(whenFiledToParseLine = {}) {
 		def events = []
 		new File(filePath).withReader { reader ->
 			def line
@@ -27,12 +27,12 @@ class EventStorage {
 		events
 	}
 
-	def appendToEventsFile(Collection<ChangeEvent> changeEvents) {
+	def appendToEventsFile(Collection<FileChangeEvent> changeEvents) {
 		if (changeEvents.empty) return
 		appendTo(filePath, toCsv(changeEvents))
 	}
 
-	def prependToEventsFile(Collection<ChangeEvent> changeEvents) {
+	def prependToEventsFile(Collection<FileChangeEvent> changeEvents) {
 		if (changeEvents.empty) return
 		prependTo(filePath, toCsv(changeEvents))
 	}
@@ -65,11 +65,11 @@ class EventStorage {
 		!file.exists() || file.length() == 0
 	}
 
-	private static String toCsv(Collection<ChangeEvent> changeEvents) {
+	private static String toCsv(Collection<FileChangeEvent> changeEvents) {
 		changeEvents.collect{toCsv(it)}.join("\n") + "\n"
 	}
 
-	private static String toCsv(ChangeEvent changeEvent) {
+	private static String toCsv(FileChangeEvent changeEvent) {
 		changeEvent.with {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
 			[format(revisionDate), revision, author, fileName, fileChangeType,
@@ -77,13 +77,13 @@ class EventStorage {
 		}
 	}
 
-	private static ChangeEvent fromCsv(String line) {
+	private static FileChangeEvent fromCsv(String line) {
 		def (revisionDate, revision, author, fileName, fileChangeType,
 				packageBefore, packageAfter, linesInFileBefore, linesInFileAfter) = line.split(",")
 		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 
-		def event = new ChangeEvent(
+		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
 				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore.toInteger(), linesInFileAfter.toInteger()),
 		)
