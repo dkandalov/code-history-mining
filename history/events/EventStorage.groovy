@@ -72,23 +72,20 @@ class EventStorage {
 	private static String toCsv(ChangeEvent changeEvent) {
 		changeEvent.with {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
-			[format(revisionDate), revision, author, elementName.replaceAll(",", ""),
-					fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore, linesInFileAfter,
-					changeType, linesBefore, linesAfter, charsBefore, charsAfter, commitMessageEscaped].join(",")
+			[format(revisionDate), revision, author, fileName, fileChangeType,
+					packageBefore, packageAfter, linesInFileBefore, linesInFileAfter, commitMessageEscaped].join(",")
 		}
 	}
 
 	private static ChangeEvent fromCsv(String line) {
-		def (revisionDate, revision, author, elementName,
-				fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore, linesInFileAfter,
-				fromLine, toLine, fromOffset, toOffset) = line.split(",")
-		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
+		def (revisionDate, revision, author, fileName, fileChangeType,
+				packageBefore, packageAfter, linesInFileBefore, linesInFileAfter) = line.split(",")
 		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
+		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 
 		def event = new ChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
 				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore.toInteger(), linesInFileAfter.toInteger()),
-				new ElementChangeInfo(elementName, fromLine.toInteger(), toLine.toInteger(), fromOffset.toInteger(), toOffset.toInteger())
 		)
 		event
 	}

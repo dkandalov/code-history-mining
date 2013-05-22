@@ -6,9 +6,8 @@ package history.events
 class ChangeEvent {
 	@Delegate CommitInfo commitInfo
 	@Delegate FileChangeInfo fileChangeInfo
-	@Delegate ElementChangeInfo partialChangeEvent
 
 	@Override String toString() {
-		"ChangeEvent($commitInfo, $fileChangeInfo, $partialChangeEvent)"
+		"ChangeEvent($commitInfo, $fileChangeInfo)"
 	}
 }

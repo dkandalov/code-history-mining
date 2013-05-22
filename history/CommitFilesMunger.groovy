@@ -1,16 +1,14 @@
 package history
-
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import history.events.ChangeEvent
-import history.events.ElementChangeInfo
 import history.events.FileChangeInfo
 import history.util.Measure
 
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
-import static CommitMungingUtil.*
+import static history.CommitMungingUtil.*
 
 class CommitFilesMunger {
 	private final Project project
@@ -23,7 +21,7 @@ class CommitFilesMunger {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false), ElementChangeInfo.EMPTY)
+				new ChangeEvent(commitInfo, fileChangeInfoOf(change, project, false))
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]

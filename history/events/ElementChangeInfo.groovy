@@ -10,7 +10,6 @@ class ElementChangeInfo {
 	int linesAfter
 	int charsBefore
 	int charsAfter
-	// TODO complexity before/after
 
 	@Override String toString() {
 		"ElementChangeInfo(\"$elementName\", $linesBefore, $linesAfter, $charsBefore, $charsAfter)"
