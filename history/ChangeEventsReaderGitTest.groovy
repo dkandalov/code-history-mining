@@ -1,11 +1,8 @@
 package history
 import com.intellij.openapi.project.Project
-import history.events.CommitInfo
-import history.events.ElementChangeInfo
-import history.events.FileChangeEvent
-import history.events.FileChangeInfo
+import history.events.*
 import history.unused.CommitMethodsMunger
-import org.junit.Ignore
+import history.unused.MethodChangeEvent
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject
@@ -45,7 +42,6 @@ class ChangeEventsReaderGitTest {
 		}
 	}
 
-	@Ignore // TODO
 	@Test "events on method level"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
@@ -57,28 +53,28 @@ class ChangeEventsReaderGitTest {
 		def changedFile2 = new FileChangeInfo("AllMembersSupplierTest.java", "MODIFICATION", "/src/test/java/org/junit/tests/experimental/theories/internal", "", 156, 209)
 		def byFileAndElement = { it.fileName + it.elementName }
 		def expectedChangeEvents = [
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addSinglePointFields", 9, 9, 380, 380)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier", 160, 185, 6121, 7143)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addArrayValues", 8, 8, 379, 379)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addMultiPointMethods", 18, 20, 934, 1049)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("", 0, 0, 0, 0)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addIterableValues", 0, 11, 0, 455)),
-				new FileChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addDataPointsValues", 0, 9, 0, 380)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addSinglePointFields", 9, 9, 380, 380)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier", 160, 185, 6121, 7143)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addArrayValues", 8, 8, 379, 379)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addMultiPointMethods", 18, 20, 934, 1049)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("", 0, 0, 0, 0)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addIterableValues", 0, 11, 0, 455)),
+				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addDataPointsValues", 0, 9, 0, 380)),
 
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::allMemberValuesFor", 7, 7, 387, 387)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionFieldsShouldBeRecognized", 0, 7, 0, 286)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionShouldBeRecognizedIgnoringStrangeTypes", 0, 7, 0, 322)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionMethodShouldBeRecognized", 0, 7, 0, 287)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField", 0, 8, 0, 211)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod", 0, 10, 0, 246)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("", 0, 0, 0, 0)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes", 0, 8, 0, 243)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField::theory", 3, 3, 58, 60)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes::theory", 3, 3, 58, 60)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::getList", 0, 4, 0, 116)),
-				new FileChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::theory", 3, 3, 58, 60))
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::allMemberValuesFor", 7, 7, 387, 387)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionFieldsShouldBeRecognized", 0, 7, 0, 286)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionShouldBeRecognizedIgnoringStrangeTypes", 0, 7, 0, 322)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::dataPointsCollectionMethodShouldBeRecognized", 0, 7, 0, 287)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField", 0, 8, 0, 211)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod", 0, 10, 0, 246)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("", 0, 0, 0, 0)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes", 0, 8, 0, 243)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListField::theory", 3, 3, 58, 60)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest", 135, 187, 4466, 6104)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListFieldWithOverlyGenericTypes::theory", 3, 3, 58, 60)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::getList", 0, 4, 0, 116)),
+				new MethodChangeEvent(commitInfo, changedFile2, new ElementChangeInfo("AllMembersSupplierTest::HasDataPointsListMethod::theory", 3, 3, 58, 60))
 		].sort(byFileAndElement)
 
 		// exercise

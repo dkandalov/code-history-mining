@@ -32,7 +32,7 @@ class CommitMethodsMunger { // TODO not really used; left here to keep it up-to-
 			commit.changes.collectMany { Change change ->
 				def fileChangeInfo = CommitFilesMunger.fileChangeInfoOf(change, project)
 				withDefault([null], elementChangesOf(change, project)).collect{
-					new FileChangeEvent(commitInfo, fileChangeInfo, it) // TODO use MethodChangeEvent
+					new MethodChangeEvent(commitInfo, fileChangeInfo, it)
 				}
 			} as Collection<FileChangeEvent>
 		} catch (ProcessCanceledException ignore) {
