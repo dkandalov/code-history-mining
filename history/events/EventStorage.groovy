@@ -4,7 +4,7 @@ import com.intellij.openapi.util.io.FileUtil
 import java.text.SimpleDateFormat
 
 class EventStorage {
-	static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+	private static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
 
 	final String filePath
 
@@ -135,6 +135,8 @@ class EventStorage {
 
 		tempFile.withOutputStream { output ->
 			output.write(text.bytes)
+			if (!file.exists()) return
+
 			file.withInputStream { input ->
 				// magic buffer size is copied from com.intellij.openapi.util.io.FileUtilRt#BUFFER (assume there is a reason for it)
 				byte[] buffer = new byte[1024 * 20]

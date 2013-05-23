@@ -1,6 +1,8 @@
 package history.events
 
-@groovy.transform.Immutable
+import groovy.transform.Immutable
+
+@Immutable
 class ElementChangeInfo {
 	String elementName
 	int linesBefore

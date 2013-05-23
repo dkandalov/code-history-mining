@@ -1,8 +1,10 @@
 package history.events
 
-@groovy.transform.Immutable
+import groovy.transform.Immutable
+
+@Immutable
 class FileChangeInfo {
-	static int NA = -1
+	static final int NA = -1
 
 	String fileName
 	String fileChangeType

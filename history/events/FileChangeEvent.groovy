@@ -1,7 +1,9 @@
 package history.events
 
+import groovy.transform.Immutable
 
-@groovy.transform.Immutable
+
+@Immutable
 class FileChangeEvent {
 	@Delegate CommitInfo commitInfo
 	@Delegate FileChangeInfo fileChangeInfo
