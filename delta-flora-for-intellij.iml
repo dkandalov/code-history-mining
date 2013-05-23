@@ -37,7 +37,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" scope="PROVIDED">
+    <orderEntry type="module-library">
       <library name="IDEA jars">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/" />
@@ -86,11 +86,20 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="groovy-1.8.3" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="groovy-all-2.0.6" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
