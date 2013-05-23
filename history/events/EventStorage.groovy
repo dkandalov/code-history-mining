@@ -39,25 +39,12 @@ class EventStorage {
 
 	Date getOldestEventTime() {
 		def line = readLastLine(filePath)
-		if (line == null) null
-		else {
-			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
-			// (it means that if processing stops between two commits that happened on the same second,
-			// we will miss one of them.. considered this to be insignificant)
-			def date = fromCsv(line).revisionDate
-			date.time -= 1000
-			date
-		}
+		line == null ? null :fromCsv(line).revisionDate
 	}
 
 	Date getMostRecentEventTime() {
 		def line = readFirstLine(filePath)
-		if (line == null) new Date()
-		else {
-			def date = fromCsv(line).revisionDate
-			date.time += 1000 // plus one second (see comments in getOldestEventTime())
-			date
-		}
+		line == null ? null : fromCsv(line).revisionDate
 	}
 
 	boolean hasNoEvents() {

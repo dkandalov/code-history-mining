@@ -137,13 +137,13 @@ def grabHistoryOf(Project project) {
 					eventsReader.request(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
-					def historyStart = storage.mostRecentEventTime
+					def historyStart = timeAfterMostRecentEventIn(storage)
 					def historyEnd = userInput.to
 					log("Loading project history from $historyStart to $historyEnd")
 					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 
 					historyStart = userInput.from
-					historyEnd = storage.oldestEventTime
+					historyEnd = timeBeforeOldestEventIn(storage)
 					log("Loading project history from $historyStart to $historyEnd")
 					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
 				}
@@ -162,3 +162,25 @@ ChangeEventsReader changeEventsReaderFor(Project project) {
 	new ChangeEventsReader(commitReader, new CommitFilesMunger(project).&mungeCommit)
 }
 
+static timeBeforeOldestEventIn(EventStorage storage) {
+	def date = storage.oldestEventTime
+	if (date == null) {
+		new Date()
+	} else {
+		// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
+		// (it means that if processing stops between two commits that happened on the same second,
+		// we will miss one of them.. considered this to be insignificant)
+		date.time -= 1000
+		date
+	}
+}
+
+static timeAfterMostRecentEventIn(EventStorage storage) {
+	def date = storage.mostRecentEventTime
+	if (date == null) {
+		new Date()
+	} else {
+		date.time += 1000  // plus one second (see comments in timeBeforeOldestEventIn())
+		date
+	}
+}
