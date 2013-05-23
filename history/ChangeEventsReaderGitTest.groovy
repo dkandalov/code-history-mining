@@ -32,7 +32,7 @@ class ChangeEventsReaderGitTest {
 		]
 
 		// exercise
-		eventsReader.request(dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007")) { List changeEvents ->
+		eventsReader.readPresentToPast(dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007")) { List changeEvents ->
 			// verify
 			assert expectedChangeEvents.size() == changeEvents.size()
 			changeEvents.eachWithIndex { event, i ->
@@ -78,7 +78,7 @@ class ChangeEventsReaderGitTest {
 		].sort(byFileAndElement)
 
 		// exercise
-		eventsReader.request(dateTime("19:30 01/04/2013"), dateTime("19:40 01/04/2013")) { List changeEvents ->
+		eventsReader.readPresentToPast(dateTime("19:30 01/04/2013"), dateTime("19:40 01/04/2013")) { List changeEvents ->
 			// verify
 			assert expectedChangeEvents.size() == changeEvents.size()
 
