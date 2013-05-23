@@ -51,13 +51,18 @@ class CommitReaderGitTest {
 	}
 
 	static Project findJUnitProject() {
-		def jUnitProject = ProjectManager.instance.openProjects.find{ it.name == "junit" }
-		assert jUnitProject != null: "Couldn't find open project for junit framework"
+		def jUnitProject = findProject("junit")
 
 		def sourceRoots = ProjectRootManager.getInstance(jUnitProject).contentSourceRoots.toList()
 		def vcsRoot = ProjectLevelVcsManager.getInstance(jUnitProject).getVcsRootObjectFor(sourceRoots.first())
 		assert vcsRoot.vcs.class.simpleName == "GitVcs"
 
 		jUnitProject
+	}
+
+	static Project findProject(String projectName) {
+		def project = ProjectManager.instance.openProjects.find{ it.name == projectName }
+		assert project != null: "Couldn't find open '$projectName' project"
+		project
 	}
 }

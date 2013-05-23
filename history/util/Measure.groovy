@@ -11,8 +11,4 @@ class Measure {
 		durations[id] += time
 		result
 	}
-
-	static record(String id, long duration) {
-		durations[id] += duration
-	}
 }

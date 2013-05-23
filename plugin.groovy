@@ -22,7 +22,7 @@ import static ui.Dialog.showDialog
 String pathToTemplates = pluginPath + "/templates"
 
 if (false) return CommitMunging_Playground.playOnIt()
-if (true) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
+if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
@@ -52,7 +52,7 @@ if (!isIdeStartup) show("reloaded DeltaFlora plugin")
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
 	String projectName = file.name.replace(".csv", "")
 	def showInBrowser = { template, eventsToJson ->
-		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}.csv"
+		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 		def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, template, json)
@@ -107,8 +107,6 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 }
 
 def grabHistoryOf(Project project) {
-	def eventsReader = changeEventsReaderFor(project)
-
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
 		def outputFile = project.name + "-events.csv"
 		def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
@@ -118,7 +116,7 @@ def grabHistoryOf(Project project) {
 		DialogState.saveDialogStateOf(project, pluginPath, userInput)
 
 		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
-			measure("time") {
+			measure("Total time") {
 				def updateIndicatorText = { changeList, callback ->
 					log(changeList.name)
 					def date = dateFormat.format((Date) changeList.commitDate)
@@ -129,35 +127,39 @@ def grabHistoryOf(Project project) {
 					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 				}
 				def storage = new EventStorage(userInput.outputFilePath)
-				def appendToStorage = { batchOfChangeEvents -> storage.appendToEventsFile(batchOfChangeEvents) }
-				def prependToStorage = { batchOfChangeEvents -> storage.prependToEventsFile(batchOfChangeEvents) }
+				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
+				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
 
+				def eventsReader = createEventsReaderFor(project)
 				if (storage.hasNoEvents()) {
 					log("Loading project history from ${userInput.from} to ${userInput.to}")
-					eventsReader.request(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
+					eventsReader.readPresentToPast(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
-					def historyStart = timeAfterMostRecentEventIn(storage)
-					def historyEnd = userInput.to
-					log("Loading project history from $historyStart to $historyEnd")
-					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
+					if (userInput.to > timeAfterMostRecentEventIn(storage)) {
+						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), userInput.to]
+						log("Loading project history from $historyStart to $historyEnd")
+						// read events from past into future because they are prepended to storage
+						eventsReader.readPastToPresent(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
+					}
 
-					historyStart = userInput.from
-					historyEnd = timeBeforeOldestEventIn(storage)
-					log("Loading project history from $historyStart to $historyEnd")
-					eventsReader.request(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+					if (userInput.from < timeBeforeOldestEventIn(storage)) {
+						def (historyStart, historyEnd) = [userInput.from, timeBeforeOldestEventIn(storage)]
+						log("Loading project history from $historyStart to $historyEnd")
+						eventsReader.readPresentToPast(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+					}
 				}
 
 				showInConsole("Saved change events to ${storage.filePath}", "output", project)
 				showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 			}
-			Measure.durations.entrySet().collect{ "Total " + it.key + ": " + it.value }.each{ log(it) }
+			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log(it) }
 		}, {})
 	}
 }
 
-ChangeEventsReader changeEventsReaderFor(Project project) {
-	def vcsRequestBatchSizeInDays = 1
+static ChangeEventsReader createEventsReaderFor(Project project) {
+	def vcsRequestBatchSizeInDays = 1 // TODO use user input
 	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
 	new ChangeEventsReader(commitReader, new CommitFilesMunger(project).&mungeCommit)
 }

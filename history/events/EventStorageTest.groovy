@@ -21,11 +21,15 @@ class EventStorageTest {
 	}
 
 	@Test void "should prepend events to a file"() {
-		storage.prependToEventsFile([event2])
-		assertThat(new File(temporaryFile).readLines().join("\n"), equalTo(event2AsCsv))
+		storage.prependToEventsFile([event1, event2])
+		assertThat(new File(temporaryFile).readLines().join("\n"), equalTo(
+				event1AsCsv + "\n" +
+				event2AsCsv
+		))
 
 		storage.prependToEventsFile([event1])
 		assertThat(new File(temporaryFile).readLines().join("\n"), equalTo(
+				event1AsCsv + "\n" +
 				event1AsCsv + "\n" +
 				event2AsCsv
 		))

@@ -13,7 +13,7 @@ import static history.util.DateTimeUtil.exactDateTime
 class ChangeEventsReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()
 
-	@Test "events on file level"() {
+	@Test "should read events on file level for one commit"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject).&mungeCommit)
@@ -42,7 +42,7 @@ class ChangeEventsReaderGitTest {
 		}
 	}
 
-	@Test "events on method level"() {
+	@Test "should read events on method level for one commit"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def eventsReader = new ChangeEventsReader(commitReader, new CommitMethodsMunger(jUnitProject).&mungeCommit)

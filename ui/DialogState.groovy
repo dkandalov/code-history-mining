@@ -4,13 +4,14 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.Immutable
 
 import java.text.SimpleDateFormat
 
-@groovy.transform.Immutable
+@Immutable
 class DialogState {
 	Date from
-	Date to
+	Date to // TODO should be inclusive
 	int vcsRequestBatchSizeInDays
 	String outputFilePath
 

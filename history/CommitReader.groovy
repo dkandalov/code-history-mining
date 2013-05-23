@@ -29,13 +29,12 @@ class CommitReader {
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
 	}
 
-	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean presentToPast = true) {
+	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true) {
 		assert historyStart.time < historyEnd.time
 
-		Iterator dateIterator = (presentToPast ?
+		Iterator dateIterator = (readPresentToPast ?
 			new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
-			new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays)
-		)
+			new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
 		new Iterator<Commit>() {
 			@Override boolean hasNext() {
@@ -49,7 +48,7 @@ class CommitReader {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
 						changes = requestCommitsFor(project, dates.from, dates.to)
-						if (!presentToPast) changes = changes.reverse()
+						if (!readPresentToPast) changes = changes.reverse()
 					}
 				}
 				changes.empty ? NO_MORE_CHANGE_LISTS : changes.remove(0)
