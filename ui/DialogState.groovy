@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 @Immutable
 class DialogState {
 	Date from
-	Date to // TODO should be inclusive
+	Date to
 	int vcsRequestBatchSizeInDays
 	String outputFilePath
 

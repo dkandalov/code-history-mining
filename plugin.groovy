@@ -130,21 +130,27 @@ def grabHistoryOf(Project project) {
 				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
 				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
 
-				def eventsReader = createEventsReaderFor(project)
+				def eventsReader = new ChangeEventsReader(
+						new CommitReader(project, userInput.vcsRequestBatchSizeInDays),
+						new CommitFilesMunger(project).&mungeCommit
+				)
+				def fromDate = userInput.from
+				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
+
 				if (storage.hasNoEvents()) {
-					log("Loading project history from ${userInput.from} to ${userInput.to}")
-					eventsReader.readPresentToPast(userInput.from, userInput.to, indicator, updateIndicatorText, appendToStorage)
+					log("Loading project history from ${fromDate} to ${toDate}")
+					eventsReader.readPresentToPast(fromDate, toDate, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
-					if (userInput.to > timeAfterMostRecentEventIn(storage)) {
-						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), userInput.to]
+					if (toDate > timeAfterMostRecentEventIn(storage)) {
+						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
 						log("Loading project history from $historyStart to $historyEnd")
 						// read events from past into future because they are prepended to storage
 						eventsReader.readPastToPresent(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 					}
 
-					if (userInput.from < timeBeforeOldestEventIn(storage)) {
-						def (historyStart, historyEnd) = [userInput.from, timeBeforeOldestEventIn(storage)]
+					if (fromDate < timeBeforeOldestEventIn(storage)) {
+						def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
 						log("Loading project history from $historyStart to $historyEnd")
 						eventsReader.readPresentToPast(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
 					}
@@ -158,11 +164,6 @@ def grabHistoryOf(Project project) {
 	}
 }
 
-static ChangeEventsReader createEventsReaderFor(Project project) {
-	def vcsRequestBatchSizeInDays = 1 // TODO use user input
-	def commitReader = new CommitReader(project, vcsRequestBatchSizeInDays)
-	new ChangeEventsReader(commitReader, new CommitFilesMunger(project).&mungeCommit)
-}
 
 static timeBeforeOldestEventIn(EventStorage storage) {
 	def date = storage.oldestEventTime
