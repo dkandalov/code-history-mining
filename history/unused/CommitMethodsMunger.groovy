@@ -30,7 +30,7 @@ class CommitMethodsMunger { // TODO not really used; left here to keep it up-to-
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collectMany { Change change ->
-				def fileChangeInfo = CommitFilesMunger.fileChangeInfoOf(change, project)
+				def fileChangeInfo = CommitFilesMunger.fileChangeInfoOf(change, project, true)
 				withDefault([null], elementChangesOf(change, project)).collect{
 					new MethodChangeEvent(commitInfo, fileChangeInfo, it)
 				}
