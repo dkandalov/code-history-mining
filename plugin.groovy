@@ -21,7 +21,7 @@ import static ui.Dialog.showDialog
 
 String pathToTemplates = pluginPath + "/templates"
 
-if (false) return CommitMunging_Playground.playOnIt()
+if (true) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
@@ -132,7 +132,7 @@ def grabHistoryOf(Project project) {
 
 				def eventsReader = new ChangeEventsReader(
 						new CommitReader(project, userInput.vcsRequestBatchSizeInDays),
-						new CommitFilesMunger(project).&mungeCommit
+						new CommitFilesMunger(project, false).&mungeCommit
 				)
 				def fromDate = userInput.from
 				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive

@@ -6,6 +6,7 @@ import org.junit.Test
 import static history.util.DateTimeUtil.exactDateTime
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
+import static history.events.FileChangeInfo.*
 
 class EventStorageTest {
 
@@ -64,11 +65,15 @@ class EventStorageTest {
 	private String temporaryFile
 	private final event1 = new FileChangeEvent(
 			new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), "Added support for iterable datapoints"),
-			new FileChangeInfo("AllMembersSupplier.java", "MODIFICATION", "/src/main/java/org/junit/experimental/theories/internal", "", 178, 204)
+			new FileChangeInfo("AllMembersSupplier.java", "MODIFICATION", "/src/main/java/org/junit/experimental/theories/internal", "",
+					new ChangeStats(178, 204, 23, 3, 0), new ChangeStats(6758, 7807, 878, 304, 0)
+			)
 	)
 	private final event2 = new FileChangeEvent(
 			new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), "Rename TestMethod -> JUnit4MethodRunner"),
-			new FileChangeInfo("Theories.java", "MODIFICATION", "/src/org/junit/experimental/theories", "", -1, -1)
+			new FileChangeInfo("Theories.java", "MODIFICATION", "/src/org/junit/experimental/theories", "",
+					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0)
+			)
 	)
 	private final event1AsCsv = "2013-04-01 19:37:57 +0100,b421d0ebd66701187c10c2b0c7f519dc435531ae,Tim Perry,AllMembersSupplier.java,MODIFICATION,/src/main/java/org/junit/experimental/theories/internal,,178,204,\"Added support for iterable datapoints\""
 	private final event2AsCsv = "2007-10-03 15:42:16 +0100,43b0fe352d5bced0c341640d0c630d23f2022a7e,dsaff <dsaff>,Theories.java,MODIFICATION,/src/org/junit/experimental/theories,,-1,-1,\"Rename TestMethod -> JUnit4MethodRunner\""
