@@ -213,7 +213,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			def templateText = new File("templates/${template}").readLines().join("\n")
 			def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
 			text = fillDataPlaceholder(text, jsValue)
-			new File("templates/${Analysis.projectName}_${template}").write(text)
+			new File("templates/${projectName}_${template}").write(text)
 		}
 
 		static String asCsvStringLiteral(Collection values, List header) {

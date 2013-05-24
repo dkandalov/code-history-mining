@@ -5,6 +5,7 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import history.events.ChangeStats
 import history.events.FileChangeEvent
 import history.events.FileChangeInfo
 
@@ -61,8 +62,8 @@ class CommitFilesMunger {
 			int charsModified = charsInFragments(fragmentsByType[CHANGED], FragmentSide.SIDE1)
 			int charsRemoved = charsInFragments(fragmentsByType[DELETED], FragmentSide.SIDE1)
 
-			lineChangesStats = new FileChangeInfo.ChangeStats(linesBefore, linesAfter, linesAdded, linesModified, linesRemoved)
-			charChangesStats = new FileChangeInfo.ChangeStats(charsBefore, charsAfter, charsAdded, charsModified, charsRemoved)
+			lineChangesStats = new ChangeStats(linesBefore, linesAfter, linesAdded, linesModified, linesRemoved)
+			charChangesStats = new ChangeStats(charsBefore, charsAfter, charsAdded, charsModified, charsRemoved)
 		}
 
 		def projectPath = toCanonicalPath(project.basePath)

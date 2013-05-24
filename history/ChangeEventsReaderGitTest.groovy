@@ -1,8 +1,13 @@
 package history
+
 import com.intellij.openapi.project.Project
-import history.events.*
+import history.events.CommitInfo
+import history.events.ElementChangeInfo
+import history.events.FileChangeEvent
+import history.events.FileChangeInfo
 import history.unused.CommitMethodsMunger
 import history.unused.MethodChangeEvent
+import org.junit.Ignore
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject
@@ -42,6 +47,7 @@ class ChangeEventsReaderGitTest {
 		}
 	}
 
+	@Ignore
 	@Test "should read events on method level for one commit"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)

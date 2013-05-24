@@ -74,16 +74,17 @@ class EventStorage {
 		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 
-		def asInt = { it.toInteger() }
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
 				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter,
-						new FileChangeInfo.ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
-						new FileChangeInfo.ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
+						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
+						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
 				)
 		)
 		event
 	}
+
+	private static int asInt(String s) { s.toInteger() }
 
 	private static String format(Date date) {
 		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)

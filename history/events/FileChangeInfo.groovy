@@ -17,17 +17,4 @@ class FileChangeInfo {
 	@Override String toString() {
 		"FileChangeInfo(\"$fileName\",\"$fileChangeType\",\"$packageBefore\",\"$packageAfter\", $lines, $chars)"
 	}
-
-	@Immutable
-	static class ChangeStats {
-		int before
-		int after
-		int added
-		int modified
-		int removed
-
-		@Override String toString() {
-			"ChangeStats($before, $after, $added, $modified, $removed)"
-		}
-	}
 }
