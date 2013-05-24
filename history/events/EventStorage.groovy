@@ -67,14 +67,20 @@ class EventStorage {
 	}
 
 	private static FileChangeEvent fromCsv(String line) {
-		def (revisionDate, revision, author, fileName, fileChangeType,
-				packageBefore, packageAfter, linesInFileBefore, linesInFileAfter) = line.split(",")
+		def (revisionDate, revision, author, fileName, fileChangeType, packageBefore, packageAfter,
+				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
+				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved
+		) = line.split(",")
 		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
 		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 
+		def asInt = { it.toInteger() }
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
-				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter, linesInFileBefore.toInteger(), linesInFileAfter.toInteger()),
+				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter,
+						new FileChangeInfo.ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
+						new FileChangeInfo.ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
+				)
 		)
 		event
 	}
