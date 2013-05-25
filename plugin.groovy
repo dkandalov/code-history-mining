@@ -11,7 +11,6 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.wm.ToolWindowAnchor
-import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.ui.components.JBScrollPane
@@ -68,8 +67,7 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 static AnAction createActionGroup(File file, String pathToTemplates) {
 	def showInBrowser = { template, eventsToJson ->
-		def filePath = pathToHistoryFiles() + "/" + file.absolutePath
-		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
+		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 
 		String projectName = file.name.replace(".csv", "")
@@ -133,7 +131,7 @@ def grabHistoryOf(Project project) {
 	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
 		DialogState.saveDialogStateOf(project, pluginPath, userInput)
 
-		doInBackground("Grabbing project history", { ProgressIndicator indicator ->
+		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {
 				def updateIndicatorText = { changeList, callback ->
 					log(changeList.name)
@@ -178,7 +176,7 @@ def grabHistoryOf(Project project) {
 				showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", "output", project)
 			}
 			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log(it) }
-		}, {})
+		}
 	}
 }
 
@@ -230,8 +228,9 @@ def showProjectStatistics(Project project) {
 		toolWindowPanel
 	}
 
-	registerToolWindow("Project Statistics", ToolWindowAnchor.RIGHT, createToolWindowPanel)
-	ToolWindowManager.getInstance(project).getToolWindow("Project Statistics").show({} as Runnable)
+	def toolWindow = registerToolWindowIn(project, "Project Statistics", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
+	def doNothing = {} as Runnable
+	toolWindow.show(doNothing)
 }
 
 
