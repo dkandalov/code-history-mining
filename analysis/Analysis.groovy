@@ -1,32 +1,14 @@
 package analysis
-
 import groovy.time.TimeCategory
-import history.events.EventStorage
+import history.events.FileChangeEvent
 import org.junit.Test
 
 import java.text.SimpleDateFormat
 
 import static analysis.Analysis.Util.*
-import static http.HttpUtil.fillDataPlaceholder
-import static http.HttpUtil.inlineJSLibraries
-import static java.lang.System.getenv
 
 class Analysis {
-	static def projectName = "scratch" // TODO refactor
-
-	static void main(String[] args) {
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-events.csv"
-		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
-
-		fillTemplate("calendar_view.html", createJsonForCalendarView(events))
-//		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
-//		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
-//		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
-//		fillTemplate("treemap.html", TreeMap.createJsonForChangeSizeTreeMap(events))
-		fillTemplate("stacked_bars.html", createJsonForCommitsStackBarsChart(events))
-	}
-
-	static String createJsonForCommitsStackBarsChart(events) { // TODO assume change events are decomposed to method-level
+	static String createJsonForCommitsStackBarsChart(events) {
 		def fromDay = floorToDay(events.last().revisionDate)
 		def toDay = floorToDay(events.first().revisionDate)
 		def fillMissingDays = { valuesByDate ->
@@ -158,19 +140,15 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJsonForBarChartView(List events) {
+	static String createJsonForBarChartView(List<FileChangeEvent> events) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
-		def commitsAmountByDate = eventsByDay
-						.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
+		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
+		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInCharsOf(it) }] }.sort{it[0]}
+		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{it[0]}
+
 		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"])
-
-		def totalChangeSizeInCharsByDate = eventsByDay
-						.collect{ [it.key, it.value.sum{ changeSizeOf(it) }] }.sort{it[0]}
 		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "changeSize"])
-
-		def totalChangeInLinesSizeByDate = eventsByDay
-						.collect{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{it[0]}
 		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "changeSize"])
 
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
@@ -180,7 +158,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeOf(it) }] }.sort{ it.key }
+					.collectEntries{ [it.key, it.value.sum{ changeSizeInCharsOf(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
@@ -206,15 +184,8 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 	}
 
 	static class Util {
-		static def changeSizeOf(event) { event.charsAfter - event.charsBefore }
-		static def changeSizeInLinesOf(event) { (event.linesBefore - event.linesAfter).abs() }
-
-		static void fillTemplate(String template, String jsValue) {
-			def templateText = new File("templates/${template}").readLines().join("\n")
-			def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
-			text = fillDataPlaceholder(text, jsValue)
-			new File("templates/${projectName}_${template}").write(text)
-		}
+		static def changeSizeInCharsOf(FileChangeEvent event) { event.chars.added + event.chars.modified + event.chars.removed }
+		static def changeSizeInLinesOf(FileChangeEvent event) { event.lines.added + event.lines.modified + event.lines.removed }
 
 		static String asCsvStringLiteral(Collection values, List header) {
 			def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }

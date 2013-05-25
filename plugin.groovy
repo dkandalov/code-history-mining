@@ -46,7 +46,7 @@ registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent act
 			true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
-if (!isIdeStartup) show("reloaded code-history-mining plugin")
+if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
@@ -133,7 +133,7 @@ def grabHistoryOf(Project project) {
 
 				def eventsReader = new ChangeEventsReader(
 						new CommitReader(project, userInput.vcsRequestBatchSizeInDays),
-						new CommitFilesMunger(project, false).&mungeCommit
+						new CommitFilesMunger(project, true).&mungeCommit
 				)
 				def fromDate = userInput.from
 				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
