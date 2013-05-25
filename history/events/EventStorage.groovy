@@ -126,7 +126,7 @@ class EventStorage {
 	}
 
 	private static prependTo(String filePath, String text) {
-		def tempFile = FileUtil.createTempFile("delta_flora", "_${new Random().nextInt(10000)}")
+		def tempFile = FileUtil.createTempFile("code_history_mining", "_${new Random().nextInt(10000)}")
 		def file = new File(filePath)
 
 		tempFile.withOutputStream { output ->

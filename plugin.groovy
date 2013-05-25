@@ -24,9 +24,9 @@ def pathToTemplates = pluginPath + "/templates"
 if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
-registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
+registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
-			"Delta Flora",
+			"Code History Mining",
 			new DefaultActionGroup().with {
 				add(new AnAction("Grab Project History") {
 					@Override void actionPerformed(AnActionEvent event) {
@@ -46,7 +46,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 			true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
-if (!isIdeStartup) show("reloaded DeltaFlora plugin")
+if (!isIdeStartup) show("reloaded code-history-mining plugin")
 
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
