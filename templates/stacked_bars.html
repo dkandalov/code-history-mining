@@ -29,7 +29,7 @@
 <script src="d3.v3.min.js"></script>
 <script>
     var rawData = /*data_placeholder*/"\
-date,author,changes size\n\
+date,author,amount of commits\n\
 18/01/2013,Mee,18\n\
 19/01/2013,Mee,5\n\
 20/01/2013,Mee,3\n\
@@ -48,7 +48,7 @@ date,author,changes size\n\
         .map(function (entry) { return entry.values.map(function (d) {
                 return {
                     x: dateFormat.parse(d.date),
-                    y: parseInt(d["changes size"]),
+                    y: parseInt(d["amount of commits"]),
                     author: d["author"],
                     y0: 0
                 };
@@ -96,7 +96,7 @@ date,author,changes size\n\
             .append("title")
             .text(function (d) {
                 return "date: " + dateFormat(d.x) + "\n" +
-                       "changes size: " + valueFormat(d.y) + "\n" +
+                       "amount of commits: " + valueFormat(d.y) + "\n" +
                        "author: " + d["author"];
             });
 

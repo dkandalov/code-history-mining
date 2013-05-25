@@ -1,17 +1,16 @@
 package analysis
 import groovy.time.TimeCategory
 import history.events.FileChangeEvent
-import org.junit.Test
 
 import java.text.SimpleDateFormat
 
 import static analysis.Analysis.Util.*
 
 class Analysis {
-	static String createJsonForCommitsStackBarsChart(events) {
+	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
 		def fromDay = floorToDay(events.last().revisionDate)
 		def toDay = floorToDay(events.first().revisionDate)
-		def fillMissingDays = { valuesByDate ->
+		def addMissingDays = { valuesByDate ->
 			use(TimeCategory) {
 				def day = fromDay.clone()
 				while (!day.after(toDay)) {
@@ -25,22 +24,22 @@ class Analysis {
 		def changesByAuthorByDate = events
 			.groupBy({ it.author }, { floorToDay(it.revisionDate) })
 			.collectEntries {
-				def changesSizeByDate = it.value
-				it.value = fillMissingDays(changesSizeByDate).sort()
+				it.value = addMissingDays(it.value).sort()
 				it
 			}
-		def authorsContributions = changesByAuthorByDate.entrySet().collectEntries{
+		def amountOfCommitsByAuthor = changesByAuthorByDate.entrySet().collectEntries{
 			def author = it.key
 			def commits = it.value.values()
 			[author, commits.size()]
 		}
 		def numberOfTopCommitters = 5
 		def flattened = changesByAuthorByDate.entrySet().toList()
-				.sort{ -authorsContributions[it.key] }.take(numberOfTopCommitters)
+				.sort{ -amountOfCommitsByAuthor[it.key] }
+				.take(numberOfTopCommitters)
 				.collectMany { entry ->
 					entry.value.collect { [it.key, entry.key, it.value.size()] }
 				}
-		asCsvStringLiteral(flattened, ["date", "author", "changeSizeOf"])
+		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
 	static class TreeMapView {
@@ -215,14 +214,6 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			if (!result.empty) result.remove(result.size() - 1)
 			result
 		}
-	}
-
-	@Test void "should group elements into pairs"() {
-		assert pairs([]) == []
-		assert pairs([1]) == []
-		assert pairs([1, 2]) == [[1, 2]]
-		assert pairs([1, 2, 3, 4, 5]) == [[1, 2], [2, 3], [3, 4], [4, 5]]
-		assert pairs([a: 1, b: 2, c: 3, d: 4].entrySet()) == [[a: 1, b: 2], [b: 2, c: 3], [c: 3, d: 4]]*.entrySet()*.toList()
 	}
 }
 
