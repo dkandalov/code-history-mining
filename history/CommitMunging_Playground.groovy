@@ -10,7 +10,7 @@ class CommitMunging_Playground {
 		def commitFilesMunger = new CommitFilesMunger(project, true)
 		def eventsReader = new ChangeEventsReader(commitReader, commitFilesMunger.&mungeCommit)
 
-		PluginUtil.doInBackground("playground", {
+		PluginUtil.doInBackground("playground") {
 			eventsReader.readPresentToPast(dateTime("19:37 01/04/2013"), dateTime("19:40 01/04/2013")) { changeEvents ->
 				PluginUtil.show(changeEvents.collect{it}.join("\n"))
 			}
@@ -21,6 +21,6 @@ class CommitMunging_Playground {
 //			eventsReader.request(dateTime("10:00 23/02/2013"), dateTime("17:02 27/02/2013")) { changeEvents ->
 //				PluginUtil.show(changeEvents.collect{it.revisionDate}.join("\n"))
 //			}
-		}, {})
+		}
 	}
 }

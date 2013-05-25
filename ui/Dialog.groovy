@@ -64,7 +64,7 @@ class Dialog {
 			add(filePathTextField, bag.next().coverLine())
 
 
-			def text = "(Please note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
+			def text = "(Note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
 			def textArea = new JTextArea(text).with {
 				lineWrap = true
 				wrapStyleWord = true
