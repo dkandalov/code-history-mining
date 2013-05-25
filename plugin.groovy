@@ -86,7 +86,7 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 		add(new AnAction("Changes By Package Tree Map") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Changes By Package Tree Map", {
-					showInBrowser("treemap.html", Analysis.TreeMap.&createJsonForChangeSizeTreeMap)
+					showInBrowser("treemap.html", Analysis.TreeMapView.&createJsonForChangeSizeTreeMap)
 				}, {})
 			}
 		})

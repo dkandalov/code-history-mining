@@ -1,8 +1,6 @@
 package analysis
-
 import history.events.EventStorage
 
-import static analysis.Analysis.createJsonForCalendarView
 import static http.HttpUtil.fillDataPlaceholder
 import static http.HttpUtil.inlineJSLibraries
 import static java.lang.System.getenv
@@ -13,12 +11,12 @@ class AnalysisPlayground {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
-		fillTemplate("calendar_view.html", projectName, createJsonForCalendarView(events))
-//		fillTemplate("changes_size_chart.html", createJsonForBarChartView(events))
-//		fillTemplate("cooccurrences-graph.html", createJsonForCooccurrencesGraph(events))
-//		fillTemplate("wordcloud.html", createJsonForCommitCommentWordCloud(events))
-//		fillTemplate("treemap.html", TreeMap.createJsonForChangeSizeTreeMap(events))
-//		fillTemplate("stacked_bars.html", createJsonForCommitsStackBarsChart(events))
+//		fillTemplate("calendar_view.html", projectName, Analysis.createJsonForCalendarView(events))
+//		fillTemplate("changes_size_chart.html", projectName, Analysis.createJsonForBarChartView(events))
+//		fillTemplate("cooccurrences-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
+//		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
+//		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
+		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {

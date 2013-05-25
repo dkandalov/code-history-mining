@@ -43,7 +43,7 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "changeSizeOf"])
 	}
 
-	static class TreeMap {
+	static class TreeMapView {
 		static String createJsonForChangeSizeTreeMap(events) {
 			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
 					.collect{ it.value.first() }
@@ -60,7 +60,7 @@ class Analysis {
 			containerTree.firstChild.toJSON()
 		}
 
-		static class Container {
+		private static class Container {
 			private final String name
 			private final Collection<Container> children
 			private int commits
@@ -144,8 +144,8 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
-		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInCharsOf(it) }] }.sort{it[0]}
-		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{it[0]}
+		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
+		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{it[0]}
 
 		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"])
 		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "changeSize"])
@@ -154,11 +154,11 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static String createJsonForCalendarView(List events) {
+	static String createJsonForCalendarView(List<FileChangeEvent> events) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeInCharsOf(it) }] }.sort{ it.key }
+					.collectEntries{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
@@ -166,7 +166,7 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		def changeSizeInLines = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeInLinesOf(it) }] }.sort{ it.key }
+					.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
@@ -184,8 +184,8 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 	}
 
 	static class Util {
-		static def changeSizeInCharsOf(FileChangeEvent event) { event.chars.added + event.chars.modified + event.chars.removed }
-		static def changeSizeInLinesOf(FileChangeEvent event) { event.lines.added + event.lines.modified + event.lines.removed }
+		static def changeSizeInChars(FileChangeEvent event) { event.chars.added + event.chars.modified + event.chars.removed }
+		static def changeSizeInLines(FileChangeEvent event) { event.lines.added + event.lines.modified + event.lines.removed }
 
 		static String asCsvStringLiteral(Collection values, List header) {
 			def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
@@ -217,38 +217,12 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		}
 	}
 
-	@Test void pairs_shouldGroupCollectionElementsIntoPairs() {
+	@Test void "should group elements into pairs"() {
 		assert pairs([]) == []
 		assert pairs([1]) == []
 		assert pairs([1, 2]) == [[1, 2]]
 		assert pairs([1, 2, 3, 4, 5]) == [[1, 2], [2, 3], [3, 4], [4, 5]]
 		assert pairs([a: 1, b: 2, c: 3, d: 4].entrySet()) == [[a: 1, b: 2], [b: 2, c: 3], [c: 3, d: 4]]*.entrySet()*.toList()
-	}
-
-	@Test void rgbGradient() {
-		def from = [255, 255, 255]
-		def to = [70, 130, 180]
-		def points = 10
-
-		def rgbStep = (0..2).collect{ (to[it] - from[it]) / (points - 1) }
-		def addRgb = { rgb1, rgb2 -> (0..2).collect{ i -> rgb1[i] + rgb2[i] }}
-
-		def interpolatedRgb =
-			(0..<points-1).inject([from]) { acc, rgb -> acc + [addRgb(acc.last(), rgbStep)] }
-				.collectNested{Math.round(it)}*.join(",").join("\n")
-
-		assert interpolatedRgb == """
-						|255,255,255
-						|234,241,247
-						|214,227,238
-						|193,213,230
-						|173,199,222
-						|152,186,213
-						|132,172,205
-						|111,158,197
-						|91,144,188
-						|70,130,180
-					""".stripMargin().trim()
 	}
 }
 
