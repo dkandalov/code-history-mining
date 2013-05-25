@@ -19,9 +19,9 @@ import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
 
-String pathToTemplates = pluginPath + "/templates"
+def pathToTemplates = pluginPath + "/templates"
 
-if (true) return CommitMunging_Playground.playOnIt()
+if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
 registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
@@ -35,7 +35,7 @@ registerAction("DeltaFloraPopup", "ctrl alt shift D") { AnActionEvent actionEven
 				})
 				add(new Separator())
 
-				def eventFiles = new File("${PathManager.pluginsPath}/delta-flora").listFiles(new FileFilter() {
+				def eventFiles = new File(pathToHistoryFiles()).listFiles(new FileFilter() {
 					@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
 				})
 				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, pathToTemplates) })
@@ -50,12 +50,14 @@ if (!isIdeStartup) show("reloaded DeltaFlora plugin")
 
 
 static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
-	String projectName = file.name.replace(".csv", "")
 	def showInBrowser = { template, eventsToJson ->
-		def filePath = "${PathManager.pluginsPath}/delta-flora/${projectName}-file-events.csv"
+		def filePath = pathToHistoryFiles() + "/" + file.absolutePath
 		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
+
+		String projectName = file.name.replace(".csv", "")
 		def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, template, json)
+
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
 
@@ -108,8 +110,7 @@ static ActionGroup createEventStorageActionGroup(File file, String pathToTemplat
 
 def grabHistoryOf(Project project) {
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
-		def outputFile = project.name + "-events.csv"
-		def outputFilePath = "${PathManager.pluginsPath}/delta-flora/${outputFile}"
+		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
 		new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
 	}
 	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
@@ -187,3 +188,5 @@ static timeAfterMostRecentEventIn(EventStorage storage) {
 		date
 	}
 }
+
+static String pathToHistoryFiles() { "${PathManager.pluginsPath}/delta-flora" }
