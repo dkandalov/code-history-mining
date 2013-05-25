@@ -29,5 +29,5 @@ Reasons to do it in IntelliJ:
 
 Please see examples and more on GitHub Pages
 ============================================
-Yes.. the rest of readme is [here](http://dkandalov.github.com/delta-flora-for-intellij)
+Yes.. the rest of readme is [here](http://dkandalov.github.com/code-history-mining)
 (because it has SVG bits which cannot be added to markdown).

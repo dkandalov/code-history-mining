@@ -15,7 +15,7 @@ class Analysis {
 	static def projectName = "scratch" // TODO refactor
 
 	static void main(String[] args) {
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/delta-flora/${projectName}-events.csv"
+		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
 		fillTemplate("calendar_view.html", createJsonForCalendarView(events))

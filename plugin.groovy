@@ -189,4 +189,4 @@ static timeAfterMostRecentEventIn(EventStorage storage) {
 	}
 }
 
-static String pathToHistoryFiles() { "${PathManager.pluginsPath}/delta-flora" }
+static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
