@@ -29,16 +29,10 @@ registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent act
 			"Code History Mining",
 			new DefaultActionGroup().with {
 				add(new AnAction("Grab Project History") {
-					@Override void actionPerformed(AnActionEvent event) {
-						grabHistoryOf(event.project)
-					}
+					@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
 				})
 				add(new Separator())
-
-				def eventFiles = new File(pathToHistoryFiles()).listFiles(new FileFilter() {
-					@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
-				})
-				addAll(eventFiles.collect{ file -> createEventStorageActionGroup(file, pathToTemplates) })
+				addAll(filesWithCodeHistory().collect{ file -> createActionGroup(file, pathToTemplates) })
 				it
 			},
 			actionEvent.dataContext,
@@ -46,10 +40,11 @@ registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent act
 			true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
+
 if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
-static ActionGroup createEventStorageActionGroup(File file, String pathToTemplates) {
+static AnAction createActionGroup(File file, String pathToTemplates) {
 	def showInBrowser = { template, eventsToJson ->
 		def filePath = pathToHistoryFiles() + "/" + file.absolutePath
 		def events = new EventStorage(filePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
@@ -187,6 +182,12 @@ static timeAfterMostRecentEventIn(EventStorage storage) {
 		date.time += 1000  // plus one second (see comments in timeBeforeOldestEventIn())
 		date
 	}
+}
+
+static File[] filesWithCodeHistory() {
+	new File(pathToHistoryFiles()).listFiles(new FileFilter() {
+		@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
+	})
 }
 
 static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
