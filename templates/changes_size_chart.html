@@ -4,6 +4,8 @@
     body {
         font: 10px sans-serif;
         background: #f2f2f2;
+        margin: 30px;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
     .axis path,
     .axis line {
@@ -200,6 +202,10 @@ date,changeSize\n\
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
         var rootElement = d3.select("#" + elementId);
+
+        var headerSpan = appendBlockElementTo(rootElement, width);
+        headerSpan.append("h2").text("Change size chart").style({"text-align": "center"});
+
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
@@ -243,10 +249,9 @@ date,changeSize\n\
         createBarsAndBrushOn(brushFooter);
 
 
-        var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: width + "px"});
-        var span = footerSpan.append("span").style({float: "right"});
-        span.append("label").html("Group by: ");
-        var groupByDropDown = span.append("select");
+        var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
+        footerSpan.append("label").html("Group by: ");
+        var groupByDropDown = footerSpan.append("select");
         groupByDropDown.append("option").attr("value", "day").html("days");
         groupByDropDown.append("option").attr("value", "monday").html("weeks");
 
@@ -254,9 +259,9 @@ date,changeSize\n\
             timeInterval = d3.time[this.value];
             updateChart();
         });
-        span.append("span").style({width: "20px", display: "inline-block"});
-        span.append("label").html("Change size measured in: ");
-        var dropDown = span.append("select");
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
+        footerSpan.append("label").html("Change size measured in: ");
+        var dropDown = footerSpan.append("select");
         dropDown.append("option").attr("value", "0").html("commits");
         dropDown.append("option").attr("value", "1").html("lines");
         dropDown.append("option").attr("value", "2").html("characters");
@@ -362,6 +367,10 @@ date,changeSize\n\
         }
         function nonZero(length) {
             return (length > 0 ? length : 0.0000001);
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span").style({float: "left", display: "block", width: width + "px"});
         }
     }
 

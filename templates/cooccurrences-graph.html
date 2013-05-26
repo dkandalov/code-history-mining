@@ -3,6 +3,9 @@
 <style>
     body {
         background: #f2f2f2;
+        margin: 30px;
+        font: 10px sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
     .node {
         stroke: #fff;
@@ -154,7 +157,7 @@ function createForcesGraphOn(elementId, graph) {
 
 
     var width = 960,
-            height = 500;
+        height = 500;
 
     var color = d3.scale.category20();
 
@@ -163,9 +166,17 @@ function createForcesGraphOn(elementId, graph) {
             .linkDistance(30)
             .size([width, height]);
 
-    var svg = d3.select("#" + elementId).append("svg")
-            .attr("width", width)
-            .attr("height", height);
+    var rootElement = d3.select("#" + elementId);
+
+    var headerSpan = appendBlockElementTo(rootElement, width);
+    headerSpan.append("h2").text("Files in the same commit").style({"text-align": "center"});
+
+    var svg = rootElement.append("svg")
+            .attr("width", width).attr("height", height);
+
+    svg.append("rect")
+            .attr("width", width).attr("height", height)
+            .style({fill: "none", stroke: "#AAAAAA"});
 
     force.nodes(graph.nodes)
             .links(graph.links)
@@ -179,10 +190,10 @@ function createForcesGraphOn(elementId, graph) {
                 return Math.sqrt(d.value);
             });
 
-    var tooltip = d3.select("#" + elementId).append("div")
+    var tooltip = rootElement.append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-    var selectionList = d3.select("#" + elementId).append("div")
+    var selectionList = rootElement.append("div")
             .attr("class", "selectionList")
             .style("position", "absolute")
             .style("left", "20px")
@@ -241,6 +252,10 @@ function createForcesGraphOn(elementId, graph) {
         selectionList
                 .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
                 .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+    }
+
+    function appendBlockElementTo(element, width) {
+        return element.append("span").style({float: "left", display: "block", width: width + "px"});
     }
 }
 

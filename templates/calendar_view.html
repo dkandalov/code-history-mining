@@ -1,9 +1,9 @@
 <!DOCTYPE html><meta charset="utf-8"><style>
     body {
-        font: 10px sans-serif;
         shape-rendering: crispEdges;
         background: #f2f2f2;
         margin: 30px;
+        font: 10px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
     .day {
@@ -145,7 +145,7 @@ date,changeSize\n\
 
         const rootElement = d3.select("#" + elementId);
 
-        var headerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
+        var headerSpan = appendBlockElementTo(rootElement, width);
         headerSpan.append("h2").text("Calendar view of changes").style({"text-align": "center"});
 
         var svg = rootElement.selectAll("svg")
@@ -179,7 +179,7 @@ date,changeSize\n\
                 .attr("class", "month")
                 .attr("d", monthPath);
 
-        var footerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
+        var footerSpan = appendBlockElementTo(rootElement, width - cellSize * 3);
         var span = footerSpan.append("span").style({float: "right"});
         span.append("label").html("Color threshold: ");
         var colorThresholdLabel = span.append("label");
@@ -258,6 +258,10 @@ date,changeSize\n\
                     + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
                     + "H" + (w1 + 1) * cellSize + "V" + 0
                     + "H" + (w0 + 1) * cellSize + "Z";
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span").style({float: "left", display: "block", width: width + "px"});
         }
     }
 
