@@ -173,6 +173,7 @@ function createForcesGraphOn(elementId, graph) {
 
     var svg = rootElement.append("svg")
             .attr("width", width).attr("height", height);
+    var svgPos = svg[0][0].getBoundingClientRect();
 
     svg.append("rect")
             .attr("width", width).attr("height", height)
@@ -196,8 +197,8 @@ function createForcesGraphOn(elementId, graph) {
     var selectionList = rootElement.append("div")
             .attr("class", "selectionList")
             .style("position", "absolute")
-            .style("left", "20px")
-            .style("top", "20px")
+            .style("left", svgPos.left + 3 + "px")
+            .style("top", svgPos.top + 3 + "px")
             .style("opacity", 0);
 
     var handledByNode = false;
@@ -212,8 +213,8 @@ function createForcesGraphOn(elementId, graph) {
                 tooltip.html(d.name)
                         .style("opacity", .9)
                         .style("position", "absolute")
-                        .style("left", parseInt(d.x + 18) + "px")
-                        .style("top", parseInt(d.y - 12) + "px");
+                        .style("left", svgPos.left + parseInt(d.x + 18) + "px")
+                        .style("top", svgPos.top + parseInt(d.y - 12) + "px");
             })
             .on("mouseout", function(d) {
                 tooltip.style("opacity", .0);
