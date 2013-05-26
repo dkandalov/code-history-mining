@@ -3,6 +3,8 @@
         font: 10px sans-serif;
         shape-rendering: crispEdges;
         background: #f2f2f2;
+        margin: 30px;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
     .day {
         fill: #fff;
@@ -142,6 +144,10 @@ date,changeSize\n\
                 .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
 
         const rootElement = d3.select("#" + elementId);
+
+        var headerSpan = rootElement.append("span").style({float: "left", display: "block", width: (width - cellSize * 3) + "px"});
+        headerSpan.append("h2").text("Calendar view of changes").style({"text-align": "center"});
+
         var svg = rootElement.selectAll("svg")
                 .data(d3.range(minYear, maxYear + 1))
                 .enter().append("svg")
@@ -230,7 +236,7 @@ date,changeSize\n\
                    .map(data);
         }
 
-        function toPercentsFunction(data, threshold) { // TODO d3.quantile
+        function toPercentsFunction(data, threshold) { // TODO try d3.quantile
             data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
             var length = data.length * (threshold / 100);
             var slicedData = data.slice(data.length - length, data.length);
