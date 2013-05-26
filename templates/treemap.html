@@ -7,15 +7,10 @@
     <style type="text/css">
         body {
             overflow: hidden;
-            margin: 0;
-            font-size: 14px;
-            font-family: "Helvetica Neue", Helvetica,serif;
+            margin: 30px;
+            font: 10px sans-serif;
+            font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
             background: #f2f2f2;
-        }
-
-        #chart, #header, #footer {
-            position: absolute;
-            top: 0;
         }
 
         .chart {
@@ -45,12 +40,9 @@
         }
         #footer {
             z-index: 1;
-            display: block;
-            font-size: 36px;
+            font-size: 24px;
             font-weight: 300;
             text-shadow: 0 1px 0 #fff;
-            top: 680px;
-            right: 140px;
             text-align: right;
         }
         .hint {
@@ -65,7 +57,7 @@
 </head>
 <body>
 <div id="body">
-    <span id="size-of-packages-treemap"></span>
+    <span id="treemap"></span>
 </div>
 <script type="text/javascript">
     var root = /*data_placeholder*/
@@ -92,7 +84,7 @@
             ]}
     /*data_placeholder*/;
 
-    createTreeMapOn("size-of-packages-treemap", root);
+    createTreeMapOn("treemap", root);
 
     function createTreeMapOn(elementId, root) {
         var w = 1280 - 80,
@@ -101,21 +93,29 @@
             y = d3.scale.linear().range([0, h]),
             color = d3.scale.category20c();
 
-        var chart = d3.select("#" + elementId).append("div")
+        var rootElement = d3.select("#" + elementId);
+
+        var chart = rootElement.append("div")
                 .attr("class", "chart")
                 .style("width", w + "px")
                 .style("height", h + "px");
+
+        var header = appendBlockElementTo(chart, w);
+        header.append("h2").text("Change size treemap")
+                .style("text-align", "center")
+                .style("margin-bottom", "30px");
+
         var svg = chart.append("svg:svg")
                 .attr("width", w)
                 .attr("height", h)
                 .append("svg:g");
+        var svgPos = svg[0][0].getBoundingClientRect();
 
-        var footer = d3.select("#" + elementId).append("div").attr("id", "footer");
+        var footer = appendBlockElementTo(chart, w).attr("id", "footer");
         var packageNameLabel = footer.append("div");
         footer.append("div").attr("class", "hint").html("click or alt-click to descend or ascend");
 
-
-        var tooltip = d3.select("#" + elementId).append("div")
+        var tooltip = rootElement.append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0.9)
                 .style("visibility", "hidden");
@@ -165,8 +165,8 @@
                                 .style("visibility", "visible")
                                 .style("height", "auto")
                                 .style("position", "absolute")
-                                .style("left", (getPos(chart[0][0]).x + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
-                                .style("top", (getPos(chart[0][0]).y + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
+                                .style("left", (svgPos.left + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
+                                .style("top", (svgPos.top + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
                     })
                     .on("mouseout", function(d) {
                         if (d.hasLabel) return;
@@ -252,6 +252,11 @@
             if (packageName.indexOf(".") == 0) return packageName.substr(1);
             else if (packageName == "") return "[project root]";
             else return packageName;
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span")
+                    .style("float", "left").style("display", "block").style("width", width + "px");
         }
     }
 

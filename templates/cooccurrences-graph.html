@@ -168,8 +168,8 @@ function createForcesGraphOn(elementId, graph) {
 
     var rootElement = d3.select("#" + elementId);
 
-    var headerSpan = appendBlockElementTo(rootElement, width);
-    headerSpan.append("h2").text("Files in the same commit").style({"text-align": "center"});
+    var header = appendBlockElementTo(rootElement, width);
+    header.append("h2").text("Files in the same commit").style({"text-align": "center"});
 
     var svg = rootElement.append("svg")
             .attr("width", width).attr("height", height);
