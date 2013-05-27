@@ -46,9 +46,6 @@
             text-align: right;
         }
         .hint {
-            position: absolute;
-            right: 0;
-            width: 1280px;
             font-size: 12px;
             color: #999;
         }
@@ -205,15 +202,6 @@
 
 
             packageNameLabel.text(formatPackageName(fullNameOf(node)));
-        }
-
-        function getPos(element) {
-            for (var x = 0, y = 0; element != null;) {
-                x += element.offsetLeft;
-                y += element.offsetTop;
-                element = element.offsetParent;
-            }
-            return {x: x, y: y};
         }
 
         function textFitsInto(rect, extent) {
