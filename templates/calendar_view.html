@@ -121,6 +121,7 @@ date,changeSize\n\
 "
 ]
 /*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
     function drawCalendarChart(elementId, rawData) {
         var threshold = 95;
@@ -147,7 +148,8 @@ date,changeSize\n\
         const rootElement = d3.select("#" + elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Calendar view of changes").style({"text-align": "center"});
+        headerSpan.append("h2").text("Calendar view of changes (" + projectName + ")")
+                .style({"text-align": "center"});
 
         var svg = rootElement.selectAll("svg")
                 .data(d3.range(minYear, maxYear + 1))

@@ -80,6 +80,7 @@
                 ]}
             ]}
     /*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
     createTreeMapOn("treemap", root);
 
@@ -98,7 +99,7 @@
                 .style("height", h + "px");
 
         var header = appendBlockElementTo(chart, w);
-        header.append("h2").text("Change size treemap")
+        header.append("h2").text("Change size treemap (" + projectName + ")")
                 .style("text-align", "center")
                 .style("margin-bottom", "30px");
 

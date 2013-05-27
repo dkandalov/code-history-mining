@@ -70,8 +70,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 
-		String projectName = file.name.replace(".csv", "")
-		def server = HttpUtil.loadIntoHttpServer(projectName, pathToTemplates, template, json)
+		def server = HttpUtil.loadIntoHttpServer(projectName(file), pathToTemplates, template, json)
 
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
@@ -265,3 +264,7 @@ static File[] filesWithCodeHistory() {
 }
 
 static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
+
+static String projectName(File file) {
+	file.name.replace(".csv", "").replace("-file-events", "")
+}

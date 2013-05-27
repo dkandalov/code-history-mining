@@ -13,11 +13,16 @@ class HttpUtil {
 		def text = readFile("$pathToTemplates/$templateFileName")
 		text = inlineJSLibraries(text) { jsLibFileName -> readFile(pathToTemplates + "/" + jsLibFileName) }
 		text = fillDataPlaceholder(text, json)
+		text = fillProjectNamePlaceholder(text, "\"$projectId\"")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
 		log("Saved tree map into: " + tempDir.absolutePath + "/" + templateFileName)
 
 		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log(it)})
+	}
+
+	static String fillProjectNamePlaceholder(String templateText, String projectName) {
+		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
 	}
 
 	static String fillDataPlaceholder(String templateText, String jsValue) {

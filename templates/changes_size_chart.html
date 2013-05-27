@@ -175,6 +175,7 @@ date,changeSize\n\
 05/03/2013,284\
 "
 ]/*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
     function drawChangeSizeChart(elementId, rawData) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
@@ -204,7 +205,7 @@ date,changeSize\n\
         var rootElement = d3.select("#" + elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Change size chart").style({"text-align": "center"});
+        headerSpan.append("h2").text("Change size chart (" + projectName + ")").style({"text-align": "center"});
 
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)

@@ -28,6 +28,7 @@
             {text: "ccc3", size: 100}
         ]
     }/*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
     createWordCloudOn("wordCloud");
 
@@ -38,8 +39,8 @@
         var height = 900;
 
         var rootElement = d3.select("#" + elementId);
-        var header = appendBlockElementTo(rootElement, width)
-        header.append("h2").text("Commit messages word cloud")
+        var header = appendBlockElementTo(rootElement, width);
+        header.append("h2").text("Commit messages word cloud (" + projectName + ")")
                 .style("text-align", "center")
                 .style("margin-bottom", "30px");
 
