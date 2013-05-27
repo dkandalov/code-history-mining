@@ -104,6 +104,11 @@ class Analysis {
 		println(result.join("\n"))
 	}
 
+	static void createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events) {
+
+
+	}
+
 	static class TreeMapView {
 		static String createJsonForChangeSizeTreeMap(events) {
 			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
@@ -273,11 +278,19 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			date
 		}
 
-		static Date floorToHour(Date date) {
-			date[Calendar.MILLISECOND] = 0
-			date[Calendar.SECOND] = 0
-			date[Calendar.MINUTE] = 0
-			date
+		static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
+			def result = []
+			def previousValues = []
+			for (value in collection) {
+				while (!previousValues.empty && !shouldKeepElement(previousValues.first(), value)) {
+					previousValues = previousValues.tail()
+				}
+
+				result << callback(previousValues, value)
+
+				if (shouldKeepElement(value, value)) previousValues << value
+			}
+			result
 		}
 
 		static <T> Collection<Collection<T>> pairs(Collection<T> collection) {

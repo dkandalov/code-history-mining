@@ -7,8 +7,8 @@ import static java.lang.System.getenv
 
 class AnalysisPlayground {
 	static void main(String[] args) {
-//		def projectName = "delta-flora-for-intellij"
-		def projectName = "junit"
+		def projectName = "delta-flora-for-intellij"
+//		def projectName = "junit"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
@@ -21,7 +21,8 @@ class AnalysisPlayground {
 //		Analysis.createJson_AmountOfComitters_Chart(events)
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
 //		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
-		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
+//		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
+		Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events)
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {
