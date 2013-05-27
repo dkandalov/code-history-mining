@@ -6,6 +6,8 @@ import history.events.FileChangeInfo
 import java.text.SimpleDateFormat
 
 import static analysis.Analysis.Util.*
+import static java.util.concurrent.TimeUnit.HOURS
+import static java.util.concurrent.TimeUnit.MILLISECONDS
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -43,7 +45,7 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
-	static void createJsonForAmountOfComittersBarsChart(List<FileChangeEvent> events) {
+	static void createJson_AmountOfComitters_Chart(List<FileChangeEvent> events) {
 		def comittersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
 				.collectEntries{ [it.key, it.value.collect{it.author}.unique()]}
@@ -51,7 +53,7 @@ class Analysis {
 		println(comittersByDay.entrySet().join("\n"))
 	}
 
-	static void createJsonForAverageAmountOfLinesChangedChart(List<FileChangeEvent> events) {
+	static void createJson_AverageAmountOfLinesChangedByDay_Chart(List<FileChangeEvent> events) {
 		def averageChangeSize = { eventList ->
 			if (eventList.empty) 0
 			else eventList.sum(0){changeSizeInLines(it)} / eventList.size()
@@ -63,16 +65,43 @@ class Analysis {
 		println(averageChangeSizeByDay.entrySet().join("\n"))
 	}
 
-	static void createJsonForAverageAmountOfFilesChangedChart(List<FileChangeEvent> events) {
+	static void createJson_AverageAmountOfFilesInCommitByDay_Chart(List<FileChangeEvent> events) {
+		def amountOfFilesIn = { eventsList -> eventsList.collect{it.fileName + it.packageBefore + it.packageAfter}.unique().size() }
 		def averageChangeSize = { eventsByRevision ->
 			if (eventsByRevision.empty) 0
-			else eventsByRevision.entrySet().sum(0){ it.value.collect{it.fileName}.unique().size() } / eventsByRevision.size()
+			else eventsByRevision.entrySet().sum(0){ amountOfFilesIn(it.value) } / eventsByRevision.size()
 		}
 		def changeSizeByDay = events
 				.groupBy({floorToDay(it.revisionDate) }, {it.revision})
 				.collectEntries{ [it.key, averageChangeSize(it.value)] }
 				.sort{ it.key }
 		println(changeSizeByDay.entrySet().join("\n"))
+	}
+
+	static void createJson_CommitsWithAndWithoutTests_Chart(List<FileChangeEvent> events) {
+		Collection.mixin(Util)
+
+		def withoutExtension = { String s -> s.contains(".") ? s.substring(0, s.lastIndexOf(".")) : s }
+		def containUnitTests = { eventList -> eventList.any{ withoutExtension(it.fileName).endsWith("Test") } }
+		def areRecentEnough = { eventList1, eventList2 ->
+			long timeDiff = eventList1.first().revisionDate.time - eventList2.first().revisionDate.time
+			HOURS.convert(timeDiff, MILLISECONDS) <= 1
+		}
+
+		// reverse events to go past-to-present and check past commit (looking for "test-first")
+		def result = events.reverse()
+				.groupBy{it.revision}
+				.entrySet().pairs().collect{ pair ->
+					def previousCommitEvents = pair[0].value
+					def commitEvents = pair[1].value
+					if (containUnitTests(commitEvents) || (containUnitTests(previousCommitEvents) && areRecentEnough(previousCommitEvents, commitEvents))) {
+						[date: commitEvents.first().revisionDate, unitTests: true]
+					} else {
+						[date: commitEvents.first().revisionDate, unitTests: false]
+					}
+				}
+
+		println(result.join("\n"))
 	}
 
 	static class TreeMapView {
@@ -162,7 +191,6 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
 															.findAll{ it.value > threshold }.sort{-it.value}
-		println(pairCoOccurrences.entrySet().join("\n"))
 
 		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
 		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
@@ -242,6 +270,13 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			date[Calendar.SECOND] = 0
 			date[Calendar.MINUTE] = 0
 			date[Calendar.HOUR_OF_DAY] = 0
+			date
+		}
+
+		static Date floorToHour(Date date) {
+			date[Calendar.MILLISECOND] = 0
+			date[Calendar.SECOND] = 0
+			date[Calendar.MINUTE] = 0
 			date
 		}
 

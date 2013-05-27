@@ -18,9 +18,10 @@ class AnalysisPlayground {
 //		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
-//		Analysis.createJsonForAmountOfComittersBarsChart(events)
-//		Analysis.createJsonForAverageAmountOfLinesChangedChart(events)
-		Analysis.createJsonForAverageAmountOfFilesChangedChart(events)
+//		Analysis.createJson_AmountOfComitters_Chart(events)
+//		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
+//		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
+		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {
