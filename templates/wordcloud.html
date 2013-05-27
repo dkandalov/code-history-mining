@@ -49,9 +49,7 @@
 
         function createWordCloud() {
             d3.layout.cloud()
-                    .timeInterval(10)
                     .size([width, height])
-                    .font("Impact")
                     .fontSize(function(d) { return d.size; })
                     .rotate(function(d) { return 0; })
                     .words(data.words.map(function(d) {
