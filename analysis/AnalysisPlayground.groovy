@@ -17,7 +17,10 @@ class AnalysisPlayground {
 //		fillTemplate("cooccurrences-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
 //		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
-		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
+//		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
+//		Analysis.createJsonForAmountOfComittersBarsChart(events)
+//		Analysis.createJsonForAverageAmountOfLinesChangedChart(events)
+		Analysis.createJsonForAverageAmountOfFilesChangedChart(events)
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {

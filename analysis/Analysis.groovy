@@ -1,6 +1,7 @@
 package analysis
 import groovy.time.TimeCategory
 import history.events.FileChangeEvent
+import history.events.FileChangeInfo
 
 import java.text.SimpleDateFormat
 
@@ -40,6 +41,38 @@ class Analysis {
 					entry.value.collect { [it.key, entry.key, it.value.size()] }
 				}
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
+	}
+
+	static void createJsonForAmountOfComittersBarsChart(List<FileChangeEvent> events) {
+		def comittersByDay = events
+				.groupBy{ floorToDay(it.revisionDate) }
+				.collectEntries{ [it.key, it.value.collect{it.author}.unique()]}
+				.sort{ it.key }
+		println(comittersByDay.entrySet().join("\n"))
+	}
+
+	static void createJsonForAverageAmountOfLinesChangedChart(List<FileChangeEvent> events) {
+		def averageChangeSize = { eventList ->
+			if (eventList.empty) 0
+			else eventList.sum(0){changeSizeInLines(it)} / eventList.size()
+		}
+		def averageChangeSizeByDay = events
+				.groupBy{ floorToDay(it.revisionDate) }
+				.collectEntries{ [it.key, averageChangeSize(it.value)] }
+				.sort{ it.key }
+		println(averageChangeSizeByDay.entrySet().join("\n"))
+	}
+
+	static void createJsonForAverageAmountOfFilesChangedChart(List<FileChangeEvent> events) {
+		def averageChangeSize = { eventsByRevision ->
+			if (eventsByRevision.empty) 0
+			else eventsByRevision.entrySet().sum(0){ it.value.collect{it.fileName}.unique().size() } / eventsByRevision.size()
+		}
+		def changeSizeByDay = events
+				.groupBy({floorToDay(it.revisionDate) }, {it.revision})
+				.collectEntries{ [it.key, averageChangeSize(it.value)] }
+				.sort{ it.key }
+		println(changeSizeByDay.entrySet().join("\n"))
 	}
 
 	static class TreeMapView {
@@ -183,8 +216,14 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 	}
 
 	static class Util {
-		static def changeSizeInChars(FileChangeEvent event) { event.chars.added + event.chars.modified + event.chars.removed }
-		static def changeSizeInLines(FileChangeEvent event) { event.lines.added + event.lines.modified + event.lines.removed }
+		static def changeSizeInChars(FileChangeEvent event) {
+			if (event.chars == FileChangeInfo.NA || event.chars == FileChangeInfo.TOO_BIG_TO_DIFF) 0
+			else event.chars.added + event.chars.modified + event.chars.removed
+		}
+		static def changeSizeInLines(FileChangeEvent event) {
+			if (event.lines == FileChangeInfo.NA || event.lines == FileChangeInfo.TOO_BIG_TO_DIFF) 0
+			else event.lines.added + event.lines.modified + event.lines.removed
+		}
 
 		static String asCsvStringLiteral(Collection values, List header) {
 			def formatDate = { Date date -> new SimpleDateFormat("dd/MM/yyyy").format(date) }
