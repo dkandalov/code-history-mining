@@ -2,6 +2,8 @@
 <meta charset="utf-8">
 <style>
     body {
+        font: 10px sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
         background: #f2f2f2;
     }
 </style>
@@ -36,6 +38,10 @@
         var height = 900;
 
         var rootElement = d3.select("#" + elementId);
+        var header = appendBlockElementTo(rootElement, width)
+        header.append("h2").text("Commit messages word cloud")
+                .style("text-align", "center")
+                .style("margin-bottom", "30px");
 
         adjustSizeOfShortWords(data.words);
         normalizeWordSize(data.words);
@@ -104,6 +110,11 @@
             words.forEach(function (word) {
                 word.size = Math.round(5 + ((word.size - min) * 100 / range));
             });
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span")
+                    .style("float", "left").style("display", "block").style("width", width + "px");
         }
     }
 </script>
