@@ -6,8 +6,7 @@ import history.events.FileChangeInfo
 import java.text.SimpleDateFormat
 
 import static analysis.Analysis.Util.*
-import static java.util.concurrent.TimeUnit.HOURS
-import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static java.util.concurrent.TimeUnit.*
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -94,6 +93,7 @@ class Analysis {
 				.entrySet().pairs().collect{ pair ->
 					def previousCommitEvents = pair[0].value
 					def commitEvents = pair[1].value
+
 					if (containUnitTests(commitEvents) || (containUnitTests(previousCommitEvents) && areRecentEnough(previousCommitEvents, commitEvents))) {
 						[date: commitEvents.first().revisionDate, unitTests: true]
 					} else {
@@ -104,9 +104,26 @@ class Analysis {
 		println(result.join("\n"))
 	}
 
-	static void createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events) {
+	static void createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, int threshold = 7) {
+		Collection.mixin(Util)
 
+		def keepWeekOfEvents = { event, currentEvent ->
+			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
+			DAYS.convert(timeDiff, MILLISECONDS) <= 7
+		}
+		def result = events.reverse()
+				.collectWithHistory(keepWeekOfEvents) { previousEvents, event ->
+					previousEvents
+							.findAll{ it.fileName == event.fileName && it.author != event.author } // TODO check packages?
+							.collect{[author1: it.author, author2: event.author, fileName: event.fileName]}
+				}
+				.flatten()
+				.groupBy{it}
+				.collectEntries{[it.key, it.value.size()]}
+				.findAll{it.value >= threshold}
+				.sort{-it.value}
 
+		println(result.entrySet().join("\n"))
 	}
 
 	static class TreeMapView {
@@ -280,7 +297,8 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 
 		static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
 			def result = []
-			def previousValues = []
+			def previousValues = new LinkedList()
+
 			for (value in collection) {
 				while (!previousValues.empty && !shouldKeepElement(previousValues.first(), value)) {
 					previousValues = previousValues.tail()
