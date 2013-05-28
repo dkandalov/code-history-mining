@@ -9,17 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
-      <library name="IntelliJEval">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../intellij_eval.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../intellij_eval.jar!/src" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea-rt.jar!/" />
@@ -103,6 +92,17 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="LivePlugin">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../live-plugin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../live-plugin.jar!/src" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>
