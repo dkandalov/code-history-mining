@@ -104,26 +104,59 @@ class Analysis {
 		println(result.join("\n"))
 	}
 
-	static void createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, int threshold = 7) {
+	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, int threshold = 7) {
 		Collection.mixin(Util)
 
-		def keepWeekOfEvents = { event, currentEvent ->
+		def keepOneWeekOfEvents = { event, currentEvent ->
 			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
 			DAYS.convert(timeDiff, MILLISECONDS) <= 7
 		}
-		def result = events.reverse()
-				.collectWithHistory(keepWeekOfEvents) { previousEvents, event ->
-					previousEvents
+		def matchingEvents = events.reverse()
+				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
+					def relatedEvents = previousEvents
 							.findAll{ it.fileName == event.fileName && it.author != event.author } // TODO check packages?
-							.collect{[author1: it.author, author2: event.author, fileName: event.fileName]}
+					relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
 				}
-				.flatten()
-				.groupBy{it}
+				.findAll{it != null}
+				.groupBy{[author: it.event.author, fileName: it.event.fileName]}
+				.findAll{it.value.size() >= threshold}
+		def links = matchingEvents
 				.collectEntries{[it.key, it.value.size()]}
-				.findAll{it.value >= threshold}
 				.sort{-it.value}
+//		println(links.entrySet().join("\n"))
 
-		println(result.entrySet().join("\n"))
+		def notInMatchingEvents = { event ->
+			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && it.event.fileName == event.fileName }}
+		}
+		def relatedLinks = matchingEvents.values()
+				.inject([]){ result, entries -> result.addAll(entries.collectMany{it.relatedEvents}.unique()); result }.unique()
+				.findAll{ notInMatchingEvents(it) }
+				.groupBy{[author: it.author, fileName: it.fileName]}
+				.collectEntries{[it.key, it.value.size()]}
+				.sort{-it.value}
+//		println(relatedLinks.entrySet().join("\n"))
+
+		def allLinks = relatedLinks.entrySet().inject(links) { map, entry ->
+			if (map.containsKey(entry.key)) {
+				map[entry.key] += entry.value
+			} else {
+				map.put(entry.key, entry.value)
+			}
+			map
+		}
+//		println(allLinks.entrySet().join("\n"))
+
+		def authors = allLinks.keySet().collect{it.author}.unique().toList()
+		def files = allLinks.keySet().collect{it.fileName}.unique().toList()
+		def nodesJSLiteral =
+				authors.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n") + ",\n" +
+				files.collect{'{"name": "' + it + '", "group": 2}'}.join(",\n")
+
+		def nodes = authors + files
+		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(it.key.fileName), it.value] }
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
 	static class TreeMapView {

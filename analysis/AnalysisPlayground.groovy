@@ -22,7 +22,7 @@ class AnalysisPlayground {
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
 //		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
-		Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events)
+		fillTemplate("author-to-file-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {

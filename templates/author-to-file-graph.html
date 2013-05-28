@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    body {
+        background: #f2f2f2;
+        margin: 30px;
+        font: 10px sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    }
+    .node {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+    .link {
+        stroke: #999;
+        stroke-opacity: .6;
+    }
+    div.tooltip {
+        position: absolute;
+        text-align: center;
+        height: 15px;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+    div.selectionList {
+        position: absolute;
+        text-align: left;
+        height: auto;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+    }
+</style>
+<body>
+<script src="d3.v3.min.js"></script>
+<span id="files-in-same-commit-graph"></span>
+<script>
+
+const graph = {
+/*data_placeholder*/
+    "nodes": [{"name": "dsaff", "group": 1},
+        {"name": "David Saff", "group": 1},
+        {"name": "kbeck", "group": 1},
+        {"name": "egamma", "group": 1},
+        {"name": "Tibor Digana", "group": 1},
+        {"name": "clarkware", "group": 1},
+        {"name": "Stefan Birkner", "group": 1},
+        {"name": "Arie van Deursen", "group": 1},
+        {"name": "pimterry", "group": 1},
+        {"name": "Stephen Connolly", "group": 1},
+        {"name": "Kevin Cooney", "group": 1},
+        {"name": "Alistair A. Israel", "group": 1},
+        {"name": "dsaff", "group": 1},
+        {"name": "Marc Philipp", "group": 1},
+        {"name": "Corey Vaillancourt", "group": 1},
+        {"name": "emeade", "group": 1},
+        {"name": "Arjan Wulder", "group": 1},
+        {"name": "James Abley", "group": 1},
+        {"name": "rodolfoliviero", "group": 1},
+        {"name": "Daniel Rothmaler", "group": 1},
+        {"name": "vbossica", "group": 1},
+        {"name": "cmschmidt", "group": 1},
+        {"name": "KentBeck", "group": 1},
+        {"name": "watisdit", "group": 1},
+        {"name": "Matthew Farwell", "group": 1},
+        {"name": "Mike Forsberg", "group": 1},
+        {"name": "marciomazza", "group": 1},
+        {"name": "Paul Holser", "group": 1},
+        {"name": "Esko Luontola", "group": 1},
+        {"name": "AllTests.java", "group": 2},
+        {"name": "build.xml", "group": 2},
+        {"name": "ReleaseNotes4.7.txt", "group": 2},
+        {"name": "package-info.java", "group": 2},
+        {"name": "Theories.java", "group": 2},
+        {"name": "Version.java", "group": 2},
+        {"name": "Parameterized.java", "group": 2},
+        {"name": "MaxCore.java", "group": 2},
+        {"name": "Suite.java", "group": 2},
+        {"name": "BlockJUnit4ClassRunner.java", "group": 2},
+        {"name": "TestRunner.java", "group": 2},
+        {"name": "JUnit4ClassRunner.java", "group": 2},
+        {"name": "pom.xml", "group": 2},
+        {"name": "TestWatchman.java", "group": 2},
+        {"name": "TestClass.java", "group": 2},
+        {"name": "acknowledgements.txt", "group": 2},
+        {"name": "MaxHistory.java", "group": 2},
+        {"name": "ParentRunner.java", "group": 2},
+        {"name": "faq.htm", "group": 2},
+        {"name": "Request.java", "group": 2},
+        {"name": "TestMethod.java", "group": 2},
+        {"name": "MaxStarterTest.java", "group": 2},
+        {"name": "Assert.java", "group": 2},
+        {"name": "ClassRequest.java", "group": 2},
+        {"name": "ExpectedException.java", "group": 2},
+        {"name": "InterceptorTest.java", "group": 2},
+        {"name": "JUnitMatchers.java", "group": 2},
+        {"name": "Categories.java", "group": 2},
+        {"name": "README.html", "group": 2},
+        {"name": "Assignments.java", "group": 2},
+        {"name": "TimeoutInterceptorTest.java", "group": 2},
+        {"name": "MethodSorterTest.java", "group": 2},
+        {"name": "TestMethodTest.java", "group": 2},
+        {"name": "StubbedTheories.java", "group": 2},
+        {"name": "ExternalResource.java", "group": 2},
+        {"name": "TextListenerTest.java", "group": 2},
+        {"name": "CompositeRunner.java", "group": 2},
+        {"name": "AssertionTest.java", "group": 2},
+        {"name": "AssumptionTest.java", "group": 2},
+        {"name": "ParallelComputer.java", "group": 2},
+        {"name": "Interceptors.java", "group": 2},
+        {"name": "CategoryTest.java", "group": 2},
+        {"name": "Description.java", "group": 2},
+        {"name": "ParameterSignature.java", "group": 2},
+        {"name": "EachTestNotifier.java", "group": 2},
+        {"name": "AllMembersSupplier.java", "group": 2},
+        {"name": "BothTest.java", "group": 2},
+        {"name": "ErrorCollector.java", "group": 2},
+        {"name": "TimeoutTest.java", "group": 2},
+        {"name": "ErrorReportingRunner.java", "group": 2},
+        {"name": "JUnitCore.java", "group": 2},
+        {"name": "WithDataPointMethod.java", "group": 2},
+        {"name": "MaxComputerTest.java", "group": 2},
+        {"name": "ReleaseNotes4.9.txt", "group": 2},
+        {"name": "SuiteTest.java", "group": 2},
+        {"name": "RunNotifier.java", "group": 2},
+        {"name": "RunListener.java", "group": 2},
+        {"name": "Result.java", "group": 2},
+        {"name": "TextListener.java", "group": 2},
+        {"name": "InaccessibleBaseClassTest.java", "group": 2},
+        {"name": ".gitignore", "group": 2},
+        {"name": "TestName.java", "group": 2},
+        {"name": "Verifier.java", "group": 2},
+        {"name": "SortableTest.java", "group": 2},
+        {"name": "SingleMethodTest.java", "group": 2},
+        {"name": "MethodValidator.java", "group": 2},
+        {"name": ".cvsignore", "group": 2},
+        {"name": "ReleaseNotes4.4.txt", "group": 2},
+        {"name": "Timeout.java", "group": 2},
+        {"name": "ExpectedExceptionInterceptorTest.java", "group": 2},
+        {"name": "TimeoutRuleTest.java", "group": 2},
+        {"name": "AssertTest.java", "group": 2},
+        {"name": "TestListenerTest.java", "group": 2},
+        {"name": "ParameterizedTestTest.java", "group": 2},
+        {"name": "Failure.java", "group": 2},
+        {"name": "ErrorReportingRequest.java", "group": 2},
+        {"name": ".classpath", "group": 2},
+        {"name": "ParameterizedAssertionErrorTest.java", "group": 2},
+        {"name": "ExperimentalTests.java", "group": 2},
+        {"name": "TestElement.java", "group": 2},
+        {"name": "Ignorance.java", "group": 2},
+        {"name": "ParallelClassTest.java", "group": 2},
+        {"name": "TestClassTest.java", "group": 2},
+        {"name": "org.eclipse.jdt.core.prefs", "group": 2},
+        {"name": "Rule.java", "group": 2},
+        {"name": "ClassRule.java", "group": 2},
+        {"name": "settings.xml", "group": 2},
+        {"name": "FailOnTimeout.java", "group": 2},
+        {"name": "BaseTestRunner.java", "group": 2},
+        {"name": "TestCase.java", "group": 2},
+        {"name": "TestCaseTest.java", "group": 2},
+        {"name": "ValidationTest.java", "group": 2},
+        {"name": "ParameterizedTestMethodTest.java", "group": 2},
+        {"name": "AnnotationTest.java", "group": 2},
+        {"name": "MoneyTest.java", "group": 2},
+        {"name": "SimpleTest.java", "group": 2},
+        {"name": "ListTest.java", "group": 2},
+        {"name": "Enclosed.java", "group": 2},
+        {"name": "InitializationError.java", "group": 2},
+        {"name": "ComparisonFailure.java", "group": 2},
+        {"name": "JUnit4TestAdapter.java", "group": 2},
+        {"name": "AssumptionViolatedExceptionTest.java", "group": 2},
+        {"name": "Assume.java", "group": 2},
+        {"name": "TestMethodInterfaceTest.java", "group": 2},
+        {"name": "WhenNoParametersMatch.java", "group": 2},
+        {"name": "FrameworkMethod.java", "group": 2},
+        {"name": "JUnit38ClassRunner.java", "group": 2},
+        {"name": "StatementInterceptor.java", "group": 2},
+        {"name": "ComparisonCriteria.java", "group": 2},
+        {"name": "ParentRunnerTest.java", "group": 2},
+        {"name": "FrameworkField.java", "group": 2},
+        {"name": "ReleaseNotes4.8.txt", "group": 2},
+        {"name": "CategoryFilter.java", "group": 2},
+        {"name": "ReleaseNotes4.9.html", "group": 2},
+        {"name": "ExpectedExceptionMatcher.java", "group": 2},
+        {"name": "CounterPanel.java", "group": 2},
+        {"name": "TextRunnerTest.java", "group": 2},
+        {"name": "TextFeedbackTest.java", "group": 2},
+        {"name": "to-do.txt", "group": 2},
+        {"name": "UserStopTest.java", "group": 2},
+        {"name": "RunWithTest.java", "group": 2},
+        {"name": "InitializationErrorForwardCompatibilityTest.java", "group": 2},
+        {"name": "ForwardCompatibilityTest.java", "group": 2},
+        {"name": "AllTestsTest.java", "group": 2},
+        {"name": "Sorter.java", "group": 2},
+        {"name": "TestIntrospector.java", "group": 2},
+        {"name": "OldTestClassRunner.java", "group": 2},
+        {"name": "ClassesRequest.java", "group": 2},
+        {"name": "IgnoredClassRunner.java", "group": 2},
+        {"name": "junit.ant", "group": 2},
+        {"name": "MethodRoadie.java", "group": 2},
+        {"name": "DataPointMethodTest.java", "group": 2},
+        {"name": "ResultMatchersTest.java", "group": 2},
+        {"name": "PrintableResultTest.java", "group": 2},
+        {"name": "EachTest.java", "group": 2},
+        {"name": "TestedOnSupplier.java", "group": 2},
+        {"name": "ResultMatchers.java", "group": 2},
+        {"name": "ParallelMethodTest.java", "group": 2},
+        {"name": "Filter.java", "group": 2},
+        {"name": "VerifierInterceptorTest.java", "group": 2},
+        {"name": "MethodRule.java", "group": 2},
+        {"name": "Category.java", "group": 2},
+        {"name": "building-junit.txt", "group": 2},
+        {"name": "ReleaseNotes4.9b1.html", "group": 2},
+        {"name": "PotentialAssignment.java", "group": 2}],
+    "links": [{"source": 0, "target": 29, "value": 58},
+        {"source": 1, "target": 30, "value": 55},
+        {"source": 1, "target": 31, "value": 45},
+        {"source": 0, "target": 32, "value": 43},
+        {"source": 0, "target": 33, "value": 39},
+        {"source": 1, "target": 34, "value": 38},
+        {"source": 2, "target": 29, "value": 37},
+        {"source": 0, "target": 35, "value": 35},
+        {"source": 0, "target": 30, "value": 34},
+        {"source": 1, "target": 29, "value": 33},
+        {"source": 1, "target": 36, "value": 32},
+        {"source": 0, "target": 37, "value": 31},
+        {"source": 1, "target": 38, "value": 30},
+        {"source": 3, "target": 39, "value": 28},
+        {"source": 0, "target": 40, "value": 28},
+        {"source": 4, "target": 41, "value": 27},
+        {"source": 1, "target": 42, "value": 25},
+        {"source": 0, "target": 34, "value": 24},
+        {"source": 0, "target": 43, "value": 24},
+        {"source": 1, "target": 44, "value": 24},
+        {"source": 1, "target": 45, "value": 23},
+        {"source": 2, "target": 32, "value": 22},
+        {"source": 0, "target": 46, "value": 22},
+        {"source": 1, "target": 46, "value": 22},
+        {"source": 5, "target": 47, "value": 21},
+        {"source": 2, "target": 39, "value": 20},
+        {"source": 0, "target": 48, "value": 20},
+        {"source": 0, "target": 49, "value": 20},
+        {"source": 1, "target": 50, "value": 20},
+        {"source": 6, "target": 44, "value": 20},
+        {"source": 2, "target": 51, "value": 19},
+        {"source": 0, "target": 52, "value": 19},
+        {"source": 1, "target": 53, "value": 19},
+        {"source": 1, "target": 37, "value": 18},
+        {"source": 1, "target": 54, "value": 18},
+        {"source": 1, "target": 55, "value": 18},
+        {"source": 1, "target": 56, "value": 18},
+        {"source": 0, "target": 57, "value": 17},
+        {"source": 0, "target": 58, "value": 17},
+        {"source": 1, "target": 59, "value": 16},
+        {"source": 7, "target": 60, "value": 16},
+        {"source": 0, "target": 61, "value": 15},
+        {"source": 0, "target": 62, "value": 15},
+        {"source": 1, "target": 51, "value": 15},
+        {"source": 1, "target": 63, "value": 15},
+        {"source": 0, "target": 64, "value": 14},
+        {"source": 0, "target": 65, "value": 14},
+        {"source": 2, "target": 66, "value": 14},
+        {"source": 0, "target": 67, "value": 14},
+        {"source": 2, "target": 33, "value": 14},
+        {"source": 1, "target": 68, "value": 14},
+        {"source": 1, "target": 66, "value": 14},
+        {"source": 1, "target": 69, "value": 14},
+        {"source": 1, "target": 70, "value": 14},
+        {"source": 0, "target": 71, "value": 13},
+        {"source": 0, "target": 51, "value": 13},
+        {"source": 0, "target": 72, "value": 13},
+        {"source": 0, "target": 73, "value": 13},
+        {"source": 0, "target": 74, "value": 13},
+        {"source": 1, "target": 75, "value": 13},
+        {"source": 1, "target": 76, "value": 13},
+        {"source": 0, "target": 77, "value": 12},
+        {"source": 0, "target": 78, "value": 12},
+        {"source": 2, "target": 35, "value": 12},
+        {"source": 2, "target": 79, "value": 12},
+        {"source": 0, "target": 80, "value": 12},
+        {"source": 0, "target": 38, "value": 12},
+        {"source": 2, "target": 50, "value": 12},
+        {"source": 1, "target": 81, "value": 12},
+        {"source": 1, "target": 43, "value": 12},
+        {"source": 1, "target": 82, "value": 12},
+        {"source": 0, "target": 83, "value": 11},
+        {"source": 0, "target": 66, "value": 11},
+        {"source": 0, "target": 84, "value": 11},
+        {"source": 0, "target": 85, "value": 11},
+        {"source": 0, "target": 86, "value": 11},
+        {"source": 0, "target": 87, "value": 11},
+        {"source": 0, "target": 88, "value": 11},
+        {"source": 1, "target": 89, "value": 11},
+        {"source": 1, "target": 71, "value": 11},
+        {"source": 1, "target": 90, "value": 11},
+        {"source": 1, "target": 91, "value": 11},
+        {"source": 8, "target": 74, "value": 11},
+        {"source": 2, "target": 34, "value": 10},
+        {"source": 0, "target": 92, "value": 10},
+        {"source": 0, "target": 93, "value": 10},
+        {"source": 0, "target": 94, "value": 10},
+        {"source": 0, "target": 95, "value": 10},
+        {"source": 2, "target": 37, "value": 10},
+        {"source": 0, "target": 96, "value": 10},
+        {"source": 1, "target": 97, "value": 10},
+        {"source": 1, "target": 98, "value": 10},
+        {"source": 4, "target": 99, "value": 10},
+        {"source": 9, "target": 41, "value": 10},
+        {"source": 3, "target": 100, "value": 9},
+        {"source": 3, "target": 51, "value": 9},
+        {"source": 3, "target": 30, "value": 9},
+        {"source": 3, "target": 57, "value": 9},
+        {"source": 2, "target": 83, "value": 9},
+        {"source": 0, "target": 101, "value": 9},
+        {"source": 0, "target": 102, "value": 9},
+        {"source": 0, "target": 103, "value": 9},
+        {"source": 0, "target": 104, "value": 9},
+        {"source": 0, "target": 105, "value": 9},
+        {"source": 0, "target": 106, "value": 9},
+        {"source": 0, "target": 107, "value": 9},
+        {"source": 0, "target": 108, "value": 9},
+        {"source": 0, "target": 109, "value": 9},
+        {"source": 2, "target": 46, "value": 9},
+        {"source": 2, "target": 36, "value": 9},
+        {"source": 1, "target": 110, "value": 9},
+        {"source": 1, "target": 111, "value": 9},
+        {"source": 1, "target": 112, "value": 9},
+        {"source": 1, "target": 113, "value": 9},
+        {"source": 1, "target": 114, "value": 9},
+        {"source": 10, "target": 38, "value": 9},
+        {"source": 4, "target": 115, "value": 9},
+        {"source": 4, "target": 116, "value": 9},
+        {"source": 2, "target": 117, "value": 8},
+        {"source": 2, "target": 118, "value": 8},
+        {"source": 2, "target": 119, "value": 8},
+        {"source": 0, "target": 120, "value": 8},
+        {"source": 0, "target": 121, "value": 8},
+        {"source": 0, "target": 122, "value": 8},
+        {"source": 0, "target": 123, "value": 8},
+        {"source": 0, "target": 124, "value": 8},
+        {"source": 0, "target": 125, "value": 8},
+        {"source": 0, "target": 126, "value": 8},
+        {"source": 0, "target": 127, "value": 8},
+        {"source": 0, "target": 128, "value": 8},
+        {"source": 0, "target": 129, "value": 8},
+        {"source": 2, "target": 61, "value": 8},
+        {"source": 0, "target": 44, "value": 8},
+        {"source": 2, "target": 112, "value": 8},
+        {"source": 2, "target": 78, "value": 8},
+        {"source": 0, "target": 130, "value": 8},
+        {"source": 0, "target": 131, "value": 8},
+        {"source": 0, "target": 132, "value": 8},
+        {"source": 0, "target": 133, "value": 8},
+        {"source": 2, "target": 49, "value": 8},
+        {"source": 2, "target": 40, "value": 8},
+        {"source": 0, "target": 134, "value": 8},
+        {"source": 1, "target": 135, "value": 8},
+        {"source": 1, "target": 136, "value": 8},
+        {"source": 1, "target": 137, "value": 8},
+        {"source": 1, "target": 138, "value": 8},
+        {"source": 1, "target": 139, "value": 8},
+        {"source": 1, "target": 140, "value": 8},
+        {"source": 11, "target": 38, "value": 8},
+        {"source": 12, "target": 141, "value": 8},
+        {"source": 1, "target": 142, "value": 8},
+        {"source": 13, "target": 143, "value": 8},
+        {"source": 14, "target": 53, "value": 8},
+        {"source": 3, "target": 144, "value": 7},
+        {"source": 3, "target": 34, "value": 7},
+        {"source": 2, "target": 145, "value": 7},
+        {"source": 15, "target": 47, "value": 7},
+        {"source": 2, "target": 146, "value": 7},
+        {"source": 0, "target": 147, "value": 7},
+        {"source": 0, "target": 148, "value": 7},
+        {"source": 0, "target": 149, "value": 7},
+        {"source": 0, "target": 150, "value": 7},
+        {"source": 0, "target": 151, "value": 7},
+        {"source": 0, "target": 152, "value": 7},
+        {"source": 0, "target": 153, "value": 7},
+        {"source": 0, "target": 79, "value": 7},
+        {"source": 0, "target": 154, "value": 7},
+        {"source": 0, "target": 155, "value": 7},
+        {"source": 0, "target": 156, "value": 7},
+        {"source": 0, "target": 157, "value": 7},
+        {"source": 0, "target": 158, "value": 7},
+        {"source": 0, "target": 159, "value": 7},
+        {"source": 0, "target": 160, "value": 7},
+        {"source": 0, "target": 161, "value": 7},
+        {"source": 0, "target": 162, "value": 7},
+        {"source": 0, "target": 163, "value": 7},
+        {"source": 0, "target": 164, "value": 7},
+        {"source": 0, "target": 165, "value": 7},
+        {"source": 2, "target": 43, "value": 7},
+        {"source": 2, "target": 38, "value": 7},
+        {"source": 2, "target": 48, "value": 7},
+        {"source": 1, "target": 166, "value": 7},
+        {"source": 1, "target": 167, "value": 7},
+        {"source": 1, "target": 35, "value": 7},
+        {"source": 1, "target": 168, "value": 7},
+        {"source": 1, "target": 169, "value": 7},
+        {"source": 1, "target": 170, "value": 7},
+        {"source": 1, "target": 171, "value": 7},
+        {"source": 10, "target": 46, "value": 7},
+        {"source": 1, "target": 172, "value": 7},
+        {"source": 6, "target": 35, "value": 7},
+        {"source": 13, "target": 53, "value": 7},
+        {"source": 13, "target": 55, "value": 7},
+        {"source": 16, "target": 29, "value": 7},
+        {"source": 8, "target": 173, "value": 7},
+        {"source": 8, "target": 80, "value": 7},
+        {"source": 2, "target": 108, "value": 4},
+        {"source": 2, "target": 144, "value": 2},
+        {"source": 0, "target": 145, "value": 2},
+        {"source": 0, "target": 119, "value": 2},
+        {"source": 0, "target": 146, "value": 2},
+        {"source": 0, "target": 47, "value": 2},
+        {"source": 2, "target": 156, "value": 2},
+        {"source": 2, "target": 74, "value": 2},
+        {"source": 17, "target": 68, "value": 2},
+        {"source": 18, "target": 44, "value": 2},
+        {"source": 19, "target": 44, "value": 2},
+        {"source": 20, "target": 51, "value": 1},
+        {"source": 3, "target": 146, "value": 1},
+        {"source": 2, "target": 47, "value": 1},
+        {"source": 2, "target": 77, "value": 1},
+        {"source": 21, "target": 83, "value": 1},
+        {"source": 2, "target": 122, "value": 1},
+        {"source": 2, "target": 65, "value": 1},
+        {"source": 2, "target": 104, "value": 1},
+        {"source": 21, "target": 105, "value": 1},
+        {"source": 2, "target": 105, "value": 1},
+        {"source": 2, "target": 107, "value": 1},
+        {"source": 2, "target": 62, "value": 1},
+        {"source": 0, "target": 50, "value": 1},
+        {"source": 10, "target": 44, "value": 1},
+        {"source": 22, "target": 50, "value": 1},
+        {"source": 22, "target": 45, "value": 1},
+        {"source": 23, "target": 51, "value": 1},
+        {"source": 22, "target": 34, "value": 1},
+        {"source": 11, "target": 34, "value": 1},
+        {"source": 19, "target": 34, "value": 1},
+        {"source": 11, "target": 30, "value": 1},
+        {"source": 19, "target": 30, "value": 1},
+        {"source": 24, "target": 30, "value": 1},
+        {"source": 25, "target": 35, "value": 1},
+        {"source": 22, "target": 54, "value": 1},
+        {"source": 22, "target": 42, "value": 1},
+        {"source": 10, "target": 113, "value": 1},
+        {"source": 10, "target": 114, "value": 1},
+        {"source": 26, "target": 38, "value": 1},
+        {"source": 27, "target": 44, "value": 1},
+        {"source": 28, "target": 44, "value": 1}]
+        /*data_placeholder*/
+};
+var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
+
+function createForcesGraphOn(elementId, graph) {
+    function QuickFind(size) {
+        this.size = size;
+        this.connections = new Array(size);
+        for (var i = 0; i < this.connections.length; i++) {
+            this.connections[i] = i;
+        }
+    }
+    QuickFind.prototype.connect =  function(p1, p2) {
+        var p1Root = this.rootOf(this.connections[p1]);
+        var p2Root = this.rootOf(this.connections[p2]);
+        for (var i = 0; i < this.connections.length; i++) {
+            if (this.connections[i] == p1Root) this.connections[i] = p2Root;
+        }
+    };
+    QuickFind.prototype.rootOf = function(p) { return this.connections[p] == p ? p : this.rootOf(this.connections[p]); };
+    QuickFind.prototype.areConnected = function(p1, p2) { return this.connections[p1] == this.connections[p2]; };
+    const quickFind = new QuickFind(graph.nodes.length);
+    graph.links.forEach(function (link) {
+        quickFind.connect(link.source, link.target);
+    });
+
+
+    var width = 960,
+        height = 500;
+
+    var color = d3.scale.category20();
+
+    var force = d3.layout.force()
+            .charge(-120)
+            .linkDistance(30)
+            .size([width, height]);
+
+    var rootElement = d3.select("#" + elementId);
+
+    var header = appendBlockElementTo(rootElement, width);
+    header.append("h2").text("Comitters changing same files graph (" + projectName + ")").style({"text-align": "center"});
+
+    var svg = rootElement.append("svg")
+            .attr("width", width).attr("height", height);
+    var svgPos = svg[0][0].getBoundingClientRect();
+
+    svg.append("rect")
+            .attr("width", width).attr("height", height)
+            .style({fill: "none", stroke: "#AAAAAA"});
+
+    force.nodes(graph.nodes)
+            .links(graph.links)
+            .start();
+
+    var link = svg.selectAll(".link")
+            .data(graph.links)
+            .enter().append("line")
+            .attr("class", "link")
+            .style("stroke-width", function (d) {
+                return Math.sqrt(d.value);
+            });
+
+    var tooltip = rootElement.append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+    var selectionList = rootElement.append("div")
+            .attr("class", "selectionList")
+            .style("position", "absolute")
+            .style("left", svgPos.left + 3 + "px")
+            .style("top", svgPos.top + 3 + "px")
+            .style("opacity", 0);
+
+    var handledByNode = false;
+    var node = svg.selectAll(".node")
+            .data(graph.nodes)
+            .enter().append("circle")
+            .attr("class", "node")
+            .attr("r", function(d){ return d.selected ? 7 : 5; })
+            .style("fill", function (d) { return color(d.group); })
+            .call(force.drag)
+            .on("mouseover", function(d) {
+                tooltip.html(d.name)
+                        .style("opacity", .9)
+                        .style("position", "absolute")
+                        .style("left", svgPos.left + parseInt(d.x + 18) + "px")
+                        .style("top", svgPos.top + parseInt(d.y - 12) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.style("opacity", .0);
+            })
+            .on("click", function (d) {
+                var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+                updateSelection(connectedNodes);
+
+                handledByNode = true;
+            });
+    svg.on("click", function () {
+        if (handledByNode) {
+            handledByNode = false;
+            return;
+        }
+        updateSelection([]);
+    });
+
+    node.append("title").text(function (d) { return d.name; });
+
+    force.on("tick", function () {
+        link.attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+        node.attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
+    });
+
+
+    function updateSelection(selectedNodes) {
+        graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
+        selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
+        node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+
+        selectionList
+                .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
+                .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+    }
+
+    function appendBlockElementTo(element, width) {
+        return element.append("span").style({float: "left", display: "block", width: width + "px"});
+    }
+}
+
+createForcesGraphOn("files-in-same-commit-graph", graph);
+
+</script>
+</body>
