@@ -42,23 +42,22 @@ if (false) return showProjectStatistics(project)
 if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
+def actionGroup = new DefaultActionGroup("Code History Mining", true).with{
+	add(new AnAction("Grab Project History") {
+		@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
+	})
+	add(new AnAction("Show Project Statistics") {
+		@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
+	})
+	add(new Separator())
+	addAll(filesWithCodeHistory().collect{ file -> createActionGroup(file, pathToTemplates) })
+	it
+}
+
+registerAction("CodeHistoryMiningMenu", "", "ToolsMenu", actionGroup)
 registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
-			"Code History Mining",
-			new DefaultActionGroup().with {
-				add(new AnAction("Grab Project History") {
-					@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
-				})
-				add(new AnAction("Show Project Statistics") {
-					@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
-				})
-				add(new Separator())
-				addAll(filesWithCodeHistory().collect{ file -> createActionGroup(file, pathToTemplates) })
-				it
-			},
-			actionEvent.dataContext,
-			JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
-			true
+			"Code History Mining", actionGroup, actionEvent.dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
 	).showCenteredInCurrentWindow(actionEvent.project)
 }
 
