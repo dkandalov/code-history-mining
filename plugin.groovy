@@ -80,14 +80,14 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating calendar view") {
-					showInBrowser("calendar_view.html", Analysis.&createJsonForCalendarView)
+					showInBrowser("calendar-view.html", Analysis.&createJsonForCalendarView)
 				}
 			}
 		})
 		add(new AnAction("Change Size History") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating change size history") {
-					showInBrowser("changes_size_chart.html", Analysis.&createJsonForBarChartView)
+					showInBrowser("changes-size-chart.html", Analysis.&createJsonForBarChartView)
 				}
 			}
 		})

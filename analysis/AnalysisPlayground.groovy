@@ -14,8 +14,8 @@ class AnalysisPlayground {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
-//		fillTemplate("calendar_view.html", projectName, Analysis.createJsonForCalendarView(events))
-//		fillTemplate("changes_size_chart.html", projectName, Analysis.createJsonForBarChartView(events))
+//		fillTemplate("calendar-view.html", projectName, Analysis.createJsonForCalendarView(events))
+//		fillTemplate("changes-size-chart.html", projectName, Analysis.createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
 		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
