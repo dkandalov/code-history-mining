@@ -254,7 +254,7 @@ class Analysis {
 				}
 				.sort{ -it.value }
 
-		def threshold = 1000
+		def threshold = 1000 // empirical number
 		if (wordOccurrences.size() > threshold)
 			wordOccurrences = wordOccurrences.take(threshold)
 
