@@ -241,8 +241,6 @@ function createForcesGraphOn(elementId, graph) {
         updateSelection([]);
     });
 
-    node.append("title").text(function (d) { return d.name; });
-
     force.on("tick", function () {
         link.attr("x1", function (d) { return d.source.x; })
                 .attr("y1", function (d) { return d.source.y; })
