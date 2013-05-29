@@ -16,7 +16,7 @@ class AnalysisPlayground {
 
 //		fillTemplate("calendar-view.html", projectName, Analysis.createJsonForCalendarView(events))
 //		fillTemplate("changes-size-chart.html", projectName, Analysis.createJsonForBarChartView(events))
-//		fillTemplate("cooccurrences-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
+//		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
 		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
