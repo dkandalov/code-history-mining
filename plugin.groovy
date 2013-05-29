@@ -22,6 +22,7 @@ import history.*
 import history.events.EventStorage
 import history.util.Measure
 import http.HttpUtil
+import org.jetbrains.annotations.Nullable
 import ui.DialogState
 
 import javax.swing.*
@@ -42,16 +43,17 @@ if (false) return showProjectStatistics(project)
 if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
-def actionGroup = new DefaultActionGroup("Code History Mining", true).with{
-	add(new AnAction("Grab Project History") {
-		@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
-	})
-	add(new AnAction("Show Project Statistics") {
-		@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
-	})
-	add(new Separator())
-	addAll(filesWithCodeHistory().collect{ file -> createActionGroup(file, pathToTemplates) })
-	it
+
+def actionGroup = new ActionGroup("Code History Mining", true) {
+	@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
+		def grabHistory = new AnAction("Grab Project History") {
+			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
+		}
+		def projectStats = new AnAction("Show Project Statistics") {
+			@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
+		}
+		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates) }
+	}
 }
 
 registerAction("CodeHistoryMiningMenu", "", "ToolsMenu", actionGroup)
@@ -208,7 +210,7 @@ def showProjectStatistics(Project project) {
 				tableModel.addRow([it.key, it.value].toArray())
 			}
 			tableModel.addRow(["Total", totalAmountOfFiles].toArray())
-			def table = new JBTable(tableModel).with {
+			def table = new JBTable(tableModel).with { // TODO make table content copyable
 				striped = true
 				showGrid = false
 				it
