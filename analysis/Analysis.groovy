@@ -237,21 +237,24 @@ class Analysis {
 	}
 
 	static String createJsonForCommitCommentWordCloud(events) {
-		def excludedWords = "as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
-				"which,that,this,them,they,we,an,the,is,be,are,it,so,not,no,and".split(",").toList().toSet()
-		def filter = { it.length() < 2 || excludedWords.contains(it) }
+		def excludedWords = "also,as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
+				"which,that,this,them,they,we,an,the,is,be,are,was,do,it,so,not,no,and".split(",").toList().toSet()
+		def notExcluded = { String s -> s.length() > 1 && !excludedWords.contains(s) }
 
 		Map wordOccurrences = events
 				.groupBy{ it.revision }.entrySet()
 				.collect{ it.value.first().commitMessage }
-				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !filter(it) }.collect{it.trim().toLowerCase()} }
+				.collectMany{
+					it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/)
+						.collect{it.trim().toLowerCase()}.findAll(notExcluded)
+				}
 				.inject([:].withDefault{0}) { wordFrequency, word ->
 					wordFrequency.put(word, wordFrequency[word] + 1)
 					wordFrequency
 				}
 				.sort{ -it.value }
 
-		def threshold = 1024
+		def threshold = 1000
 		if (wordOccurrences.size() > threshold)
 			wordOccurrences = wordOccurrences.take(threshold)
 
