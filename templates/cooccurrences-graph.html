@@ -18,7 +18,7 @@
     div.tooltip {
         position: absolute;
         text-align: center;
-        height: 15px;
+        height: auto;
         padding: 5px;
         font: 12px sans-serif;
         background: lightsteelblue;
@@ -26,7 +26,7 @@
         border-radius: 8px;
         pointer-events: none;
     }
-    div.selectionList {
+    div.selectedNodesLabel {
         position: absolute;
         text-align: left;
         height: auto;
@@ -157,8 +157,8 @@ function createForcesGraphOn(elementId, graph) {
     });
 
 
-    var width = 960,
-        height = 500;
+    var width = 1100,
+        height = 700;
 
     var color = d3.scale.category20();
 
@@ -195,12 +195,19 @@ function createForcesGraphOn(elementId, graph) {
     var tooltip = rootElement.append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
-    var selectionList = rootElement.append("div")
-            .attr("class", "selectionList")
+    var selectedNodesLabel = rootElement.append("div")
+            .attr("class", "selectedNodesLabel")
             .style("position", "absolute")
             .style("left", svgPos.left + 3 + "px")
             .style("top", svgPos.top + 3 + "px")
             .style("opacity", 0);
+    if (graph.nodes.length == 0)
+        rootElement.append("div")
+                .attr("class", "tooltip")
+                .html("Unfortunately, there is nothing to show.<br/>It looks like there are no files commited at the same time very often.")
+                .style("position", "absolute")
+                .style("top", function (){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; });
 
     var handledByNode = false;
     var node = svg.selectAll(".node")
@@ -251,7 +258,7 @@ function createForcesGraphOn(elementId, graph) {
         selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
         node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
 
-        selectionList
+        selectedNodesLabel
                 .html(selectedNodes.map(function (d) { return d.name; }).sort().join("<br/>"))
                 .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
     }
