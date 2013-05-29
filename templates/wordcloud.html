@@ -209,7 +209,7 @@
         var header = appendBlockElementTo(rootElement, width);
         header.append("h2").text("Commit messages word cloud (" + projectName + ")")
                 .style("text-align", "center")
-                .style("margin-bottom", "30px");
+                .style("margin", "30px");
 
         adjustSizeOfShortWords(data.words);
         normalizeWordSize(data.words);
@@ -281,7 +281,7 @@
 
         function appendBlockElementTo(element, width) {
             return element.append("span")
-                    .style("float", "left").style("display", "block").style("width", width + "px");
+                    .style("display", "block").style("width", width + "px");
         }
     }
 </script>
