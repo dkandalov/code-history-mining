@@ -159,6 +159,16 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
+	static String createJson_CommitDayAndTime_PunchCard(List<FileChangeEvent> events) {
+		def amountOfCommitsByHour = events
+				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate)]}
+				.collectEntries{[it.key, it.value.size()]}
+				.sort{a, b -> (a.key[0] * 100 + a.key[1]) <=> (b.key[0] * 100 + b.key[1]) }
+		println(amountOfCommitsByHour.entrySet().join("\n"))
+
+		""
+	}
+
 	static class TreeMapView {
 		static String createJsonForChangeSizeTreeMap(events) {
 			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
@@ -326,6 +336,14 @@ ${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value +
 			date[Calendar.MINUTE] = 0
 			date[Calendar.HOUR_OF_DAY] = 0
 			date
+		}
+
+		static int dayOfWeekOf(Date date) {
+			date.getAt(Calendar.DAY_OF_WEEK)
+		}
+
+		static int hourOf(Date date) {
+			date.getAt(Calendar.HOUR_OF_DAY)
 		}
 
 		static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
