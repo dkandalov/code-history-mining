@@ -237,17 +237,26 @@ class Analysis {
 	}
 
 	static String createJsonForCommitCommentWordCloud(events) {
-		Map wordOccurrences = events.groupBy{ it.revision }.entrySet()
-				.collect{ it.value.first().commitMessage }.toList()
-				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !it.empty }.collect{it.toLowerCase()} }
+		def excludedWords = "as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
+				"which,that,this,them,they,we,an,the,is,be,are,it,so,not,no,and".split(",").toList().toSet()
+		def filter = { it.length() < 2 || excludedWords.contains(it) }
+
+		Map wordOccurrences = events
+				.groupBy{ it.revision }.entrySet()
+				.collect{ it.value.first().commitMessage }
+				.collectMany{ it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/).findAll{ !filter(it) }.collect{it.trim().toLowerCase()} }
 				.inject([:].withDefault{0}) { wordFrequency, word ->
-			wordFrequency.put(word, wordFrequency[word] + 1)
-			wordFrequency
-		}
-		def mostFrequentWords = wordOccurrences.entrySet().sort{ -it.value }.take(600)
+					wordFrequency.put(word, wordFrequency[word] + 1)
+					wordFrequency
+				}
+				.sort{ -it.value }
+
+		def threshold = 1024
+		if (wordOccurrences.size() > threshold)
+			wordOccurrences = wordOccurrences.take(threshold)
 
 		"""{"words": [
-${mostFrequentWords.collect { '{"text": "' + it.key + '", "size": ' + it.value + '}' }.join(",\n")}
+${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '}' }.join(",\n")}
 ]}
 """
 	}

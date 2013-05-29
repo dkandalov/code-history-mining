@@ -2,6 +2,7 @@ package analysis
 import history.events.EventStorage
 
 import static http.HttpUtil.fillDataPlaceholder
+import static http.HttpUtil.fillProjectNamePlaceholder
 import static http.HttpUtil.inlineJSLibraries
 import static java.lang.System.getenv
 
@@ -16,7 +17,7 @@ class AnalysisPlayground {
 //		fillTemplate("calendar_view.html", projectName, Analysis.createJsonForCalendarView(events))
 //		fillTemplate("changes_size_chart.html", projectName, Analysis.createJsonForBarChartView(events))
 //		fillTemplate("cooccurrences-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
-//		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
+		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
 //		Analysis.createJson_AmountOfComitters_Chart(events)
@@ -24,7 +25,7 @@ class AnalysisPlayground {
 //		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 //		fillTemplate("author-to-file-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
-				Analysis.createJson_CommitTime_PunchCard(events)
+//				Analysis.createJson_CommitDayAndTime_PunchCard(events)
 
 	}
 
@@ -32,6 +33,7 @@ class AnalysisPlayground {
 		def templateText = new File("templates/${template}").readLines().join("\n")
 		def text = inlineJSLibraries(templateText) { fileName -> new File("templates/$fileName").readLines().join("\n") }
 		text = fillDataPlaceholder(text, jsValue)
+		text = fillProjectNamePlaceholder(text, "\"$projectName\"")
 		new File("templates/${projectName}_${template}").write(text)
 	}
 
