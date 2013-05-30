@@ -181,8 +181,6 @@ function createForcesGraphOn(elementId, graph) {
             .links(graph.links)
             .start();
 
-    var quickFind = connectNodesIn(graph);
-
     var link = svg.selectAll(".link")
             .data(graph.links)
             .enter().append("line")
@@ -243,9 +241,12 @@ function createForcesGraphOn(elementId, graph) {
                     svg.selectAll(".link").data(graph.links).exit().remove();
                     force.nodes(graph.nodes).links(graph.links).start();
 
-                    quickFind = connectNodesIn(graph);
-
                 } else {
+                    var quickFind = new QuickFind(graph.nodes.length);
+                    graph.links.forEach(function (link) {
+                        // "index" property is added by d3js force layout
+                        quickFind.connect(link.source.index, link.target.index);
+                    });
                     var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
                     updateSelection(connectedNodes, showLongFileNames);
                 }
@@ -295,14 +296,6 @@ function createForcesGraphOn(elementId, graph) {
         return element.append("span").style({display: "block", width: width + "px"});
     }
 
-    function connectNodesIn(graph) {
-        var quickFind = new QuickFind(graph.nodes.length);
-        graph.links.forEach(function (link) {
-            // "index" property is added by d3js force layout
-            quickFind.connect(link.source.index, link.target.index);
-        });
-        return quickFind;
-    }
 }
 
 createForcesGraphOn("files-in-same-commit-graph", graph);
