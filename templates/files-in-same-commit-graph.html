@@ -151,10 +151,6 @@ function createForcesGraphOn(elementId, graph) {
     };
     QuickFind.prototype.rootOf = function(p) { return this.connections[p] == p ? p : this.rootOf(this.connections[p]); };
     QuickFind.prototype.areConnected = function(p1, p2) { return this.connections[p1] == this.connections[p2]; };
-    const quickFind = new QuickFind(graph.nodes.length);
-    graph.links.forEach(function (link) {
-        quickFind.connect(link.source, link.target);
-    });
 
 
     var width = 1100,
@@ -184,6 +180,8 @@ function createForcesGraphOn(elementId, graph) {
     force.nodes(graph.nodes)
             .links(graph.links)
             .start();
+
+    var quickFind = connectNodesIn(graph);
 
     var link = svg.selectAll(".link")
             .data(graph.links)
@@ -229,8 +227,28 @@ function createForcesGraphOn(elementId, graph) {
                 tooltip.style("opacity", .0);
             })
             .on("click", function (d) {
-                var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
-                updateSelection(connectedNodes, showLongFileNames);
+                var shouldRemoveNode = d3.event.altKey;
+                if (shouldRemoveNode) {
+                    updateSelection([], showLongFileNames);
+
+                    var i = graph.nodes.indexOf(d);
+                    graph.nodes = graph.nodes.filter(function(node) { return node != d; });
+                    graph.links = graph.links.filter(function(link) { return link.source != d && link.target != d; });
+                    graph.links.forEach(function(link) {
+                        if (link.source.index >= i) link.source.index -= 1;
+                        if (link.target.index >= i) link.target.index -= 1;
+                    });
+
+                    svg.selectAll(".node").data(graph.nodes).exit().remove();
+                    svg.selectAll(".link").data(graph.links).exit().remove();
+                    force.nodes(graph.nodes).links(graph.links).start();
+
+                    quickFind = connectNodesIn(graph);
+
+                } else {
+                    var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, d.index); });
+                    updateSelection(connectedNodes, showLongFileNames);
+                }
 
                 handledByNode = true;
             });
@@ -275,6 +293,15 @@ function createForcesGraphOn(elementId, graph) {
 
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
+    }
+
+    function connectNodesIn(graph) {
+        var quickFind = new QuickFind(graph.nodes.length);
+        graph.links.forEach(function (link) {
+            // "index" property is added by d3js force layout
+            quickFind.connect(link.source.index, link.target.index);
+        });
+        return quickFind;
     }
 }
 
