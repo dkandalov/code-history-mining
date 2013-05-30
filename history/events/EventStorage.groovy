@@ -56,7 +56,7 @@ class EventStorage {
 		changeEvents.collect{toCsv(it)}.join("\n") + "\n"
 	}
 
-	private static String toCsv(FileChangeEvent changeEvent) {
+	private static String toCsv(FileChangeEvent changeEvent) { // TODO use proper csv (e.g. files can have commas in name)
 		changeEvent.with {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
 			[format(revisionDate), revision, author, fileName, fileChangeType, packageBefore, packageAfter,
