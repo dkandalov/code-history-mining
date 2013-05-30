@@ -31,9 +31,6 @@ class Dialog {
 		JPanel rootPanel = new JPanel().with{
 			layout = new GridBagLayout()
 			GridBag bag = new GridBag()
-					.setDefaultAnchor(0, EAST)
-					.setDefaultAnchor(1, WEST)
-					.setDefaultWeightX(1, 1)
 					.setDefaultFill(HORIZONTAL)
 			bag.defaultInsets = new Insets(5, 5, 5, 5)
 
@@ -41,6 +38,7 @@ class Dialog {
 			add(fromDatePicker, bag.next())
 			add(new JLabel("To:"), bag.next())
 			add(toDatePicker, bag.next())
+			add(new JLabel(), bag.next().fillCellHorizontally())
 			add(new JLabel("VCS Request batch size:"), bag.nextLine().next())
 			add(vcsRequestSizeField, bag.next())
 			add(new JLabel("day(s)"), bag.next().coverLine())
@@ -61,18 +59,10 @@ class Dialog {
 			}
 			filePathTextField.addActionListener(actionListener)
 			filePathTextField.text = state.outputFilePath
-			add(filePathTextField, bag.next().coverLine())
+			add(filePathTextField, bag.next().coverLine().weightx(1).fillCellHorizontally())
 
-
-			def text = "(Note that grabbing history might significantly slow down UI and/or take a really long time for a big project)"
-			def textArea = new JTextArea(text).with {
-				lineWrap = true
-				wrapStyleWord = true
-				editable = false
-				it
-			}
-			textArea.background = background
-			add(textArea, bag.nextLine().coverLine())
+			def text = new JLabel("(Note that grabbing history for big project might significantly slow down IDE and/or take a really long time.)")
+			add(text, bag.nextLine().coverLine())
 			it
 		}
 
