@@ -264,12 +264,14 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String createJson_FilesInTheSameCommit_Graph(events, threshold = 7) {
+	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, threshold = 7) {
+		Collection.mixin(Util)
+
 		def fileNamesByRevision = events
 				.groupBy{ it.revision }
-				.values()*.collect{ it.fileName }*.toList()*.unique()
+				.values()*.collect{ fullFileNameOf(it) }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesByRevision
-				.inject([:].withDefault{0}) { map, fileNames -> pairs(fileNames).each{ map[it.sort()] += 1 }; map }
+				.inject([:].withDefault{0}) { map, fileNames -> fileNames.pairs().each{ map[it.sort()] += 1 }; map }
 				.findAll{ it.value > threshold }.sort{-it.value}
 
 		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
@@ -343,6 +345,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 					.collect{it.join(",")}
 					.join(jsNewLine)
 			"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
+		}
+
+		static String fullFileNameOf(FileChangeEvent event) {
+			def nonEmptyPackage = (!event.packageBefore.empty ? event.packageBefore : event.packageAfter)
+			nonEmptyPackage + "/" + event.fileName
 		}
 
 		static Date floorToDay(Date date) {
