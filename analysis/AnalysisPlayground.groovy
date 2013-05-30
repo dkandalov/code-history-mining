@@ -9,15 +9,15 @@ import static java.lang.System.getenv
 class AnalysisPlayground {
 	static void main(String[] args) {
 //		def projectName = "delta-flora-for-intellij"
-		def projectName = "junit"
-//		def projectName = "fitnesse"
+//		def projectName = "junit"
+		def projectName = "fitnesse"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
 //		fillTemplate("calendar-view.html", projectName, Analysis.createJsonForCalendarView(events))
 //		fillTemplate("changes-size-chart.html", projectName, Analysis.createJsonForBarChartView(events))
-//		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJsonForCooccurrencesGraph(events))
-		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
+		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJson_FilesInTheSameCommit_Graph(events))
+//		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
 //		Analysis.createJson_AmountOfComitters_Chart(events)

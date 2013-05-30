@@ -264,10 +264,13 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String createJsonForCooccurrencesGraph(events, threshold = 7) {
-		def fileNamesInRevision = events.groupBy{ it.revision }.values()*.collect{ it.fileName }*.toList()*.unique()
-		def pairCoOccurrences = fileNamesInRevision.inject([:].withDefault{0}) { acc, files -> pairs(files).each{ acc[it.sort()] += 1 }; acc }
-															.findAll{ it.value > threshold }.sort{-it.value}
+	static String createJson_FilesInTheSameCommit_Graph(events, threshold = 7) {
+		def fileNamesByRevision = events
+				.groupBy{ it.revision }
+				.values()*.collect{ it.fileName }*.toList()*.unique()
+		def pairCoOccurrences = fileNamesByRevision
+				.inject([:].withDefault{0}) { map, fileNames -> pairs(fileNames).each{ map[it.sort()] += 1 }; map }
+				.findAll{ it.value > threshold }.sort{-it.value}
 
 		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
 		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }

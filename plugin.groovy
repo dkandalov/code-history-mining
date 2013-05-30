@@ -94,7 +94,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		add(new AnAction("Files In The Same Commit Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Files in the same commit graph") {
-					showInBrowser("files-in-same-commit-graph.html", Analysis.&createJsonForCooccurrencesGraph)
+					showInBrowser("files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph)
 				}
 			}
 		})
