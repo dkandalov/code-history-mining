@@ -271,11 +271,54 @@ function createForcesGraphOn(elementId, graph) {
                 .attr("cy", function (d) { return d.y; });
     });
 
+
     var footerSpan = appendBlockElementTo(rootElement, width);
     var span = footerSpan.append("span").style({float: "right"});
     span.append("label").html("Show long file names:");
     span.append("input").attr("type", "checkbox")
         .on("click", function() { showLongFileNames = !showLongFileNames; });
+    span.append("span").style({width: "20px", display: "inline-block"});
+
+    span.append("label").html("Min cluster size: ");
+    var dropDown = span.append("select");
+    for (var i = 2; i < 11; i++) {
+        dropDown.append("option").attr("value", i).html(i);
+    }
+    dropDown.on("change", function() {
+        var quickFind = new QuickFind(graph.nodes.length);
+        graph.links.forEach(function (link) {
+            // "index" property is added by d3js force layout
+            quickFind.connect(link.source.index, link.target.index);
+        });
+
+        var threshold = +this.value;
+        var exploredNodes = [];
+        var nodesToRemove = [];
+        graph.nodes.forEach(function (node) {
+            if (exploredNodes.indexOf(node) >= 0) return;
+
+            var connectedNodes = graph.nodes.filter(function(eachNode) { return quickFind.areConnected(eachNode.index, node.index); });
+            if (connectedNodes.length < threshold) {
+                nodesToRemove = nodesToRemove.concat(connectedNodes);
+            }
+            exploredNodes = exploredNodes.concat(connectedNodes);
+        });
+
+        nodesToRemove.forEach(function (d) {
+            var i = graph.nodes.indexOf(d);
+            graph.nodes = graph.nodes.filter(function(node) { return node != d; });
+            graph.links = graph.links.filter(function(link) { return link.source != d && link.target != d; });
+            graph.links.forEach(function(link) {
+                if (link.source.index >= i) link.source.index -= 1;
+                if (link.target.index >= i) link.target.index -= 1;
+            });
+        });
+
+        svg.selectAll(".node").data(graph.nodes).exit().remove();
+        svg.selectAll(".link").data(graph.links).exit().remove();
+        force.nodes(graph.nodes).links(graph.links).start();
+    });
+
 
 
     function updateSelection(selectedNodes, showLongFileNames) {
