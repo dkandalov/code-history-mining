@@ -11,6 +11,7 @@ class AnalysisPlayground {
 //		def projectName = "delta-flora-for-intellij"
 //		def projectName = "junit"
 		def projectName = "fitnesse"
+		//def projectName = "scala"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 

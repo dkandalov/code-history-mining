@@ -228,6 +228,7 @@ function createForcesGraphOn(elementId, graph) {
                 var shouldRemoveNode = d3.event.altKey;
                 if (shouldRemoveNode) {
                     updateSelection([], showLongFileNames);
+                    tooltip.style("opacity", .0);
 
                     var i = graph.nodes.indexOf(d);
                     graph.nodes = graph.nodes.filter(function(node) { return node != d; });
