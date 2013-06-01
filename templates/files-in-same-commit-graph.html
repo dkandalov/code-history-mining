@@ -205,7 +205,7 @@ function createForcesGraphOn(elementId, graph) {
         return graph.nodes.filter(function(eachNode) {
             return quickFind.areConnected(eachNode.index, node.index);
         });
-    }
+    };
 
     var width = 1100,
         height = 700;
@@ -332,20 +332,7 @@ function createForcesGraphOn(elementId, graph) {
 
         graphEditor.undoAll();
 
-        var threshold = +this.value;
-        var exploredNodes = [];
-        var nodesToRemove = [];
-        graph.nodes.forEach(function (node) {
-            if (exploredNodes.indexOf(node) >= 0) return;
-
-            var connectedNodes = graphEditor.nodesConnectedTo(node);
-            if (connectedNodes.length < threshold) {
-                nodesToRemove = nodesToRemove.concat(connectedNodes);
-            }
-            exploredNodes = exploredNodes.concat(connectedNodes);
-        });
-
-        nodesToRemove.forEach(function(node) { graphEditor.remove(node); });
+        nodesInClustersSmallerThan(+this.value).forEach(function(node) { graphEditor.remove(node); });
 
         svg.selectAll(".link")
                 .data(graph.links)
@@ -367,6 +354,20 @@ function createForcesGraphOn(elementId, graph) {
     });
 
 
+    function nodesInClustersSmallerThan(maxClusterSize) {
+        var visitedNodes = [];
+        var nodes = [];
+        graph.nodes.forEach(function (node) {
+            if (visitedNodes.indexOf(node) >= 0) return;
+
+            var connectedNodes = graphEditor.nodesConnectedTo(node);
+            if (connectedNodes.length < maxClusterSize) {
+                nodes = nodes.concat(connectedNodes);
+            }
+            visitedNodes = visitedNodes.concat(connectedNodes);
+        });
+        return nodes;
+    }
 
     function updateSelection(selectedNodes, showLongFileNames) {
         graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
