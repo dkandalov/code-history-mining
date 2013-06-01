@@ -151,7 +151,7 @@ function createForcesGraphOn(elementId, graph) {
     };
     QuickFind.prototype.rootOf = function(p) { return this.connections[p] == p ? p : this.rootOf(this.connections[p]); };
     QuickFind.prototype.areConnected = function(p1, p2) { return this.connections[p1] == this.connections[p2]; };
-    function createQuickFind(graph) {
+    function createQuickFindIndex(graph) {
         var quickFind = new QuickFind(graph.nodes.length);
         graph.links.forEach(function (link) {
             // "index" property is added by d3js force layout
@@ -163,8 +163,14 @@ function createForcesGraphOn(elementId, graph) {
     function GraphEditor(graph) {
         this.graph = graph;
         this.actions = [];
-        this.quickFind = createQuickFind(graph);
+        this.quickFind = createQuickFindIndex(graph);
     }
+    GraphEditor.prototype.removeAll = function(nodes) {
+        for (var i = 0; i < nodes.length; i++) {
+            this.remove(nodes[i]);
+        }
+        this.quickFind = createQuickFindIndex(graph);
+    };
     GraphEditor.prototype.remove = function(node) {
         var nodeIndex = this.graph.nodes.indexOf(node);
         var linksToRemove = this.graph.links.filter(function(link) { return link.source == node || link.target == node; });
@@ -181,8 +187,6 @@ function createForcesGraphOn(elementId, graph) {
             if (link.source.index >= nodeIndex) link.source.index -= 1;
             if (link.target.index >= nodeIndex) link.target.index -= 1;
         });
-
-        this.quickFind = createQuickFind(graph);
     };
     GraphEditor.prototype.undoAll = function () {
         while (this.actions.length > 0) {
@@ -192,13 +196,13 @@ function createForcesGraphOn(elementId, graph) {
             action.node.index = this.graph.nodes.length - 1;
 
             var graphNodes = this.graph.nodes;
-            this.graph.links = this.graph.links.concat(action.links.map(function(it) { return it.link; }))
+            this.graph.links = this.graph.links.concat(action.links.map(function(it) { return it.link; }));
             action.links.forEach(function (entry) {
                 if (entry.link.source.index == action.nodeIndex) entry.link.source.index = graphNodes.length - 1;
                 if (entry.link.target.index == action.nodeIndex) entry.link.target.index = graphNodes.length - 1;
             });
         }
-        this.quickFind = createQuickFind(graph);
+        this.quickFind = createQuickFindIndex(graph);
     };
     GraphEditor.prototype.nodesConnectedTo = function(node) {
         var quickFind = this.quickFind;
@@ -280,7 +284,7 @@ function createForcesGraphOn(elementId, graph) {
                     updateSelection([], showLongFileNames);
                     tooltip.style("opacity", .0);
 
-                    graphEditor.remove(node);
+                    graphEditor.removeAll([node]);
 
                     svg.selectAll(".node").data(graph.nodes).exit().remove();
                     svg.selectAll(".link").data(graph.links).exit().remove();
@@ -330,9 +334,7 @@ function createForcesGraphOn(elementId, graph) {
 
         graphEditor.undoAll();
 
-        nodesInClustersSmallerThan(+this.value).forEach(function(node) {
-            graphEditor.remove(node);
-        });
+        graphEditor.removeAll(nodesInClustersSmallerThan(+this.value));
 
         linkElements = updateLinks(svg, graph);
 
