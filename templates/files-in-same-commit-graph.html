@@ -208,11 +208,7 @@ function createForcesGraphOn(elementId, graph) {
     var color = d3.scale.category20();
     var showLongFileNames = false;
     var gravity = -120;
-
-    var force = d3.layout.force()
-            .charge(gravity)
-            .linkDistance(30)
-            .size([width, height]);
+    var force = createForce(gravity);
 
     var rootElement = d3.select("#" + elementId);
 
@@ -288,16 +284,17 @@ function createForcesGraphOn(elementId, graph) {
         updateSelection([], showLongFileNames);
     });
 
-    force.on("tick", function () {
+    var onForceTick = function () {
         linkElements
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+                .attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
         nodeElements
-            .attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-    });
+                .attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+    };
+    force.on("tick", onForceTick);
 
 
     var footerSpan = appendBlockElementTo(rootElement, width);
@@ -312,25 +309,14 @@ function createForcesGraphOn(elementId, graph) {
     gravityDropDown.append("option").attr("value", "high").html("High");
     gravityDropDown.append("option").attr("value", "medium").attr("selected", "true").html("Medium");
     gravityDropDown.append("option").attr("value", "low").html("Low");
+
     gravityDropDown.on("change", function () {
         if (this.value == "high") gravity = -50;
         else if (this.value == "medium") gravity = -120;
         else if (this.value == "low") gravity = -320;
 
-        force = d3.layout.force()
-                .charge(gravity)
-                .linkDistance(30)
-                .size([width, height]);
-        force.on("tick", function () {
-            linkElements
-                    .attr("x1", function (d) { return d.source.x; })
-                    .attr("y1", function (d) { return d.source.y; })
-                    .attr("x2", function (d) { return d.target.x; })
-                    .attr("y2", function (d) { return d.target.y; });
-            nodeElements
-                    .attr("cx", function (d) { return d.x; })
-                    .attr("cy", function (d) { return d.y; });
-        });
+        force = createForce(gravity);
+        force.on("tick", onForceTick);
         force.nodes(graph.nodes).links(graph.links).start();
         svg.selectAll(".node").call(force.drag);
     });
@@ -353,6 +339,10 @@ function createForcesGraphOn(elementId, graph) {
         force.nodes(graph.nodes).links(graph.links).start();
     });
 
+
+    function createForce(gravity) {
+        return d3.layout.force().charge(gravity).linkDistance(30).size([width, height]);
+    }
 
     function updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode) {
         svg.selectAll(".node")
