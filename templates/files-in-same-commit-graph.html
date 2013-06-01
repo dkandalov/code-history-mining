@@ -237,7 +237,7 @@ function createForcesGraphOn(elementId, graph) {
 
     var graphEditor = new GraphEditor(graph);
 
-    var link = svg.selectAll(".link")
+    var linkElements = svg.selectAll(".link")
             .data(graph.links)
             .enter().append("line")
             .attr("class", "link")
@@ -261,7 +261,7 @@ function createForcesGraphOn(elementId, graph) {
                 .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; });
 
     var handledByNode = false;
-    var node = svg.selectAll(".node")
+    var nodeElements = svg.selectAll(".node")
             .data(graph.nodes)
             .enter().append("circle")
             .attr("class", "node")
@@ -305,11 +305,13 @@ function createForcesGraphOn(elementId, graph) {
     });
 
     force.on("tick", function () {
-        link.attr("x1", function (d) { return d.source.x; })
+        linkElements
+            .attr("x1", function (d) { return d.source.x; })
             .attr("y1", function (d) { return d.source.y; })
             .attr("x2", function (d) { return d.target.x; })
             .attr("y2", function (d) { return d.target.y; });
-        node.attr("cx", function (d) { return d.x; })
+        nodeElements
+            .attr("cx", function (d) { return d.x; })
             .attr("cy", function (d) { return d.y; });
     });
 
@@ -332,7 +334,9 @@ function createForcesGraphOn(elementId, graph) {
 
         graphEditor.undoAll();
 
-        nodesInClustersSmallerThan(+this.value).forEach(function(node) { graphEditor.remove(node); });
+        nodesInClustersSmallerThan(+this.value).forEach(function(node) {
+            graphEditor.remove(node);
+        });
 
         svg.selectAll(".link")
                 .data(graph.links)
@@ -340,7 +344,7 @@ function createForcesGraphOn(elementId, graph) {
                 .attr("class", "link")
                 .style("stroke-width", function (d) { return Math.sqrt(d.value); });
         svg.selectAll(".link").data(graph.links).exit().remove();
-        link = svg.selectAll(".link");
+        linkElements = svg.selectAll(".link");
 
         svg.selectAll(".node").data(graph.nodes).enter().append("circle")
                 .attr("class", "node")
@@ -348,7 +352,7 @@ function createForcesGraphOn(elementId, graph) {
                 .style("fill", function (d) { return color(d.group); })
                 .call(force.drag);
         svg.selectAll(".node").data(graph.nodes).exit().remove();
-        node = svg.selectAll(".node");
+        nodeElements = svg.selectAll(".node");
 
         force.nodes(graph.nodes).links(graph.links).start();
     });
@@ -372,7 +376,7 @@ function createForcesGraphOn(elementId, graph) {
     function updateSelection(selectedNodes, showLongFileNames) {
         graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
         selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
-        node.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+        nodeElements.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
 
         selectedNodesLabel
                 .html(selectedNodes.map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
