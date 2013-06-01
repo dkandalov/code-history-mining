@@ -317,7 +317,7 @@ function createForcesGraphOn(elementId, graph) {
 
     var footerSpan = appendBlockElementTo(rootElement, width);
     var span = footerSpan.append("span").style({float: "right"});
-    span.append("label").html("Show long file names:");
+    span.append("label").html("Show file path:");
     span.append("input").attr("type", "checkbox")
         .on("click", function() { showLongFileNames = !showLongFileNames; });
     span.call(addDelimiter);
@@ -360,6 +360,12 @@ function createForcesGraphOn(elementId, graph) {
         minLinkStrength = +this.value;
         filterNodes();
     });
+
+
+    var subFooterSpan = appendBlockElementTo(rootElement, width);
+    subFooterSpan.append("span").style({float: "left"})
+        .append("div").style("color", "#999")
+        .html("alt+click or alt+shift+click to remove node or group of nodes");
 
 
     function createForce(gravity) {
