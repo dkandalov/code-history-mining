@@ -115,8 +115,8 @@ const graph = {
         {"source": 18, "target": 27, "value": 3},
         {"source": 24, "target": 32, "value": 3},
         {"source": 17, "target": 32, "value": 3},
-        {"source": 4, "target": 17, "value": 13},
-        {"source": 4, "target": 35, "value": 23},
+        {"source": 4, "target": 17, "value": 43},
+        {"source": 4, "target": 35, "value": 53},
         {"source": 19, "target": 35, "value": 3},
         {"source": 19, "target": 46, "value": 3},
         {"source": 12, "target": 46, "value": 3},
@@ -355,26 +355,31 @@ function createForcesGraphOn(elementId, graph) {
 
     function updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode) {
         svg.selectAll(".node")
-                .data(graph.nodes)
+                .data(graph.nodes, byNodeName)
                 .enter().append("circle")
                 .attr("class", "node")
+                .html("aaa")
                 .attr("r", function(d){ return d.selected ? 7 : 5; })
                 .style("fill", function (d) { return color(d.group); })
                 .call(force.drag)
                 .on("mouseover", onMouseOverNode)
                 .on("mouseout", onMouseOutOfNode)
                 .on("click", whenClickedOnNode);
-        svg.selectAll(".node").data(graph.nodes).exit().remove();
+        svg.selectAll(".node")
+                .data(graph.nodes, byNodeName)
+                .exit().remove();
         return svg.selectAll(".node");
     }
 
     function updateLinks(svg, graph) {
         svg.selectAll(".link")
-                .data(graph.links)
+                .data(graph.links, byLinkState)
                 .enter().append("line")
                 .attr("class", "link")
                 .style("stroke-width", function (d) { return Math.sqrt(d.value); });
-        svg.selectAll(".link").data(graph.links).exit().remove();
+        svg.selectAll(".link")
+                .data(graph.links, byLinkState)
+                .exit().remove();
         return svg.selectAll(".link");
     }
 
@@ -396,7 +401,7 @@ function createForcesGraphOn(elementId, graph) {
     function updateSelection(selectedNodes, showLongFileNames) {
         graph.nodes.forEach(function (eachNode) { eachNode.selected = false; });
         selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
-        nodeElements.data(graph.nodes).attr("r", function(d){ return d.selected ? 7 : 5; });
+        nodeElements.data(graph.nodes, byNodeName).attr("r", function(d){ return d.selected ? 7 : 5; });
 
         selectedNodesLabel
                 .html(selectedNodes.map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
@@ -412,6 +417,8 @@ function createForcesGraphOn(elementId, graph) {
         return element.append("span").style({display: "block", width: width + "px"});
     }
 
+    function byNodeName(node) { return node.name; }
+    function byLinkState(link) { return "" + link.source.index + "-" + link.target.index; }
 }
 
 createForcesGraphOn("files-in-same-commit-graph", graph);
