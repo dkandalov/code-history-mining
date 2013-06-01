@@ -221,6 +221,8 @@ function createForcesGraphOn(elementId, graph) {
     header.append("h2").text("Files in the same commit (" + projectName + ")").style({"text-align": "center"});
 
     var svg = rootElement.append("svg").attr("width", width).attr("height", height);
+    var svgLinks = svg.append("g");
+    var svgNodes = svg.append("g");
     var svgPos = svg[0][0].getBoundingClientRect();
 
     svg.append("rect")
@@ -267,8 +269,8 @@ function createForcesGraphOn(elementId, graph) {
 
             graphEditor.deleteNodes([node]);
 
-            linkElements = updateLinks(svg, graph);
-            nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+            linkElements = updateLinks(svgLinks, graph);
+            nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
             force.nodes(graph.nodes).links(graph.links).start();
 
         } else {
@@ -277,8 +279,8 @@ function createForcesGraphOn(elementId, graph) {
 
         handledByNode = true;
     };
-    var linkElements = updateLinks(svg, graph);
-    var nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+    var linkElements = updateLinks(svgLinks, graph);
+    var nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
 
 
     svg.on("click", function () {
@@ -391,8 +393,8 @@ function createForcesGraphOn(elementId, graph) {
         graphEditor.deleteLinks(linksWithStrengthLessThan(minLinkStrength, graph));
         graphEditor.deleteNodes(nodesInClustersSmallerThan(minClusterSize, graph, graphEditor));
 
-        linkElements = updateLinks(svg, graph);
-        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+        linkElements = updateLinks(svgLinks, graph);
+        nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
         force.nodes(graph.nodes).links(graph.links).start();
     }
 
