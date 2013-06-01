@@ -207,8 +207,10 @@ function createForcesGraphOn(elementId, graph) {
 
     var color = d3.scale.category20();
     var showLongFileNames = false;
+    var gravity = -120;
+
     var force = d3.layout.force()
-            .charge(-120)
+            .charge(gravity)
             .linkDistance(30)
             .size([width, height]);
 
@@ -265,7 +267,7 @@ function createForcesGraphOn(elementId, graph) {
             graphEditor.removeAll([node]);
 
             linkElements = updateLinks(svg, graph);
-            nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+            nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
             force.nodes(graph.nodes).links(graph.links).start();
 
         } else {
@@ -275,7 +277,7 @@ function createForcesGraphOn(elementId, graph) {
         handledByNode = true;
     };
     var linkElements = updateLinks(svg, graph);
-    var nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+    var nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
 
 
     svg.on("click", function () {
@@ -288,13 +290,13 @@ function createForcesGraphOn(elementId, graph) {
 
     force.on("tick", function () {
         linkElements
-            .attr("x1", function (d) { return d.source.x; })
-            .attr("y1", function (d) { return d.source.y; })
-            .attr("x2", function (d) { return d.target.x; })
-            .attr("y2", function (d) { return d.target.y; });
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
         nodeElements
-            .attr("cx", function (d) { return d.x; })
-            .attr("cy", function (d) { return d.y; });
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
     });
 
 
@@ -303,6 +305,35 @@ function createForcesGraphOn(elementId, graph) {
     span.append("label").html("Show long file names:");
     span.append("input").attr("type", "checkbox")
         .on("click", function() { showLongFileNames = !showLongFileNames; });
+    span.append("span").style({width: "20px", display: "inline-block"});
+
+    span.append("label").html("Gravity: ");
+    var gravityDropDown = span.append("select");
+    gravityDropDown.append("option").attr("value", "high").html("High");
+    gravityDropDown.append("option").attr("value", "medium").attr("selected", "true").html("Medium");
+    gravityDropDown.append("option").attr("value", "low").html("Low");
+    gravityDropDown.on("change", function () {
+        if (this.value == "high") gravity = -50;
+        else if (this.value == "medium") gravity = -120;
+        else if (this.value == "low") gravity = -320;
+
+        force = d3.layout.force()
+                .charge(gravity)
+                .linkDistance(30)
+                .size([width, height]);
+        force.on("tick", function () {
+            linkElements
+                    .attr("x1", function (d) { return d.source.x; })
+                    .attr("y1", function (d) { return d.source.y; })
+                    .attr("x2", function (d) { return d.target.x; })
+                    .attr("y2", function (d) { return d.target.y; });
+            nodeElements
+                    .attr("cx", function (d) { return d.x; })
+                    .attr("cy", function (d) { return d.y; });
+        });
+        force.nodes(graph.nodes).links(graph.links).start();
+        svg.selectAll(".node").call(force.drag);
+    });
     span.append("span").style({width: "20px", display: "inline-block"});
 
     span.append("label").html("Min cluster size: ");
@@ -318,12 +349,12 @@ function createForcesGraphOn(elementId, graph) {
         graphEditor.removeAll(nodesInClustersSmallerThan(+this.value));
 
         linkElements = updateLinks(svg, graph);
-        nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
         force.nodes(graph.nodes).links(graph.links).start();
     });
 
 
-    function updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode) {
+    function updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode) {
         svg.selectAll(".node")
                 .data(graph.nodes)
                 .enter().append("circle")
