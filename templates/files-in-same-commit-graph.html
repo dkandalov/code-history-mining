@@ -96,39 +96,39 @@ const graph = {
     ],
     "links": [
         {"source": 41, "target": 30, "value": 7},
-        {"source": 25, "target": 16, "value": 6},
-        {"source": 11, "target": 5, "value": 6},
-        {"source": 15, "target": 41, "value": 6},
-        {"source": 21, "target": 23, "value": 5},
-        {"source": 30, "target": 6, "value": 5},
-        {"source": 21, "target": 36, "value": 4},
-        {"source": 7, "target": 31, "value": 4},
-        {"source": 27, "target": 26, "value": 4},
-        {"source": 6, "target": 3, "value": 4},
-        {"source": 24, "target": 9, "value": 3},
-        {"source": 33, "target": 29, "value": 3},
-        {"source": 1, "target": 14, "value": 3},
-        {"source": 40, "target": 28, "value": 3},
-        {"source": 10, "target": 11, "value": 3},
-        {"source": 45, "target": 8, "value": 3},
-        {"source": 34, "target": 20, "value": 3},
-        {"source": 18, "target": 27, "value": 3},
-        {"source": 24, "target": 32, "value": 3},
-        {"source": 17, "target": 32, "value": 3},
+        {"source": 25, "target": 16, "value": 16},
+        {"source": 11, "target": 5, "value": 16},
+        {"source": 15, "target": 41, "value": 16},
+        {"source": 21, "target": 23, "value": 15},
+        {"source": 30, "target": 6, "value": 15},
+        {"source": 21, "target": 36, "value": 14},
+        {"source": 7, "target": 31, "value": 14},
+        {"source": 27, "target": 26, "value": 14},
+        {"source": 6, "target": 3, "value": 14},
+        {"source": 24, "target": 9, "value": 13},
+        {"source": 33, "target": 29, "value": 13},
+        {"source": 1, "target": 14, "value": 13},
+        {"source": 40, "target": 28, "value": 13},
+        {"source": 10, "target": 11, "value": 13},
+        {"source": 45, "target": 8, "value": 13},
+        {"source": 34, "target": 20, "value": 13},
+        {"source": 18, "target": 27, "value": 13},
+        {"source": 24, "target": 32, "value": 13},
+        {"source": 17, "target": 32, "value": 13},
         {"source": 4, "target": 17, "value": 43},
         {"source": 4, "target": 35, "value": 53},
-        {"source": 19, "target": 35, "value": 3},
-        {"source": 19, "target": 46, "value": 3},
-        {"source": 12, "target": 46, "value": 3},
-        {"source": 12, "target": 0, "value": 3},
-        {"source": 0, "target": 42, "value": 3},
-        {"source": 42, "target": 39, "value": 3},
-        {"source": 2, "target": 37, "value": 3},
-        {"source": 37, "target": 22, "value": 3},
-        {"source": 22, "target": 38, "value": 3},
-        {"source": 38, "target": 43, "value": 3},
-        {"source": 41, "target": 3, "value": 3},
-        {"source": 13, "target": 44, "value": 3}
+        {"source": 19, "target": 35, "value": 13},
+        {"source": 19, "target": 46, "value": 13},
+        {"source": 12, "target": 46, "value": 13},
+        {"source": 12, "target": 0, "value": 13},
+        {"source": 0, "target": 42, "value": 13},
+        {"source": 42, "target": 39, "value": 13},
+        {"source": 2, "target": 37, "value": 13},
+        {"source": 37, "target": 22, "value": 13},
+        {"source": 22, "target": 38, "value": 13},
+        {"source": 38, "target": 43, "value": 13},
+        {"source": 41, "target": 3, "value": 13},
+        {"source": 13, "target": 44, "value": 13}
     ]
 /*data_placeholder*/
 };
@@ -161,11 +161,14 @@ function createForcesGraphOn(elementId, graph) {
 
     function GraphEditor(graph) {
         this.graph = graph;
-        this.actions = [];
+        this.deletions = [];
         this.quickFind = createQuickFindIndex(graph);
     }
-    GraphEditor.prototype.deleteLinks = function(links) {
-        // TODO
+    GraphEditor.prototype.deleteLinks = function(linksToRemove) {
+        this.deletions.push({links: linksToRemove});
+        this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
+
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.deleteNodes = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
@@ -177,23 +180,21 @@ function createForcesGraphOn(elementId, graph) {
         var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
         var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
-        var graphLinks = this.graph.links;
-        var linkEntries = linksToRemove.map(function (link) {
-            return {index: graphLinks.indexOf(link), link: link};
-        }).sort(function (a, b) { return a.index - b.index; });
-        this.actions.push({nodeIndex: nodeIndex, node: nodeToRemove, links: linkEntries});
+        this.deletions.push({nodeIndex: nodeIndex, node: nodeToRemove, links: linksToRemove});
 
         this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
         this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
     };
     GraphEditor.prototype.undoAllDeletions = function () {
-        while (this.actions.length > 0) {
-            var action = this.actions.pop();
+        while (this.deletions.length > 0) {
+            var deletion = this.deletions.pop();
 
-            this.graph.nodes = this.graph.nodes.concat([action.node]);
-            action.node.index = this.graph.nodes.length - 1;
+            if (deletion.node != null) {
+                this.graph.nodes = this.graph.nodes.concat([deletion.node]);
+                deletion.node.index = this.graph.nodes.length - 1;
+            }
 
-            this.graph.links = this.graph.links.concat(action.links.map(function(it) { return it.link; }));
+            this.graph.links = this.graph.links.concat(deletion.links);
         }
         this.quickFind = createQuickFindIndex(this.graph);
     };
@@ -387,21 +388,16 @@ function createForcesGraphOn(elementId, graph) {
         tooltip.style("opacity", .0);
 
         graphEditor.undoAllDeletions();
-        graphEditor.deleteNodes(nodesInClustersSmallerThan(minClusterSize, graph, graphEditor));
         graphEditor.deleteLinks(linksWithStrengthLessThan(minLinkStrength, graph));
-        graphEditor.deleteNodes(nodesWithoutConnections(graph));
+        graphEditor.deleteNodes(nodesInClustersSmallerThan(minClusterSize, graph, graphEditor));
 
         linkElements = updateLinks(svg, graph);
         nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
         force.nodes(graph.nodes).links(graph.links).start();
     }
 
-    function nodesWithoutConnections(graph) {
-        // TODO
-    }
-
     function linksWithStrengthLessThan(minLinkStrength, graph) {
-        return graph.links.filter(function (link) { return link.value >= minLinkStrength; })
+        return graph.links.filter(function (link) { return link.value < minLinkStrength; })
     }
 
     function nodesInClustersSmallerThan(maxClusterSize, graph, graphEditor) {
