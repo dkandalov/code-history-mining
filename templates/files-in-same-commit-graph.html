@@ -237,11 +237,7 @@ function createForcesGraphOn(elementId, graph) {
 
     var graphEditor = new GraphEditor(graph);
 
-    var linkElements = svg.selectAll(".link")
-            .data(graph.links)
-            .enter().append("line")
-            .attr("class", "link")
-            .style("stroke-width", function (d) { return Math.sqrt(d.value); });
+    var linkElements = updateLinks(svg, graph);
 
     var tooltip = rootElement.append("div")
             .attr("class", "tooltip")
@@ -338,13 +334,7 @@ function createForcesGraphOn(elementId, graph) {
             graphEditor.remove(node);
         });
 
-        svg.selectAll(".link")
-                .data(graph.links)
-                .enter().append("line")
-                .attr("class", "link")
-                .style("stroke-width", function (d) { return Math.sqrt(d.value); });
-        svg.selectAll(".link").data(graph.links).exit().remove();
-        linkElements = svg.selectAll(".link");
+        linkElements = updateLinks(svg, graph);
 
         svg.selectAll(".node").data(graph.nodes).enter().append("circle")
                 .attr("class", "node")
@@ -357,6 +347,16 @@ function createForcesGraphOn(elementId, graph) {
         force.nodes(graph.nodes).links(graph.links).start();
     });
 
+
+    function updateLinks(svg, graph) {
+        svg.selectAll(".link")
+                .data(graph.links)
+                .enter().append("line")
+                .attr("class", "link")
+                .style("stroke-width", function (d) { return Math.sqrt(d.value); });
+        svg.selectAll(".link").data(graph.links).exit().remove();
+        return svg.selectAll(".link");
+    }
 
     function nodesInClustersSmallerThan(maxClusterSize) {
         var visitedNodes = [];
