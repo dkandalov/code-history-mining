@@ -320,7 +320,7 @@ function createForcesGraphOn(elementId, graph) {
     span.append("label").html("Show long file names:");
     span.append("input").attr("type", "checkbox")
         .on("click", function() { showLongFileNames = !showLongFileNames; });
-    span.append("span").style({width: "20px", display: "inline-block"});
+    span.call(addDelimiter);
 
     span.append("label").html("Gravity: ");
     var gravityDropDown = span.append("select");
@@ -338,7 +338,7 @@ function createForcesGraphOn(elementId, graph) {
         force.nodes(graph.nodes).links(graph.links).start();
         svg.selectAll(".node").call(force.drag);
     });
-    span.append("span").style({width: "20px", display: "inline-block"});
+    span.call(addDelimiter);
 
     span.append("label").html("Min cluster size: ");
     var clusterSizeDropDown = span.append("select");
@@ -349,7 +349,7 @@ function createForcesGraphOn(elementId, graph) {
         minClusterSize = +this.value;
         filterNodes();
     });
-    span.append("span").style({width: "20px", display: "inline-block"});
+    span.call(addDelimiter);
 
     span.append("label").html("Min link strength: ");
     var linkStrengthDropDown = span.append("select");
@@ -445,6 +445,10 @@ function createForcesGraphOn(elementId, graph) {
 
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
+    }
+
+    function addDelimiter(span) {
+        span.append("span").style({width: "20px", display: "inline-block"});
     }
 
     function byNodeName(node) { return node.name; }
