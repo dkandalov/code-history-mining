@@ -207,6 +207,7 @@ function createForcesGraphOn(elementId, graph) {
     var color = d3.scale.category20();
     var showLongFileNames = false;
     var gravity = -120;
+    var minClusterSize = 2;
     var force = createForce(gravity);
 
     var rootElement = d3.select("#" + elementId);
@@ -295,6 +296,18 @@ function createForcesGraphOn(elementId, graph) {
     };
     force.on("tick", onForceTick);
 
+    var filterNodes = function() {
+        updateSelection([], showLongFileNames);
+        tooltip.style("opacity", .0);
+
+        graphEditor.undoDeleteAll();
+        graphEditor.deleteAll(nodesInClustersSmallerThan(minClusterSize));
+
+        linkElements = updateLinks(svg, graph);
+        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+        force.nodes(graph.nodes).links(graph.links).start();
+    };
+
 
     var footerSpan = appendBlockElementTo(rootElement, width);
     var span = footerSpan.append("span").style({float: "right"});
@@ -326,16 +339,9 @@ function createForcesGraphOn(elementId, graph) {
     d3.range(2, 11).forEach(function (i) {
         clusterSizeDropDown.append("option").attr("value", i).html(i);
     });
-    clusterSizeDropDown.on("change", function() {
-        updateSelection([], showLongFileNames);
-        tooltip.style("opacity", .0);
-
-        graphEditor.undoDeleteAll();
-        graphEditor.deleteAll(nodesInClustersSmallerThan(+this.value));
-
-        linkElements = updateLinks(svg, graph);
-        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
-        force.nodes(graph.nodes).links(graph.links).start();
+    clusterSizeDropDown.on("change", function () {
+        minClusterSize = +this.value;
+        filterNodes();
     });
     span.append("span").style({width: "20px", display: "inline-block"});
 
