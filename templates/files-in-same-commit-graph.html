@@ -164,13 +164,13 @@ function createForcesGraphOn(elementId, graph) {
         this.actions = [];
         this.quickFind = createQuickFindIndex(graph);
     }
-    GraphEditor.prototype.removeAll = function(nodes) {
+    GraphEditor.prototype.deleteAll = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
-            this.remove(nodes[i]);
+            this.delete(nodes[i]);
         }
         this.quickFind = createQuickFindIndex(this.graph);
     };
-    GraphEditor.prototype.remove = function(nodeToRemove) {
+    GraphEditor.prototype.delete = function(nodeToRemove) {
         var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
         var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
@@ -183,7 +183,7 @@ function createForcesGraphOn(elementId, graph) {
         this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
         this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
     };
-    GraphEditor.prototype.undoAll = function () {
+    GraphEditor.prototype.undoDeleteAll = function () {
         while (this.actions.length > 0) {
             var action = this.actions.pop();
 
@@ -259,7 +259,7 @@ function createForcesGraphOn(elementId, graph) {
             updateSelection([], showLongFileNames);
             tooltip.style("opacity", .0);
 
-            graphEditor.removeAll([node]);
+            graphEditor.deleteAll([node]);
 
             linkElements = updateLinks(svg, graph);
             nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
@@ -330,8 +330,8 @@ function createForcesGraphOn(elementId, graph) {
         updateSelection([], showLongFileNames);
         tooltip.style("opacity", .0);
 
-        graphEditor.undoAll();
-        graphEditor.removeAll(nodesInClustersSmallerThan(+this.value));
+        graphEditor.undoDeleteAll();
+        graphEditor.deleteAll(nodesInClustersSmallerThan(+this.value));
 
         linkElements = updateLinks(svg, graph);
         nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
