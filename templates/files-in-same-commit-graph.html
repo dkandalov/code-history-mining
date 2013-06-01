@@ -207,7 +207,6 @@ function createForcesGraphOn(elementId, graph) {
 
     var color = d3.scale.category20();
     var showLongFileNames = false;
-
     var force = d3.layout.force()
             .charge(-120)
             .linkDistance(30)
@@ -218,21 +217,16 @@ function createForcesGraphOn(elementId, graph) {
     var header = appendBlockElementTo(rootElement, width);
     header.append("h2").text("Files in the same commit (" + projectName + ")").style({"text-align": "center"});
 
-    var svg = rootElement.append("svg")
-            .attr("width", width).attr("height", height);
+    var svg = rootElement.append("svg").attr("width", width).attr("height", height);
     var svgPos = svg[0][0].getBoundingClientRect();
 
     svg.append("rect")
             .attr("width", width).attr("height", height)
             .style({fill: "none", stroke: "#AAAAAA"});
 
-    force.nodes(graph.nodes)
-            .links(graph.links)
-            .start();
-
+    force.nodes(graph.nodes).links(graph.links).start();
     var graphEditor = new GraphEditor(graph);
 
-    var linkElements = updateLinks(svg, graph);
 
     var tooltip = rootElement.append("div")
             .attr("class", "tooltip")
@@ -270,8 +264,8 @@ function createForcesGraphOn(elementId, graph) {
 
             graphEditor.removeAll([node]);
 
-            svg.selectAll(".node").data(graph.nodes).exit().remove();
-            svg.selectAll(".link").data(graph.links).exit().remove();
+            linkElements = updateLinks(svg, graph);
+            nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
             force.nodes(graph.nodes).links(graph.links).start();
 
         } else {
@@ -280,7 +274,9 @@ function createForcesGraphOn(elementId, graph) {
 
         handledByNode = true;
     };
+    var linkElements = updateLinks(svg, graph);
     var nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+
 
     svg.on("click", function () {
         if (handledByNode) {
@@ -323,7 +319,6 @@ function createForcesGraphOn(elementId, graph) {
 
         linkElements = updateLinks(svg, graph);
         nodeElements = updateNodes(svg, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
-
         force.nodes(graph.nodes).links(graph.links).start();
     });
 
