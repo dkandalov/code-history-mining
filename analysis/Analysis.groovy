@@ -149,10 +149,10 @@ class Analysis {
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def files = allLinks.keySet().collect{it.fileName}.unique().toList()
 		def nodesJSLiteral =
-				authors.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n") + ",\n" +
-				files.collect{'{"name": "' + it + '", "group": 2}'}.join(",\n")
+			files.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n") + ",\n" +
+			authors.collect{'{"name": "' + it + '", "group": 2}'}.join(",\n")
 
-		def nodes = authors + files
+		def nodes = files + authors
 		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(it.key.fileName), it.value] }
 		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
