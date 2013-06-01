@@ -262,7 +262,9 @@ function createForcesGraphOn(elementId, graph) {
         tooltip.style("opacity", .0);
     };
     var whenClickedOnNode = function (node) {
-        var shouldRemoveNode = d3.event.altKey;
+        var shouldRemoveNode = d3.event.altKey && !d3.event.shiftKey;
+        var shouldRemoveNodeCluster = d3.event.altKey && d3.event.shiftKey;
+
         if (shouldRemoveNode) {
             updateSelection([], showLongFileNames);
             tooltip.style("opacity", .0);
@@ -273,6 +275,15 @@ function createForcesGraphOn(elementId, graph) {
             nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
             force.nodes(graph.nodes).links(graph.links).start();
 
+        } else if (shouldRemoveNodeCluster) {
+            updateSelection([], showLongFileNames);
+            tooltip.style("opacity", .0);
+
+            graphEditor.deleteNodes(graphEditor.nodesConnectedTo(node));
+
+            linkElements = updateLinks(svgLinks, graph);
+            nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+            force.nodes(graph.nodes).links(graph.links).start();
         } else {
             updateSelection(graphEditor.nodesConnectedTo(node), showLongFileNames);
         }
