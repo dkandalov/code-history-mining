@@ -155,7 +155,7 @@ function createForcesGraphOn(elementId, graph) {
         var quickFind = new QuickFind(graph.nodes.length);
         graph.links.forEach(function (link) {
             // "index" property is added by d3js force layout
-            quickFind.connect(link.source.index, link.target.index);
+            quickFind.connect(graph.nodes.indexOf(link.source), graph.nodes.indexOf(link.target));
         });
         return quickFind;
     }
@@ -169,24 +169,20 @@ function createForcesGraphOn(elementId, graph) {
         for (var i = 0; i < nodes.length; i++) {
             this.remove(nodes[i]);
         }
-        this.quickFind = createQuickFindIndex(graph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
-    GraphEditor.prototype.remove = function(node) {
-        var nodeIndex = this.graph.nodes.indexOf(node);
-        var linksToRemove = this.graph.links.filter(function(link) { return link.source == node || link.target == node; });
+    GraphEditor.prototype.remove = function(nodeToRemove) {
+        var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
+        var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
         var graphLinks = this.graph.links;
         var linkEntries = linksToRemove.map(function (link) {
             return {index: graphLinks.indexOf(link), link: link};
         }).sort(function (a, b) { return a.index - b.index; });
-        this.actions.push({nodeIndex: nodeIndex, node: node, links: linkEntries});
+        this.actions.push({nodeIndex: nodeIndex, node: nodeToRemove, links: linkEntries});
 
-        this.graph.nodes = this.graph.nodes.filter(function(eachNode) { return eachNode != node; });
+        this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
         this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
-        this.graph.links.forEach(function(link) {
-            if (link.source.index >= nodeIndex) link.source.index -= 1;
-            if (link.target.index >= nodeIndex) link.target.index -= 1;
-        });
     };
     GraphEditor.prototype.undoAll = function () {
         while (this.actions.length > 0) {
@@ -195,18 +191,13 @@ function createForcesGraphOn(elementId, graph) {
             this.graph.nodes = this.graph.nodes.concat([action.node]);
             action.node.index = this.graph.nodes.length - 1;
 
-            var graphNodes = this.graph.nodes;
             this.graph.links = this.graph.links.concat(action.links.map(function(it) { return it.link; }));
-            action.links.forEach(function (entry) {
-                if (entry.link.source.index == action.nodeIndex) entry.link.source.index = graphNodes.length - 1;
-                if (entry.link.target.index == action.nodeIndex) entry.link.target.index = graphNodes.length - 1;
-            });
         }
-        this.quickFind = createQuickFindIndex(graph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.nodesConnectedTo = function(node) {
         var quickFind = this.quickFind;
-        return graph.nodes.filter(function(eachNode) {
+        return this.graph.nodes.filter(function(eachNode) {
             return quickFind.areConnected(eachNode.index, node.index);
         });
     };
@@ -268,7 +259,7 @@ function createForcesGraphOn(elementId, graph) {
                 .style("left", svgPos.left + parseInt(d.x + 18) + "px")
                 .style("top", svgPos.top + parseInt(d.y - 12) + "px");
     };
-    var onMouseOutOfNode = function (d) {
+    var onMouseOutOfNode = function() {
         tooltip.style("opacity", .0);
     };
     var whenClickedOnNode = function (node) {
@@ -328,7 +319,6 @@ function createForcesGraphOn(elementId, graph) {
         tooltip.style("opacity", .0);
 
         graphEditor.undoAll();
-
         graphEditor.removeAll(nodesInClustersSmallerThan(+this.value));
 
         linkElements = updateLinks(svg, graph);
