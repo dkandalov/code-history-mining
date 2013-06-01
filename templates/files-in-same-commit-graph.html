@@ -164,7 +164,10 @@ function createForcesGraphOn(elementId, graph) {
         this.actions = [];
         this.quickFind = createQuickFindIndex(graph);
     }
-    GraphEditor.prototype.deleteAll = function(nodes) {
+    GraphEditor.prototype.deleteLinks = function(links) {
+        // TODO
+    };
+    GraphEditor.prototype.deleteNodes = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
             this.delete(nodes[i]);
         }
@@ -183,7 +186,7 @@ function createForcesGraphOn(elementId, graph) {
         this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
         this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
     };
-    GraphEditor.prototype.undoDeleteAll = function () {
+    GraphEditor.prototype.undoAllDeletions = function () {
         while (this.actions.length > 0) {
             var action = this.actions.pop();
 
@@ -208,6 +211,7 @@ function createForcesGraphOn(elementId, graph) {
     var showLongFileNames = false;
     var gravity = -120;
     var minClusterSize = 2;
+    var minLinkStrength = 7;
     var force = createForce(gravity);
 
     var rootElement = d3.select("#" + elementId);
@@ -260,7 +264,7 @@ function createForcesGraphOn(elementId, graph) {
             updateSelection([], showLongFileNames);
             tooltip.style("opacity", .0);
 
-            graphEditor.deleteAll([node]);
+            graphEditor.deleteNodes([node]);
 
             linkElements = updateLinks(svg, graph);
             nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
@@ -295,18 +299,6 @@ function createForcesGraphOn(elementId, graph) {
                 .attr("cy", function(d) { return d.y; });
     };
     force.on("tick", onForceTick);
-
-    var filterNodes = function() {
-        updateSelection([], showLongFileNames);
-        tooltip.style("opacity", .0);
-
-        graphEditor.undoDeleteAll();
-        graphEditor.deleteAll(nodesInClustersSmallerThan(minClusterSize));
-
-        linkElements = updateLinks(svg, graph);
-        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
-        force.nodes(graph.nodes).links(graph.links).start();
-    };
 
 
     var footerSpan = appendBlockElementTo(rootElement, width);
@@ -351,7 +343,8 @@ function createForcesGraphOn(elementId, graph) {
         linkStrengthDropDown.append("option").attr("value", i).html(i);
     });
     linkStrengthDropDown.on("change", function() {
-        // TODO
+        minLinkStrength = +this.value;
+        filterNodes();
     });
 
 
@@ -389,7 +382,29 @@ function createForcesGraphOn(elementId, graph) {
         return svg.selectAll(".link");
     }
 
-    function nodesInClustersSmallerThan(maxClusterSize) {
+    function filterNodes() {
+        updateSelection([], showLongFileNames);
+        tooltip.style("opacity", .0);
+
+        graphEditor.undoAllDeletions();
+        graphEditor.deleteNodes(nodesInClustersSmallerThan(minClusterSize, graph, graphEditor));
+        graphEditor.deleteLinks(linksWithStrengthLessThan(minLinkStrength, graph));
+        graphEditor.deleteNodes(nodesWithoutConnections(graph));
+
+        linkElements = updateLinks(svg, graph);
+        nodeElements = updateNodes(svg, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
+        force.nodes(graph.nodes).links(graph.links).start();
+    }
+
+    function nodesWithoutConnections(graph) {
+        // TODO
+    }
+
+    function linksWithStrengthLessThan(minLinkStrength, graph) {
+        return graph.links.filter(function (link) { return link.value >= minLinkStrength; })
+    }
+
+    function nodesInClustersSmallerThan(maxClusterSize, graph, graphEditor) {
         var visitedNodes = [];
         var nodes = [];
         graph.nodes.forEach(function (node) {
