@@ -181,7 +181,6 @@ function createForcesGraphOn(elementId, graph) {
             action.node.index = this.graph.nodes.length - 1;
 
             var graphNodes = this.graph.nodes;
-            var graphLinks = this.graph.links;
             this.graph.links = this.graph.links.concat(action.links.map(function(it) { return it.link; }))
             action.links.forEach(function (entry) {
                 if (entry.link.source.index == action.nodeIndex) entry.link.source.index = graphNodes.length - 1;
@@ -316,6 +315,9 @@ function createForcesGraphOn(elementId, graph) {
         dropDown.append("option").attr("value", i).html(i);
     }
     dropDown.on("change", function() {
+        updateSelection([], showLongFileNames);
+        tooltip.style("opacity", .0);
+
         graphEditor.undoAll();
 
         var quickFind = new QuickFind(graph.nodes.length);
@@ -338,7 +340,6 @@ function createForcesGraphOn(elementId, graph) {
         });
 
         nodesToRemove.forEach(function(node) { graphEditor.remove(node); });
-//        console.log(nodesToRemove);
 
         svg.selectAll(".link")
                 .data(graph.links)
