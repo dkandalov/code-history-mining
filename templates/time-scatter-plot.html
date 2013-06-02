@@ -303,6 +303,9 @@ dayOfWeek,time,value\n\
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    svg.append("defs").append("clipPath").attr("id", "scatterPlotClip")
+            .append("rect").attr("width", width).attr("height", height);
+
 
     var data = d3.csv.parse(rawData)
         .map(function(d) { return {
@@ -340,10 +343,12 @@ dayOfWeek,time,value\n\
             .data(data)
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", function (d) { return d.value * 2; })
+            .attr("clip-path", "url(#scatterPlotClip)")
+            .attr("r", function (d) { return d.value * 10; })
             .attr("cx", function (d) { return x(d.dayAndHour); })
             .attr("cy", function (d) { return y(d.minute); })
-            .style("fill", function(d) { return color(0) });
+            .style("opacity", function() { return 0.5; })
+            .style("fill", function() { return color(0); });
 
     function parseHour(s) {
         var i = s.indexOf(":");
