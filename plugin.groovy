@@ -108,6 +108,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		add(new AnAction("Changes By Package Tree Map") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Changes By Package Tree Map") {
+					// TODO add sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 					showInBrowser("treemap.html", Analysis.TreeMapView.&createJsonForChangeSizeTreeMap)
 				}
 			}

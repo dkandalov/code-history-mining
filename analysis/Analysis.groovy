@@ -165,9 +165,11 @@ class Analysis {
 				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{a, b -> (a.key[0] * 10000 + a.key[1] * 100 + a.key[2]) <=> (b.key[0] * 10000 + b.key[1] * 100 + b.key[2]) }
-		println(amountOfCommitsByMinute.entrySet().join("\n"))
 
-		""
+		asCsvStringLiteral(
+				amountOfCommitsByMinute.entrySet().collect{[it.key[0], "${it.key[1]}:${it.key[2]}", it.value]},
+				["dayOfWeek", "time", "value"]
+		)
 	}
 
 	static class TreeMapView {
@@ -361,7 +363,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			date
 		}
 
-		static int dayOfWeekOf(Date date) { date.getAt(Calendar.DAY_OF_WEEK) }
+		static int dayOfWeekOf(Date date) {
+			int day = date.getAt(Calendar.DAY_OF_WEEK)
+			// make it Monday-based (Monday=1, Tuesday=2 ... Sunday=7)
+			(day == 1) ? 7 : day - 1
+		}
 		static int hourOf(Date date) { date.getAt(Calendar.HOUR_OF_DAY) }
 		static int minuteOf(Date date) { date.getAt(Calendar.MINUTE) }
 
