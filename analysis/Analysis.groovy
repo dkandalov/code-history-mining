@@ -167,8 +167,8 @@ class Analysis {
 				.sort{a, b -> (a.key[0] * 10000 + a.key[1] * 100 + a.key[2]) <=> (b.key[0] * 10000 + b.key[1] * 100 + b.key[2]) }
 
 		asCsvStringLiteral(
-				amountOfCommitsByMinute.entrySet().collect{[it.key[0], "${it.key[1]}:${it.key[2]}", it.value]},
-				["dayOfWeek", "time", "value"]
+				amountOfCommitsByMinute.entrySet().collect{[it.key[0], it.key[1], it.key[2], it.value]},
+				["dayOfWeek", "hour", "minute", "value"]
 		)
 	}
 
