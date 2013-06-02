@@ -15,6 +15,7 @@
     }
 </style>
 <body>
+<span id="scatter-plot"></span>
 <script src="d3.v3.min.js"></script>
 <script>
     var rawData = /*data_placeholder*/"\
@@ -284,15 +285,19 @@ dayOfWeek,time,value\n\
 7,23:14,1\n\
 7,23:38,1\n\
 "/*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"code-history-mining"/*project_name_placeholder*/;
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+    createCommitTimeScatterPlot("scatter-plot", rawData);
 
-    var x = d3.scale.linear().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
-    var color = d3.scale.category10();
-    var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
+    function createCommitTimeScatterPlot(elementId, rawData) {
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear().range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+        var color = d3.scale.category10();
+        var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(12, 7 * 24, 24))
                 .tickSize(0).tickPadding(10)
                 .tickFormat(function (n) {
@@ -300,72 +305,79 @@ dayOfWeek,time,value\n\
                     var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                     return days[n];
                 });
-    var xAxis = d3.svg.axis().scale(x).orient("bottom")
+        var xAxis = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(0, 7 * 24, 24))
                 .tickFormat(function() { return ""; });
-    var yAxis = d3.svg.axis().scale(y).orient("left");
-
-    var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    svg.append("defs").append("clipPath").attr("id", "scatterPlotClip")
-            .append("rect").attr("width", width).attr("height", height);
+        var yAxis = d3.svg.axis().scale(y).orient("left");
 
 
-    var data = d3.csv.parse(rawData)
-        .map(function(d) { return {
-            dayOfWeek: +d.dayOfWeek,
-            hour: parseHour(d.time),
-            minute: parseMinute(d.time),
-            dayAndHour: (+d.dayOfWeek - 1) * 24 + parseHour(d.time),
-            value: d.value
-        };});
+        var rootElement = d3.select("#" + elementId);
 
-    x.domain([0, 7 * 24]).nice();
-    y.domain([0, 59]).nice();
+        var headerSpan = appendBlockElementTo(rootElement, width);
+        headerSpan.append("h2").text("Commit time scatter plot (" + projectName + ")").style({"text-align": "center"});
 
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end");
+        var svg = rootElement.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        svg.append("defs").append("clipPath").attr("id", "scatterPlotClip")
+                .append("rect").attr("width", width).attr("height", height);
 
-    svg.append("g")
-            .attr("class", "x axis labels")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxisLabels)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end");
 
-    svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end");
+        var data = d3.csv.parse(rawData)
+                .map(function(d) { return {
+                    dayOfWeek: +d.dayOfWeek,
+                    hour: parseHour(d.time),
+                    minute: parseMinute(d.time),
+                    dayAndHour: (+d.dayOfWeek - 1) * 24 + parseHour(d.time),
+                    value: d.value
+                };});
 
-    svg.selectAll(".dot")
-            .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("clip-path", "url(#scatterPlotClip)")
-            .attr("r", function (d) { return d.value * 10; })
-            .attr("cx", function (d) { return x(d.dayAndHour); })
-            .attr("cy", function (d) { return y(d.minute); })
-            .style("opacity", function() { return 0.5; })
-            .style("fill", function() { return color(0); });
+        x.domain([0, 7 * 24]).nice();
+        y.domain([0, 59]).nice();
+
+        svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+                .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end");
+
+        svg.append("g")
+                .attr("class", "x axis labels")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxisLabels)
+                .append("text")
+                .attr("class", "label")
+                .attr("x", width)
+                .attr("y", -6)
+                .style("text-anchor", "end");
+
+        svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end");
+
+        svg.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr("clip-path", "url(#scatterPlotClip)")
+                .attr("r", function (d) { return d.value * 10; })
+                .attr("cx", function (d) { return x(d.dayAndHour); })
+                .attr("cy", function (d) { return y(d.minute); })
+                .style("opacity", function() { return 0.5; })
+                .style("fill", function() { return color(0); });
+    }
 
     function parseHour(s) {
         var i = s.indexOf(":");
@@ -375,5 +387,9 @@ dayOfWeek,time,value\n\
         var i = s.indexOf(":");
         return +s.substring(i + 1);
     }
+    function appendBlockElementTo(element, width) {
+        return element.append("span").style({display: "block", width: width + "px"});
+    }
 
 </script>
+</body>
