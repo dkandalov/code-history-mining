@@ -301,7 +301,7 @@ dayOfWeek,hour,minute,value\n\
         var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(12, 7 * 24, 24))
                 .tickSize(0).tickPadding(10)
-                .tickFormat(function(n) { return toDayOfWeek(n); });
+                .tickFormat(function(n) { return toDayOfWeek(Math.floor(n / 24) + 1); });
         var xAxis = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(0, 7 * 24, 24))
                 .tickFormat(function() { return ""; });
@@ -324,14 +324,26 @@ dayOfWeek,hour,minute,value\n\
                 .append("rect").attr("width", width).attr("height", height);
 
 
-        var data = d3.csv.parse(rawData)
+        var dataByMinute = d3.csv.parse(rawData)
                 .map(function(d) { return {
                     dayOfWeek: +d.dayOfWeek,
                     hour: +d.hour,
                     minute: +d.minute,
                     dayAndHour: (+d.dayOfWeek - 1) * 24 + (+d.hour),
-                    value: d.value
+                    value: +d.value
                 };});
+        var dataByHour = d3.values(d3.nest()
+                .key(function(d){ return d.dayAndHour; })
+                .rollup(function (entries) {
+                    return entries.reduce(function (a, b) {
+                        return {
+                            dayOfWeek: a.dayOfWeek,
+                            hour: a.hour,
+                            dayAndHour: a.dayAndHour,
+                            value: a.value + b.value
+                        };
+                    });
+                }).map(dataByMinute));
 
         x.domain([0, 7 * 24]).nice();
         y.domain([0, 59]).nice();
@@ -367,14 +379,14 @@ dayOfWeek,hour,minute,value\n\
                 .style("text-anchor", "end");
 
         var points = svg.selectAll(".dot")
-                .data(data)
+                .data(dataByMinute)
                 .enter().append("circle");
         points.attr("class", "dot")
                 .attr("clip-path", "url(#scatterPlotClip)")
                 .attr("r", function (d) { return d.value * commitSizeMultiplier; })
                 .attr("cx", function (d) { return x(d.dayAndHour); })
                 .attr("cy", function (d) { return y(d.minute); })
-                .style("opacity", function() { return 0.5; })
+                .style("opacity", function() { return 0.7; })
                 .style("fill", function() { return color(0); })
                 .append("title").text(function (d) {
                     return d.value + " commit(s) at " + d.hour + ":" + d.minute + " on " + toDayOfWeek(d.dayOfWeek);
@@ -384,7 +396,7 @@ dayOfWeek,hour,minute,value\n\
         var span = footerSpan.append("span").style({float: "right"});
         span.append("label").html("Commit size multiplier: ");
         var multiplierLabel = span.append("label");
-        span.append("span").style({width: "20px", display: "inline-block"});
+        span.append("span").style({width: "5px", display: "inline-block"});
 
         span.append("button").text("-").on("click", function () {
             if (commitSizeMultiplier <= 1) commitSizeMultiplier = 0.5;
@@ -400,6 +412,37 @@ dayOfWeek,hour,minute,value\n\
             updatePointSizes(points, multiplierLabel, commitSizeMultiplier);
         });
 
+        span.append("span").style({width: "20px", display: "inline-block"});
+        span.append("label").html("Group time by: ");
+        var dropDown = span.append("select");
+        dropDown.append("option").attr("value", "0").html("hours");
+        dropDown.append("option").attr("value", "1").html("minutes");
+        dropDown.on("change", function() {
+            if (+this.value == 1) {
+                y.domain([0, 24]).nice();
+
+                svg.selectAll(".dot").remove();
+                points = svg.selectAll(".dot")
+                        .data(dataByHour)
+                        .enter().append("circle");
+                points.attr("class", "dot")
+                        .attr("clip-path", "url(#scatterPlotClip)")
+                        .attr("r", function(d) { return d.value * commitSizeMultiplier; })
+                        .attr("cx", function(d) { return x((d.dayOfWeek - 1) * 24 + 12); })
+                        .attr("cy", function(d) { return y(d.hour); })
+                        .style("opacity", function() { return 0.7; })
+                        .style("fill", function() { return color(0); })
+                        .append("title").text(function (d) {
+                            return d.value + " commit(s) at " + d.hour + " hours " + " on " + toDayOfWeek(d.dayOfWeek);
+                        });
+
+                yAxis = d3.svg.axis().scale(y).orient("left");
+                svg.select(".y.axis").call(yAxis);
+            } else {
+
+            }
+        });
+
         updatePointSizes(points, multiplierLabel, commitSizeMultiplier);
     }
 
@@ -411,8 +454,7 @@ dayOfWeek,hour,minute,value\n\
         return element.append("span").style({display: "block", width: width + "px"});
     }
     function toDayOfWeek(n) {
-        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-        return days[Math.floor(n/24)];
+        return ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][n-1];
     }
 
 </script>
