@@ -222,8 +222,10 @@ function createForcesGraphOn(elementId, graph) {
     var selectedNodesLabel = rootElement.append("div")
             .attr("class", "selectedNodesLabel")
             .style("position", "absolute")
-            .style("left", svgPos.left + 3 + "px")
-            .style("top", svgPos.top + 3 + "px")
+            .style("opacity", 0);
+    var selectedNodesLabel2 = rootElement.append("div")
+            .attr("class", "selectedNodesLabel")
+            .style("position", "absolute")
             .style("opacity", 0);
     if (graph.nodes.length == 0)
         rootElement.append("div")
@@ -421,9 +423,21 @@ function createForcesGraphOn(elementId, graph) {
         selectedNodes.forEach(function (eachNode) { eachNode.selected = true; });
         nodeElements.data(graph.nodes, byNodeName).attr("r", function(d){ return d.selected ? 7 : 5; });
 
+        var nodesByGroup = d3.nest().key(function (node) { return node.group; }).map(selectedNodes);
+        if (nodesByGroup[1] == null) nodesByGroup[1] = [];
+        if (nodesByGroup[2] == null) nodesByGroup[2] = [];
+
         selectedNodesLabel
-                .html(selectedNodes.map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
-                .style("opacity", (selectedNodes.length > 0 ? 1 : 0));
+                .style("left", svgPos.left + 3 + "px")
+                .style("top", svgPos.top + 3 + "px")
+                .html(nodesByGroup[1].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
+                .style("opacity", (nodesByGroup[1].length > 0 ? 1 : 0));
+        var pos = selectedNodesLabel[0][0].getBoundingClientRect();
+        selectedNodesLabel2
+                .style("left", svgPos.left + 3 + "px")
+                .style("top", pos.top + pos.height + 3 + "px")
+                .html(nodesByGroup[2].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
+                .style("opacity", (nodesByGroup[2].length > 0 ? 1 : 0));
     }
 
     function dropPath(fileName) {
