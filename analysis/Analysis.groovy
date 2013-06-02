@@ -159,12 +159,13 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJson_CommitDayAndTime_PunchCard(List<FileChangeEvent> events) {
-		def amountOfCommitsByHour = events
-				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate)]}
+	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events) {
+		def amountOfCommitsByMinute = events
+				.groupBy{it.revision}.entrySet()*.collect{it.value.first()}.flatten()
+				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
 				.collectEntries{[it.key, it.value.size()]}
-				.sort{a, b -> (a.key[0] * 100 + a.key[1]) <=> (b.key[0] * 100 + b.key[1]) }
-		println(amountOfCommitsByHour.entrySet().join("\n"))
+				.sort{a, b -> (a.key[0] * 10000 + a.key[1] * 100 + a.key[2]) <=> (b.key[0] * 10000 + b.key[1] * 100 + b.key[2]) }
+		println(amountOfCommitsByMinute.entrySet().join("\n"))
 
 		""
 	}
@@ -360,13 +361,9 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			date
 		}
 
-		static int dayOfWeekOf(Date date) {
-			date.getAt(Calendar.DAY_OF_WEEK)
-		}
-
-		static int hourOf(Date date) {
-			date.getAt(Calendar.HOUR_OF_DAY)
-		}
+		static int dayOfWeekOf(Date date) { date.getAt(Calendar.DAY_OF_WEEK) }
+		static int hourOf(Date date) { date.getAt(Calendar.HOUR_OF_DAY) }
+		static int minuteOf(Date date) { date.getAt(Calendar.MINUTE) }
 
 		static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
 			def result = []
