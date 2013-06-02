@@ -297,14 +297,11 @@ dayOfWeek,time,value\n\
         var x = d3.scale.linear().range([0, width]);
         var y = d3.scale.linear().range([height, 0]);
         var color = d3.scale.category10();
+
         var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(12, 7 * 24, 24))
                 .tickSize(0).tickPadding(10)
-                .tickFormat(function (n) {
-                    n = Math.floor(n/24);
-                    var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-                    return days[n];
-                });
+                .tickFormat(function(n) { return toDayOfWeek(n); });
         var xAxis = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(0, 7 * 24, 24))
                 .tickFormat(function() { return ""; });
@@ -376,7 +373,10 @@ dayOfWeek,time,value\n\
                 .attr("cx", function (d) { return x(d.dayAndHour); })
                 .attr("cy", function (d) { return y(d.minute); })
                 .style("opacity", function() { return 0.5; })
-                .style("fill", function() { return color(0); });
+                .style("fill", function() { return color(0); })
+                .append("title").text(function (d) {
+                    return d.value + " commit(s) at " + d.hour + ":" + d.minute + " on " + toDayOfWeek(d.dayOfWeek);
+                });
     }
 
     function parseHour(s) {
@@ -389,6 +389,10 @@ dayOfWeek,time,value\n\
     }
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
+    }
+    function toDayOfWeek(n) {
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return days[Math.floor(n/24)];
     }
 
 </script>
