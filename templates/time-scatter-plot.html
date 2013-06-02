@@ -306,6 +306,8 @@ dayOfWeek,hour,minute,value\n\
                 .tickValues(d3.range(0, 7 * 24, 24))
                 .tickFormat(function() { return ""; });
         var yAxis = d3.svg.axis().scale(y).orient("left");
+        var defaultCommitSizeMultiplier = 5;
+        var commitSizeMultiplier = defaultCommitSizeMultiplier;
 
 
         var rootElement = d3.select("#" + elementId);
@@ -364,12 +366,12 @@ dayOfWeek,hour,minute,value\n\
                 .attr("dy", ".71em")
                 .style("text-anchor", "end");
 
-        svg.selectAll(".dot")
+        var points = svg.selectAll(".dot")
                 .data(data)
-                .enter().append("circle")
-                .attr("class", "dot")
+                .enter().append("circle");
+        points.attr("class", "dot")
                 .attr("clip-path", "url(#scatterPlotClip)")
-                .attr("r", function (d) { return d.value * 10; })
+                .attr("r", function (d) { return d.value * commitSizeMultiplier; })
                 .attr("cx", function (d) { return x(d.dayAndHour); })
                 .attr("cy", function (d) { return y(d.minute); })
                 .style("opacity", function() { return 0.5; })
@@ -377,6 +379,32 @@ dayOfWeek,hour,minute,value\n\
                 .append("title").text(function (d) {
                     return d.value + " commit(s) at " + d.hour + ":" + d.minute + " on " + toDayOfWeek(d.dayOfWeek);
                 });
+
+        var footerSpan = appendBlockElementTo(rootElement, width + margin.left);
+        var span = footerSpan.append("span").style({float: "right"});
+        span.append("label").html("Commit size multiplier: ");
+        var colorThresholdLabel = span.append("label");
+
+        span.append("button").text("-").on("click", function () {
+            commitSizeMultiplier--;
+            points.attr("r", function (d) { return d.value * commitSizeMultiplier; });
+//            data = parseRawData(rawData[rawDataIndex], threshold);
+//            updateCalendarView(dayRects, data);
+        });
+        span.append("button").text("+").on("click", function () {
+            commitSizeMultiplier++;
+            points.attr("r", function (d) { return d.value * commitSizeMultiplier; });
+//            data = parseRawData(rawData[rawDataIndex], threshold);
+//            updateCalendarView(dayRects, data);
+        });
+        span.append("button").text("reset").on("click", function () {
+            commitSizeMultiplier = defaultCommitSizeMultiplier;
+            points.attr("r", function (d) { return d.value * commitSizeMultiplier; });
+//            threshold = 95;
+//            data = parseRawData(rawData[rawDataIndex], threshold);
+//            updateCalendarView(dayRects, data);
+        });
+
     }
 
     function appendBlockElementTo(element, width) {
