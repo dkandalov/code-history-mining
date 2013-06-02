@@ -195,7 +195,7 @@
                 {"text": "review", "size": 13}
             ]}
 /*data_placeholder*/;
-    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+    var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
 
     createWordCloudOn("wordCloud");
 
@@ -262,6 +262,10 @@
                             }
                         }
                     });
+
+            rootElement.select("#footer").remove();
+            var footer = rootElement.append("span").attr("id", "footer").style("display", "block").style("width", width + "px")
+            footer.append("div").style({color: "#999", float: "right"}).html("alt+click on word to exclude it");
         }
 
         function adjustSizeOfShortWords(words) {
