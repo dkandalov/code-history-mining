@@ -3,6 +3,9 @@
 <style>
     body {
         font: 10px sans-serif;
+        background: #f2f2f2;
+        margin: 30px;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
     .axis path,
     .axis line {
@@ -289,13 +292,17 @@ dayOfWeek,time,value\n\
     var x = d3.scale.linear().range([0, width]);
     var y = d3.scale.linear().range([height, 0]);
     var color = d3.scale.category10();
-    var xAxis = d3.svg.axis().scale(x).orient("bottom")
-                .tickValues(d3.range(0, 7 * 24, 24))
+    var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
+                .tickValues(d3.range(12, 7 * 24, 24))
+                .tickSize(0).tickPadding(10)
                 .tickFormat(function (n) {
                     n = Math.floor(n/24);
                     var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
                     return days[n];
                 });
+    var xAxis = d3.svg.axis().scale(x).orient("bottom")
+                .tickValues(d3.range(0, 7 * 24, 24))
+                .tickFormat(function() { return ""; });
     var yAxis = d3.svg.axis().scale(y).orient("left");
 
     var svg = d3.select("body").append("svg")
@@ -316,13 +323,23 @@ dayOfWeek,time,value\n\
             value: d.value
         };});
 
-    x.domain([0, 168]).nice();
-    y.domain([0, 60]).nice();
+    x.domain([0, 7 * 24]).nice();
+    y.domain([0, 59]).nice();
 
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end");
+
+    svg.append("g")
+            .attr("class", "x axis labels")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxisLabels)
             .append("text")
             .attr("class", "label")
             .attr("x", width)
