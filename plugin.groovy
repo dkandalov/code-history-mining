@@ -84,9 +84,9 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
-		add(new AnAction("Change Size History") {
+		add(new AnAction("Change Size Chart") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating change size history") {
+				doInBackground("Creating change size chart") {
 					showInBrowser("changes-size-chart.html", Analysis.&createJsonForBarChartView)
 				}
 			}
