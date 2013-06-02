@@ -98,6 +98,13 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
+		add(new AnAction("Committers Changing Same Files Graph") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Committers changing same files graph") {
+					showInBrowser("author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph)
+				}
+			}
+		})
 		add(new AnAction("Changes By Package Tree Map") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Changes By Package Tree Map") {
