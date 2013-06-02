@@ -114,11 +114,11 @@ class Analysis {
 		def matchingEvents = events.reverse()
 				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
 					def relatedEvents = previousEvents
-							.findAll{ it.fileName == event.fileName && it.author != event.author } // TODO check packages?
+							.findAll{ fullFileNameIn(it) == fullFileNameIn(event) && it.author != event.author }
 					relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
 				}
 				.findAll{it != null}
-				.groupBy{[author: it.event.author, fileName: it.event.fileName]}
+				.groupBy{[author: it.event.author, fileName: fullFileNameIn(it.event)]}
 				.findAll{it.value.size() >= threshold}
 		def links = matchingEvents
 				.collectEntries{[it.key, it.value.size()]}
@@ -126,12 +126,12 @@ class Analysis {
 //		println(links.entrySet().join("\n"))
 
 		def notInMatchingEvents = { event ->
-			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && it.event.fileName == event.fileName }}
+			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && fullFileNameIn(it.event) == fullFileNameIn(event) }}
 		}
 		def relatedLinks = matchingEvents.values()
 				.inject([]){ result, entries -> result.addAll(entries.collectMany{it.relatedEvents}.unique()); result }.unique()
 				.findAll{ notInMatchingEvents(it) }
-				.groupBy{[author: it.author, fileName: it.fileName]}
+				.groupBy{[author: it.author, fileName: fullFileNameIn(it)]}
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
 //		println(relatedLinks.entrySet().join("\n"))
@@ -269,7 +269,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 		def fileNamesByRevision = events
 				.groupBy{ it.revision }
-				.values()*.collect{ fullFileNameOf(it) }*.toList()*.unique()
+				.values()*.collect{ fullFileNameIn(it) }*.toList()*.unique()
 		def pairCoOccurrences = fileNamesByRevision
 				.inject([:].withDefault{0}) { map, fileNames -> fileNames.pairs().each{ map[it.sort()] += 1 }; map }
 				.findAll{ it.value > threshold }.sort{-it.value}
@@ -347,7 +347,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
 		}
 
-		static String fullFileNameOf(FileChangeEvent event) {
+		static String fullFileNameIn(FileChangeEvent event) {
 			def nonEmptyPackage = (!event.packageBefore.empty ? event.packageBefore : event.packageAfter)
 			nonEmptyPackage + "/" + event.fileName
 		}
