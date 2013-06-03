@@ -38,6 +38,7 @@
         pointer-events: none;
     }
 </style>
+<head><title>Committers changing same files</title></head>
 <body>
 <script src="d3.v3.min.js"></script>
 <span id="rootElement"></span>
@@ -114,7 +115,7 @@ const graph = {
         /*data_placeholder*/
 };
 var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
-var graphName = "Committers changing same files";
+var graphName = "Committers changing same files (" + projectName + ")";
 
 function createForcesGraphOn(elementId, graph) {
     function QuickFind(size) {
