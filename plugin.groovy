@@ -120,6 +120,13 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
+		add(new AnAction("Commit Time Punchcard") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Commit Time Punchcard") {
+					showInBrowser("commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard)
+				}
+			}
+		})
 		add(new Separator())
 		add(new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
