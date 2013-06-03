@@ -305,10 +305,10 @@ dayOfWeek,hour,minute,value\n\
         var xAxis = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(0, 7 * 24, 24))
                 .tickFormat(function() { return ""; });
-        var yAxis = d3.svg.axis().scale(y).orient("left");
-        var defaultCommitSizeMultiplier = 5;
+        var yAxis = null;
+        var defaultCommitSizeMultiplier = 1;
         var commitSizeMultiplier = defaultCommitSizeMultiplier;
-
+        var groupByHours = true;
 
         var rootElement = d3.select("#" + elementId);
 
@@ -346,7 +346,8 @@ dayOfWeek,hour,minute,value\n\
                 }).map(dataByMinute));
 
         x.domain([0, 7 * 24]).nice();
-        y.domain([0, 59]).nice();
+
+        var points = updatePoints();
 
         svg.append("g")
                 .attr("class", "x axis")
@@ -378,19 +379,6 @@ dayOfWeek,hour,minute,value\n\
                 .attr("dy", ".71em")
                 .style("text-anchor", "end");
 
-        var points = svg.selectAll(".dot")
-                .data(dataByMinute)
-                .enter().append("circle");
-        points.attr("class", "dot")
-                .attr("clip-path", "url(#scatterPlotClip)")
-                .attr("r", function (d) { return d.value * commitSizeMultiplier; })
-                .attr("cx", function (d) { return x(d.dayAndHour); })
-                .attr("cy", function (d) { return y(d.minute); })
-                .style("opacity", function() { return 0.7; })
-                .style("fill", function() { return color(0); })
-                .append("title").text(function (d) {
-                    return d.value + " commit(s) at " + d.hour + ":" + d.minute + " on " + toDayOfWeek(d.dayOfWeek);
-                });
 
         var footerSpan = appendBlockElementTo(rootElement, width + margin.left);
         var span = footerSpan.append("span").style({float: "right"});
@@ -418,7 +406,15 @@ dayOfWeek,hour,minute,value\n\
         dropDown.append("option").attr("value", "0").html("hours");
         dropDown.append("option").attr("value", "1").html("minutes");
         dropDown.on("change", function() {
-            if (+this.value == 1) {
+            groupByHours = (+this.value == 0);
+            points = updatePoints();
+        });
+
+        updatePointSizes(points, multiplierLabel, commitSizeMultiplier);
+
+        function updatePoints() {
+            var points;
+            if (groupByHours) {
                 y.domain([0, 24]).nice();
 
                 svg.selectAll(".dot").remove();
@@ -430,7 +426,7 @@ dayOfWeek,hour,minute,value\n\
                         .attr("r", function(d) { return d.value * commitSizeMultiplier; })
                         .attr("cx", function(d) { return x((d.dayOfWeek - 1) * 24 + 12); })
                         .attr("cy", function(d) { return y(d.hour); })
-                        .style("opacity", function() { return 0.7; })
+                        .style("opacity", function() { return 0.8; })
                         .style("fill", function() { return color(0); })
                         .append("title").text(function (d) {
                             return d.value + " commit(s) at " + d.hour + " hours " + " on " + toDayOfWeek(d.dayOfWeek);
@@ -439,11 +435,28 @@ dayOfWeek,hour,minute,value\n\
                 yAxis = d3.svg.axis().scale(y).orient("left");
                 svg.select(".y.axis").call(yAxis);
             } else {
+                y.domain([0, 59]).nice();
 
+                svg.selectAll(".dot").remove();
+                points = svg.selectAll(".dot")
+                        .data(dataByMinute)
+                        .enter().append("circle");
+                points.attr("class", "dot")
+                        .attr("clip-path", "url(#scatterPlotClip)")
+                        .attr("r", function (d) { return d.value * commitSizeMultiplier; })
+                        .attr("cx", function (d) { return x(d.dayAndHour); })
+                        .attr("cy", function (d) { return y(d.minute); })
+                        .style("opacity", function() { return 0.8; })
+                        .style("fill", function() { return color(0); })
+                        .append("title").text(function (d) {
+                            return d.value + " commit(s) at " + d.hour + ":" + d.minute + " on " + toDayOfWeek(d.dayOfWeek);
+                        });
+
+                yAxis = d3.svg.axis().scale(y).orient("left");
+                svg.select(".y.axis").call(yAxis);
             }
-        });
-
-        updatePointSizes(points, multiplierLabel, commitSizeMultiplier);
+            return points;
+        }
     }
 
     function updatePointSizes(points, label, multiplier) {
