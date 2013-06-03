@@ -8,6 +8,7 @@ class FileChangeInfo {
 	static final ChangeStats TOO_BIG_TO_DIFF = new ChangeStats(-2, -2, -2, -2, -2)
 
 	String fileName
+	String fileNameBefore
 	String packageName
 	String packageNameBefore
 	String fileChangeType
@@ -16,6 +17,6 @@ class FileChangeInfo {
 
 
 	@Override String toString() {
-		"FileChangeInfo(\"$fileName\",\"$packageName\",\"$packageNameBefore\",\"$fileChangeType\",$lines,$chars)"
+		"FileChangeInfo(\"$fileName\",\"$fileNameBefore\",\"$packageName\",\"$packageNameBefore\",\"$fileChangeType\",$lines,$chars)"
 	}
 }
