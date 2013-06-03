@@ -59,7 +59,7 @@ class EventStorage {
 	private static String toCsv(FileChangeEvent changeEvent) { // TODO use proper csv (e.g. files can have commas in name), may be http://csv4180.sourceforge.net/
 		changeEvent.with {
 			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
-			[format(revisionDate), revision, author, fileName, packageBefore, packageAfter, fileChangeType,
+			[format(revisionDate), revision, author, fileName, packageName, packageNameBefore, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
 					commitMessageEscaped].join(",")
@@ -67,7 +67,7 @@ class EventStorage {
 	}
 
 	private static FileChangeEvent fromCsv(String line) {
-		def (revisionDate, revision, author, fileName, packageBefore, packageAfter, fileChangeType,
+		def (revisionDate, revision, author, fileName, packageName, packageNameBefore, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved
 		) = line.split(",")
@@ -76,7 +76,7 @@ class EventStorage {
 
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
-				new FileChangeInfo(fileName, packageBefore, packageAfter, fileChangeType,
+				new FileChangeInfo(fileName, packageName, packageNameBefore, fileChangeType,
 						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
 						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
 				)

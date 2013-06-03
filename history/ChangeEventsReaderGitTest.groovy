@@ -24,7 +24,7 @@ class ChangeEventsReaderGitTest {
 				new FileChangeEvent(commitInfo, new FileChangeInfo("Theories.java", "/src/org/junit/experimental/theories", "", "MODIFICATION", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "", "MOVED", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4ClassRunner.java", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4MethodRunner.java", "/src/org/junit/internal/runners", "", "NEW", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("TestMethod.java", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("StubbedTheories.java", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "", "MODIFICATION", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("StubbedTheoryMethod.java", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "", "MODIFICATION", NA, NA)),

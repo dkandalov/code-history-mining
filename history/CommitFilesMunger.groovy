@@ -46,13 +46,13 @@ class CommitFilesMunger {
 		}
 
 		def projectPath = toCanonicalPath(project.basePath)
-		def packageBefore = measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
-		def packageAfter = measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(projectPath, "") }
+		def packageNameBefore = measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
+		def packageName = measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(projectPath, "") }
 
 		new FileChangeInfo(
 				nonEmptyRevision.file.name,
-				packageBefore,
-				packageAfter == packageBefore ? "" : packageAfter,
+				packageName,
+				packageNameBefore == packageName ? "" : packageNameBefore,
 				change.type.toString(),
 				lineChangesStats,
 				charChangesStats

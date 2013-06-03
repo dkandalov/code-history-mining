@@ -65,7 +65,7 @@ class Analysis {
 	}
 
 	static void createJson_AverageAmountOfFilesInCommitByDay_Chart(List<FileChangeEvent> events) {
-		def amountOfFilesIn = { eventsList -> eventsList.collect{it.fileName + it.packageBefore + it.packageAfter}.unique().size() }
+		def amountOfFilesIn = { eventsList -> eventsList.collect{it.fileName + it.packageNameBefore + it.packageName}.unique().size() }
 		def averageChangeSize = { eventsByRevision ->
 			if (eventsByRevision.empty) 0
 			else eventsByRevision.entrySet().sum(0){ amountOfFilesIn(it.value) } / eventsByRevision.size()
@@ -174,13 +174,13 @@ class Analysis {
 
 	static class TreeMapView {
 		static String createJsonForChangeSizeTreeMap(events) {
-			events = events.groupBy{ [it.revision, it.packageBefore, it.packageAfter] }
+			events = events.groupBy{ [it.revision, it.packageNameBefore, it.packageName] }
 					.collect{ it.value.first() }
 					.collectMany{
-				if (!it.packageBefore.empty && !it.packageAfter.empty && it.packageBefore != it.packageAfter) {
-					[it.packageBefore + "/" + it.fileName, it.packageAfter + "/" + it.fileName]
+				if (!it.packageNameBefore.empty && !it.packageName.empty && it.packageNameBefore != it.packageName) {
+					[it.packageNameBefore + "/" + it.fileName, it.packageName + "/" + it.fileName]
 				} else {
-					[(!it.packageBefore.empty ? it.packageBefore : it.packageAfter) + "/" + it.fileName]
+					[(!it.packageNameBefore.empty ? it.packageNameBefore : it.packageName) + "/" + it.fileName]
 				}
 			}
 
@@ -351,7 +351,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		}
 
 		static String fullFileNameIn(FileChangeEvent event) {
-			def nonEmptyPackage = (!event.packageBefore.empty ? event.packageBefore : event.packageAfter)
+			def nonEmptyPackage = (!event.packageNameBefore.empty ? event.packageNameBefore : event.packageName)
 			nonEmptyPackage + "/" + event.fileName
 		}
 
