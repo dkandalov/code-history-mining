@@ -76,7 +76,7 @@ class EventStorage {
 
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
-				new FileChangeInfo(fileName, fileChangeType, packageBefore, packageAfter,
+				new FileChangeInfo(fileName, packageBefore, packageAfter, fileChangeType,
 						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
 						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
 				)

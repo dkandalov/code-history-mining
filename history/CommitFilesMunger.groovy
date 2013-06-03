@@ -51,9 +51,9 @@ class CommitFilesMunger {
 
 		new FileChangeInfo(
 				nonEmptyRevision.file.name,
-				change.type.toString(),
 				packageBefore,
 				packageAfter == packageBefore ? "" : packageAfter,
+				change.type.toString(),
 				lineChangesStats,
 				charChangesStats
 		)
