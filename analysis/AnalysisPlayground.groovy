@@ -15,11 +15,11 @@ class AnalysisPlayground {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
-//		fillTemplate("calendar-view.html", projectName, Analysis.createJsonForCalendarView(events))
-//		fillTemplate("changes-size-chart.html", projectName, Analysis.createJsonForBarChartView(events))
+//		fillTemplate("calendar-view.html", projectName, Analysis.createJson_ChangeSize_Calendar(events))
+//		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_ChangeSize_Chart(events))
 //		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJson_FilesInTheSameCommit_Graph(events))
-//		fillTemplate("wordcloud.html", projectName, Analysis.createJsonForCommitCommentWordCloud(events))
-//		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJsonForChangeSizeTreeMap(events))
+//		fillTemplate("wordcloud.html", projectName, Analysis.createJson_CommitComments_WordCloud(events))
+//		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
 //		Analysis.createJson_AmountOfComitters_Chart(events)
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)

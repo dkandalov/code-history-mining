@@ -80,14 +80,14 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		add(new AnAction("Change Size Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating calendar view") {
-					showInBrowser("calendar-view.html", Analysis.&createJsonForCalendarView)
+					showInBrowser("calendar-view.html", Analysis.&createJson_ChangeSize_Calendar)
 				}
 			}
 		})
 		add(new AnAction("Change Size Chart") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating change size chart") {
-					showInBrowser("changes-size-chart.html", Analysis.&createJsonForBarChartView)
+					showInBrowser("changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart)
 				}
 			}
 		})
@@ -105,18 +105,18 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
-		add(new AnAction("Changes By Package Tree Map") {
+		add(new AnAction("Change Size in Folders Treemap") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Changes By Package Tree Map") {
+				doInBackground("Change Size in Folders Treemap") {
 					// TODO add sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-					showInBrowser("treemap.html", Analysis.TreeMapView.&createJsonForChangeSizeTreeMap)
+					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
 				}
 			}
 		})
 		add(new AnAction("Commit Messages Word Cloud") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Commit Messages Word Cloud") {
-					showInBrowser("wordcloud.html", Analysis.&createJsonForCommitCommentWordCloud)
+					showInBrowser("wordcloud.html", Analysis.&createJson_CommitComments_WordCloud)
 				}
 			}
 		})

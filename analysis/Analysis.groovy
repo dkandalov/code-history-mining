@@ -173,7 +173,7 @@ class Analysis {
 	}
 
 	static class TreeMapView {
-		static String createJsonForChangeSizeTreeMap(events) {
+		static String createJson_AmountOfChangeInFolders_TreeMap(events) {
 			events = events.groupBy{ [it.revision, it.packageNameBefore, it.packageName] }
 					.collect{ it.value.first() }
 					.collectMany{
@@ -239,7 +239,7 @@ class Analysis {
 		}
 	}
 
-	static String createJsonForCommitCommentWordCloud(events) {
+	static String createJson_CommitComments_WordCloud(events) {
 		def excludedWords = "also,as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
 				"which,that,this,them,they,we,an,the,is,be,are,was,do,it,so,not,no,and".split(",").toList().toSet()
 		def notExcluded = { String s -> s.length() > 1 && !excludedWords.contains(s) }
@@ -285,7 +285,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJsonForBarChartView(List<FileChangeEvent> events) {
+	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
@@ -299,7 +299,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static String createJsonForCalendarView(List<FileChangeEvent> events) {
+	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
