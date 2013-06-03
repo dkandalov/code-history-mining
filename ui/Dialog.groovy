@@ -39,7 +39,7 @@ class Dialog {
 			add(new JLabel("To:"), bag.next())
 			add(toDatePicker, bag.next())
 			add(new JLabel(), bag.next().fillCellHorizontally())
-			add(new JLabel("VCS Request batch size:"), bag.nextLine().next())
+			add(new JLabel("VCS request size:"), bag.nextLine().next())
 			add(vcsRequestSizeField, bag.next())
 			add(new JLabel("day(s)"), bag.next().coverLine())
 			add(new JLabel("File path:"), bag.nextLine().next())
