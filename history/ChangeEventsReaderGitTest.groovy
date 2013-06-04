@@ -22,7 +22,7 @@ class ChangeEventsReaderGitTest {
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)
 		def expectedChangeEvents = [
 				new FileChangeEvent(commitInfo, new FileChangeInfo("Theories.java", "", "/src/org/junit/experimental/theories", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethodRunner.java", "TheoryMethod.java", "/src/org/junit/experimental/theories/internal", "", "MOVED", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethodRunner.java", "TheoryMethod.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "", "NEW", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("TestMethod.java", "", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),

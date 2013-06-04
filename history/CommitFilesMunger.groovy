@@ -13,6 +13,7 @@ import history.events.FileChangeInfo
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
+import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static history.CommitMungingUtil.*
 import static history.util.Measure.measure
 
@@ -52,12 +53,20 @@ class CommitFilesMunger {
 		def packageName = measure("VCS content time"){
 			withDefault(packageNameBefore, change.afterRevision?.file?.parentPath?.path).replace(projectPath, "")
 		}
+		def optimizedPackageNameBefore = {
+			if (change.type != MODIFICATION) packageNameBefore
+			else packageNameBefore == packageName ? "" : packageNameBefore
+		}
+		def optimizedFileNameBefore = {
+			if (change.type != MODIFICATION) fileNameBefore
+			else fileNameBefore == fileName ? "" : fileNameBefore
+		}
 
 		new FileChangeInfo(
 				fileName,
-				fileNameBefore == fileName ? "" : fileNameBefore,
+				optimizedFileNameBefore(),
 				packageName,
-				packageNameBefore == packageName ? "" : packageNameBefore,
+				optimizedPackageNameBefore(),
 				change.type.toString(),
 				lineChangesStats,
 				charChangesStats
