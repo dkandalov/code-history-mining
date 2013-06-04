@@ -1,5 +1,6 @@
 package analysis
 import groovy.time.TimeCategory
+import history.events.CommitInfo
 import history.events.FileChangeEvent
 import history.events.FileChangeInfo
 
@@ -107,6 +108,8 @@ class Analysis {
 	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, int threshold = 7) {
 		Collection.mixin(Util)
 
+		events = useLatestNameForMovedFiles(events)
+
 		def keepOneWeekOfEvents = { event, currentEvent ->
 			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
 			DAYS.convert(timeDiff, MILLISECONDS) <= 7
@@ -123,7 +126,6 @@ class Analysis {
 		def links = matchingEvents
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
-//		println(links.entrySet().join("\n"))
 
 		def notInMatchingEvents = { event ->
 			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && fullFileNameIn(it.event) == fullFileNameIn(event) }}
@@ -134,7 +136,6 @@ class Analysis {
 				.groupBy{[author: it.author, fileName: fullFileNameIn(it)]}
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
-//		println(relatedLinks.entrySet().join("\n"))
 
 		def allLinks = relatedLinks.entrySet().inject(links) { map, entry ->
 			if (map.containsKey(entry.key)) {
@@ -144,7 +145,6 @@ class Analysis {
 			}
 			map
 		}
-//		println(allLinks.entrySet().join("\n"))
 
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def files = allLinks.keySet().collect{it.fileName}.unique().toList()
@@ -173,7 +173,9 @@ class Analysis {
 	}
 
 	static class TreeMapView {
-		static String createJson_AmountOfChangeInFolders_TreeMap(events) {
+		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events) {
+			events = useLatestNameForMovedFiles(events)
+
 			events = events.groupBy{ [it.revision, it.packageNameBefore, it.packageName] }
 					.collect{ it.value.first() }
 					.collectMany{
@@ -329,6 +331,42 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	static class Util {
+		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events) {
+			for (int i = 0; i < events.size(); i++) {
+				def event = events[i]
+				if (event.fileChangeType != "MOVED") continue
+
+				def oldFileName = event.fileNameBefore
+				def oldPackageName = event.packageNameBefore
+				def newFileName = event.fileName
+				def newPackageName = event.packageName
+
+				for (int j = i + 1; j < events.size(); j++) {
+					def thatEvent = events[j]
+					if (thatEvent.fileName == oldFileName && thatEvent.packageName == oldPackageName) {
+						def fileChangeType = thatEvent.fileChangeType
+						if (thatEvent.fileChangeType == "MOVED") {
+							oldFileName = thatEvent.fileNameBefore
+							oldPackageName = thatEvent.packageNameBefore
+							fileChangeType = "MOVED_UNDONE"
+						}
+						events[j] = updated(thatEvent, newFileName, newPackageName, fileChangeType)
+					}
+				}
+			}
+			events
+		}
+
+		private static FileChangeEvent updated(FileChangeEvent fileChangeEvent, String newFileName, String newPackageName,
+		                                       String updatedChangeType) {
+			fileChangeEvent.with{
+				new FileChangeEvent(
+						new CommitInfo(revision, author, revisionDate, commitMessage),
+						new FileChangeInfo(newFileName, "", newPackageName, "", updatedChangeType, lines, chars)
+				)
+			}
+		}
+		
 		static def changeSizeInChars(FileChangeEvent event) {
 			if (event.chars == FileChangeInfo.NA || event.chars == FileChangeInfo.TOO_BIG_TO_DIFF) 0
 			else event.chars.added + event.chars.modified + event.chars.removed
