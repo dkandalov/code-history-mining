@@ -174,20 +174,11 @@ class Analysis {
 
 	static class TreeMapView {
 		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events) {
-			events = useLatestNameForMovedFiles(events)
-
-			events = events.groupBy{ [it.revision, it.packageNameBefore, it.packageName] }
-					.collect{ it.value.first() }
-					.collectMany{
-				if (!it.packageNameBefore.empty && !it.packageName.empty && it.packageNameBefore != it.packageName) {
-					[it.packageNameBefore + "/" + it.fileName, it.packageName + "/" + it.fileName]
-				} else {
-					[(!it.packageNameBefore.empty ? it.packageNameBefore : it.packageName) + "/" + it.fileName]
-				}
-			}
+			def filePaths = useLatestNameForMovedFiles(events)
+					.collect{ it.packageName + "/" + it.fileName }
 
 			def containerTree = new Container("", 0)
-			events.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
+			filePaths.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
 			containerTree.firstChild.toJSON()
 		}
 
