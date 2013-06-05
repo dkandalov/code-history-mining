@@ -149,8 +149,8 @@ class Analysis {
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def files = allLinks.keySet().collect{it.fileName}.unique().toList()
 		def nodesJSLiteral =
-			[files.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n") +
-			authors.collect{'{"name": "' + it + '", "group": 2}'}.join(",\n")].join(",")
+			(files.collect{'{"name": "' + it + '", "group": 1}'} +
+			authors.collect{'{"name": "' + it + '", "group": 2}'}).join(",\n")
 
 		def nodes = files + authors
 		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(it.key.fileName), it.value] }
@@ -380,8 +380,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		}
 
 		static String fullFileNameIn(FileChangeEvent event) {
-			def nonEmptyPackage = (!event.packageNameBefore.empty ? event.packageNameBefore : event.packageName)
-			nonEmptyPackage + "/" + event.fileName
+			event.packageName + "/" + event.fileName
 		}
 
 		static Date floorToDay(Date date) {
