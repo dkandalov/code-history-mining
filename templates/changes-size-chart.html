@@ -211,6 +211,7 @@ date,changeSize\n\
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
+        var svgPos = svg[0][0].getBoundingClientRect();
         svg.append("defs").append("clipPath").attr("id", "chartClip")
                 .append("rect").attr("width", width).attr("height", height);
 
@@ -250,6 +251,13 @@ date,changeSize\n\
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
         createBarsAndBrushOn(brushFooter);
 
+        var nothingToShowLabel = rootElement.append("div")
+                .html("Unfortunately, there is nothing to show.")
+                .style("position", "absolute")
+                .style("top", function (){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
+                .style("opacity", 0);
+
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
         footerSpan.append("label").html("Group by: ");
@@ -288,6 +296,8 @@ date,changeSize\n\
             createBarsAndBrushOn(brushFooter);
 
             zoomedView.select(".y.axis").call(yAxis);
+
+            nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
 
             onBrush();
         }
