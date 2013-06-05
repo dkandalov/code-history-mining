@@ -178,6 +178,8 @@ date,changeSize\n\
 ]/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
+    drawChangeSizeChart("changes-size-view", rawData);
+
     function drawChangeSizeChart(elementId, rawData) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
                 margin2 = {top: 430, right: 20, bottom: 15, left: 40},
@@ -338,6 +340,7 @@ date,changeSize\n\
                     .attr("y", -6)
                     .attr("height", height2 + 7);
         }
+
         function createBarsOn(element) {
             element.selectAll(".bar").remove();
             element.selectAll(".bar")
@@ -361,6 +364,7 @@ date,changeSize\n\
                                 yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
         }
+
         function onBrush() {
             var domain = brush.empty() ? x2.domain() : brush.extent();
             x.domain(domain);
@@ -371,21 +375,21 @@ date,changeSize\n\
                     .attr("width", barWidth);
             zoomedView.select(".x.axis").call(xAxis);
         }
+
         function barWidthFor(timeInterval, fromDate, toDate) {
             var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
             barWidth = Math.floor(barWidth);
             return barWidth < 1 ? 1 : barWidth;
         }
-        function nonZero(length) {
-            return (length > 0 ? length : 0.0000001);
-        }
-
-        function appendBlockElementTo(element, width) {
-            return element.append("span").style({display: "block", width: width + "px"});
-        }
     }
 
-    drawChangeSizeChart("changes-size-view", rawData);
+    function nonZero(length) {
+        return (length > 0 ? length : 0.0000001);
+    }
+
+    function appendBlockElementTo(element, width) {
+        return element.append("span").style({display: "block", width: width + "px"});
+    }
 
 </script>
 </body>
