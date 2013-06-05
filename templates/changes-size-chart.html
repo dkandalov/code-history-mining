@@ -261,6 +261,11 @@ date,changeSize\n\
 
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
+
+        footerSpan.append("label").html("Total size: ");
+        var amountOfCommitsLabel = footerSpan.append("label").html("");
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
+
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
         groupByDropDown.append("option").attr("value", "day").html("days");
@@ -271,6 +276,7 @@ date,changeSize\n\
             updateChart();
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
+
         footerSpan.append("label").html("Change size measured in: ");
         var dropDown = footerSpan.append("select");
         dropDown.append("option").attr("value", "0").html("commits");
@@ -281,6 +287,9 @@ date,changeSize\n\
             daysData = parseRawData(rawData[rawDataIndex]);
             updateChart();
         });
+
+        updateChart();
+
 
         function updateChart() {
             data = aggregate(daysData, timeInterval);
@@ -307,19 +316,6 @@ date,changeSize\n\
                 date: dateFormat.parse(d.date),
                 changeSize: parseInt(d.changeSize)};
             });
-        }
-        function aggregate(daysData, timeInterval) {
-            if (timeInterval == d3.time.day) return daysData;
-            return d3.values(d3.nest()
-                    .key(function (d) { return timeInterval.floor(d.date); })
-                    .rollup(function (days) {
-                        var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
-                        var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                        return {date: date, changeSize: totalChangeSize };
-                    })
-                    .map(daysData)).filter(function (d) {
-                        return d.changeSize > 0;
-                    });
         }
         function createBarsAndBrushOn(element) {
             element.selectAll("g").remove();
@@ -361,7 +357,7 @@ date,changeSize\n\
                             dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
                         }
                         return xAxisLabel + ": " + dateAsString + "\n" +
-                                yAxisLabel + ": " + valueFormat(d.changeSize);
+                               yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
         }
 
@@ -374,6 +370,8 @@ date,changeSize\n\
                     .attr("x", function (d) { return x(d.date); })
                     .attr("width", barWidth);
             zoomedView.select(".x.axis").call(xAxis);
+
+            amountOfCommitsLabel.html(d3.format(".3s")(amountOfCommitsWithin(domain, data)));
         }
 
         function barWidthFor(timeInterval, fromDate, toDate) {
@@ -381,6 +379,26 @@ date,changeSize\n\
             barWidth = Math.floor(barWidth);
             return barWidth < 1 ? 1 : barWidth;
         }
+    }
+
+    function amountOfCommitsWithin(domain, data) {
+        var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
+        var changeSize = function(d) { return d.changeSize; };
+        return d3.sum(data.filter(withinDomain), changeSize);
+    }
+
+    function aggregate(daysData, timeInterval) {
+        if (timeInterval == d3.time.day) return daysData;
+        return d3.values(d3.nest()
+                        .key(function (d) { return timeInterval.floor(d.date); })
+                        .rollup(function (days) {
+                            var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
+                            var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
+                            return {date: date, changeSize: totalChangeSize };
+                        })
+                        .map(daysData)).filter(function (d) {
+                    return d.changeSize > 0;
+                });
     }
 
     function nonZero(length) {
