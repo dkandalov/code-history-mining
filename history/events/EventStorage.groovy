@@ -1,5 +1,7 @@
 package history.events
 import com.intellij.openapi.util.io.FileUtil
+import history.events.csv4180.CSVReader
+import history.events.csv4180.CSVWriter
 
 import java.text.SimpleDateFormat
 
@@ -12,7 +14,7 @@ class EventStorage {
 		this.filePath = filePath
 	}
 
-	List<FileChangeEvent> readAllEvents(whenFiledToParseLine = {}) {
+	List<FileChangeEvent> readAllEvents(whenFiledToParseLine = {line, e ->}) {
 		def events = []
 		new File(filePath).withReader { reader ->
 			def line
@@ -56,22 +58,27 @@ class EventStorage {
 		changeEvents.collect{toCsv(it)}.join("\n") + "\n"
 	}
 
-	private static String toCsv(FileChangeEvent changeEvent) { // TODO use proper csv (e.g. files can have commas in name), may be http://csv4180.sourceforge.net/
+	private static String toCsv(FileChangeEvent changeEvent) {
 		changeEvent.with {
-			def commitMessageEscaped = '"' + commitMessage.replaceAll("\"", "\\\"").replaceAll("\n", "\\\\n") + '"'
+			def stringWriter = new StringWriter()
+			def csvWriter = new CSVWriter(stringWriter)
 			[format(revisionDate), revision, author, fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
-					commitMessageEscaped].join(",")
+					commitMessage].each { csvWriter.writeField(String.valueOf(it)) }
+			csvWriter.close()
+			stringWriter.toString()
 		}
 	}
 
 	private static FileChangeEvent fromCsv(String line) {
+		def fields = []
+		def csvReader = new CSVReader(new StringReader(line))
+		csvReader.readFields(fields)
 		def (revisionDate, revision, author, fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
-				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved
-		) = line.split(",")
-		def commitMessage = line.substring(line.indexOf('"') + 1, line.size() - 1)
+				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage
+		) = fields
 		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
 
 		def event = new FileChangeEvent(

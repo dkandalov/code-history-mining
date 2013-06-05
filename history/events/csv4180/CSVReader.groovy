@@ -84,7 +84,7 @@ public class CSVReader extends BufferedReader {
 	 *             input.
 	 */
 	public String readField() throws IOException {
-		int c;
+		int i;
 		final int UNQUOTED = 0;
 		final int QUOTED = 1;
 		final int QUOTEDPLUS = 2;
@@ -95,7 +95,8 @@ public class CSVReader extends BufferedReader {
 		}
 
 		this.buffer.setLength(0);
-		while ((c = this.read()) >= 0) {
+		while ((i = this.read()) >= 0) {
+			char c = (char) i
 			if (state == QUOTEDPLUS) {
 				switch (c) {
 					case '"':
