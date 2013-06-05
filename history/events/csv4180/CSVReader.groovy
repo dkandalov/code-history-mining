@@ -1,153 +1,91 @@
 package history.events.csv4180
 /**
- * CSV4180Reader provides a simple way to import CSV values from a file. The
- * reader extends BufferedReader for improved performance.
+ * Originally copied from https://csv4180.svn.sourceforge.net/svnroot/csv4180/
+ * Should be compatible with http://www.apps.ietf.org/rfc/rfc4180.html
  *
  * @author Thomas Davis (sunsetbrew)
  * @copyright Copyright (c) 2010, Thomas Davis
  * @license http://opensource.org/licenses/mit-license.php MIT License
  */
-public class CSVReader extends BufferedReader {
+class CSVReader extends BufferedReader {
 
-	/**
-	 * Create a buffering character-input stream that uses a default-sized input
-	 * buffer.
-	 *
-	 * @param in
-	 *            A Reader
-	 */
-	public CSVReader(Reader reader) {
-		super(reader);
+	CSVReader(Reader reader) {
+		super(reader)
 	}
 
-	/**
-	 * Create a buffering character-input stream that uses an input buffer of
-	 * the specified size.
-	 *
-	 * @param in
-	 *            A Reader
-	 * @param sz
-	 *            Input-buffer size
-	 */
-	public CSVReader(Reader reader, int sz) {
-		super(reader, sz);
-	}
-
-	/**
-	 * Indicates if the last field read was at the end of the line.
-	 *
-	 * @return true if last field read was at the end of the line, false
-	 *         otherwise or if no fields have been read.
-	 */
-	public boolean hasMoreFieldsOnLine() {
-		return this.moreFieldsOnLine;
-	}
-
-	/**
-	 * Indicates if all the data from the reader has been read.
-	 *
-	 * @return true if all the data from the reader has been read.
-	 */
-	public boolean isEOF() {
-		return this.eof;
-	}
-
-	/**
-	 * Reads the current line's fields into an ArrayList. This is a convenience
-	 * method.
-	 *
-	 * @param fields
-	 *            container for the fields in the current row. It will be
-	 *            cleared.
-	 * @throws IOException
-	 *             on general I/O error
-	 * @throws EOFException
-	 *             on end of file
-	 */
-	public void readFields(List<String> fields) throws IOException {
-		fields.clear();
-		if (this.eof) {
-			throw new EOFException();
+	void readFields(List<String> fields) throws IOException {
+		fields.clear()
+		if (eof) {
+			throw new EOFException()
 		}
-		fields.add(readField());
-		while (this.moreFieldsOnLine) {
-			fields.add(readField());
+		fields.add(readField())
+		while (moreFieldsOnLine) {
+			fields.add(readField())
 		}
 	}
 
-	/**
-	 * Reads the next field from the input removing quotes as necessary.
-	 *
-	 * @return next field
-	 * @throws IOException
-	 *             If an I/O error occurs, may be an EOFException on end of
-	 *             input.
-	 */
-	public String readField() throws IOException {
-		int i;
-		final int UNQUOTED = 0;
-		final int QUOTED = 1;
-		final int QUOTEDPLUS = 2;
-		int state = UNQUOTED;
+	String readField() throws IOException {
+		int state = UNQUOTED
 
-		if (this.eof) {
-			throw new EOFException();
+		if (eof) {
+			throw new EOFException()
 		}
 
-		this.buffer.setLength(0);
-		while ((i = this.read()) >= 0) {
+		buffer.setLength(0)
+
+		int i
+		while ((i = read()) >= 0) {
 			char c = (char) i
 			if (state == QUOTEDPLUS) {
 				switch (c) {
 					case '"':
-						this.buffer.append('"');
-						state = QUOTED;
-						continue;
+						buffer.append('"')
+						state = QUOTED
+						continue
 					default:
-						state = UNQUOTED;
-						break;
+						state = UNQUOTED
+						break
 				}
 			}
 			if (state == QUOTED) {
 				switch (c) {
 					default:
-						this.buffer.append((char) c);
-						continue;
+						buffer.append((char) c)
+						continue
 					case '"':
-						state = QUOTEDPLUS;
-						continue;
+						state = QUOTEDPLUS
+						continue
 				}
 			}
 
 			// (state == UNQUOTED)
 			switch (c) {
 				case '"':
-					state = QUOTED;
-					continue;
+					state = QUOTED
+					continue
 				case '\r':
-					continue;
+					continue
 				case '\n':
 				case ',':
-					this.moreFieldsOnLine = (c != '\n');
-					return this.buffer.toString();
+					moreFieldsOnLine = (c != '\n')
+					return buffer.toString()
 				default:
-					this.buffer.append((char) c);
-					continue;
+					buffer.append((char) c)
+					continue
 			}
 
 		}
-		this.eof = true;
-		this.moreFieldsOnLine = false;
-		return this.buffer.toString();
+		eof = true
+		moreFieldsOnLine = false
+		return buffer.toString()
 	}
 
-	/** @ignore */
-	private boolean moreFieldsOnLine = true;
+	private boolean moreFieldsOnLine = true
+	private boolean eof = false
+	private final StringBuffer buffer = new StringBuffer()
 
-	/** @ignore */
-	private boolean eof = false;
-
-	/** @ignore */
-	private final StringBuffer buffer = new StringBuffer();
+	private final int UNQUOTED = 0
+	private final int QUOTED = 1
+	private final int QUOTEDPLUS = 2
 
 }
