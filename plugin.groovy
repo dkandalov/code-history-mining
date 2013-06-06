@@ -1,5 +1,6 @@
 import analysis.Analysis
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.fileTypes.FileType
@@ -118,6 +119,11 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 			}
 		})
 		add(new Separator())
+		add(new AnAction("Show in File Manager") {
+			@Override void actionPerformed(AnActionEvent event) {
+				ShowFilePathAction.openFile(file)
+			}
+		})
 		add(new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
 				int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
