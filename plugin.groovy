@@ -1,5 +1,4 @@
 import analysis.Analysis
-import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
@@ -8,15 +7,10 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.table.JBTable
 import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
 import history.*
 import history.events.EventStorage
@@ -24,17 +18,13 @@ import history.util.Measure
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
-
-import javax.swing.*
-import javax.swing.table.DefaultTableModel
-import java.awt.*
+import ui.ProjectStatisticsToolWindow
 
 import static IntegrationTestsRunner.runIntegrationTests
+import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
-import static java.awt.GridBagConstraints.BOTH
-import static java.awt.GridBagConstraints.NORTH
 import static ui.Dialog.showDialog
 
 def pathToTemplates = pluginPath + "/templates"
@@ -140,10 +130,10 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 
 def grabHistoryOf(Project project) {
 	if (CommitReader.amountOfVCSIn(project) == 0) {
-		Messages.showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 		return
 	} else if (CommitReader.amountOfVCSIn(project) > 1) {
-		Messages.showWarningDialog(project, "Cannot grab project history because there are there are multiple VCS roots setup for it.", "Code History Mining")
+		showWarningDialog(project, "Cannot grab project history because there are there are multiple VCS roots setup for it.", "Code History Mining")
 		return
 	}
 
@@ -212,50 +202,8 @@ def showProjectStatistics(Project project) {
 		if (fileCount > 0) map.put(fileType.defaultExtension, fileCount)
 		map
 	}.sort{ -it.value }
-	def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
 
-	def actionGroup = new DefaultActionGroup().with{
-		add(new AnAction(AllIcons.Actions.Cancel) {
-			@Override void actionPerformed(AnActionEvent event) {
-				unregisterToolWindow("Project Statistics")
-			}
-		})
-		it
-	}
-
-	def createToolWindowPanel = {
-		JPanel rootPanel = new JPanel().with{
-			def tableModel = new DefaultTableModel() {
-				@Override boolean isCellEditable(int row, int column) { false }
-			}
-			tableModel.addColumn("File extension")
-			tableModel.addColumn("File count")
-			fileCountByFileExtension.entrySet().each {
-				tableModel.addRow([it.key, it.value].toArray())
-			}
-			tableModel.addRow(["Total", totalAmountOfFiles].toArray())
-			def table = new JBTable(tableModel).with { // TODO make table content copyable
-				striped = true
-				showGrid = false
-				it
-			}
-
-			layout = new GridBagLayout()
-			GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
-			add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
-
-			it
-		}
-
-		def toolWindowPanel = new SimpleToolWindowPanel(true)
-		toolWindowPanel.content = rootPanel
-		toolWindowPanel.toolbar = ActionManager.instance.createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, actionGroup, true).component
-		toolWindowPanel
-	}
-
-	def toolWindow = registerToolWindowIn(project, "Project Statistics", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
-	def doNothing = {} as Runnable
-	toolWindow.show(doNothing)
+	ProjectStatisticsToolWindow.showIn(project, fileCountByFileExtension)
 }
 
 
