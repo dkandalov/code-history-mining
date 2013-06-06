@@ -66,6 +66,9 @@ class Dialog {
 				it
 			}, bag.nextLine().coverLine())
 
+			def text = new JLabel("(Please note that grabbing history can significantly slow down IDE and/or take a really long time.)")
+			add(text, bag.nextLine().coverLine())
+
 			it
 		}
 
