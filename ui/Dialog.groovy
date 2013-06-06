@@ -25,7 +25,6 @@ class Dialog {
 	static showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
 		def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
 		def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
-		def vcsRequestSizeField = new JTextField(String.valueOf(state.vcsRequestBatchSizeInDays))
 		def filePathTextField = new TextFieldWithBrowseButton()
 
 		JPanel rootPanel = new JPanel().with{
@@ -39,9 +38,6 @@ class Dialog {
 			add(new JLabel("To:"), bag.next())
 			add(toDatePicker, bag.next())
 			add(new JLabel(), bag.next().fillCellHorizontally())
-			add(new JLabel("VCS request size:"), bag.nextLine().next())
-			add(vcsRequestSizeField, bag.next())
-			add(new JLabel("day(s)"), bag.next().coverLine())
 			add(new JLabel("File path:"), bag.nextLine().next())
 			def actionListener = new ActionListener() {
 				@Override void actionPerformed(ActionEvent e) {
@@ -70,11 +66,7 @@ class Dialog {
 		builder.title = dialogTitle
 		builder.okActionEnabled = true
 		builder.okOperation = {
-			def toInteger = {
-				String s = it.replaceAll("\\D", "")
-				s.empty ? 1 : s.toInteger()
-			}
-			onOkCallback(new DialogState(fromDatePicker.date, toDatePicker.date, toInteger(vcsRequestSizeField.text), filePathTextField.text))
+			onOkCallback(new DialogState(fromDatePicker.date, toDatePicker.date, filePathTextField.text))
 			builder.dialogWrapper.close(0)
 		} as Runnable
 		builder.centerPanel = rootPanel

@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat
 class DialogState {
 	Date from
 	Date to
-	int vcsRequestBatchSizeInDays
 	String outputFilePath
 
 	static DialogState loadDialogStateFor(Project project, String pathToFolder, Closure<DialogState> createDefault) {
@@ -33,7 +32,6 @@ class DialogState {
 			def toDialogState = { map -> new DialogState(
 					parseDate(map.from),
 					parseDate(map.to),
-					Integer.parseInt((String) map.vcsRequestBatchSizeInDays),
 					map.outputFilePath
 			)}
 

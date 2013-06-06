@@ -141,7 +141,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 def grabHistoryOf(Project project) {
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
 		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
-		new DialogState(new Date() - 300, new Date(), 1, outputFilePath)
+		new DialogState(new Date() - 300, new Date(), outputFilePath)
 	}
 	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
 		DialogState.saveDialogStateOf(project, pluginPath, userInput)
@@ -161,8 +161,9 @@ def grabHistoryOf(Project project) {
 				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
 				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
 
+				def vcsRequestBatchSizeInDays = 1 // from personal observation this request size seems to be ok (hardcoded so that not to clutter UI dialog)
 				def eventsReader = new ChangeEventsReader(
-						new CommitReader(project, userInput.vcsRequestBatchSizeInDays),
+						new CommitReader(project, vcsRequestBatchSizeInDays),
 						new CommitFilesMunger(project, true).&mungeCommit
 				)
 				def fromDate = userInput.from
