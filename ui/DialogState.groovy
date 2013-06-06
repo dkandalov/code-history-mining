@@ -13,6 +13,7 @@ class DialogState {
 	Date from
 	Date to
 	String outputFilePath
+	boolean grabChangeSizeInLines
 
 	static DialogState loadDialogStateFor(Project project, String pathToFolder, Closure<DialogState> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
@@ -32,7 +33,8 @@ class DialogState {
 			def toDialogState = { map -> new DialogState(
 					parseDate(map.from),
 					parseDate(map.to),
-					map.outputFilePath
+					map.outputFilePath,
+					Boolean.valueOf((String) map.grabChangeSizeInLines)
 			)}
 
 			def json = FileUtil.loadFile(new File(pathToFolder + "/dialog-state.json"))

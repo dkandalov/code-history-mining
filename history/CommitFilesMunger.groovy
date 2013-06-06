@@ -19,10 +19,10 @@ import static history.util.Measure.measure
 
 class CommitFilesMunger {
 	private final Project project
-	private final boolean countLines
+	private final boolean countChangeSizeInLines
 
-	CommitFilesMunger(Project project, boolean countLines = true) {
-		this.countLines = countLines
+	CommitFilesMunger(Project project, boolean countChangeSizeInLines) {
+		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
 	}
 
@@ -30,7 +30,7 @@ class CommitFilesMunger {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countLines))
+				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines))
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]

@@ -26,6 +26,7 @@ class Dialog {
 		def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
 		def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
 		def filePathTextField = new TextFieldWithBrowseButton()
+		def grabChangeSizeCheckBox = new JCheckBox()
 
 		JPanel rootPanel = new JPanel().with{
 			layout = new GridBagLayout()
@@ -61,7 +62,7 @@ class Dialog {
 				layout = new GridBagLayout()
 				GridBag bag2 = new GridBag()
 				add(new JLabel("Grab change size in lines/characters:"), bag2.nextLine().next())
-				add(new JCheckBox(), bag2.next().coverLine().weightx(1).fillCellHorizontally())
+				add(grabChangeSizeCheckBox, bag2.next().coverLine().weightx(1).fillCellHorizontally())
 				it
 			}, bag.nextLine().coverLine())
 
@@ -72,7 +73,12 @@ class Dialog {
 		builder.title = dialogTitle
 		builder.okActionEnabled = true
 		builder.okOperation = {
-			onOkCallback(new DialogState(fromDatePicker.date, toDatePicker.date, filePathTextField.text))
+			onOkCallback(new DialogState(
+					fromDatePicker.date,
+					toDatePicker.date,
+					filePathTextField.text,
+					grabChangeSizeCheckBox.selected
+			))
 			builder.dialogWrapper.close(0)
 		} as Runnable
 		builder.centerPanel = rootPanel
