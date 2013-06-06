@@ -57,8 +57,14 @@ class Dialog {
 			filePathTextField.text = state.outputFilePath
 			add(filePathTextField, bag.next().coverLine().weightx(1).fillCellHorizontally())
 
-			def text = new JLabel("(Note that grabbing history for big project might significantly slow down IDE and/or take a really long time.)")
-			add(text, bag.nextLine().coverLine())
+			add(new JPanel().with {
+				layout = new GridBagLayout()
+				GridBag bag2 = new GridBag()
+				add(new JLabel("Grab change size in lines/characters:"), bag2.nextLine().next())
+				add(new JCheckBox(), bag2.next().coverLine().weightx(1).fillCellHorizontally())
+				it
+			}, bag.nextLine().coverLine())
+
 			it
 		}
 
