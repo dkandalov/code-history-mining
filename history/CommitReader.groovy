@@ -115,4 +115,9 @@ class CommitReader {
 		def isNotMergeCommit = { Commit commit -> commit.changes.size() > 0 }
 		result.findAll{isNotMergeCommit(it)}
 	}
+
+	static amountOfVCSIn(Project project) {
+		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
+		sourceRoots.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }.size()
+	}
 }

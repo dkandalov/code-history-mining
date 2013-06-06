@@ -139,6 +139,14 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 }
 
 def grabHistoryOf(Project project) {
+	if (CommitReader.amountOfVCSIn(project) == 0) {
+		Messages.showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+		return
+	} else if (CommitReader.amountOfVCSIn(project) > 1) {
+		Messages.showWarningDialog(project, "Cannot grab project history because there are there are multiple VCS roots setup for it.", "Code History Mining")
+		return
+	}
+
 	def state = DialogState.loadDialogStateFor(project, pluginPath) {
 		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
 		new DialogState(new Date() - 300, new Date(), outputFilePath, false)
