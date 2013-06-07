@@ -182,10 +182,10 @@ date,changeSize\n\
 
     function drawChangeSizeChart(elementId, rawData) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
-                margin2 = {top: 430, right: 20, bottom: 15, left: 40},
-                width = 960 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom,
-                height2 = 500 - margin2.top - margin2.bottom;
+            margin2 = {top: 430, right: 20, bottom: 15, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom,
+            height2 = 500 - margin2.top - margin2.bottom;
 
         var dateFormat = d3.time.format("%d/%m/%Y");
         var valueFormat = function(n) {
@@ -262,10 +262,6 @@ date,changeSize\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
-        footerSpan.append("label").html("Total size: ");
-        var totalChangeSizeLabel = footerSpan.append("label").html("");
-        footerSpan.append("span").style({width: "20px", display: "inline-block"});
-
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
         groupByDropDown.append("option").attr("value", "day").html("days");
@@ -287,6 +283,15 @@ date,changeSize\n\
             daysData = parseRawData(rawData[rawDataIndex]);
             updateChart();
         });
+
+        var leftFooter = rootElement.append("span")
+                .style("position", "absolute")
+                .style("left", function (){ return svgPos.left + margin.left + "px"; })
+        leftFooter.append("span").style("color", "#999").html("Total size: ");
+        var totalChangeSizeLabel = leftFooter
+                .append("span").style("color", "#999")
+                .append("label").html("");
+
 
         updateChart();
 
