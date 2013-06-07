@@ -215,6 +215,8 @@ date,changeSize\n\
         var svgPos = svg[0][0].getBoundingClientRect();
         svg.append("defs").append("clipPath").attr("id", "chartClip")
                 .append("rect").attr("width", width).attr("height", height);
+        svg.append("defs").append("clipPath").attr("id", "brushClip")
+                .append("rect").attr("width", width).attr("height", height2);
 
         var rawDataIndex = 0;
         var daysData = parseRawData(rawData[rawDataIndex]);
@@ -329,6 +331,7 @@ date,changeSize\n\
                     .data(data)
                     .enter().append("rect")
                     .attr("class", "bar")
+                    .attr("clip-path", "url(#brushClip)")
                     .attr("x", function (d) { return x2(d.date); })
                     .attr("width", barWidth)
                     .attr("y", function (d) { return y2(d.changeSize); })
