@@ -1,7 +1,8 @@
 package ui
-
 import com.intellij.icons.AllIcons
+import com.intellij.ide.ClipboardSynchronizer
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.ui.components.JBScrollPane
@@ -11,10 +12,13 @@ import com.intellij.util.ui.GridBag
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 import java.awt.*
+import java.awt.datatransfer.StringSelection
+import java.awt.event.ActionEvent
 
 import static intellijeval.PluginUtil.registerToolWindowIn
 import static intellijeval.PluginUtil.unregisterToolWindow
-import static java.awt.GridBagConstraints.*
+import static java.awt.GridBagConstraints.BOTH
+import static java.awt.GridBagConstraints.NORTH
 
 class ProjectStatisticsToolWindow {
 	static showIn(project, fileCountByFileExtension) {
@@ -40,11 +44,12 @@ class ProjectStatisticsToolWindow {
 					tableModel.addRow([it.key, it.value].toArray())
 				}
 				tableModel.addRow(["Total", totalAmountOfFiles].toArray())
-				def table = new JBTable(tableModel).with { // TODO make table content copyable
+				def table = new JBTable(tableModel).with {
 					striped = true
 					showGrid = false
 					it
 				}
+				registerCopyToClipboardShortCut(table, tableModel)
 
 				layout = new GridBagLayout()
 				GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
@@ -62,5 +67,19 @@ class ProjectStatisticsToolWindow {
 		def toolWindow = registerToolWindowIn(project, "Project Statistics", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
 		def doNothing = {} as Runnable
 		toolWindow.show(doNothing)
+	}
+
+	private static registerCopyToClipboardShortCut(JTable table, DefaultTableModel tableModel) {
+		KeyStroke copyKeyStroke = KeymapUtil.getKeyStroke(ActionManager.instance.getAction(IdeActions.ACTION_COPY).shortcutSet)
+		table.registerKeyboardAction(new AbstractAction() {
+			@Override void actionPerformed(ActionEvent event) {
+				def selectedCells = table.selectedRows.collect{ row ->
+					(0..<tableModel.columnCount).collect{ column ->
+						tableModel.getValueAt(row, column).toString() }
+				}
+				def content = new StringSelection(selectedCells.collect{ it.join(",") }.join("\n"))
+				ClipboardSynchronizer.instance.setContent(content, content)
+			}
+		}, "Copy", copyKeyStroke, JComponent.WHEN_FOCUSED)
 	}
 }
