@@ -263,7 +263,7 @@ date,changeSize\n\
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
         footerSpan.append("label").html("Total size: ");
-        var amountOfCommitsLabel = footerSpan.append("label").html("");
+        var totalChangeSizeLabel = footerSpan.append("label").html("");
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
         footerSpan.append("label").html("Group by: ");
@@ -371,7 +371,10 @@ date,changeSize\n\
                     .attr("width", barWidth);
             zoomedView.select(".x.axis").call(xAxis);
 
-            amountOfCommitsLabel.html(d3.format(".3s")(amountOfCommitsWithin(domain, data)));
+            totalChangeSizeLabel.html(function(n) {
+                var s = d3.format(",")(n);
+                return s.length < 3 ? s : d3.format(".3s")(n);
+            }(amountOfCommitsWithin(domain, data)));
         }
 
         function barWidthFor(timeInterval, fromDate, toDate) {
