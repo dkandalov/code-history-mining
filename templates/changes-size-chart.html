@@ -19,6 +19,11 @@
     .bar:hover {
         fill: rgb(62, 104, 146);
     }
+    .line {
+        fill: none;
+        stroke: #b46538;
+        stroke-width: 1px;
+    }
     .brush .extent {
         stroke: #fff;
         fill-opacity: .125;
@@ -223,6 +228,7 @@ date,changeSize\n\
 
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
+        var varianceData = calculateMonthlyVariance(data);
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -231,6 +237,10 @@ date,changeSize\n\
         x2.domain(x.domain());
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
+
+        var varianceLine = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.variance); });
 
         var zoomedView = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -248,11 +258,11 @@ date,changeSize\n\
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .text(yAxisLabel);
-        createBarsOn(zoomedView);
+        showDataOn(zoomedView);
 
         var brushFooter = svg.append("g")
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-        createBarsAndBrushOn(brushFooter);
+        showBrushOn(brushFooter);
 
         var nothingToShowLabel = rootElement.append("div")
                 .html("Unfortunately, there is nothing to show.")
@@ -263,6 +273,11 @@ date,changeSize\n\
 
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
+
+        footerSpan.append("label").html("One month variance: ");
+        footerSpan.append("input").attr("type", "checkbox").on("click", function() {
+        });
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
@@ -309,8 +324,8 @@ date,changeSize\n\
 
             barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
-            createBarsOn(zoomedView);
-            createBarsAndBrushOn(brushFooter);
+            showDataOn(zoomedView);
+            showBrushOn(brushFooter);
 
             zoomedView.select(".y.axis").call(yAxis);
 
@@ -324,7 +339,7 @@ date,changeSize\n\
                 changeSize: parseInt(d.changeSize)};
             });
         }
-        function createBarsAndBrushOn(element) {
+        function showBrushOn(element) {
             element.selectAll("g").remove();
             element.append("g")
                     .selectAll(".bar2")
@@ -345,7 +360,7 @@ date,changeSize\n\
                     .attr("height", height2 + 7);
         }
 
-        function createBarsOn(element) {
+        function showDataOn(element) {
             element.selectAll(".bar").remove();
             element.selectAll(".bar")
                     .data(data)
@@ -367,6 +382,12 @@ date,changeSize\n\
                         return xAxisLabel + ": " + dateAsString + "\n" +
                                yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
+
+            element.append("path")
+                    .datum(varianceData)
+                    .attr("class", "line")
+                    .attr("d", varianceLine);
+
         }
 
         function onBrush() {
@@ -418,6 +439,12 @@ date,changeSize\n\
 
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
+    }
+
+    function calculateMonthlyVariance(data) {
+        return data.map(function(d) {
+            return {date: d.date, variance: 15000};
+        });
     }
 
 </script>
