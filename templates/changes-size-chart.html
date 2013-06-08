@@ -229,11 +229,12 @@ date,changeSize\n\
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
         var varianceData = calculateMonthlyVariance(data);
+        console.log(varianceData);
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
         x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-        y.domain([0, d3.max(data, function (d) { return d.changeSize; })]);
+        y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
         x2.domain(x.domain());
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
@@ -442,9 +443,33 @@ date,changeSize\n\
     }
 
     function calculateMonthlyVariance(data) {
-        return data.map(function(d) {
-            return {date: d.date, variance: 15000};
-        });
+        var dayLength = (24 * 60 * 60 * 1000);
+
+        var fromDate = data[0].date.getTime();
+        var toDate = fromDate + 30 * dayLength;
+        
+        var firstPeriodData = data.filter(function (d) { return d.date >= fromDate && d.date <= toDate; });
+        var firstPeriodMean = d3.mean(firstPeriodData, function (d) { return d.changeSize; });
+
+        var result = [];
+        while (toDate < data[data.length - 1].date.getTime()) {
+            var entries = data.filter(function(d){ return d.date >= fromDate && d.date <= toDate; });
+            var mean = d3.mean(entries, function(d){ return d.changeSize; });
+//            console.log(mean);
+            console.log(entries.length);
+
+            var variance = 0;
+            if (entries.length > 0) {
+                variance = d3.sum(entries, function(d){ return Math.pow(d.changeSize - mean, 2); }) / entries.length;
+            }
+
+            result.push({date: new Date(toDate), variance: variance});
+
+            fromDate += dayLength;
+            toDate += dayLength;
+        }
+
+        return firstPeriodData.map(function(d){ return {date: d.date, variance: firstPeriodMean}; }).concat(result);
     }
 
 </script>
