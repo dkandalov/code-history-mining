@@ -229,7 +229,6 @@ date,changeSize\n\
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
         var varianceData = calculateMonthlyVariance(data);
-        console.log(varianceData);
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -442,34 +441,30 @@ date,changeSize\n\
         return element.append("span").style({display: "block", width: width + "px"});
     }
 
-    function calculateMonthlyVariance(data) {
-        var dayLength = (24 * 60 * 60 * 1000);
-
-        var fromDate = data[0].date.getTime();
-        var toDate = fromDate + 30 * dayLength;
-        
-        var firstPeriodData = data.filter(function (d) { return d.date >= fromDate && d.date <= toDate; });
-        var firstPeriodMean = d3.mean(firstPeriodData, function (d) { return d.changeSize; });
-
+    function calculateMonthlyVariance(data) { // TODO broken
+        function changeSize(entry) { return entry == null ? 0 : entry.changeSize; }
         var result = [];
-        while (toDate < data[data.length - 1].date.getTime()) {
-            var entries = data.filter(function(d){ return d.date >= fromDate && d.date <= toDate; });
-            var mean = d3.mean(entries, function(d){ return d.changeSize; });
-//            console.log(mean);
-            console.log(entries.length);
 
-            var variance = 0;
-            if (entries.length > 0) {
-                variance = d3.sum(entries, function(d){ return Math.pow(d.changeSize - mean, 2); }) / entries.length;
-            }
+        var wholeRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
 
-            result.push({date: new Date(toDate), variance: variance});
+        var firstRange = wholeRange.slice(0, 30);
+        var firstRangeMean = d3.mean(firstRange, function(date){ return changeSize(data[date]); });
+        console.log(d3.map(function (d) { return d.date; }, data));
 
-            fromDate += dayLength;
-            toDate += dayLength;
+        for (var i = 0; i < 30; i++) {
+            result.push({date: wholeRange[i], variance: firstRangeMean})
         }
 
-        return firstPeriodData.map(function(d){ return {date: d.date, variance: firstPeriodMean}; }).concat(result);
+        for (var i = 0; i < data.length - 30; i++) {
+            var range = wholeRange.slice(i, i + 30);
+            var mean = d3.mean(range, function(date){ return data[date] == null ? 0 : data[date].changeSize; });
+            var variance = d3.sum(range, function(date){ return Math.pow(changeSize(data[date]) - mean, 2); }) / range.length;
+
+            result.push({date: wholeRange[i + 30], variance: variance});
+        }
+
+        console.log(result);
+        return result;
     }
 
 </script>
