@@ -21,7 +21,7 @@
     }
     .line {
         fill: none;
-        stroke: #b46538;
+        stroke: #c61d10;
         stroke-width: 1px;
     }
     .brush .extent {
@@ -441,29 +441,34 @@ date,changeSize\n\
         return element.append("span").style({display: "block", width: width + "px"});
     }
 
-    function calculateMonthlyVariance(data) { // TODO broken
-        function changeSize(entry) { return entry == null ? 0 : entry.changeSize; }
+    function calculateMonthlyVariance(data) {
         var result = [];
-
         var wholeRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
+        var changeSize = changeSizeByDay(data, wholeRange);
 
         var firstRange = wholeRange.slice(0, 30);
-        var firstRangeMean = d3.mean(firstRange, function(date){ return changeSize(data[date]); });
-        console.log(d3.map(function (d) { return d.date; }, data));
+        var firstRangeMean = d3.mean(firstRange, function(date){ return changeSize[date]; });
 
         for (var i = 0; i < 30; i++) {
-            result.push({date: wholeRange[i], variance: firstRangeMean})
+            result.push({date: wholeRange[i], variance: Math.sqrt(firstRangeMean)})
         }
 
-        for (var i = 0; i < data.length - 30; i++) {
+        for (var i = 0; i < wholeRange.length - 30; i++) {
             var range = wholeRange.slice(i, i + 30);
-            var mean = d3.mean(range, function(date){ return data[date] == null ? 0 : data[date].changeSize; });
-            var variance = d3.sum(range, function(date){ return Math.pow(changeSize(data[date]) - mean, 2); }) / range.length;
+            var mean = d3.mean(range, function(date){ return changeSize[date]; });
+            var variance = d3.sum(range, function(date){ return Math.pow(changeSize[date] - mean, 2); }) / range.length;
 
-            result.push({date: wholeRange[i + 30], variance: variance});
+            result.push({date: wholeRange[i + 30], variance: Math.sqrt(variance)});
         }
 
         console.log(result);
+        return result;
+    }
+
+    function changeSizeByDay(data, datesRange) {
+        var result = {};
+        data.forEach(function (d) { result[d.date] = d.changeSize; });
+        datesRange.forEach(function (d) { if (result[d.date] == null) result[d.date] = 0; });
         return result;
     }
 
