@@ -446,19 +446,17 @@ date,changeSize\n\
         var wholeRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
         var changeSize = changeSizeByDay(data, wholeRange);
 
-        var firstRange = wholeRange.slice(0, 30);
-        var firstRangeMean = d3.mean(firstRange, function(date){ return changeSize[date]; });
-
-        for (var i = 0; i < 30; i++) {
-            result.push({date: wholeRange[i], variance: Math.sqrt(firstRangeMean)})
+        for (var i = 1; i < 30; i++) {
+            var mean = d3.mean(wholeRange.slice(0, i), function(index){ return changeSize[wholeRange[index]]; });
+            console.log(mean);
+            result.push({date: wholeRange[i], variance: mean})
         }
 
         for (var i = 0; i < wholeRange.length - 30; i++) {
             var range = wholeRange.slice(i, i + 30);
             var mean = d3.mean(range, function(date){ return changeSize[date]; });
-            var variance = d3.sum(range, function(date){ return Math.pow(changeSize[date] - mean, 2); }) / range.length;
 
-            result.push({date: wholeRange[i + 30], variance: Math.sqrt(variance)});
+            result.push({date: wholeRange[i + 30], variance: mean});
         }
 
         console.log(result);
