@@ -228,7 +228,7 @@ date,changeSize\n\
 
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
-        var varianceData = calculateMonthlyVariance(data);
+        var meanData = calculateMonthlyMean(data);
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -238,9 +238,9 @@ date,changeSize\n\
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
-        var varianceLine = d3.svg.line()
+        var meanLine = d3.svg.line()
                 .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.variance); });
+                .y(function(d) { return y(d.mean); });
 
         var zoomedView = svg.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -274,7 +274,7 @@ date,changeSize\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
-        footerSpan.append("label").html("One month variance: ");
+        footerSpan.append("label").html("One month mean: ");
         footerSpan.append("input").attr("type", "checkbox").on("click", function() {
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
@@ -384,10 +384,9 @@ date,changeSize\n\
                     });
 
             element.append("path")
-                    .datum(varianceData)
+                    .datum(meanData)
                     .attr("class", "line")
-                    .attr("d", varianceLine);
-
+                    .attr("d", meanLine);
         }
 
         function onBrush() {
@@ -398,12 +397,15 @@ date,changeSize\n\
                     .data(data)
                     .attr("x", function (d) { return x(d.date); })
                     .attr("width", barWidth);
+            zoomedView.selectAll(".line")
+                    .data(meanData);
             zoomedView.select(".x.axis").call(xAxis);
 
-            totalChangeSizeLabel.html(function(n) {
+            var formatChangeSize = (function (n) {
                 var s = d3.format(",")(n);
                 return s.length < 3 ? s : d3.format(".3s")(n);
-            }(amountOfCommitsWithin(domain, data)));
+            });
+            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data)));
         }
 
         function barWidthFor(timeInterval, fromDate, toDate) {
@@ -441,22 +443,21 @@ date,changeSize\n\
         return element.append("span").style({display: "block", width: width + "px"});
     }
 
-    function calculateMonthlyVariance(data) {
+    function calculateMonthlyMean(data) {
         var result = [];
         var wholeRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
         var changeSize = changeSizeByDay(data, wholeRange);
 
-        for (var i = 1; i < 30; i++) {
-            var mean = d3.mean(wholeRange.slice(0, i), function(index){ return changeSize[wholeRange[index]]; });
-            console.log(mean);
-            result.push({date: wholeRange[i], variance: mean})
-        }
-
-        for (var i = 0; i < wholeRange.length - 30; i++) {
-            var range = wholeRange.slice(i, i + 30);
+        for (var i = 0; i < wholeRange.length; i++) {
+            var range = wholeRange.slice((i < 30 ? 0 : i - 30), i);
             var mean = d3.mean(range, function(date){ return changeSize[date]; });
+            if (mean == null) {
+                console.log(wholeRange[i]); // TODO fix it
+                console.log(i);
+                mean = 1;
+            }
 
-            result.push({date: wholeRange[i + 30], variance: mean});
+            result.push({date: wholeRange[i], mean: mean});
         }
 
         console.log(result);
