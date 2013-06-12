@@ -21,7 +21,7 @@
     }
     .line {
         fill: none;
-        stroke: #c61d10;
+        stroke: #ff0000;
         stroke-width: 1px;
     }
     .brush .extent {
@@ -397,8 +397,12 @@ date,changeSize\n\
                     .data(data)
                     .attr("x", function (d) { return x(d.date); })
                     .attr("width", barWidth);
-            zoomedView.selectAll(".line")
-                    .data(meanData);
+
+            zoomedView.selectAll(".line").remove();
+            zoomedView.append("path")
+                    .datum(meanData)
+                    .attr("class", "line")
+                    .attr("d", meanLine);
             zoomedView.select(".x.axis").call(xAxis);
 
             var formatChangeSize = (function (n) {
