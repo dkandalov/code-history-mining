@@ -66,6 +66,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="groovy-all-2.0.6" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -84,7 +85,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="groovy-all-2.0.6" level="application" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -103,6 +103,15 @@
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../../live-plugin.jar!/src" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
   </component>
