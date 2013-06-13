@@ -21,7 +21,7 @@
     }
     .line {
         fill: none;
-        stroke: #ff0000;
+        stroke: #ff0000;   <!--TODO find better color-->
         stroke-width: 1px;
     }
     .brush .extent {
@@ -456,20 +456,15 @@ date,changeSize\n\
     }
 
     function calculateMonthlyMean(data) {
+        var period = 30;
         var result = [];
-        var wholeRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
-        var changeSize = changeSizeByDay(data, wholeRange);
+        var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
+        var changeSize = changeSizeByDay(data, datesRange);
 
-        for (var i = 0; i < wholeRange.length; i++) {
-            var range = wholeRange.slice((i < 30 ? 0 : i - 30), i);
+        for (var i = period; i < datesRange.length; i++) {
+            var range = datesRange.slice(i - period, i);
             var mean = d3.mean(range, function(date){ return changeSize[date]; });
-            if (mean == null) {
-                console.log(wholeRange[i]); // TODO fix it
-                console.log(i);
-                mean = 1;
-            }
-
-            result.push({date: wholeRange[i], mean: mean});
+            result.push({date: datesRange[i], mean: mean});
         }
 
         return result;
@@ -477,8 +472,8 @@ date,changeSize\n\
 
     function changeSizeByDay(data, datesRange) {
         var result = {};
-        data.forEach(function (d) { result[d.date] = d.changeSize; });
-        datesRange.forEach(function (d) { if (result[d.date] == null) result[d.date] = 0; });
+        datesRange.forEach(function(date) { result[date] = 0; });
+        data.forEach(function(d) { result[d.date] = d.changeSize; });
         return result;
     }
 
