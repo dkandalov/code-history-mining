@@ -459,10 +459,13 @@ date,changeSize\n\
         var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
         var changeSize = changeSizeByDay(data, datesRange);
 
+        var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return changeSize[date]; });
+
         for (var i = period; i < datesRange.length; i++) {
-            var range = datesRange.slice(i - period, i);
-            var mean = d3.mean(range, function(date){ return changeSize[date]; });
-            result.push({date: datesRange[i], mean: mean});
+            var date = datesRange[i];
+            var dateToExclude = datesRange[i - period];
+            mean += (changeSize[date] - changeSize[dateToExclude]) / period;
+            result.push({date: date, mean: mean});
         }
 
         return result;
