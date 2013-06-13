@@ -206,6 +206,7 @@ date,changeSize\n\
         var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
         var xAxisLabel = "Date";
         var yAxisLabel = "Change size";
+        var showOneMonthMean = false;
 
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
@@ -274,8 +275,10 @@ date,changeSize\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
-        footerSpan.append("label").html("One month mean: ");
+        footerSpan.append("label").html("One month average: ");
         footerSpan.append("input").attr("type", "checkbox").on("click", function() {
+            showOneMonthMean = !showOneMonthMean;
+            updateChart();
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
@@ -315,6 +318,8 @@ date,changeSize\n\
 
         function updateChart() {
             data = aggregate(daysData, timeInterval);
+            meanData = calculateMonthlyMean(data);
+
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
             y.domain([0, d3.max(data, function (d) {
                 return d.changeSize;
@@ -383,10 +388,10 @@ date,changeSize\n\
                                yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
 
-            element.append("path")
-                    .datum(meanData)
-                    .attr("class", "line")
-                    .attr("d", meanLine);
+//            element.append("path") // TODO don't need this?
+//                    .datum(meanData)
+//                    .attr("class", "line")
+//                    .attr("d", meanLine);
         }
 
         function onBrush() {
@@ -399,11 +404,14 @@ date,changeSize\n\
                     .attr("width", barWidth);
 
             zoomedView.selectAll(".line").remove();
-            zoomedView.append("path")
-                    .datum(meanData)
-                    .attr("class", "line")
-                    .attr("d", meanLine);
-            zoomedView.select(".x.axis").call(xAxis);
+            if (showOneMonthMean) {
+                zoomedView.append("path")
+                        .datum(meanData)
+                        .attr("class", "line")
+                        .attr("clip-path", "url(#chartClip)")
+                        .attr("d", meanLine);
+                zoomedView.select(".x.axis").call(xAxis);
+            }
 
             var formatChangeSize = (function (n) {
                 var s = d3.format(",")(n);
@@ -464,7 +472,6 @@ date,changeSize\n\
             result.push({date: wholeRange[i], mean: mean});
         }
 
-        console.log(result);
         return result;
     }
 
