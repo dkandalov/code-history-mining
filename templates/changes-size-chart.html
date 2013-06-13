@@ -229,7 +229,7 @@ date,changeSize\n\
 
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
-        var meanData = calculateMonthlyMean(data);
+        var meanData = [];
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -259,17 +259,15 @@ date,changeSize\n\
                 .attr("dy", ".71em")
                 .style("text-anchor", "end")
                 .text(yAxisLabel);
-        showDataOn(zoomedView);
 
         var brushFooter = svg.append("g")
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-        showBrushOn(brushFooter);
 
         var nothingToShowLabel = rootElement.append("div")
                 .html("Unfortunately, there is nothing to show.")
                 .style("position", "absolute")
-                .style("top", function (){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
-                .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
+                .style("top", function(){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function(){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
                 .style("opacity", 0);
 
 
@@ -306,7 +304,7 @@ date,changeSize\n\
 
         var leftFooter = rootElement.append("span")
                 .style("position", "absolute")
-                .style("left", function (){ return svgPos.left + margin.left + "px"; })
+                .style("left", function(){ return svgPos.left + margin.left + "px"; })
         leftFooter.append("span").style("color", "#999").html("Total size: ");
         var totalChangeSizeLabel = leftFooter
                 .append("span").style("color", "#999")
@@ -321,9 +319,7 @@ date,changeSize\n\
             meanData = calculateMonthlyMean(data);
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function (d) {
-                return d.changeSize;
-            })]);
+            y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
             x2.domain(x.domain());
             y2.domain(y.domain());
 
@@ -338,6 +334,7 @@ date,changeSize\n\
 
             onBrush();
         }
+
         function showBrushOn(element) {
             element.selectAll("g").remove();
             element.append("g")
@@ -346,10 +343,10 @@ date,changeSize\n\
                     .enter().append("rect")
                     .attr("class", "bar")
                     .attr("clip-path", "url(#brushClip)")
-                    .attr("x", function (d) { return x2(d.date); })
+                    .attr("x", function(d) { return x2(d.date); })
                     .attr("width", barWidth)
-                    .attr("y", function (d) { return y2(d.changeSize); })
-                    .attr("height", function (d) { return height2 - y2(d.changeSize); })
+                    .attr("y", function(d) { return y2(d.changeSize); })
+                    .attr("height", function(d) { return height2 - y2(d.changeSize); })
                     .append("title");
             element.append("g")
                     .attr("class", "x brush")
@@ -366,12 +363,12 @@ date,changeSize\n\
                     .enter().append("rect")
                     .attr("class", "bar")
                     .attr("clip-path", "url(#chartClip)")
-                    .attr("x", function (d) { return x(d.date); })
+                    .attr("x", function(d) { return x(d.date); })
                     .attr("width", barWidth)
-                    .attr("y", function (d) { return y(d.changeSize); })
-                    .attr("height", function (d) { return height - y(d.changeSize); })
+                    .attr("y", function(d) { return y(d.changeSize); })
+                    .attr("height", function(d) { return height - y(d.changeSize); })
                     .append("title")
-                    .text(function (d) {
+                    .text(function(d) {
                         var dateAsString;
                         if (timeInterval == d3.time.day) {
                             dateAsString = dateFormat(d.date);
@@ -394,7 +391,7 @@ date,changeSize\n\
             barWidth = barWidthFor(timeInterval, domain[0], domain[1]);
             zoomedView.selectAll(".bar")
                     .data(data)
-                    .attr("x", function (d) { return x(d.date); })
+                    .attr("x", function(d) { return x(d.date); })
                     .attr("width", barWidth);
 
             zoomedView.selectAll(".line").remove();
@@ -407,7 +404,7 @@ date,changeSize\n\
                 zoomedView.select(".x.axis").call(xAxis);
             }
 
-            var formatChangeSize = (function (n) {
+            var formatChangeSize = (function(n) {
                 var s = d3.format(",")(n);
                 return s.length < 3 ? s : d3.format(".3s")(n);
             });
@@ -437,8 +434,8 @@ date,changeSize\n\
     function aggregate(daysData, timeInterval) {
         if (timeInterval == d3.time.day) return daysData;
         return d3.values(d3.nest()
-                        .key(function (d) { return timeInterval.floor(d.date); })
-                        .rollup(function (days) {
+                        .key(function(d) { return timeInterval.floor(d.date); })
+                        .rollup(function(days) {
                             var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
                             var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
                             return {date: date, changeSize: totalChangeSize };
