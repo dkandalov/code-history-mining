@@ -225,7 +225,7 @@ date,changeSize\n\
                 .append("rect").attr("width", width).attr("height", height2);
 
         var rawDataIndex = 0;
-        var daysData = parseRawData(rawData[rawDataIndex]);
+        var daysData = parseRawData(rawData[rawDataIndex], dateFormat);
 
         var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
@@ -300,7 +300,7 @@ date,changeSize\n\
         dropDown.append("option").attr("value", "2").html("characters");
         dropDown.on("change", function() {
             rawDataIndex = +this.value;
-            daysData = parseRawData(rawData[rawDataIndex]);
+            daysData = parseRawData(rawData[rawDataIndex], dateFormat);
             updateChart();
         });
 
@@ -337,12 +337,6 @@ date,changeSize\n\
             nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
 
             onBrush();
-        }
-        function parseRawData(rawData) {
-            return d3.csv.parse(rawData).map(function(d) { return {
-                date: dateFormat.parse(d.date),
-                changeSize: parseInt(d.changeSize)};
-            });
         }
         function showBrushOn(element) {
             element.selectAll("g").remove();
@@ -425,6 +419,13 @@ date,changeSize\n\
             barWidth = Math.floor(barWidth);
             return barWidth < 1 ? 1 : barWidth;
         }
+    }
+
+    function parseRawData(rawData, dateFormat) {
+        return d3.csv.parse(rawData).map(function(d) { return {
+            date: dateFormat.parse(d.date),
+            changeSize: parseInt(d.changeSize)};
+        });
     }
 
     function amountOfCommitsWithin(domain, data) {
