@@ -21,8 +21,8 @@
     }
     .line {
         fill: none;
-        stroke: #ff0000;   <!--TODO find better color-->
-        stroke-width: 1px;
+        stroke-width: 1.5px;
+        stroke: #b2182b;
     }
     .brush .extent {
         stroke: #fff;
@@ -304,7 +304,7 @@ date,changeSize\n\
 
         var leftFooter = rootElement.append("span")
                 .style("position", "absolute")
-                .style("left", function(){ return svgPos.left + margin.left + "px"; })
+                .style("left", function(){ return svgPos.left + margin.left + "px"; });
         leftFooter.append("span").style("color", "#999").html("Total size: ");
         var totalChangeSizeLabel = leftFooter
                 .append("span").style("color", "#999")
@@ -378,11 +378,6 @@ date,changeSize\n\
                         return xAxisLabel + ": " + dateAsString + "\n" +
                                yAxisLabel + ": " + valueFormat(d.changeSize);
                     });
-
-//            element.append("path") // TODO don't need this?
-//                    .datum(meanData)
-//                    .attr("class", "line")
-//                    .attr("d", meanLine);
         }
 
         function onBrush() {
