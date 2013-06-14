@@ -45,6 +45,32 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
+	static List<Number> percentile(List<Number> sortedNumbers, double percent,
+	                               Number min = Collections.min(sortedNumbers), Number max = Collections.max(sortedNumbers),
+	                               Number guess = (min + max) / 2 ) {
+		sortedNumbers
+	}
+
+	static void createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
+		Collection.mixin(Util)
+
+		def times = events
+				.groupBy{it.revision}.entrySet().collect{it.value.first()}
+				.pairs().collect{ first, second -> first.revisionDate.time - second.revisionDate.time}
+		times = percentile(times.sort(), 20)
+		def maxTime = times.max()
+		long bucketSize = maxTime / 9
+
+		def result = times
+				.inject([:].withDefault{0}){ map, time ->
+					long bucket = (Long) time / bucketSize
+					map.put(bucket, map.get(bucket) + 1)
+					map
+				}
+
+		println(result.entrySet().join("\n"))
+	}
+
 	static void createJson_AmountOfComitters_Chart(List<FileChangeEvent> events) {
 		def comittersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
