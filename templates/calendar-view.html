@@ -123,9 +123,9 @@ date,changeSize\n\
 /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    drawCalendarChart("calendar-view", rawData);
+    drawCalendarChart("calendar-view", rawData, projectName);
 
-    function drawCalendarChart(elementId, rawData) {
+    function drawCalendarChart(elementId, rawData, projectName) {
         var threshold = 95;
         var rawDataIndex = 0;
         var data = parseRawData(rawData[rawDataIndex], threshold);

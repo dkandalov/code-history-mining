@@ -198,9 +198,9 @@
 /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
 
-    createWordCloudOn("wordCloud");
+    createWordCloud("wordCloud", projectName);
 
-    function createWordCloudOn(elementId) {
+    function createWordCloud(elementId, projectName) {
         var solidFill = d3.scale.category10();
         var mixedFill = d3.scale.category20();
         var width = 1000;

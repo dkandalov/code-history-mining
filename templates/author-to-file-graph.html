@@ -117,7 +117,9 @@ const graph = {
 var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
 var graphName = "Committers changing same files";
 
-function createForcesGraphOn(elementId, graph) {
+createForcesGraphOn("rootElement", graph, projectName);
+
+function createForcesGraphOn(elementId, graph, projectName) {
     function QuickFind(size) {
         this.size = size;
         this.connections = new Array(size);
@@ -466,8 +468,6 @@ function createForcesGraphOn(elementId, graph) {
     function byNodeName(node) { return node.name; }
     function byLinkState(link) { return "" + link.source.index + "-" + link.target.index; }
 }
-
-createForcesGraphOn("rootElement", graph);
 
 </script>
 </body>

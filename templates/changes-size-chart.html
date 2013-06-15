@@ -183,9 +183,9 @@ date,changeSize\n\
 ]/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    drawChangeSizeChart("changes-size-view", rawData);
+    drawChangeSizeChart("changes-size-view", rawData, projectName);
 
-    function drawChangeSizeChart(elementId, rawData) {
+    function drawChangeSizeChart(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
             margin2 = {top: 430, right: 20, bottom: 15, left: 40},
             width = 960 - margin.left - margin.right,

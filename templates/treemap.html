@@ -83,9 +83,9 @@
     /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    createTreeMapOn("treemap", root);
+    createTreeMapOn("treemap", root, projectName);
 
-    function createTreeMapOn(elementId, root) {
+    function createTreeMapOn(elementId, root, projectName) {
         var w = 1280 - 80,
             h = 800 - 180,
             x = d3.scale.linear().range([0, w]),

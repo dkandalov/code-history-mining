@@ -137,7 +137,9 @@ var projectName = /*project_name_placeholder*/"some project"/*project_name_place
 var graphName = "Files in the same commit";
 
 
-function createForcesGraphOn(elementId, graph) {
+createForcesGraphOn("rootElement", graph, projectName);
+
+function createForcesGraphOn(elementId, graph, projectName) {
     function QuickFind(size) {
         this.size = size;
         this.connections = new Array(size);
@@ -486,8 +488,6 @@ function createForcesGraphOn(elementId, graph) {
     function byNodeName(node) { return node.name; }
     function byLinkState(link) { return "" + link.source.index + "-" + link.target.index; }
 }
-
-createForcesGraphOn("rootElement", graph);
 
 </script>
 </body>

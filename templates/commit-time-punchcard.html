@@ -294,9 +294,9 @@ dayOfWeek,hour,minute,value\n\
 " /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"code-history-mining"/*project_name_placeholder*/;
 
-    createCommitTimeScatterPlot("scatter-plot", rawData);
+    createCommitTimeScatterPlot("scatter-plot", rawData, projectName);
 
-    function createCommitTimeScatterPlot(elementId, rawData) {
+    function createCommitTimeScatterPlot(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
