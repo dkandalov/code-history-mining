@@ -1386,12 +1386,7 @@ metric\n\
                     .attr("width", x(binnedData[0].dx) - 1)
                     .attr("height", function(d) { return height - y(d.y); })
                     .append("title")
-                    .text(function(d) {
-                        // TODO fix this
-                        var from = d.x * d.dx;
-                        var to = (d.x + 1) * d.dx - 1;
-                        return "amount: " + d.length + "; value: " + (from == to ? from : from + ".." + to)
-                    });
+                    .text(function(d) { return "amount: " + d.length });
             svg.select((".x.axis")).remove();
             svg.select((".y.axis")).remove();
             svg.append("g")
