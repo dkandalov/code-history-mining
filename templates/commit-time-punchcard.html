@@ -303,7 +303,6 @@ dayOfWeek,hour,minute,value\n\
 
         var x = d3.scale.linear().range([0, width]);
         var y = d3.scale.linear().range([height, 0]);
-        var color = d3.scale.category10();
 
         var xAxisLabels = d3.svg.axis().scale(x).orient("bottom")
                 .tickValues(d3.range(12, 7 * 24, 24))
@@ -461,12 +460,23 @@ dayOfWeek,hour,minute,value\n\
             }
             return points;
         }
+
+        function updatePointSizes(points, label, multiplier) {
+            var maxValue = d3.max(dataByHour, function (d) { return d.value; });
+            var yAxisHeight = svg.select(".y.axis")[0][0].getBoundingClientRect().height;
+            var adjustment;
+            if (groupByHours) {
+                adjustment = yAxisHeight / (24 * maxValue);
+            } else {
+                adjustment = yAxisHeight / (60 * maxValue);
+                adjustment *= 5; // just because it seems to look better; may be it's worth also estimate values density
+            }
+
+            points.attr("r", function (d) { return (d.value * multiplier * adjustment * 0.5) + "px"; });
+            label.html(multiplier + "x");
+        }
     }
 
-    function updatePointSizes(points, label, multiplier) {
-        points.attr("r", function (d) { return d.value * multiplier; });
-        label.html(multiplier + "x");
-    }
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
     }
