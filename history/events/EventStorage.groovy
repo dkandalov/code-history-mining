@@ -65,7 +65,7 @@ class EventStorage {
 			[format(revisionDate), revision, author, fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
-					commitMessage].each { csvWriter.writeField(String.valueOf(it)) }
+					escapeNewLines(commitMessage)].each { csvWriter.writeField(String.valueOf(it)) }
 			csvWriter.close()
 			stringWriter.toString()
 		}
@@ -82,7 +82,7 @@ class EventStorage {
 		revisionDate = DATE_FORMAT.parse(revisionDate)
 
 		def event = new FileChangeEvent(
-				new CommitInfo(revision, author, revisionDate, commitMessage),
+				new CommitInfo(revision, author, revisionDate, unescapeNewLines(commitMessage)),
 				new FileChangeInfo(fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
 						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
 						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
@@ -90,6 +90,9 @@ class EventStorage {
 		)
 		event
 	}
+
+	private static escapeNewLines(String s) { s.replaceAll("\n", "\\\\n") }
+	private static unescapeNewLines(String s) { s.replaceAll("\\\\n", "\n") }
 
 	private static int asInt(String s) { s.toInteger() }
 
