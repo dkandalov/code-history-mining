@@ -45,25 +45,15 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
-	static void createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
+	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
 		Collection.mixin(Util)
-
 		def times = events
 				.groupBy{it.revision}.entrySet().collect{it.value.first()}
 				.sort{it.revisionDate} // sort because VCS doesn't guarantee commit time to increase (observed in junit history)
 				.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
 				.toList()
-		times = filterByPercentile(times, 0.8)
-		long bucketSize = times.max() / 9
 
-		def result = times
-				.inject(new TreeMap().withDefault{0}){ map, time ->
-					long bucket = (Long) time / bucketSize
-					map.put(bucket, map.get(bucket) + 1)
-					map
-				}
-
-		println(result.entrySet().join("\n"))
+		asCsvStringLiteral(times, ["metric"])
 	}
 
 	static void createJson_AmountOfComitters_Chart(List<FileChangeEvent> events) {
@@ -443,12 +433,6 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			}
 			if (!result.empty) result.remove(result.size() - 1)
 			result
-		}
-
-		static List<Number> filterByPercentile(List<Number> numbers, double percent) {
-			int i = numbers.size() * percent
-			def n = numbers.sort(false)[i]
-			numbers.findAll{it <= n}
 		}
 	}
 }
