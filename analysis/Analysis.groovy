@@ -45,24 +45,19 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
-	static List<Number> percentile(List<Number> sortedNumbers, double percent,
-	                               Number min = Collections.min(sortedNumbers), Number max = Collections.max(sortedNumbers),
-	                               Number guess = (min + max) / 2 ) {
-		sortedNumbers
-	}
-
 	static void createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
 		Collection.mixin(Util)
 
 		def times = events
 				.groupBy{it.revision}.entrySet().collect{it.value.first()}
-				.pairs().collect{ first, second -> first.revisionDate.time - second.revisionDate.time}
-		times = percentile(times.sort(), 20)
-		def maxTime = times.max()
-		long bucketSize = maxTime / 9
+				.sort{it.revisionDate} // sort because VCS doesn't guarantee commit time to increase (observed in junit history)
+				.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
+				.toList()
+		times = filterByPercentile(times, 0.8)
+		long bucketSize = times.max() / 9
 
 		def result = times
-				.inject([:].withDefault{0}){ map, time ->
+				.inject(new TreeMap().withDefault{0}){ map, time ->
 					long bucket = (Long) time / bucketSize
 					map.put(bucket, map.get(bucket) + 1)
 					map
@@ -448,6 +443,12 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			}
 			if (!result.empty) result.remove(result.size() - 1)
 			result
+		}
+
+		static List<Number> filterByPercentile(List<Number> numbers, double percent) {
+			int i = numbers.size() * percent
+			def n = numbers.sort(false)[i]
+			numbers.findAll{it <= n}
 		}
 	}
 }
