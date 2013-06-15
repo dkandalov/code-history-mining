@@ -1409,7 +1409,7 @@ metric\n\
         var minutes = Math.floor(seconds / 60);
         if (minutes < 60) return minutes + " min";
         var hours = Math.floor(minutes / 60);
-        if (hours < 24) return hours + " hours";
+        if (hours < 24) return hours + (hours == 1 ? " hour": " hours");
         var days = Math.floor(hours / 24);
         return days + " days"; // TODO labels with same text, e.g. "2 days, 2 days"
     }

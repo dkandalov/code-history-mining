@@ -47,11 +47,14 @@ class Analysis {
 
 	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
 		Collection.mixin(Util)
+
 		def times = events
-				.groupBy{it.revision}.entrySet().collect{it.value.first()}
-				.sort{it.revisionDate} // sort because VCS doesn't guarantee commit time to increase (observed in junit history)
-				.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
-				.toList()
+				.groupBy{it.revision}.values().collect{it.first()}
+				.sort{it.revisionDate} // sort because VCS doesn't guarantee that commit time increases (e.g. observed in junit history)
+				.groupBy{it.author}.values().collectMany{ commitsByAuthor ->
+					commitsByAuthor.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
+				}
+				.findAll{it > MINUTES.toMillis(1)} // this is an attempt to exclude time diffs between merging pull requests
 
 		asCsvStringLiteral(times, ["metric"])
 	}
