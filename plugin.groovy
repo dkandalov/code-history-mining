@@ -84,21 +84,21 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		})
 		add(new AnAction("Files In The Same Commit Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Files in the same commit graph") {
+				doInBackground("Creating files in the same commit graph") {
 					showInBrowser("files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph)
 				}
 			}
 		})
 		add(new AnAction("Committers Changing Same Files Graph") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Committers changing same files graph") {
+				doInBackground("Creating committers changing same files graph") {
 					showInBrowser("author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph)
 				}
 			}
 		})
 		add(new AnAction("Change Size in Folders Treemap") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Change Size in Folders Treemap") {
+				doInBackground("Creating change size in folders treemap") {
 					// TODO add sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
 				}
@@ -106,14 +106,14 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		})
 		add(new AnAction("Commit Messages Word Cloud") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Commit Messages Word Cloud") {
+				doInBackground("Creating commit messages word cloud") {
 					showInBrowser("wordcloud.html", Analysis.&createJson_CommitComments_WordCloud)
 				}
 			}
 		})
 		add(new AnAction("Commit Time Punchcard") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Commit Time Punchcard") {
+				doInBackground("Creating commit time punchcard") {
 					showInBrowser("commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard)
 				}
 			}
