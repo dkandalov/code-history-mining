@@ -8,10 +8,10 @@ import static java.lang.System.getenv
 
 class AnalysisPlayground {
 	static void main(String[] args) {
-		def projectName = "code-history-mining"
+//		def projectName = "code-history-mining"
 //		def projectName = "junit"
 //		def projectName = "fitnesse"
-//		def projectName = "scala"
+		def projectName = "scala"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
@@ -21,13 +21,13 @@ class AnalysisPlayground {
 //		fillTemplate("wordcloud.html", projectName, Analysis.createJson_CommitComments_WordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(events))
 //		fillTemplate("stacked_bars.html", projectName, Analysis.createJsonForCommitsStackBarsChart(events))
+		fillTemplate("time-between-commits-histogram.html", projectName, Analysis.createJson_TimeBetweenCommits_Histogram(events))
 //		Analysis.createJson_AmountOfComitters_Chart(events)
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
 //		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 //		fillTemplate("author-to-file-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
-		fillTemplate("commit-time-punchcard.html", projectName, Analysis.createJson_CommitsByDayOfWeekAndTime_PunchCard(events))
-
+//		fillTemplate("commit-time-punchcard.html", projectName, Analysis.createJson_CommitsByDayOfWeekAndTime_PunchCard(events))
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {

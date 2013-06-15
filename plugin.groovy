@@ -118,6 +118,13 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
+		add(new AnAction("Time Between Commits Histogram") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Creating time between commits histogram") {
+					showInBrowser("time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram)
+				}
+			}
+		})
 		add(new Separator())
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {
