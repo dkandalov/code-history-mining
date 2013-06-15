@@ -1327,31 +1327,9 @@ metric\n\
     function createHistogram(elementId, rawData, projectName) {
         var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
 
-        var timeIntervalFormat = function(milliseconds) {
-            var seconds = Math.floor(milliseconds / 1000);
-            if (seconds < 60) return seconds + " sec";
-            var minutes = Math.floor(seconds / 60);
-            if (minutes < 60) return minutes + " mins";
-            var hours = Math.floor(minutes / 60);
-            if (hours < 24) return hours + " hours";
-            var days = Math.floor(hours / 24);
-            return days + " days";
-        };
-        var yAxisFormat = function(n) {
-            var s = d3.format(",")(n);
-            return s.length < 6 ? s : d3.format("s")(n);
-        };
-
         var margin = {top: 20, right: 20, bottom: 40, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
-
-        var x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
-        var binnedData = d3.layout.histogram().bins(x.ticks(200))(data);
-        var y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
-        var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(timeIntervalFormat);
-        var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(yAxisFormat);
-
 
         var rootElement = d3.select("#" + elementId);
 
@@ -1364,31 +1342,7 @@ metric\n\
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var bar = svg.selectAll(".bar")
-                .data(binnedData)
-                .enter().append("g")
-                .attr("class", "bar")
-                .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-        bar.append("rect")
-                .attr("x", 1)
-                .attr("width", x(binnedData[0].dx) - 1)
-                .attr("height", function(d) { return height - y(d.y); })
-                .append("title")
-                .text(function(d) {
-                    // TODO fix this
-                    var from = d.x * d.dx;
-                    var to = (d.x + 1) * d.dx - 1;
-                    return "amount: " + d.length + "; value: " + (from == to ? from : from + ".." + to)
-                });
-
-        svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-        svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis);
+        updateHistogram();
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
         footerSpan.append("label").html("Percentile: ");
@@ -1407,11 +1361,15 @@ metric\n\
 
             data = data.filter(function(d) { return d <= n; });
 
-            x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
-            binnedData = d3.layout.histogram().bins(x.ticks(200))(data);
-            y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
-            xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(timeIntervalFormat);
-            yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(yAxisFormat);
+            updateHistogram();
+        });
+
+        function updateHistogram() {
+            var x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
+            var binnedData = d3.layout.histogram().bins(x.ticks(200))(data);
+            var y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
+            var xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(timeIntervalFormat);
+            var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(yAxisFormat);
 
             svg.selectAll(".bar").remove();
             var bar = svg.selectAll(".bar")
@@ -1440,7 +1398,23 @@ metric\n\
             svg.append("g")
                     .attr("class", "y axis")
                     .call(yAxis);
-        });
+        }
+    }
+
+    function timeIntervalFormat(milliseconds) {
+        var seconds = Math.floor(milliseconds / 1000);
+        if (seconds < 60) return seconds + " sec";
+        var minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes + " mins";
+        var hours = Math.floor(minutes / 60);
+        if (hours < 24) return hours + " hours";
+        var days = Math.floor(hours / 24);
+        return days + " days"; // TODO fix "2 days 2 days"
+    }
+
+    function yAxisFormat(n) {
+        var s = d3.format(",")(n);
+        return s.length < 6 ? s : d3.format("s")(n);
     }
 
     function appendBlockElementTo(element, width) {
