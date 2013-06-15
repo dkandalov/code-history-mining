@@ -187,6 +187,15 @@ function createForcesGraphOn(elementId, graph) {
             return quickFind.areConnected(eachNode.index, node.index);
         });
     };
+    GraphEditor.prototype.immediateConnectionsOf = function(node) {
+        var result = this.graph.links.map(function(link) {
+            if (link.source == node) return link.target;
+            else if (link.target == node) return link.source;
+            else return null;
+        }).filter(function(it) { return it != null; });
+        result.push(node);
+        return result;
+    };
 
     var width = 1100,
         height = 700;
@@ -271,7 +280,7 @@ function createForcesGraphOn(elementId, graph) {
             nodeElements = updateNodes(svgNodes, force, graph, onMouseOverNode, onMouseOutOfNode, whenClickedOnNode);
             force.nodes(graph.nodes).links(graph.links).start();
         } else {
-            updateSelection(graphEditor.nodesConnectedTo(node), showLongFileNames);
+            updateSelection(graphEditor.immediateConnectionsOf(node), showLongFileNames);
         }
 
         handledByNode = true;
