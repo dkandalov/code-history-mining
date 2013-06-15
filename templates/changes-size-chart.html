@@ -284,7 +284,6 @@ date,changeSize\n\
         var groupByDropDown = footerSpan.append("select");
         groupByDropDown.append("option").attr("value", "day").html("days");
         groupByDropDown.append("option").attr("value", "monday").html("weeks");
-
         groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
             updateChart();

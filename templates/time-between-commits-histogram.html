@@ -1333,7 +1333,7 @@ metric\n\
             var minutes = Math.floor(seconds / 60);
             if (minutes < 60) return minutes + " mins";
             var hours = Math.floor(minutes / 60);
-            if (hours < 24) return minutes + " hours";
+            if (hours < 24) return hours + " hours";
             var days = Math.floor(hours / 24);
             return days + " days";
         };
@@ -1342,7 +1342,7 @@ metric\n\
             return s.length < 6 ? s : d3.format("s")(n);
         };
 
-        var margin = {top: 20, right: 20, bottom: 100, left: 40},
+        var margin = {top: 20, right: 20, bottom: 40, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -1389,6 +1389,58 @@ metric\n\
         svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis);
+
+        var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
+        footerSpan.append("label").html("Percentile: ");
+        var groupByDropDown = footerSpan.append("select");
+        for (var i = 100; i > 0; i -= 10) {
+            groupByDropDown.append("option").attr("value", i).html(i);
+        }
+        groupByDropDown.on("change", function() {
+            data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
+            var sortedData = data.sort(function (a, b) { return a - b; });
+
+            var percentile = +this.value / 100;
+            var i = Math.round((data.length - 1) * percentile);
+            var n = sortedData[i];
+            while (sortedData[i] == n && i < sortedData.length) i++;
+
+            data = data.filter(function(d) { return d <= n; });
+
+            x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
+            binnedData = d3.layout.histogram().bins(x.ticks(200))(data);
+            y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
+            xAxis = d3.svg.axis().scale(x).orient("bottom").tickFormat(timeIntervalFormat);
+            yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(yAxisFormat);
+
+            svg.selectAll(".bar").remove();
+            var bar = svg.selectAll(".bar")
+                    .data(binnedData)
+                    .enter().append("g")
+                    .attr("class", "bar")
+                    .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+            bar.append("rect")
+                    .attr("x", 1)
+                    .attr("width", x(binnedData[0].dx) - 1)
+                    .attr("height", function(d) { return height - y(d.y); })
+                    .append("title")
+                    .text(function(d) {
+                        // TODO fix this
+                        var from = d.x * d.dx;
+                        var to = (d.x + 1) * d.dx - 1;
+                        return "amount: " + d.length + "; value: " + (from == to ? from : from + ".." + to)
+                    });
+            svg.select((".x.axis")).remove();
+            svg.select((".y.axis")).remove();
+            svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(xAxis);
+            svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+        });
     }
 
     function appendBlockElementTo(element, width) {
