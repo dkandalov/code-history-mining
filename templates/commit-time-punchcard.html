@@ -467,10 +467,9 @@ dayOfWeek,hour,minute,value\n\
             var adjustment;
             if (groupByHours) {
                 adjustment = yAxisHeight / (24 * maxValue);
-                adjustment *= 2; // just because it seems to look better
             } else {
                 adjustment = yAxisHeight / (60 * maxValue);
-                adjustment *= 10; // just because it seems to look better
+                adjustment *= 5; // just because it seems to look better
             }
 
             points.attr("r", function (d) { return (d.value * multiplier * adjustment * 0.5) + "px"; });
