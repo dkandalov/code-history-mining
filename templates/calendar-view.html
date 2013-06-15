@@ -16,18 +16,16 @@
         stroke: #000;
         stroke-width: 2px;
     }
-    .calendar-view .q0-10{fill: rgb(255, 255, 255)}
-    .calendar-view .q1-10{fill: rgb(234,241,247)}
-    .calendar-view .q2-10{fill: rgb(214,227,238)}
-    .calendar-view .q3-10{fill: rgb(193,213,230)}
-    .calendar-view .q4-10{fill: rgb(173,199,222)}
-    .calendar-view .q5-10{fill: rgb(152,186,213)}
-    .calendar-view .q6-10{fill: rgb(132,172,205)}
-    .calendar-view .q7-10{fill: rgb(111,158,197)}
-    .calendar-view .q8-10{fill: rgb(91,144,188)}
-    .calendar-view .q9-10{fill: rgb(70,130,180)} /*steelblue*/
+    /* colors from colorbrewer2.org */
+    .calendar-view .q0-8{fill: rgb(247, 251, 255)}
+    .calendar-view .q1-8{fill: rgb(222, 235, 247)}
+    .calendar-view .q2-8{fill: rgb(198, 219, 239)}
+    .calendar-view .q3-8{fill: rgb(158, 202, 225)}
+    .calendar-view .q4-8{fill: rgb(107, 174, 214)}
+    .calendar-view .q5-8{fill: rgb(66, 146, 198)}
+    .calendar-view .q6-8{fill: rgb(33, 113, 181)}
+    .calendar-view .q7-8{fill: rgb(8, 81, 156)}
 </style>
-<!--TODO take proper color palette from web even if there are less than 10 colors -->
 <head><title>Calendar view of changes</title></head>
 <body>
 <span id="calendar-view"></span>
@@ -125,6 +123,8 @@ date,changeSize\n\
 /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
+    drawCalendarChart("calendar-view", rawData);
+
     function drawCalendarChart(elementId, rawData) {
         var threshold = 95;
         var rawDataIndex = 0;
@@ -145,7 +145,7 @@ date,changeSize\n\
         var maxYear = d3.max(Object.keys(data), function(d) { return dateFormat.parse(d).getFullYear(); });
 
         var color = d3.scale.quantize().domain([0.0, 1.0])
-                .range(d3.range(10).map(function(d) { return "q" + d + "-10"; }));
+                .range(d3.range(8).map(function(d) { return "q" + d + "-8"; }));
 
         const rootElement = d3.select("#" + elementId);
 
@@ -230,30 +230,6 @@ date,changeSize\n\
             colorThresholdLabel.html(threshold + "%");
         }
 
-        function parseRawData(rawData, threshold) {
-            var data = d3.csv.parse(rawData);
-            data.forEach(function (d) { d.changeSize = +d.changeSize; });
-            var toPercents = toPercentsFunction(data, threshold);
-
-            return d3.nest()
-                   .key(function(d) { return d.date; })
-                   .rollup(function(d) { return {value: toPercents(d[0].changeSize), changeSize: d[0].changeSize}; })
-                   .map(data);
-        }
-
-        function toPercentsFunction(data, threshold) { // TODO try d3.quantile
-            data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
-            var length = data.length * (threshold / 100);
-            var slicedData = data.slice(data.length - length, data.length);
-
-            var min = d3.min(slicedData, function (d) { return d.changeSize; });
-            var max = d3.max(slicedData, function (d) { return d.changeSize; });
-            var rangeSize = (max - min > 0 ? max - min : 0.0000001);
-            return function (value) {
-                return (value - min) / rangeSize;
-            };
-        }
-
         function monthPath(t0) {
             var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
                     d0 = +day(t0), w0 = +week(t0),
@@ -270,6 +246,28 @@ date,changeSize\n\
         }
     }
 
-    drawCalendarChart("calendar-view", rawData);
+    function parseRawData(rawData, threshold) {
+        var data = d3.csv.parse(rawData);
+        data.forEach(function (d) { d.changeSize = +d.changeSize; });
+        var toPercents = toPercentsFunction(data, threshold);
+
+        return d3.nest()
+                .key(function(d) { return d.date; })
+                .rollup(function(d) { return {value: toPercents(d[0].changeSize), changeSize: d[0].changeSize}; })
+                .map(data);
+    }
+
+    function toPercentsFunction(data, threshold) { // TODO try d3.quantile
+        data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
+        var length = data.length * (threshold / 100);
+        var slicedData = data.slice(data.length - length, data.length);
+
+        var min = d3.min(slicedData, function (d) { return d.changeSize; });
+        var max = d3.max(slicedData, function (d) { return d.changeSize; });
+        var rangeSize = (max - min > 0 ? max - min : 0.0000001);
+        return function (value) {
+            return (value - min) / rangeSize;
+        };
+    }
 
 </script>
