@@ -7,7 +7,7 @@ import groovy.transform.Immutable
 class CommitInfo {
 	String revision
 	String author
-	Date revisionDate // TODO timezones (e.g. both GMT, BST in fitnesse file events)
+	Date revisionDate
 	String commitMessage
 
 	@Override String toString() {

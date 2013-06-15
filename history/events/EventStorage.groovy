@@ -6,7 +6,7 @@ import history.events.csv4180.CSVWriter
 import java.text.SimpleDateFormat
 
 class EventStorage {
-	private static final String CSV_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z"
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
 	final String filePath
 
@@ -79,7 +79,7 @@ class EventStorage {
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage
 		) = fields
-		revisionDate = new SimpleDateFormat(CSV_DATE_FORMAT).parse(revisionDate)
+		revisionDate = DATE_FORMAT.parse(revisionDate)
 
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, commitMessage),
@@ -94,7 +94,7 @@ class EventStorage {
 	private static int asInt(String s) { s.toInteger() }
 
 	private static String format(Date date) {
-		new SimpleDateFormat(CSV_DATE_FORMAT).format(date)
+		DATE_FORMAT.format(date)
 	}
 
 	private static String readFirstLine(String filePath) {
