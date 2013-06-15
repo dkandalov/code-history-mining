@@ -19,7 +19,7 @@ import history.util.Measure
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
-import ui.ProjectStatisticsToolWindow
+import ui.ProjectStatsToolWindow
 
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
@@ -209,7 +209,7 @@ def showProjectStatistics(Project project) {
 		map
 	}.sort{ -it.value }
 
-	ProjectStatisticsToolWindow.showIn(project, fileCountByFileExtension)
+	ProjectStatsToolWindow.showIn(project, fileCountByFileExtension)
 }
 
 

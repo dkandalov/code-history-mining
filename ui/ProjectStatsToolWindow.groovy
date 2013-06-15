@@ -20,7 +20,7 @@ import static intellijeval.PluginUtil.unregisterToolWindow
 import static java.awt.GridBagConstraints.BOTH
 import static java.awt.GridBagConstraints.NORTH
 
-class ProjectStatisticsToolWindow {
+class ProjectStatsToolWindow {
 	static showIn(project, fileCountByFileExtension) {
 		def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
 
@@ -35,24 +35,10 @@ class ProjectStatisticsToolWindow {
 
 		def createToolWindowPanel = {
 			JPanel rootPanel = new JPanel().with{
-				def tableModel = new DefaultTableModel() {
-					@Override boolean isCellEditable(int row, int column) { false }
-				}
-				tableModel.addColumn("File extension")
-				tableModel.addColumn("File count")
-				fileCountByFileExtension.entrySet().each {
-					tableModel.addRow([it.key, it.value].toArray())
-				}
-				tableModel.addRow(["Total", totalAmountOfFiles].toArray())
-				def table = new JBTable(tableModel).with {
-					striped = true
-					showGrid = false
-					it
-				}
-				registerCopyToClipboardShortCut(table, tableModel)
-
 				layout = new GridBagLayout()
 				GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
+
+				JBTable table = createTable(fileCountByFileExtension, totalAmountOfFiles)
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 
 				it
@@ -67,6 +53,25 @@ class ProjectStatisticsToolWindow {
 		def toolWindow = registerToolWindowIn(project, "Project Statistics", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
 		def doNothing = {} as Runnable
 		toolWindow.show(doNothing)
+	}
+
+	private static JBTable createTable(fileCountByFileExtension, totalAmountOfFiles) {
+		def tableModel = new DefaultTableModel() {
+			@Override boolean isCellEditable(int row, int column) { false }
+		}
+		tableModel.addColumn("File extension")
+		tableModel.addColumn("File count")
+		fileCountByFileExtension.entrySet().each{
+			tableModel.addRow([it.key, it.value].toArray())
+		}
+		tableModel.addRow(["Total", totalAmountOfFiles].toArray())
+		def table = new JBTable(tableModel).with{
+			striped = true
+			showGrid = false
+			it
+		}
+		registerCopyToClipboardShortCut(table, tableModel)
+		table
 	}
 
 	private static registerCopyToClipboardShortCut(JTable table, DefaultTableModel tableModel) {
