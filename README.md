@@ -12,6 +12,8 @@ Warnings:
  - all browsers with SVG support should work but I only tried Chrome and Safari
  - grabbing history from VCS into csv can be slow
 
+<img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+
 
 ### Why?
 There seems to be a lot of interesting data captured in version control systems, yet we don't use it that much.
