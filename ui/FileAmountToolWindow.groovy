@@ -20,14 +20,14 @@ import static intellijeval.PluginUtil.unregisterToolWindow
 import static java.awt.GridBagConstraints.BOTH
 import static java.awt.GridBagConstraints.NORTH
 
-class ProjectStatsToolWindow {
+class FileAmountToolWindow {
 	static showIn(project, fileCountByFileExtension) {
 		def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
 
 		def actionGroup = new DefaultActionGroup().with{
 			add(new AnAction(AllIcons.Actions.Cancel) {
 				@Override void actionPerformed(AnActionEvent event) {
-					unregisterToolWindow("Project Statistics")
+					unregisterToolWindow("File Amount by Type")
 				}
 			})
 			it
@@ -50,7 +50,7 @@ class ProjectStatsToolWindow {
 			toolWindowPanel
 		}
 
-		def toolWindow = registerToolWindowIn(project, "Project Statistics", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
+		def toolWindow = registerToolWindowIn(project, "File Amount by Type", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
 		def doNothing = {} as Runnable
 		toolWindow.show(doNothing)
 	}
@@ -60,7 +60,7 @@ class ProjectStatsToolWindow {
 			@Override boolean isCellEditable(int row, int column) { false }
 		}
 		tableModel.addColumn("File extension")
-		tableModel.addColumn("File count")
+		tableModel.addColumn("Amount")
 		fileCountByFileExtension.entrySet().each{
 			tableModel.addRow([it.key, it.value].toArray())
 		}

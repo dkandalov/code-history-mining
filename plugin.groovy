@@ -19,7 +19,7 @@ import util.Measure
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
-import ui.ProjectStatsToolWindow
+import ui.FileAmountToolWindow
 
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
@@ -28,7 +28,7 @@ import static util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
 
-if (false) return showProjectStatistics(project)
+if (false) return showFileAmountByType(project)
 if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
@@ -38,8 +38,8 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def grabHistory = new AnAction("Grab Project History") {
 			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
 		}
-		def projectStats = new AnAction("Show Project Statistics") {
-			@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
+		def projectStats = new AnAction("File amount by type") {
+			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
 		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates()) }
 	}
@@ -207,7 +207,7 @@ def grabHistoryOf(Project project) {
 	}
 }
 
-def showProjectStatistics(Project project) {
+def showFileAmountByType(Project project) {
 	def scope = GlobalSearchScope.projectScope(project)
 	def fileCountByFileExtension = FileTypeManager.instance.registeredFileTypes.inject([:]) { Map map, FileType fileType ->
 		int fileCount = FileBasedIndex.instance.getContainingFiles(FileTypeIndex.NAME, fileType, scope).size()
@@ -215,7 +215,7 @@ def showProjectStatistics(Project project) {
 		map
 	}.sort{ -it.value }
 
-	ProjectStatsToolWindow.showIn(project, fileCountByFileExtension)
+	FileAmountToolWindow.showIn(project, fileCountByFileExtension)
 }
 
 
