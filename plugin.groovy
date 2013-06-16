@@ -148,12 +148,12 @@ def grabHistoryOf(Project project) {
 		return
 	}
 
-	def state = DialogState.loadDialogStateFor(project, pluginPath) {
+	def state = DialogState.loadDialogStateFor(project, dialogStatePath()) {
 		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
 		new DialogState(new Date() - 300, new Date(), outputFilePath, false)
 	}
 	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
-		DialogState.saveDialogStateOf(project, pluginPath, userInput)
+		DialogState.saveDialogStateOf(project, dialogStatePath(), userInput)
 
 		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {
@@ -248,6 +248,8 @@ static File[] filesWithCodeHistory() {
 }
 
 String pathToTemplates() { new File(this.class.classLoader.getResource("templates").toURI()).absolutePath }
+
+String dialogStatePath() { "${PathManager.pluginsPath}/code-history-mining" }
 
 static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
 
