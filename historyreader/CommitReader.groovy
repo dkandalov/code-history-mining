@@ -3,15 +3,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
-import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.Consumer
-import git4idea.GitUtil
-import git4idea.changes.GitCommittedChangeList as GitCommit
-import git4idea.changes.GitRepositoryLocation
-import git4idea.commands.GitSimpleHandler
 import util.PastToPresentIterator
 import util.PresentToPastIterator
 
@@ -68,7 +60,7 @@ class CommitReader {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
-			return workarounds_for_intellij_git_api(project, location, fromDate, toDate)
+			return GitPluginWorkaround.getCommittedChanges_with_intellij_git_api_workarounds(project, location, fromDate, toDate)
 		}
 
 		def settings = changesProvider.createDefaultSettings()
@@ -81,39 +73,6 @@ class CommitReader {
 			settings.dateBefore = toDate
 		}
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
-	}
-
-	// TODO make loading git class optional in case github plugin is not installed
-	/**
-	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
-	 */
-	private static List<Commit> workarounds_for_intellij_git_api(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
-		def result = []
-		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
-			@Override void consume(GitSimpleHandler h) {
-				// makes git notice file renames/moves (not sure but seems that otherwise intellij api doesn't do it)
-				h.addParameters("-M")
-
-				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
-				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
-			}
-		}
-		def resultConsumer = new Consumer<GitCommit>() {
-			@Override void consume(GitCommit gitCommit) {
-				result << gitCommit
-			}
-		}
-		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
-
-		// if "false", Commit for merge will contain all changes from merge
-		// this is NOT useful because changes will be in previous Commits anyway
-		// TODO (not sure how it works with other VCS)
-		boolean skipDiffsForMerge = true
-
-		GitUtil.getLocalCommittedChanges(project, root, parametersSpecifier, resultConsumer, skipDiffsForMerge)
-
-		def isNotMergeCommit = { Commit commit -> commit.changes.size() > 0 }
-		result.findAll{isNotMergeCommit(it)}
 	}
 
 	static amountOfVCSIn(Project project) {
