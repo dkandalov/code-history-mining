@@ -8,8 +8,8 @@ It has has two parts:
  - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
 
 Warnings:
- - all VCS supported by IntelliJ should work but only Git and Svn were tried
- - all browsers with SVG support should work but only Chrome and Safari were tried
+ - all VCS supported by IntelliJ should work but I only tried Git and Svn
+ - all browsers with SVG support should work but I only tried Chrome and Safari
 
 
 ### Why?
