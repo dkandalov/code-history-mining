@@ -62,6 +62,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), pathToTemplates, template, json)
 
+		// TODO check that browser is configured correctly in IntelliJ
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
 

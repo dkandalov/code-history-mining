@@ -83,6 +83,7 @@ class CommitReader {
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
 
+	// TODO make loading git classe optional in case github plugin is not installed
 	/**
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */

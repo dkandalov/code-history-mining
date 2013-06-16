@@ -1,0 +1,31 @@
+<idea-plugin version="2">
+    <id>CodeHistoryMining</id>
+    <name>CodeHistoryMining</name>
+    <version>0.1 beta</version>
+    <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry
+        Kandalov
+    </vendor>
+
+    <description><![CDATA[
+        Enter short description for your plugin here.<br>
+        <small>most HTML tags may be used</small>
+        ]]></description>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="122.600" />
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
+    <application-components>
+        <component>
+            <implementation-class>codehistorymining.AppComponent</implementation-class>
+        </component>
+    </application-components>
+
+    <depends optional="true">org.jetbrains.plugins.github</depends>
+
+</idea-plugin>
