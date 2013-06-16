@@ -28,8 +28,6 @@ import static history.util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
 
-def pathToTemplates = pluginPath + "/templates"
-
 if (false) return showProjectStatistics(project)
 if (false) return CommitMunging_Playground.playOnIt()
 if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
@@ -43,7 +41,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def projectStats = new AnAction("Show Project Statistics") {
 			@Override void actionPerformed(AnActionEvent event) { showProjectStatistics(event.project) }
 		}
-		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates) }
+		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates()) }
 	}
 }
 
@@ -248,6 +246,8 @@ static File[] filesWithCodeHistory() {
 		@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
 	})
 }
+
+String pathToTemplates() { new File(this.class.classLoader.getResource("templates").toURI()).absolutePath }
 
 static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
 
