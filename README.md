@@ -1,9 +1,7 @@
 ### What is this?
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community)-based IDEs to grab
-and analyze project source code history. Here is a screenshot:
-
-<img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+and analyze project source code history.
 
 It has has two parts:
  - reading project history from version control and saving it as csv file
@@ -22,9 +20,12 @@ This is an attempt to make looking at project history easier.
  - interactive visualization is cool because it's fun to play with and can hopefully give deeper insight into project history
 
 
-### Examples
-Please see [GitHub pages](http://dkandalov.github.com/code-history-mining).
-(A separate page to keep readme small and not to put SVG into markdown.)
+### Screenshots / Examples
+Screenshot of grab history dialog:
+<img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+
+For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining).
+(It's a separate page to keep readme small and not to put SVG into markdown.)
 
 
 ### How to use
