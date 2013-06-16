@@ -1,4 +1,4 @@
-package history
+package historyreader
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.FilePathImpl

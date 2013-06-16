@@ -1,4 +1,4 @@
-package history
+package historyreader
 
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import events.FileChangeEvent

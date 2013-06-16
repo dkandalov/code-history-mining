@@ -13,7 +13,7 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.ui.UIUtil
-import history.*
+import historyreader.*
 import events.EventStorage
 import util.Measure
 import http.HttpUtil

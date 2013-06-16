@@ -1,4 +1,4 @@
-package history
+package historyreader
 
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor

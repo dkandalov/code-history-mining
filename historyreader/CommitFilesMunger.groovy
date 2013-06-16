@@ -1,4 +1,4 @@
-package history
+package historyreader
 import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
@@ -14,7 +14,7 @@ import events.FileChangeInfo
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
-import static history.CommitMungingUtil.*
+import static historyreader.CommitMungingUtil.*
 import static util.Measure.measure
 
 class CommitFilesMunger {

@@ -1,8 +1,8 @@
-package history
+package historyreader
 import com.intellij.openapi.project.Project
 import events.*
-import history.unused.CommitMethodsMunger
-import history.unused.MethodChangeEvent
+import historyreader.unused.CommitMethodsMunger
+import historyreader.unused.MethodChangeEvent
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject

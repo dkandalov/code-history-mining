@@ -1,4 +1,4 @@
-package history
+package historyreader
 import intellijeval.PluginUtil
 
 import static util.DateTimeUtil.dateTime
