@@ -1,5 +1,6 @@
 import analysis.Analysis
 import com.intellij.ide.BrowserUtil
+import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
@@ -13,20 +14,20 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.ui.UIUtil
-import historyreader.*
 import events.EventStorage
-import util.Measure
+import historyreader.*
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
+import util.Measure
 
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
+import static util.Measure.measure
 
 if (false) return showFileAmountByType(project)
 if (false) return CommitMunging_Playground.playOnIt()
@@ -62,7 +63,16 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), pathToTemplates, template, json)
 
-		// TODO check that browser is configured correctly in IntelliJ
+		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
+		if (!browserConfiguredCorrectly) {
+			UIUtil.invokeLaterIfNeeded {
+				showWarningDialog(
+						"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
+						"Code History Mining"
+				)
+			}
+			// try to open url anyway in case the above check is wrong
+		}
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
 
@@ -98,7 +108,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 		add(new AnAction("Change Size in Folders Treemap") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating change size in folders treemap") {
-					// TODO add sunburst layout? (http://bl.ocks.org/mbostock/4063423)
+					// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
 				}
 			}
