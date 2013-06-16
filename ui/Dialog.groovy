@@ -26,7 +26,9 @@ class Dialog {
 		def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
 		def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
 		def filePathTextField = new TextFieldWithBrowseButton()
+		filePathTextField.text = state.outputFilePath
 		def grabChangeSizeCheckBox = new JCheckBox()
+		grabChangeSizeCheckBox.selected = state.grabChangeSizeInLines
 
 		JPanel rootPanel = new JPanel().with{
 			layout = new GridBagLayout()
@@ -55,7 +57,6 @@ class Dialog {
 				}
 			}
 			filePathTextField.addActionListener(actionListener)
-			filePathTextField.text = state.outputFilePath
 			add(filePathTextField, bag.next().coverLine().weightx(1).fillCellHorizontally())
 
 			add(new JPanel().with {
