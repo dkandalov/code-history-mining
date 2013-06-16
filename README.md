@@ -1,33 +1,45 @@
 What is this?
 =============
 
-This is a plugin for IntelliJ to analyze project source code history.
-Original idea is taken from [Delta Flora](https://github.com/michaelfeathers/delta-flora) by Michael Feathers.
+This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community)-based IDEs to grab
+and analyze project source code history.
 
-This plugin has two parts:
- - transforming VCS history into .csv format (csv because it's easy to read and analyze afterwards)
- - analyzing history and displaying results using d3.js (requires a browser)
+It has has two parts:
+ - reading project history from version control and saving it as csv file
+ - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
 
-It is **work-in-progress**.
+Warnings
+ - all VCS supported by IntelliJ should work but I only tried Git and Svn
+ - all browsers with SVG support should work but I only tried Chrome and Safari
+ - grabbing history from VCS into csv can be slow
 
 
 Why?
 ====
-There seems to be a lot of interesting data captured in version control systems, yet we don't tend to use it that much.
+There seems to be a lot of interesting data captured in version control systems, yet we don't use it that much.
 This is an attempt to make looking at project history easier.
-(It is not meant to be used as "metrics" but rather as a tool to get insight/alternative view on project and how it evolves over time.)
 
-Things in project history that might be interesting to look at:
- - people interaction over time
- - how code changes over time
- - how people interact with code
-
-Reasons to do it in IntelliJ:
- - it has API for most popular VCSs so in theory this plugin should work with any VCS supported by IntelliJ
- - it has good support for many languages what makes analyzing source code AST really easy
+ - converting history to csv is useful because it's easy to read and process in any language (or even in a spreadsheet)
+ - interactive visualization is cool because it's fun to play with and can hopefully give deeper insight into project history
 
 
-Please see examples and more on GitHub Pages
-============================================
-Yes.. the rest of readme is [here](http://dkandalov.github.com/code-history-mining)
-(because it has SVG bits which cannot be added to markdown).
+Examples
+========
+Please see [GitHub pages](http://dkandalov.github.com/code-history-mining).
+(A separate page to keep readme small and not to put SVG into markdown.)
+
+
+How to use
+==========
+Not released yet. Will be in IntelliJ plugin repository.
+
+
+Output csv format
+=================
+TODO
+
+
+Acknowledgments
+===============
+ - inspired by Michael Feathers workshop and [Delta Flora](https://github.com/michaelfeathers/delta-flora) project
+ - all visualizations are based on awesome [d3.js examples](https://github.com/mbostock/d3/wiki/Gallery)
