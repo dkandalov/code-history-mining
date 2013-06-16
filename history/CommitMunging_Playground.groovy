@@ -1,7 +1,7 @@
 package history
 import intellijeval.PluginUtil
 
-import static history.util.DateTimeUtil.dateTime
+import static util.DateTimeUtil.dateTime
 
 class CommitMunging_Playground {
 	static playOnIt() {

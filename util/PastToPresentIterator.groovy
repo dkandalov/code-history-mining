@@ -1,4 +1,4 @@
-package history.util
+package util
 
 class PastToPresentIterator implements Iterator {
 	final Date fromDate

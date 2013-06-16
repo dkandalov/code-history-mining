@@ -1,8 +1,8 @@
 package analysis
 import groovy.time.TimeCategory
-import history.events.CommitInfo
-import history.events.FileChangeEvent
-import history.events.FileChangeInfo
+import events.CommitInfo
+import events.FileChangeEvent
+import events.FileChangeInfo
 
 import java.text.SimpleDateFormat
 

@@ -3,8 +3,8 @@ package history
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
-import history.events.CommitInfo
-import history.util.Measure
+import events.CommitInfo
+import util.Measure
 
 class CommitMungingUtil {
 	static CommitInfo commitInfoOf(CommittedChangeList commit) {

@@ -12,10 +12,10 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList as GitCommit
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
-import history.util.PastToPresentIterator
-import history.util.PresentToPastIterator
+import util.PastToPresentIterator
+import util.PresentToPastIterator
 
-import static history.util.Measure.measure
+import static util.Measure.measure
 
 class CommitReader {
 	static Commit NO_MORE_CHANGE_LISTS = null
@@ -83,7 +83,7 @@ class CommitReader {
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
 
-	// TODO make loading git classe optional in case github plugin is not installed
+	// TODO make loading git class optional in case github plugin is not installed
 	/**
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */

@@ -1,14 +1,14 @@
 package history
 import com.intellij.openapi.project.Project
-import history.events.*
+import events.*
 import history.unused.CommitMethodsMunger
 import history.unused.MethodChangeEvent
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject
-import static history.events.FileChangeInfo.getNA
-import static history.util.DateTimeUtil.dateTime
-import static history.util.DateTimeUtil.exactDateTime
+import static events.FileChangeInfo.getNA
+import static util.DateTimeUtil.dateTime
+import static util.DateTimeUtil.exactDateTime
 
 class ChangeEventsReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()

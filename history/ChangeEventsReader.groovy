@@ -1,7 +1,7 @@
 package history
 
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import history.events.FileChangeEvent
+import events.FileChangeEvent
 import intellijeval.PluginUtil
 
 class ChangeEventsReader {

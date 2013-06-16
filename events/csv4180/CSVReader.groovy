@@ -1,4 +1,4 @@
-package history.events.csv4180
+package events.csv4180
 /**
  * Originally copied from https://csv4180.svn.sourceforge.net/svnroot/csv4180/
  * Should be compatible with http://www.apps.ietf.org/rfc/rfc4180.html

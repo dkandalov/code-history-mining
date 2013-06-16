@@ -9,7 +9,7 @@ import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
 import static CommitReader.requestCommitsFor
-import static history.util.DateTimeUtil.dateTime
+import static util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()

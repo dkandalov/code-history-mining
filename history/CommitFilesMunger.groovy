@@ -7,15 +7,15 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.util.diff.FilesTooBigForDiffException
-import history.events.ChangeStats
-import history.events.FileChangeEvent
-import history.events.FileChangeInfo
+import events.ChangeStats
+import events.FileChangeEvent
+import events.FileChangeInfo
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static history.CommitMungingUtil.*
-import static history.util.Measure.measure
+import static util.Measure.measure
 
 class CommitFilesMunger {
 	private final Project project

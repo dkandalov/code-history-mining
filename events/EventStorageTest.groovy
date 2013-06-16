@@ -1,9 +1,9 @@
-package history.events
+package events
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-import static history.util.DateTimeUtil.exactDateTime
+import static util.DateTimeUtil.exactDateTime
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 

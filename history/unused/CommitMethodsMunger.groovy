@@ -8,9 +8,9 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.psi.*
 import history.CommitFilesMunger
-import history.events.ElementChangeInfo
-import history.events.FileChangeEvent
-import history.util.Measure
+import events.ElementChangeInfo
+import events.FileChangeEvent
+import util.Measure
 
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1

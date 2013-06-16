@@ -1,4 +1,4 @@
-package history.util
+package util
 
 
 class Measure {

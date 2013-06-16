@@ -1,10 +1,10 @@
-package history.util
+package util
 
 import groovy.time.TimeCategory
 import org.junit.Test
 
-import static history.util.DateTimeUtil.date
-import static history.util.DateTimeUtil.dateTime
+import static util.DateTimeUtil.date
+import static util.DateTimeUtil.dateTime
 
 class TimeIteratorsTest {
 	@Test void "should iterate from present to past in intervals"() {

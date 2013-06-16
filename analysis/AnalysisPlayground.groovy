@@ -1,5 +1,5 @@
 package analysis
-import history.events.EventStorage
+import events.EventStorage
 
 import static http.HttpUtil.fillDataPlaceholder
 import static http.HttpUtil.fillProjectNamePlaceholder

@@ -14,8 +14,8 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.ui.UIUtil
 import history.*
-import history.events.EventStorage
-import history.util.Measure
+import events.EventStorage
+import util.Measure
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
@@ -24,7 +24,7 @@ import ui.ProjectStatsToolWindow
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static history.util.Measure.measure
+import static util.Measure.measure
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
 

@@ -1,8 +1,8 @@
 package history.unused
 
-import history.events.CommitInfo
-import history.events.ElementChangeInfo
-import history.events.FileChangeInfo
+import events.CommitInfo
+import events.ElementChangeInfo
+import events.FileChangeInfo
 
 @groovy.transform.Immutable
 class MethodChangeEvent {

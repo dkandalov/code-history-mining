@@ -7,8 +7,8 @@ import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFileFactory
-import history.events.FileChangeEvent
-import history.events.CommitInfo
+import events.FileChangeEvent
+import events.CommitInfo
 import intellijeval.PluginUtil
 
 import static intellijeval.PluginUtil.show

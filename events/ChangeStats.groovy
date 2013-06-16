@@ -1,4 +1,4 @@
-package history.events
+package events
 
 import groovy.transform.Immutable
 

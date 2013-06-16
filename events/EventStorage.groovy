@@ -1,7 +1,7 @@
-package history.events
+package events
 import com.intellij.openapi.util.io.FileUtil
-import history.events.csv4180.CSVReader
-import history.events.csv4180.CSVWriter
+import events.csv4180.CSVReader
+import events.csv4180.CSVWriter
 
 import java.text.SimpleDateFormat
 
