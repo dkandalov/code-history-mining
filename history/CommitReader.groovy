@@ -1,16 +1,15 @@
 package history
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import git4idea.changes.GitCommittedChangeList as GitCommit
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.util.Consumer
 import git4idea.GitUtil
+import git4idea.changes.GitCommittedChangeList as GitCommit
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
 import history.util.PastToPresentIterator
@@ -117,7 +116,9 @@ class CommitReader {
 	}
 
 	static amountOfVCSIn(Project project) {
-		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
-		sourceRoots.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }.size()
+		ProjectRootManager.getInstance(project).contentSourceRoots
+				.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }
+				.findAll{ it.path != null }.unique()
+				.size()
 	}
 }

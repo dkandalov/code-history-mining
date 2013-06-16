@@ -146,7 +146,7 @@ def grabHistoryOf(Project project) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 		return
 	} else if (CommitReader.amountOfVCSIn(project) > 1) {
-		showWarningDialog(project, "Cannot grab project history because there are there are multiple VCS roots setup for it.", "Code History Mining")
+		showWarningDialog(project, "Sorry, grabbing history for project with multiple VCS roots is not implemented.", "Code History Mining")
 		return
 	}
 
