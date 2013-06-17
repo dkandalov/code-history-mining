@@ -148,10 +148,32 @@
             background: #f2f2f2;
         }
         #commit-treemap text {
-            font-size: 14px;
+            font-size: 12px;
         }
         #commit-treemap rect {
             fill: none;
+        }
+        #commit-treemap div.tooltip {
+            position: absolute;
+            text-align: center;
+            height: 15px;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        #commit-treemap #footer {
+            z-index: 1;
+            font-size: 18px;
+            font-weight: 300;
+            text-shadow: 0 1px 0 #fff;
+            text-align: right;
+        }
+        #commit-treemap .hint {
+            font-size: 12px;
+            color: #999;
         }
     </style>
     <style>
@@ -7808,9 +7830,8 @@ function createTreeMapOn(elementId, root, projectName) {
 
     var svg = chart.append("svg:svg")
             .attr("width", w)
-            .attr("height", h)
-            .append("svg:g");
-    var svgPos = svg[0][0].getBoundingClientRect();
+            .attr("height", h);
+    var svgPos = svg[0][0];
 
     var footer = appendBlockElementTo(chart, w).attr("id", "footer");
     var packageNameLabel = footer.append("div");
@@ -7866,8 +7887,8 @@ function createTreeMapOn(elementId, root, projectName) {
                             .style("visibility", "visible")
                             .style("height", "auto")
                             .style("position", "absolute")
-                            .style("left", (svgPos.left + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
-                            .style("top", (svgPos.top + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
+                            .style("left", (svgPos.offsetLeft + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
+                            .style("top", (svgPos.offsetTop + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
                 })
                 .on("mouseout", function(d) {
                     if (d.hasLabel) return;
