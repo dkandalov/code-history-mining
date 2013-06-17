@@ -287,7 +287,7 @@
 <script src="html/d3.v3.min.js"></script>
 
 <script>
-var calendarViewRawData = ["\
+var rawData = ["\
 date,changeSize\n\
 09/01/2001,1\n\
 10/01/2001,1\n\
@@ -1907,7 +1907,7 @@ date,changeSize\n\
 "];
 var projectName = "junit";
 
-drawCalendarChart("calendar-view", calendarViewRawData, projectName);
+drawCalendarChart("calendar-view", rawData, projectName);
 
 function drawCalendarChart(elementId, rawData, projectName) {
     var threshold = 95;
@@ -1915,11 +1915,11 @@ function drawCalendarChart(elementId, rawData, projectName) {
     var data = parseRawData(rawData[rawDataIndex], threshold);
 
     var width = 800,
-        height = 116,
+        height = 136,
         cellSize = 14;
 
-    var day = d3.time.format("%w"),
-            week = d3.time.format("%U");
+    var day = function(d) { return (d.getDay() + 6) % 7; };
+    var week = d3.time.format("%W");
     var dateFormat = d3.time.format("%d/%m/%Y");
     var valueFormat = function(n) {
         var s = d3.format(",")(n);
@@ -1932,6 +1932,8 @@ function drawCalendarChart(elementId, rawData, projectName) {
             .range(d3.range(8).map(function(d) { return "q" + d + "-8"; }));
 
     const rootElement = d3.select("#" + elementId);
+
+    var headerSpan = appendBlockElementTo(rootElement, width);
 
     var svg = rootElement.selectAll("svg")
             .data(d3.range(minYear, maxYear + 1))
@@ -2024,31 +2026,32 @@ function drawCalendarChart(elementId, rawData, projectName) {
     function appendBlockElementTo(element, width) {
         return element.append("span").style({display: "block", width: width + "px"});
     }
-
-    function parseRawData(rawData, threshold) {
-        var data = d3.csv.parse(rawData);
-        data.forEach(function (d) { d.changeSize = +d.changeSize; });
-        var toPercents = toPercentsFunction(data, threshold);
-
-        return d3.nest()
-                .key(function(d) { return d.date; })
-                .rollup(function(d) { return {value: toPercents(d[0].changeSize), changeSize: d[0].changeSize}; })
-                .map(data);
-    }
-
-    function toPercentsFunction(data, threshold) { // TODO try d3.quantile
-        data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
-        var length = data.length * (threshold / 100);
-        var slicedData = data.slice(data.length - length, data.length);
-
-        var min = d3.min(slicedData, function (d) { return d.changeSize; });
-        var max = d3.max(slicedData, function (d) { return d.changeSize; });
-        var rangeSize = (max - min > 0 ? max - min : 0.0000001);
-        return function (value) {
-            return (value - min) / rangeSize;
-        };
-    }
 }
+
+function parseRawData(rawData, threshold) {
+    var data = d3.csv.parse(rawData);
+    data.forEach(function (d) { d.changeSize = +d.changeSize; });
+    var toPercents = toPercentsFunction(data, threshold);
+
+    return d3.nest()
+            .key(function(d) { return d.date; })
+            .rollup(function(d) { return {value: toPercents(d[0].changeSize), changeSize: d[0].changeSize}; })
+            .map(data);
+}
+
+function toPercentsFunction(data, threshold) {
+    data = data.map(function(d){ return d.changeSize; });
+    data.sort(d3.ascending);
+
+    var min = d3.min(data);
+    var max = d3.quantile(data, threshold / 100);
+    var valueRange = (max - min > 0 ? max - min : 0.0000001);
+
+    return function (value) {
+        return value >= max ? 1 : (value - min) / valueRange;
+    };
+}
+
 </script>
 
 <script>
