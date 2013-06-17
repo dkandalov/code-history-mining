@@ -3827,8 +3827,8 @@ function drawChangeSizeChart(elementId, rawData, projectName) {
                     .attr("class", "line")
                     .attr("clip-path", "url(#chartClip)")
                     .attr("d", meanLine);
-            zoomedView.select(".x.axis").call(xAxis);
         }
+        zoomedView.select(".x.axis").call(xAxis);
 
         var formatChangeSize = (function(n) {
             var s = d3.format(",")(n);
