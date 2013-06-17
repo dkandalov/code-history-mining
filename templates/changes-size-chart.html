@@ -2,29 +2,32 @@
 <meta charset="utf-8">
 <style>
     body {
-        font: 10px sans-serif;
         background: #f2f2f2;
         margin: 30px;
+    }
+    #change-size-chart,
+    #change-size-chart text {
+        font: 10px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
-    .axis path,
-    .axis line {
+    #change-size-chart .axis path,
+    #change-size-chart .axis line {
         fill: none;
         stroke: #000;
         shape-rendering: crispEdges;
     }
-    .bar {
+    #change-size-chart .bar {
         fill: steelblue;
     }
-    .bar:hover {
+    #change-size-chart .bar:hover {
         fill: rgb(62, 104, 146);
     }
-    .line {
+    #change-size-chart .line {
         fill: none;
         stroke-width: 1.5px;
         stroke: #b2182b;
     }
-    .brush .extent {
+    #change-size-chart .brush .extent {
         stroke: #fff;
         fill-opacity: .125;
         shape-rendering: crispEdges;
@@ -32,10 +35,10 @@
 </style>
 <head><title>Change size chart</title></head>
 <body>
-<span id="changes-size-view"></span>
+<span id="change-size-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData = /*data_placeholder*/
+    var rawChartData = /*data_placeholder*/
 ["\
 date,changeSize\n\
 11/08/2012,14218\n\
@@ -183,7 +186,7 @@ date,changeSize\n\
 ]/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    drawChangeSizeChart("changes-size-view", rawData, projectName);
+    drawChangeSizeChart("change-size-chart", rawChartData, projectName);
 
     function drawChangeSizeChart(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
@@ -395,8 +398,9 @@ date,changeSize\n\
                         .attr("class", "line")
                         .attr("clip-path", "url(#chartClip)")
                         .attr("d", meanLine);
-                zoomedView.select(".x.axis").call(xAxis);
             }
+
+            zoomedView.select(".x.axis").call(xAxis);
 
             var formatChangeSize = (function(n) {
                 var s = d3.format(",")(n);
@@ -410,66 +414,68 @@ date,changeSize\n\
             barWidth = Math.floor(barWidth);
             return barWidth < 1 ? 1 : barWidth;
         }
-    }
 
-    function parseRawData(rawData, dateFormat) {
-        return d3.csv.parse(rawData).map(function(d) { return {
-            date: dateFormat.parse(d.date),
-            changeSize: parseInt(d.changeSize)};
-        });
-    }
+        <!-- static methods -->
 
-    function amountOfCommitsWithin(domain, data) {
-        var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
-        var changeSize = function(d) { return d.changeSize; };
-        return d3.sum(data.filter(withinDomain), changeSize);
-    }
-
-    function aggregate(daysData, timeInterval) {
-        if (timeInterval == d3.time.day) return daysData;
-        return d3.values(d3.nest()
-                        .key(function(d) { return timeInterval.floor(d.date); })
-                        .rollup(function(days) {
-                            var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
-                            var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                            return {date: date, changeSize: totalChangeSize };
-                        })
-                        .map(daysData)).filter(function (d) {
-                    return d.changeSize > 0;
-                });
-    }
-
-    function nonZero(length) {
-        return (length > 0 ? length : 0.0000001);
-    }
-
-    function appendBlockElementTo(element, width) {
-        return element.append("span").style({display: "block", width: width + "px"});
-    }
-
-    function calculateMonthlyMean(data) {
-        var period = 30;
-        var result = [];
-        var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
-        var changeSize = changeSizeByDay(data, datesRange);
-
-        var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return changeSize[date]; });
-
-        for (var i = period; i < datesRange.length; i++) {
-            var date = datesRange[i];
-            var dateToExclude = datesRange[i - period];
-            mean += (changeSize[date] - changeSize[dateToExclude]) / period;
-            result.push({date: date, mean: mean});
+        function parseRawData(rawData, dateFormat) {
+            return d3.csv.parse(rawData).map(function(d) { return {
+                date: dateFormat.parse(d.date),
+                changeSize: parseInt(d.changeSize)};
+            });
         }
 
-        return result;
-    }
+        function amountOfCommitsWithin(domain, data) {
+            var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
+            var changeSize = function(d) { return d.changeSize; };
+            return d3.sum(data.filter(withinDomain), changeSize);
+        }
 
-    function changeSizeByDay(data, datesRange) {
-        var result = {};
-        datesRange.forEach(function(date) { result[date] = 0; });
-        data.forEach(function(d) { result[d.date] = d.changeSize; });
-        return result;
+        function aggregate(daysData, timeInterval) {
+            if (timeInterval == d3.time.day) return daysData;
+            return d3.values(d3.nest()
+                            .key(function(d) { return timeInterval.floor(d.date); })
+                            .rollup(function(days) {
+                                var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
+                                var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
+                                return {date: date, changeSize: totalChangeSize };
+                            })
+                            .map(daysData)).filter(function (d) {
+                        return d.changeSize > 0;
+                    });
+        }
+
+        function nonZero(length) {
+            return (length > 0 ? length : 0.0000001);
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span").style({display: "block", width: width + "px"});
+        }
+
+        function calculateMonthlyMean(data) {
+            var period = 30;
+            var result = [];
+            var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
+            var changeSize = changeSizeByDay(data, datesRange);
+
+            var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return changeSize[date]; });
+
+            for (var i = period; i < datesRange.length; i++) {
+                var date = datesRange[i];
+                var dateToExclude = datesRange[i - period];
+                mean += (changeSize[date] - changeSize[dateToExclude]) / period;
+                result.push({date: date, mean: mean});
+            }
+
+            return result;
+        }
+
+        function changeSizeByDay(data, datesRange) {
+            var result = {};
+            datesRange.forEach(function(date) { result[date] = 0; });
+            data.forEach(function(d) { result[d.date] = d.changeSize; });
+            return result;
+        }
     }
 
 </script>
