@@ -2,30 +2,32 @@
 <meta charset="utf-8"/>
 <style>
     body {
-        font: 10px sans-serif;
         background: #f2f2f2;
         margin: 30px;
+    }
+    #commit-time-punchcard {
+        font: 10px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
-    .dot {
+    #commit-time-punchcard .dot {
         fill: steelblue;
     }
-    .dot:hover {
+    #commit-time-punchcard .dot:hover {
         fill: rgb(62, 104, 146);
     }
-    .axis path,
-    .axis line {
+    #commit-time-punchcard .axis path,
+    #commit-time-punchcard .axis line {
         fill: none;
         stroke: #000;
         shape-rendering: crispEdges;
     }
 </style>
-<head><title>Commit time scatter plot</title></head>
+<head><title>Commit time punchcard</title></head>
 <body>
-<span id="scatter-plot"></span>
+<span id="commit-time-punchcard"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawData = /*data_placeholder*/"\
+    var commitTimePunchcardRawData = /*data_placeholder*/"\
 dayOfWeek,hour,minute,value\n\
 1,0,14,1\n\
 1,8,41,1\n\
@@ -294,7 +296,7 @@ dayOfWeek,hour,minute,value\n\
 " /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"code-history-mining"/*project_name_placeholder*/;
 
-    createCommitTimeScatterPlot("scatter-plot", rawData, projectName);
+    createCommitTimeScatterPlot("commit-time-punchcard", commitTimePunchcardRawData, projectName);
 
     function createCommitTimeScatterPlot(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -319,7 +321,7 @@ dayOfWeek,hour,minute,value\n\
         var rootElement = d3.select("#" + elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Commit time scatter plot (" + projectName + ")").style({"text-align": "center"});
+        headerSpan.append("h2").text("Commit time punchcard (" + projectName + ")").style({"text-align": "center"});
 
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)
