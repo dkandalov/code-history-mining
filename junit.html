@@ -240,42 +240,44 @@
     <section id="main_content" class="inner">
         <p>
             This is visualization of <a href="https://github.com/junit-team/junit">JUnit</a> code history using
-            this <a href="https://github.com/dkandalov/code-history-mining">IntelliJ plugin</a>.
-            It's not exactly output of the plugin but a combination of all visualizations.
-
-            (Based on this <a href="http://dl.dropboxusercontent.com/u/4965784/junit-file-events.csv">csv file</a>.)
+            <a href="http://d3js.org/">d3.js</a>.
+            Produced with <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a>.
         </p>
 
-        <h6>Change size chart</h6>
+        <h4>Change size chart</h4>
         <p id="change-size-chart"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Files changed in the same commit</h6>
-        This only includes files which changed in the same commit more than 7 times.
-        Thickness of edges is correlated with the number of commits.
+        <h4>Files changed in the same commit</h4>
+        This graph shows files which were changed in the same commit at least 7 times.
+        Thickness of edges is proportional to the number of commits.
+        (Renamed and moved files are tracked but only current file name is displayed.)
+        The idea is to discover de facto dependencies between files.
         <p id="files-in-same-commit-graph"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Committers changing same files</h6>
+        <h4>Committers changing same files</h4>
+
         <p id="committers-changing-same-files"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Commit messages wordcloud</h6>
+        <h4>Commit messages wordcloud</h4>
         <p id="commit-word-cloud"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Amount of commits treemap</h6>
+        <h4>Amount of commits treemap</h4>
         <p id="commit-treemap"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Commit time punchcard</h6>
+        <h4>Commit time punchcard</h4>
         <p id="commit-time-punchcard"></p>
-        <br/>
+        <br/><br/>
 
-        <h6>Time between commits histogram</h6>
+        <h4>Time between commits histogram</h4>
         <p id="time-between-commits-histogram"></p>
+        <br/><br/>
 
-        <h6>Changes calendar view</h6>
+        <h4>Changes calendar view</h4>
         <p id="calendar-view"></p>
         <br/>
 
@@ -285,11 +287,10 @@
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
     <footer class="inner">
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a>.</p>
         <p class="copyright">Please feel free to drop <a href="https://twitter.com/dmitrykandalov">me</a> a line
-            or create an issue on <a href="https://github.com/dkandalov/code-history-mining/issues">GitHub</a>
-            if something doesn't work.
+            or create an issue on <a href="https://github.com/dkandalov/code-history-mining/issues">GitHub</a>.
         </p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
     </footer>
 </div>
 
