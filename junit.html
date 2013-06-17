@@ -13,7 +13,7 @@
         #calendar-view {
             shape-rendering: crispEdges;
             background: #f2f2f2;
-            font: 10px sans-serif;
+            font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
         }
         .day {
@@ -143,7 +143,7 @@
     </style>
     <style>
         #commit-treemap {
-            font: 10px sans-serif;
+            font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
             background: #f2f2f2;
         }
@@ -178,32 +178,37 @@
     </style>
     <style>
         #commit-time-punchcard {
-            font: 10px sans-serif;
+            font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
             background: #f2f2f2;
         }
-        .dot {
+        #commit-time-punchcard .dot {
             fill: steelblue;
         }
-        .dot:hover {
+        #commit-time-punchcard .dot:hover {
             fill: rgb(62, 104, 146);
         }
-        .axis path,
-        .axis line {
+        #commit-time-punchcard .axis path,
+        #commit-time-punchcard .axis line {
             fill: none;
             stroke: #000;
             shape-rendering: crispEdges;
         }
     </style>
     <style>
-        .bar rect {
+        #time-between-commits-histogram {
+            font: 11px sans-serif;
+            font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+            background: #f2f2f2;
+        }
+        #time-between-commits-histogram .bar rect {
             fill: steelblue;
             shape-rendering: crispEdges;
         }
-        .bar rect:hover {
+        #time-between-commits-histogram .bar rect:hover {
             fill: rgb(62, 104, 146);
         }
-        .axis path, .axis line {
+        #time-between-commits-histogram .axis path, .axis line {
             fill: none;
             stroke: #aaa;
             shape-rendering: crispEdges;
@@ -259,7 +264,7 @@
         <br/>
 
         <h6>Time between commits histogram</h6>
-        <p id="histogram"></p>
+        <p id="time-between-commits-histogram"></p>
 
         <h6>Changes calendar view</h6>
         <p id="calendar-view"></p>
@@ -7976,7 +7981,7 @@ function createTreeMapOn(elementId, root, projectName) {
 </script>
 
 <script>
-var rawData = "\
+var commitTimeRawData = "\
 dayOfWeek,hour,minute,value\n\
 1,0,10,1\n\
 1,0,49,1\n\
@@ -9059,7 +9064,7 @@ dayOfWeek,hour,minute,value\n\
 ";
 var projectName = "junit";
 
-createCommitTimeScatterPlot("commit-time-punchcard", rawData, projectName);
+createCommitTimeScatterPlot("commit-time-punchcard", commitTimeRawData, projectName);
 
 function createCommitTimeScatterPlot(elementId, rawData, projectName) {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -9077,7 +9082,7 @@ function createCommitTimeScatterPlot(elementId, rawData, projectName) {
             .tickValues(d3.range(0, 7 * 24, 24))
             .tickFormat(function() { return ""; });
     var yAxis = null;
-    var defaultCommitSizeMultiplier = 1;
+    var defaultCommitSizeMultiplier = 2;
     var commitSizeMultiplier = defaultCommitSizeMultiplier;
     var groupByHours = true;
 
@@ -9252,7 +9257,7 @@ function createCommitTimeScatterPlot(elementId, rawData, projectName) {
 </script>
 
 <script>
-const rawData = "\
+const timeBetweenCommitsRawData = "\
 metric\n\
 85442000\n\
 520706000\n\
@@ -10308,7 +10313,7 @@ metric\n\
 ";
 var projectName = "junit";
 
-createHistogram("histogram", rawData, projectName);
+createHistogram("time-between-commits-histogram", timeBetweenCommitsRawData, projectName);
 
 function createHistogram(elementId, rawData, projectName) {
     var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
