@@ -134,8 +134,8 @@ date,changeSize\n\
             height = 136,
             cellSize = 17;
 
-        var day = d3.time.format("%w"),
-            week = d3.time.format("%U");
+        var day = function(d) { return (d.getDay() + 6) % 7; };
+        var week = d3.time.format("%W");
         var dateFormat = d3.time.format("%d/%m/%Y");
         var valueFormat = function(n) {
             var s = d3.format(",")(n);
