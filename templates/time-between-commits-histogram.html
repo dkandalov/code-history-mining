@@ -1,29 +1,31 @@
 <!DOCTYPE html><meta charset="utf-8">
 <style>
     body {
-        font: 10px sans-serif;
         background: #f2f2f2;
         margin: 30px;
+    }
+    #time-between-commits-histogram {
+        font: 10px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
-    .bar rect {
+    #time-between-commits-histogram .bar rect {
         fill: steelblue;
         shape-rendering: crispEdges;
     }
-    .bar rect:hover {
+    #time-between-commits-histogram .bar rect:hover {
         fill: rgb(62, 104, 146);
     }
-    .axis path, .axis line {
+    #time-between-commits-histogram .axis path, .axis line {
         fill: none;
         stroke: #aaa;
         shape-rendering: crispEdges;
     }
 </style>
 <body>
-<span id="histogram"></span>
+<span id="time-between-commits-histogram"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    const rawData = /*data_placeholder*/"\
+    const timeBetweenCommitsRawData = /*data_placeholder*/"\
 metric\n\
 85442000\n\
 520706000\n\
@@ -1325,7 +1327,7 @@ metric\n\
 "/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
 
-    createHistogram("histogram", rawData, projectName);
+    createHistogram("time-between-commits-histogram", timeBetweenCommitsRawData, projectName);
 
     function createHistogram(elementId, rawData, projectName) {
         var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
