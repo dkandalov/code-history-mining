@@ -214,6 +214,15 @@
             shape-rendering: crispEdges;
         }
     </style>
+    <style>
+        #commit-word-cloud {
+            font: 11px sans-serif;
+            font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+        }
+        #commit-word-cloud text {
+            cursor: default;
+        }
+    </style>
 </head>
 
 <body>
@@ -252,7 +261,7 @@
         <br/>
 
         <h6>Commit messages wordcloud</h6>
-        <p id="word-cloud"></p>
+        <p id="commit-word-cloud"></p>
         <br/>
 
         <h6>Amount of commits treemap</h6>
@@ -4798,7 +4807,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
 </script>
 
 <script>
-var data = {"words": [
+var commitWordCloudData = {"words": [
             {"text": "kent", "size": 186},
             {"text": "test", "size": 180},
             {"text": "added", "size": 171},
@@ -5803,19 +5812,16 @@ var data = {"words": [
         ;
 var projectName = "junit";
 
-createWordCloud("wordCloud", projectName);
+createWordCloud("commit-word-cloud", commitWordCloudData, projectName);
 
-function createWordCloud(elementId, projectName) {
+function createWordCloud(elementId, data, projectName) {
     var solidFill = d3.scale.category10();
     var mixedFill = d3.scale.category20();
-    var width = 1000;
+    var width = 800;
     var height = 700;
 
     var rootElement = d3.select("#" + elementId);
     var header = appendBlockElementTo(rootElement, width);
-    header.append("h2").text("Commit messages word cloud (" + projectName + ")")
-            .style("text-align", "center")
-            .style("margin", "30px");
 
     adjustSizeOfShortWords(data.words);
     normalizeWordSize(data.words);
