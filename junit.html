@@ -36,46 +36,32 @@
         .calendar-view .q7-8{fill: rgb(8, 81, 156)}
     </style>
     <style>
-        .axis path,
-        .axis line {
+        #change-size-chart,
+        #change-size-chart text {
+            font: 11px sans-serif;
+            font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+        }
+        #change-size-chart .axis path,
+        #change-size-chart .axis line {
             fill: none;
             stroke: #000;
             shape-rendering: crispEdges;
         }
-        .bar {
+        #change-size-chart .bar {
             fill: steelblue;
         }
-        .bar:hover {
+        #change-size-chart .bar:hover {
             fill: rgb(62, 104, 146);
         }
-        .line {
+        #change-size-chart .line {
             fill: none;
             stroke-width: 1.5px;
             stroke: #b2182b;
         }
-        .brush .extent {
-            stroke: #fff;
-            fill-opacity: .125;
-            shape-rendering: crispEdges;
+        #change-size-chart rect {
+            fill: black;
         }
-    </style>
-    <style>
-        #changes-size-view {
-            font: 10px sans-serif;
-        }
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-        .bar {
-            fill: steelblue;
-        }
-        .bar:hover {
-            fill: rgb(62, 104, 146);
-        }
-        .brush .extent {
+        #change-size-chart .brush .extent {
             stroke: #fff;
             fill-opacity: .125;
             shape-rendering: crispEdges;
@@ -195,8 +181,8 @@
             (Based on this <a href="http://dl.dropboxusercontent.com/u/4965784/junit-file-events.csv">csv file</a>.)
         </p>
 
-        <h6>Changes size chart</h6>
-        <p id="changes-size-view"></p>
+        <h6>Change size chart</h6>
+        <p id="change-size-chart"></p>
         <br/>
 
         <h6>Files changed in the same commit</h6>
@@ -3630,7 +3616,7 @@ date,changeSize\n\
 "];
 var projectName = "junit";
 
-drawChangeSizeChart("changes-size-view", rawData, projectName);
+drawChangeSizeChart("change-size-chart", rawData, projectName);
 
 function drawChangeSizeChart(elementId, rawData, projectName) {
     var margin = {top: 20, right: 20, bottom: 100, left: 40},
