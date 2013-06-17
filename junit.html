@@ -1996,7 +1996,7 @@ function drawCalendarChart(elementId, rawData, projectName) {
 </script>
 
 <script>
-var rawData = ["\
+var changeSizeChartRawData = ["\
 date,changeSize\n\
 09/01/2001,1\n\
 10/01/2001,1\n\
@@ -3616,7 +3616,7 @@ date,changeSize\n\
 "];
 var projectName = "junit";
 
-drawChangeSizeChart("change-size-chart", rawData, projectName);
+drawChangeSizeChart("change-size-chart", changeSizeChartRawData, projectName);
 
 function drawChangeSizeChart(elementId, rawData, projectName) {
     var margin = {top: 20, right: 20, bottom: 100, left: 40},
@@ -3907,7 +3907,7 @@ function drawChangeSizeChart(elementId, rawData, projectName) {
 
 <script>
 
-const graph = {
+const filesInTheSameCommitGraph = {
     "nodes": [{"name": "/build.xml", "group": 1},
         {"name": "/src/main/java/junit/runner/Version.java", "group": 1},
         {"name": "/src/main/java/org/junit/runners/BlockJUnit4ClassRunner.java", "group": 1},
@@ -3971,7 +3971,7 @@ var projectName = "junit";
 var graphName = "Files in the same commit";
 
 
-createForcesGraphOn("files-in-same-commit-graph", graph, projectName);
+createForcesGraphOn("files-in-same-commit-graph", filesInTheSameCommitGraph, projectName);
 
 function createForcesGraphOn(elementId, graph, projectName) {
     function QuickFind(size) {
@@ -4005,46 +4005,46 @@ function createForcesGraphOn(elementId, graph, projectName) {
     }
     GraphEditor.prototype.deleteLinks = function(linksToRemove) {
         this.deletions.push({links: linksToRemove});
-        this.committersToFilesGraph.links = this.committersToFilesGraph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
+        this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
 
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.deleteNodes = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
             this.delete(nodes[i]);
         }
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.delete = function(nodeToRemove) {
-        var nodeIndex = this.committersToFilesGraph.nodes.indexOf(nodeToRemove);
-        var linksToRemove = this.committersToFilesGraph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
+        var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
+        var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
         this.deletions.push({nodeIndex: nodeIndex, node: nodeToRemove, links: linksToRemove});
 
-        this.committersToFilesGraph.nodes = this.committersToFilesGraph.nodes.filter(function(node) { return node != nodeToRemove; });
-        this.committersToFilesGraph.links = this.committersToFilesGraph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
+        this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
+        this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
     };
     GraphEditor.prototype.undoAllDeletions = function () {
         while (this.deletions.length > 0) {
             var deletion = this.deletions.pop();
 
             if (deletion.node != null) {
-                this.committersToFilesGraph.nodes = this.committersToFilesGraph.nodes.concat([deletion.node]);
-                deletion.node.index = this.committersToFilesGraph.nodes.length - 1;
+                this.graph.nodes = this.graph.nodes.concat([deletion.node]);
+                deletion.node.index = this.graph.nodes.length - 1;
             }
 
-            this.committersToFilesGraph.links = this.committersToFilesGraph.links.concat(deletion.links);
+            this.graph.links = this.graph.links.concat(deletion.links);
         }
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.nodesConnectedTo = function(node) {
         var quickFind = this.quickFind;
-        return this.committersToFilesGraph.nodes.filter(function(eachNode) {
+        return this.graph.nodes.filter(function(eachNode) {
             return quickFind.areConnected(eachNode.index, node.index);
         });
     };
     GraphEditor.prototype.immediateConnectionsOf = function(node) {
-        var result = this.committersToFilesGraph.links.map(function(link) {
+        var result = this.graph.links.map(function(link) {
             if (link.source == node) return link.target;
             else if (link.target == node) return link.source;
             else return null;
