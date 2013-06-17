@@ -232,8 +232,8 @@ date,changeSize\n\
 
         function monthPath(t0) {
             var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
-                    d0 = +day(t0), w0 = +week(t0),
-                    d1 = +day(t1), w1 = +week(t1);
+                d0 = +day(t0), w0 = +week(t0),
+                d1 = +day(t1), w1 = +week(t1);
             return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
                     + "H" + w0 * cellSize + "V" + 7 * cellSize
                     + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
@@ -257,16 +257,16 @@ date,changeSize\n\
                 .map(data);
     }
 
-    function toPercentsFunction(data, threshold) { // TODO try d3.quantile
-        data.sort(function (a, b) { return a.changeSize < b.changeSize ? 1 : -1; });
-        var length = data.length * (threshold / 100);
-        var slicedData = data.slice(data.length - length, data.length);
+    function toPercentsFunction(data, threshold) {
+        data = data.map(function(d){ return d.changeSize; });
+        data.sort(d3.ascending);
 
-        var min = d3.min(slicedData, function (d) { return d.changeSize; });
-        var max = d3.max(slicedData, function (d) { return d.changeSize; });
-        var rangeSize = (max - min > 0 ? max - min : 0.0000001);
+        var min = d3.min(data);
+        var max = d3.quantile(data, threshold / 100);
+        var valueRange = (max - min > 0 ? max - min : 0.0000001);
+
         return function (value) {
-            return (value - min) / rangeSize;
+            return value >= max ? 1 : (value - min) / valueRange;
         };
     }
 
