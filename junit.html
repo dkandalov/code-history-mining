@@ -70,18 +70,18 @@
     <style>
         #files-in-same-commit-graph {
             background: #f2f2f2;
-            font: 10px sans-serif;
+            font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
         }
-        .node {
+        #files-in-same-commit-graph .node {
             stroke: #fff;
             stroke-width: 1.5px;
         }
-        .link {
+        #files-in-same-commit-graph .link {
             stroke: #999;
             stroke-opacity: .6;
         }
-        div.tooltip {
+        #files-in-same-commit-graph div.tooltip {
             position: absolute;
             text-align: center;
             height: auto;
@@ -92,7 +92,7 @@
             border-radius: 8px;
             pointer-events: none;
         }
-        div.selectedNodesLabel {
+        #files-in-same-commit-graph div.selectedNodesLabel {
             position: absolute;
             text-align: left;
             height: auto;
@@ -107,8 +107,38 @@
     <style>
         #committers-changing-same-files {
             background: #f2f2f2;
-            font: 10px sans-serif;
+            font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+        }
+        #committers-changing-same-files .node {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+        #committers-changing-same-files .link {
+            stroke: #999;
+            stroke-opacity: .6;
+        }
+        #committers-changing-same-files div.tooltip {
+            position: absolute;
+            text-align: center;
+            height: auto;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+        #committers-changing-same-files div.selectedNodesLabel {
+            position: absolute;
+            text-align: left;
+            height: auto;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0;
+            border-radius: 8px;
+            pointer-events: none;
         }
     </style>
     <style>
@@ -4419,46 +4449,46 @@ function createForcesGraphOn(elementId, graph, projectName) {
     }
     GraphEditor.prototype.deleteLinks = function(linksToRemove) {
         this.deletions.push({links: linksToRemove});
-        this.committersToFilesGraph.links = this.committersToFilesGraph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
+        this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
 
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.deleteNodes = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
             this.delete(nodes[i]);
         }
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.delete = function(nodeToRemove) {
-        var nodeIndex = this.committersToFilesGraph.nodes.indexOf(nodeToRemove);
-        var linksToRemove = this.committersToFilesGraph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
+        var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
+        var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
         this.deletions.push({nodeIndex: nodeIndex, node: nodeToRemove, links: linksToRemove});
 
-        this.committersToFilesGraph.nodes = this.committersToFilesGraph.nodes.filter(function(node) { return node != nodeToRemove; });
-        this.committersToFilesGraph.links = this.committersToFilesGraph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
+        this.graph.nodes = this.graph.nodes.filter(function(node) { return node != nodeToRemove; });
+        this.graph.links = this.graph.links.filter(function(link) { return linksToRemove.indexOf(link) == -1; });
     };
     GraphEditor.prototype.undoAllDeletions = function () {
         while (this.deletions.length > 0) {
             var deletion = this.deletions.pop();
 
             if (deletion.node != null) {
-                this.committersToFilesGraph.nodes = this.committersToFilesGraph.nodes.concat([deletion.node]);
-                deletion.node.index = this.committersToFilesGraph.nodes.length - 1;
+                this.graph.nodes = this.graph.nodes.concat([deletion.node]);
+                deletion.node.index = this.graph.nodes.length - 1;
             }
 
-            this.committersToFilesGraph.links = this.committersToFilesGraph.links.concat(deletion.links);
+            this.graph.links = this.graph.links.concat(deletion.links);
         }
-        this.quickFind = createQuickFindIndex(this.committersToFilesGraph);
+        this.quickFind = createQuickFindIndex(this.graph);
     };
     GraphEditor.prototype.nodesConnectedTo = function(node) {
         var quickFind = this.quickFind;
-        return this.committersToFilesGraph.nodes.filter(function(eachNode) {
+        return this.graph.nodes.filter(function(eachNode) {
             return quickFind.areConnected(eachNode.index, node.index);
         });
     };
     GraphEditor.prototype.immediateConnectionsOf = function(node) {
-        var result = this.committersToFilesGraph.links.map(function(link) {
+        var result = this.graph.links.map(function(link) {
             if (link.source == node) return link.target;
             else if (link.target == node) return link.source;
             else return null;
@@ -4485,7 +4515,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
     var svg = rootElement.append("svg").attr("width", width).attr("height", height);
     var svgLinks = svg.append("g");
     var svgNodes = svg.append("g");
-    var svgPos = svg[0][0].getBoundingClientRect();
+    var svgPos = svg[0][0];
 
     svg.append("rect")
             .attr("width", width).attr("height", height)
@@ -4511,16 +4541,16 @@ function createForcesGraphOn(elementId, graph, projectName) {
                 .attr("class", "tooltip")
                 .html("Unfortunately, there is nothing to show.")
                 .style("position", "absolute")
-                .style("top", function (){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
-                .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; });
+                .style("top", function (){ return svgPos.offsetTop + (svgPos.offsetHeight / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function (){ return svgPos.offsetLeft + (svgPos.offsetWidth / 2) - (this.offsetWidth / 2) + "px"; });
 
     var handledByNode = false;
     var onMouseOverNode = function (d) {
         tooltip.html(showLongFileNames ? d.name : dropPath(d.name))
                 .style("opacity", .9)
                 .style("position", "absolute")
-                .style("left", svgPos.left + parseInt(d.x + 18) + "px")
-                .style("top", svgPos.top + parseInt(d.y - 12) + "px");
+                .style("left", svgPos.offsetLeft + parseInt(d.x + 18) + "px")
+                .style("top", svgPos.offsetTop + parseInt(d.y - 12) + "px");
     };
     var onMouseOutOfNode = function() {
         tooltip.style("opacity", .0);
@@ -4707,14 +4737,14 @@ function createForcesGraphOn(elementId, graph, projectName) {
         if (nodesByGroup[2] == null) nodesByGroup[2] = [];
 
         selectedNodesLabel
-                .style("left", svgPos.left + 3 + "px")
-                .style("top", svgPos.top + 3 + "px")
+                .style("left", svgPos.offsetLeft + 3 + "px")
+                .style("top", svgPos.offsetTop + 3 + "px")
                 .html(nodesByGroup[1].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
                 .style("opacity", (nodesByGroup[1].length > 0 ? 1 : 0));
-        var pos = selectedNodesLabel[0][0].getBoundingClientRect();
+        var pos = selectedNodesLabel[0][0];
         selectedNodesLabel2
-                .style("left", svgPos.left + 3 + "px")
-                .style("top", pos.top + pos.height + 3 + "px")
+                .style("left", svgPos.offsetLeft + 3 + "px")
+                .style("top", pos.offsetTop + pos.offsetHeight + 3 + "px")
                 .html(nodesByGroup[2].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
                 .style("opacity", (nodesByGroup[2].length > 0 ? 1 : 0));
     }
