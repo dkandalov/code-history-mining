@@ -12,22 +12,18 @@
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
             background: #f2f2f2;
         }
-
-        .chart {
+        #commit-treemap .chart {
             display: block;
             margin: auto;
             margin-top: 40px;
         }
-
-        text {
+        #commit-treemap text {
             font-size: 14px;
         }
-
-        rect {
+        #commit-treemap rect {
             fill: none;
         }
-
-        div.tooltip {
+        #commit-treemap div.tooltip {
             position: absolute;
             text-align: center;
             height: 15px;
@@ -38,24 +34,23 @@
             border-radius: 8px;
             pointer-events: none;
         }
-        #footer {
+        #commit-treemap #footer {
             z-index: 1;
             font-size: 24px;
             font-weight: 300;
             text-shadow: 0 1px 0 #fff;
             text-align: right;
         }
-        .hint {
+        #commit-treemap .hint {
             font-size: 12px;
             color: #999;
         }
-
     </style>
 </head>
-<head><title>Change size treemap</title></head>
+<head><title>Amount of commits treemap</title></head>
 <body>
 <div id="body">
-    <span id="treemap"></span>
+    <span id="commit-treemap"></span>
 </div>
 <script type="text/javascript">
     var root = /*data_placeholder*/
@@ -83,7 +78,7 @@
     /*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    createTreeMapOn("treemap", root, projectName);
+    createTreeMapOn("commit-treemap", root, projectName);
 
     function createTreeMapOn(elementId, root, projectName) {
         var w = 1280 - 80,
@@ -100,15 +95,14 @@
                 .style("height", h + "px");
 
         var header = appendBlockElementTo(chart, w);
-        header.append("h2").text("Change size treemap (" + projectName + ")")
+        header.append("h2").text("Amount of commits treemap (" + projectName + ")")
                 .style("text-align", "center")
                 .style("margin-bottom", "30px");
 
         var svg = chart.append("svg:svg")
                 .attr("width", w)
-                .attr("height", h)
-                .append("svg:g");
-        var svgPos = svg[0][0].getBoundingClientRect();
+                .attr("height", h);
+        var svgPos = svg[0][0];
 
         var footer = appendBlockElementTo(chart, w).attr("id", "footer");
         var packageNameLabel = footer.append("div");
@@ -164,8 +158,8 @@
                                 .style("visibility", "visible")
                                 .style("height", "auto")
                                 .style("position", "absolute")
-                                .style("left", (svgPos.left + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
-                                .style("top", (svgPos.top + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
+                                .style("left", (svgPos.offsetLeft + d.x + (d.dx / 2) - (tooltip[0][0].offsetWidth / 2)) + "px")
+                                .style("top", (svgPos.offsetTop + d.y + (d.dy / 2) - (tooltip[0][0].offsetHeight / 2)) + "px");
                     })
                     .on("mouseout", function(d) {
                         if (d.hasLabel) return;
