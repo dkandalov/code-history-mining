@@ -294,6 +294,7 @@
 </div>
 
 <script src="html/d3.v3.min.js"></script>
+<script src="html/d3.layout.cloud.js"></script>
 
 <script>
 var rawData = ["\
@@ -5891,7 +5892,7 @@ function createWordCloud(elementId, data, projectName) {
         var max = d3.max(words, function (d) { return d.size; });
         var range = (max != min ? max - min : 1);
         words.forEach(function (word) {
-            word.size = Math.round(5 + ((word.size - min) * 100 / range));
+            word.size = Math.round(3 + ((word.size - min) * 100 / range));
         });
     }
 
