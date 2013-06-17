@@ -4,18 +4,21 @@
     body {
         background: #f2f2f2;
         margin: 30px;
-        font: 10px sans-serif;
+    }
+    #author-to-file-graph,
+    #author-to-file-graph text {
+        font: 11px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
-    .node {
+    #author-to-file-graph .node {
         stroke: #fff;
         stroke-width: 1.5px;
     }
-    .link {
+    #author-to-file-graph .link {
         stroke: #999;
         stroke-opacity: .6;
     }
-    div.tooltip {
+    #author-to-file-graph div.tooltip {
         position: absolute;
         text-align: center;
         height: auto;
@@ -26,7 +29,7 @@
         border-radius: 8px;
         pointer-events: none;
     }
-    div.selectedNodesLabel {
+    #author-to-file-graph div.selectedNodesLabel {
         position: absolute;
         text-align: left;
         height: auto;
@@ -41,10 +44,10 @@
 <head><title>Committers changing same files</title></head>
 <body>
 <script src="d3.v3.min.js"></script>
-<span id="rootElement"></span>
+<span id="author-to-file-graph"></span>
 <script>
 
-const graph = {
+const authorToFileGraph = {
 /*data_placeholder*/
     "nodes": [
         {"name": "acknowledgements.txt", "group": 1},
@@ -117,7 +120,7 @@ const graph = {
 var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
 var graphName = "Committers changing same files";
 
-createForcesGraphOn("rootElement", graph, projectName);
+createForcesGraphOn("author-to-file-graph", authorToFileGraph, projectName);
 
 function createForcesGraphOn(elementId, graph, projectName) {
     function QuickFind(size) {
@@ -218,7 +221,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
     var svg = rootElement.append("svg").attr("width", width).attr("height", height);
     var svgLinks = svg.append("g");
     var svgNodes = svg.append("g");
-    var svgPos = svg[0][0].getBoundingClientRect();
+    var svgPos = svg[0][0];
 
     svg.append("rect")
             .attr("width", width).attr("height", height)
@@ -244,16 +247,16 @@ function createForcesGraphOn(elementId, graph, projectName) {
                 .attr("class", "tooltip")
                 .html("Unfortunately, there is nothing to show.")
                 .style("position", "absolute")
-                .style("top", function (){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
-                .style("left", function (){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; });
+                .style("top", function (){ return svgPos.offsetTop + (svgPos.offsetHeight / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function (){ return svgPos.offsetLeft + (svgPos.offsetWidth / 2) - (this.offsetWidth / 2) + "px"; });
 
     var handledByNode = false;
     var onMouseOverNode = function (d) {
         tooltip.html(showLongFileNames ? d.name : dropPath(d.name))
                 .style("opacity", .9)
                 .style("position", "absolute")
-                .style("left", svgPos.left + parseInt(d.x + 18) + "px")
-                .style("top", svgPos.top + parseInt(d.y - 12) + "px");
+                .style("left", svgPos.offsetLeft + parseInt(d.x + 18) + "px")
+                .style("top", svgPos.offsetTop + parseInt(d.y - 12) + "px");
     };
     var onMouseOutOfNode = function() {
         tooltip.style("opacity", .0);
@@ -440,14 +443,14 @@ function createForcesGraphOn(elementId, graph, projectName) {
         if (nodesByGroup[2] == null) nodesByGroup[2] = [];
 
         selectedNodesLabel
-                .style("left", svgPos.left + 3 + "px")
-                .style("top", svgPos.top + 3 + "px")
+                .style("left", svgPos.offsetLeft + 3 + "px")
+                .style("top", svgPos.offsetTop + 3 + "px")
                 .html(nodesByGroup[1].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
                 .style("opacity", (nodesByGroup[1].length > 0 ? 1 : 0));
-        var pos = selectedNodesLabel[0][0].getBoundingClientRect();
+        var pos = selectedNodesLabel[0][0];
         selectedNodesLabel2
-                .style("left", svgPos.left + 3 + "px")
-                .style("top", pos.top + pos.height + 3 + "px")
+                .style("left", svgPos.offsetLeft + 3 + "px")
+                .style("top", pos.offsetTop + pos.offsetHeight + 3 + "px")
                 .html(nodesByGroup[2].map(function (d) { return showLongFileNames ? d.name : dropPath(d.name); }).sort().join("<br/>"))
                 .style("opacity", (nodesByGroup[2].length > 0 ? 1 : 0));
     }
