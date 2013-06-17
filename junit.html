@@ -142,16 +142,15 @@
         }
     </style>
     <style>
-        #treemap {
+        #commit-treemap {
             font: 10px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
             background: #f2f2f2;
         }
-        text {
+        #commit-treemap text {
             font-size: 14px;
         }
-
-        rect {
+        #commit-treemap rect {
             fill: none;
         }
     </style>
@@ -230,7 +229,7 @@
         <br/>
 
         <h6>Amount of commits treemap</h6>
-        <p id="treemap"></p>
+        <p id="commit-treemap"></p>
         <br/>
 
         <h6>Commit time punchcard</h6>
@@ -5867,8 +5866,8 @@ function createWordCloud(elementId, projectName) {
 }
 </script>
 
-<script type="text/javascript">
-var root = {"name": "", "size": "6206", "children": [
+<script>
+var treeMapRoot = {"name": "", "size": "6206", "children": [
     {"name": "src", "size": "4796", "children": [
         {"name": "test", "size": "1791", "children": [
             {"name": "java", "size": "1791", "children": [
@@ -7789,14 +7788,14 @@ var root = {"name": "", "size": "6206", "children": [
     ]}]};
 var projectName = "junit";
 
-createTreeMapOn("treemap", root, projectName);
+createTreeMapOn("commit-treemap", treeMapRoot, projectName);
 
 function createTreeMapOn(elementId, root, projectName) {
-    var w = 800 - 80,
-            h = 800 - 180,
-            x = d3.scale.linear().range([0, w]),
-            y = d3.scale.linear().range([0, h]),
-            color = d3.scale.category20c();
+    var w = 900 - 80,
+        h = 800 - 180,
+        x = d3.scale.linear().range([0, w]),
+        y = d3.scale.linear().range([0, h]),
+        color = d3.scale.category20c();
 
     var rootElement = d3.select("#" + elementId);
 
