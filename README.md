@@ -24,12 +24,12 @@ This is an attempt to make looking at project history easier.
 Screenshot of grab history dialog:
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
 
-For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining).
+For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
 (It's a separate page to keep readme small and not to put SVG into markdown.)
 
 
 ### How to use
-Not released yet. Will be in IntelliJ plugin repository.
+Not released yet. Will be soon in IntelliJ plugin repository.
 
 
 ### Output csv format
