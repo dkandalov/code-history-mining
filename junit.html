@@ -251,21 +251,38 @@
         <h4>Files changed in the same commit</h4>
         This graph shows files which were changed in the same commit at least 7 times.
         Thickness of edges is proportional to the number of commits.
-        (Renamed and moved files are tracked but only current file name is displayed.)
+        Renamed and moved files are tracked but only current file name is displayed.
         The idea is to discover de facto dependencies between files.
+        <br/>
+        (Click on nodes to select a cluster. Drag nodes to have fun.)
         <p id="files-in-same-commit-graph"></p>
         <br/><br/>
 
         <h4>Committers changing same files</h4>
+        This graph shows committers and files that were edited by them within 7 days.
+        The is idea is to discover communication patterns and shared code "ownership".
+        <br/>
+        In this particular case graph is not very accurate because of different
+        VCS user names for the same person (e.g. "dsaff" and "David Saff").
 
         <p id="committers-changing-same-files"></p>
         <br/><br/>
 
         <h4>Commit messages wordcloud</h4>
+        This is a word cloud from commit messages excluding some of prepositions and articles.
+        The idea is to see what happened with code by observing human language.
+        <br/>
+        This particular cloud might not be very representative because of commit messages
+        with meta-information (that's why cloud has "threeriversinstitute" in it).
+        You can alt-click on words to exclude them.
         <p id="commit-word-cloud"></p>
         <br/><br/>
 
         <h4>Amount of commits treemap</h4>
+        Shows a break-down of commits by package.
+        Renamed and moved package are tracked but only current package name is displayed.
+        The idea is to see which parts of the project have more attention
+        (e.g. ration between changes in test and production code).
         <p id="commit-treemap"></p>
         <br/><br/>
 
