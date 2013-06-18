@@ -245,6 +245,7 @@
         </p>
 
         <h4>Change size chart</h4>
+        Shows amount of changes by day/week. The idea is to see overall trend of project.
         <p id="change-size-chart"></p>
         <br/><br/>
 
@@ -253,13 +254,13 @@
         Thickness of edges is proportional to the number of commits.
         Renamed and moved files are tracked but only current file name is displayed.
         The idea is to discover de facto dependencies between files.
-        <br/>
-        (Click on nodes to select a cluster. Drag nodes to have fun.)
         <p id="files-in-same-commit-graph"></p>
         <br/><br/>
 
         <h4>Committers changing same files</h4>
-        This graph shows committers and files that were edited by them within 7 days.
+        This graph shows committers and files. If file was edited by one committer
+        and then edited by another within a week, a link is added. Links that happened at least 7 times
+        are added to the graph.
         The is idea is to discover communication patterns and shared code "ownership".
         <br/>
         In this particular case graph is not very accurate because of different
@@ -287,14 +288,24 @@
         <br/><br/>
 
         <h4>Commit time punchcard</h4>
+        Shows amount of commits at certain time of day (this is similar to
+        <a href="https://github.com/blog/1093-introducing-the-new-github-graphs">GitHub punchcard</a>).
+        <br/>
+        Note that you can also group commits by minute (inspired by
+        <a href="http://dtrace.org/blogs/brendan/2012/03/26/subsecond-offset-heat-maps/">subsecond offset heatmaps</a>).
         <p id="commit-time-punchcard"></p>
         <br/><br/>
 
         <h4>Time between commits histogram</h4>
+        Shows histogram of time between commits by each committer.
+        <br/>
+        (If time between commits is less than 1 minute, it's discarded assuming it was a merge from pull request.)
         <p id="time-between-commits-histogram"></p>
         <br/><br/>
 
         <h4>Changes calendar view</h4>
+        Shows amount of changes by day in a calendar layout.
+        Each square represents a day. The more commits on the day, the more intense its color.
         <p id="calendar-view"></p>
         <br/>
 
