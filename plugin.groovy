@@ -39,7 +39,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def grabHistory = new AnAction("Grab Project History") {
 			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
 		}
-		def projectStats = new AnAction("File amount by type") {
+		def projectStats = new AnAction("Project files amount by type") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
 		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates()) }
@@ -71,7 +71,7 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 						"Code History Mining"
 				)
 			}
-			// try to open url anyway in case the above check is wrong
+			// don't return to try to open url anyway in case the above check is wrong
 		}
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
