@@ -2,23 +2,23 @@
     <id>CodeHistoryMining</id>
     <name>CodeHistoryMining</name>
     <version>0.1 beta</version>
-    <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry
-        Kandalov
-    </vendor>
+    <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <small>most HTML tags may be used</small>
-        ]]></description>
+        This plugin does two things:
+        <ul>
+            <li>grabs project history from version control and saving it as csv file</li>
+            <li>reads history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
+        </ul>
+        For more details please see readme at https://github.com/dkandalov/code-history-mining
+    ]]></description>
 
-    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
     <idea-version since-build="122.600" />
 
-    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
+    <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
+    <!-- TODO uncomment after first release -->
     <depends>com.intellij.modules.lang</depends>
-    -->
 
     <application-components>
         <component>
@@ -26,6 +26,7 @@
         </component>
     </application-components>
 
+    <!-- this is to pull github plugin dependencies for GitPluginWorkaround class -->
     <depends optional="true">org.jetbrains.plugins.github</depends>
 
 </idea-plugin>
