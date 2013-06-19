@@ -39,7 +39,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def grabHistory = new AnAction("Grab Project History") {
 			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
 		}
-		def projectStats = new AnAction("Project files amount by type") {
+		def projectStats = new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
 		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates()) }
@@ -47,7 +47,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 }
 
 registerAction("CodeHistoryMiningMenu", "", "ToolsMenu", actionGroup)
-registerAction("CodeHistoryMiningPopup", "ctrl alt shift D") { AnActionEvent actionEvent ->
+registerAction("CodeHistoryMiningPopup", "ctrl shift H") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Code History Mining", actionGroup, actionEvent.dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
 	).showCenteredInCurrentWindow(actionEvent.project)
@@ -77,9 +77,9 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 	}
 
 	new DefaultActionGroup(file.name, true).with {
-		add(new AnAction("Change Size Calendar View") {
+		add(new AnAction("Changes Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating calendar view") {
+				doInBackground("Creating changes calendar view") {
 					showInBrowser("calendar-view.html", Analysis.&createJson_ChangeSize_Calendar)
 				}
 			}
@@ -105,9 +105,9 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
-		add(new AnAction("Change Size in Folders Treemap") {
+		add(new AnAction("Amount Of Commits Treemap") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating change size in folders treemap") {
+				doInBackground("Creating amount of commits treemap") {
 					// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
 				}
