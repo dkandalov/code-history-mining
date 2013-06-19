@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/code-history-mining.iml" filepath="$PROJECT_DIR$/code-history-mining.iml" />
+      <module fileurl="file://$PROJECT_DIR$/intellij-plugin/intellij-plugin.iml" filepath="$PROJECT_DIR$/intellij-plugin/intellij-plugin.iml" />
     </modules>
   </component>
 </project>
