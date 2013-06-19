@@ -1,6 +1,6 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
-    <name>CodeHistoryMining</name>
+    <name>Code History Mining</name>
     <version>0.1 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 

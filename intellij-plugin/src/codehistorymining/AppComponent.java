@@ -1,16 +1,15 @@
 package codehistorymining;
 
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import groovy.lang.Binding;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 public class AppComponent implements ApplicationComponent {
 	private static final Logger LOG = Logger.getInstance("CodeHistoryMining");
@@ -51,15 +50,8 @@ public class AppComponent implements ApplicationComponent {
 		binding.setVariable("event", null);
 		binding.setVariable("project", null);
 		binding.setVariable("isIdeStartup", true);
-		binding.setVariable("pluginPath", pluginPath());
+		binding.setVariable("pluginPath", PathManager.getJarPathForClass(AppComponent.class));
 		return binding;
-	}
-
-	private static String pluginPath() throws URISyntaxException {
-		ClassLoader classLoader = AppComponent.class.getClassLoader();
-		URL resource = classLoader.getResource("plugin.class");
-		if (resource == null) throw new IllegalStateException("Failed to find plugin.class");
-		return new File(resource.toURI()).getParent();
 	}
 
 	private static Method findMethod(String methodName, Class<?> aClass) {
