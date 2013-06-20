@@ -151,10 +151,10 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 }
 
 def grabHistoryOf(Project project) {
-	if (CommitReader.amountOfVCSIn(project) == 0) {
+	if (CommitReader.amountOfVCSRootsIn(project) == 0) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 		return
-	} else if (CommitReader.amountOfVCSIn(project) > 1) {
+	} else if (CommitReader.amountOfVCSRootsIn(project) > 1) {
 		showWarningDialog(project, "Sorry, grabbing history for project with multiple VCS roots is not implemented.", "Code History Mining")
 		return
 	}
@@ -209,8 +209,9 @@ def grabHistoryOf(Project project) {
 				}
 
 				def consoleTitle = "Code History Mining"
-				showInConsole("Saved change events to ${storage.filePath}", consoleTitle, project)
-				showInConsole("(it should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}')", consoleTitle, project)
+				def message = "Saved change events to ${storage.filePath}\n" +
+						"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
+				showInConsole(message, consoleTitle, project)
 			}
 			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log(it) }
 		}

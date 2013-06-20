@@ -3,6 +3,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
+import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import util.PastToPresentIterator
 import util.PresentToPastIterator
@@ -10,7 +11,7 @@ import util.PresentToPastIterator
 import static util.Measure.measure
 
 class CommitReader {
-	static Commit NO_MORE_CHANGE_LISTS = null
+	static Commit NO_MORE_COMMITS = null
 
 	private final Project project
 	private final int sizeOfVCSRequestInDays
@@ -27,6 +28,7 @@ class CommitReader {
 			new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
 			new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
+
 		new Iterator<Commit>() {
 			@Override boolean hasNext() {
 				!changes.empty || dateIterator.hasNext()
@@ -42,7 +44,7 @@ class CommitReader {
 						if (!readPresentToPast) changes = changes.reverse()
 					}
 				}
-				changes.empty ? NO_MORE_CHANGE_LISTS : changes.remove(0)
+				changes.empty ? NO_MORE_COMMITS : changes.remove(0)
 			}
 
 			@Override void remove() {
@@ -52,10 +54,9 @@ class CommitReader {
 	}
 
 	static List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
-		def sourceRoots = ProjectRootManager.getInstance(project).contentSourceRoots.toList()
-		def sourceRoot = sourceRoots.first()
-		def vcsRoot = ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(sourceRoot)
-		if (vcsRoot == null) return []
+		def vcsRoots = vcsRootsIn(project)
+		if (vcsRoots.empty) return []
+		def vcsRoot = vcsRoots.first()
 
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
@@ -75,10 +76,13 @@ class CommitReader {
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
 
-	static amountOfVCSIn(Project project) {
+	static amountOfVCSRootsIn(Project project) {
+		vcsRootsIn(project).size()
+	}
+
+	private static List<VcsRoot> vcsRootsIn(Project project) {
 		ProjectRootManager.getInstance(project).contentSourceRoots
 				.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }
 				.findAll{ it.path != null }.unique()
-				.size()
 	}
 }

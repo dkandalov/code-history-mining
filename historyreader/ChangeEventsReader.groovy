@@ -29,7 +29,7 @@ class ChangeEventsReader {
 	            Closure callbackWrapper, Closure callback) {
 		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast)
 		for (commit in commits) {
-			if (commit == CommitReader.NO_MORE_CHANGE_LISTS) break
+			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (indicator?.canceled) break
 
 			callbackWrapper(commit) {
