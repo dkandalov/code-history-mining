@@ -26,7 +26,7 @@
     .calendar-view .q6-8{fill: rgb(33, 113, 181)}
     .calendar-view .q7-8{fill: rgb(8, 81, 156)}
 </style>
-<head><title>Calendar view of changes</title></head>
+<head><title>Changes calendar view</title></head>
 <body>
 <span id="calendar-view"></span>
 <script src="d3.v3.min.js"></script>
@@ -150,7 +150,7 @@ date,changeSize\n\
         const rootElement = d3.select("#" + elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Calendar view of changes (" + projectName + ")")
+        headerSpan.append("h2").text("Changes calendar view (" + projectName + ")")
                 .style({"text-align": "center"});
 
         var svg = rootElement.selectAll("svg")
