@@ -1,9 +1,9 @@
 package ui
-
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static java.awt.GridBagConstraints.*
+import static java.awt.GridBagConstraints.HORIZONTAL
 
 class Dialog {
 	static showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
@@ -30,10 +30,11 @@ class Dialog {
 		def grabChangeSizeCheckBox = new JCheckBox()
 		grabChangeSizeCheckBox.selected = state.grabChangeSizeInLines
 
+		grabChangeSizeCheckBox.toolTipText = "Requires loading files content. Can slow down history grabbing."
+
 		JPanel rootPanel = new JPanel().with{
 			layout = new GridBagLayout()
-			GridBag bag = new GridBag()
-					.setDefaultFill(HORIZONTAL)
+			GridBag bag = new GridBag().setDefaultFill(HORIZONTAL)
 			bag.defaultInsets = new Insets(5, 5, 5, 5)
 
 			add(new JLabel("From:"), bag.nextLine().next())
@@ -41,18 +42,11 @@ class Dialog {
 			add(new JLabel("To:"), bag.next())
 			add(toDatePicker, bag.next())
 			add(new JLabel(), bag.next().fillCellHorizontally())
-			add(new JLabel("File path:"), bag.nextLine().next())
+			add(new JLabel("Save to:"), bag.nextLine().next())
 			def actionListener = new ActionListener() {
 				@Override void actionPerformed(ActionEvent e) {
 					def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
-					FileChooserDescriptor chooserDescriptor = FileChooserDescriptorFactory.createSingleFileDescriptor(csvFileType).with{
-						showFileSystemRoots = true
-						title = "Output File"
-						description = "Select output file"
-						hideIgnored = false
-						it
-					}
-					VirtualFile file = FileChooser.chooseFile(chooserDescriptor, project, VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text))
+					VirtualFile file = FileChooser.chooseFile(fileChooserDescriptor(csvFileType), project, VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text))
 					if (file != null) filePathTextField.text = file.path
 				}
 			}
@@ -67,7 +61,7 @@ class Dialog {
 				it
 			}, bag.nextLine().coverLine())
 
-			def text = new JLabel("(Please note that grabbing history can significantly slow down IDE and/or take a really long time.)")
+			def text = new JLabel("(Please note that grabbing history can slow down IDE and/or take a really long time.)")
 			add(text, bag.nextLine().coverLine())
 
 			it
@@ -88,6 +82,16 @@ class Dialog {
 		builder.centerPanel = rootPanel
 
 		ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
+	}
+
+	private static FileChooserDescriptor fileChooserDescriptor(FileType csvFileType) {
+		FileChooserDescriptorFactory.createSingleFileDescriptor(csvFileType).with{
+			showFileSystemRoots = true
+			title = "Output File"
+			description = "Select output file"
+			hideIgnored = false
+			it
+		}
 	}
 
 }
