@@ -80,7 +80,7 @@ class Analysis {
 	}
 
 	static void createJson_AverageAmountOfFilesInCommitByDay_Chart(List<FileChangeEvent> events) {
-		def amountOfFilesIn = { eventsList -> eventsList.collect{it.fileName + it.packageNameBefore + it.packageName}.unique().size() }
+		def amountOfFilesIn = { eventsList -> eventsList.collect{nonEmptyFileName(it.fileName) + it.packageNameBefore + it.packageName}.unique().size() }
 		def averageChangeSize = { eventsByRevision ->
 			if (eventsByRevision.empty) 0
 			else eventsByRevision.entrySet().sum(0){ amountOfFilesIn(it.value) } / eventsByRevision.size()
@@ -96,7 +96,7 @@ class Analysis {
 		Collection.mixin(Util)
 
 		def withoutExtension = { String s -> s.contains(".") ? s.substring(0, s.lastIndexOf(".")) : s }
-		def containUnitTests = { eventList -> eventList.any{ withoutExtension(it.fileName).endsWith("Test") } }
+		def containUnitTests = { eventList -> eventList.any{ withoutExtension(nonEmptyFileName(it)).endsWith("Test") } }
 		def areRecentEnough = { eventList1, eventList2 ->
 			long timeDiff = eventList1.first().revisionDate.time - eventList2.first().revisionDate.time
 			HOURS.convert(timeDiff, MILLISECONDS) <= 1
@@ -161,13 +161,13 @@ class Analysis {
 		}
 
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
-		def files = allLinks.keySet().collect{it.fileName}.unique().toList()
+		def files = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
 		def nodesJSLiteral =
 			(files.collect{'{"name": "' + it + '", "group": 1}'} +
 			authors.collect{'{"name": "' + it + '", "group": 2}'}).join(",\n")
 
 		def nodes = files + authors
-		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(it.key.fileName), it.value] }
+		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(nonEmptyFileName(it.key)), it.value] }
 		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
@@ -189,7 +189,7 @@ class Analysis {
 	static class TreeMapView {
 		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events) {
 			def filePaths = useLatestNameForMovedFiles(events)
-					.collect{ it.packageName + "/" + it.fileName }
+					.collect{ nonEmptyPackageName(it) + "/" + nonEmptyFileName(it) }
 
 			def containerTree = new Container("", 0)
 			filePaths.inject(containerTree) { Container tree, filePath -> tree.updateTree(filePath) }
@@ -339,6 +339,9 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 	static class Util {
 		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events) {
+			if (events.size() > 1)
+				assert events.first().revisionDate.time > events.last().revisionDate.time : "events go from present to past"
+
 			for (int i = 0; i < events.size(); i++) {
 				def event = events[i]
 				if (event.fileChangeType != "MOVED") continue
@@ -352,10 +355,10 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 					def thatEvent = events[j]
 					if (thatEvent.fileName == oldFileName && thatEvent.packageName == oldPackageName) {
 						def fileChangeType = thatEvent.fileChangeType
-						if (thatEvent.fileChangeType == "MOVED") {
+						if (fileChangeType == "MOVED") {
 							oldFileName = thatEvent.fileNameBefore
 							oldPackageName = thatEvent.packageNameBefore
-							fileChangeType = "MOVED_UNDONE"
+							fileChangeType = "MOVED_UNDONE" // this is just to avoid potential confusion
 						}
 						events[j] = updated(thatEvent, newFileName, newPackageName, fileChangeType)
 					}
@@ -395,8 +398,16 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			"\"\\\n" + jsHeader + jsBody + jsNewLine + "\"";
 		}
 
-		static String fullFileNameIn(FileChangeEvent event) {
-			event.packageName + "/" + event.fileName
+		static String fullFileNameIn(event) {
+			nonEmptyPackageName(event) + "/" + nonEmptyFileName(event)
+		}
+
+		static String nonEmptyPackageName(event) {
+			event.packageName != "" ? event.packageName : event.packageNameBefore
+		}
+
+		static String nonEmptyFileName(event) {
+			event.fileName != "" ? event.fileName : event.fileNameBefore
 		}
 
 		static Date floorToDay(Date date) {

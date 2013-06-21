@@ -1,4 +1,6 @@
 package historyreader
+
+import analysis.Analysis
 import com.intellij.openapi.project.Project
 import events.*
 import historyreader.unused.CommitMethodsMunger
@@ -57,7 +59,7 @@ class ChangeEventsReaderGitTest {
 				"AllMembersSupplierTest.java", "", "/src/test/java/org/junit/tests/experimental/theories/internal", "", "MODIFICATION",
 				new ChangeStats(156, 209, 54, 0, 1), new ChangeStats(5285, 6947, 1668, 0, 5)
 		)
-		def byFileAndElement = { it.fileName + it.elementName }
+		def byFileAndElement = { Analysis.Util.nonEmptyFileName(it) + it.elementName }
 		def expectedChangeEvents = [
 				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier::addSinglePointFields", 9, 9, 380, 380)),
 				new MethodChangeEvent(commitInfo, changedFile1, new ElementChangeInfo("AllMembersSupplier", 160, 185, 6121, 7143)),
