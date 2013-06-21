@@ -11,6 +11,7 @@ import util.PresentToPastIterator
 import static util.Measure.measure
 
 class CommitReader {
+	private static final Logger LOG = Logger.getInstance(CommitReader.class.name)
 	static Commit NO_MORE_COMMITS = null
 
 	private final Project project
@@ -40,7 +41,13 @@ class CommitReader {
 				measure("VCS request time") {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
-						changes = requestCommitsFor(project, dates.from, dates.to)
+						try {
+							changes = requestCommitsFor(project, dates.from, dates.to)
+						} catch (Exception e) { 
+							// this is to catch errors in VCS plugin implementation 
+							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
+                            				LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
+                				}
 						if (!readPresentToPast) changes = changes.reverse()
 					}
 				}
