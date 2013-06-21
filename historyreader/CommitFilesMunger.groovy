@@ -52,20 +52,14 @@ class CommitFilesMunger {
 		def packageNameBefore = measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
 		def packageName = measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(projectPath, "") }
 
-		def optimizedFileNameBefore = {
-			if (change.type != MODIFICATION) fileNameBefore
-			else fileNameBefore == fileName ? "" : fileNameBefore // TODO don't need "fileNameBefore == fileName"?
-		}
-		def optimizedPackageNameBefore = {
-			if (change.type != MODIFICATION) packageNameBefore
-			else packageNameBefore == packageName ? "" : packageNameBefore
-		}
+		def optimizedFileNameBefore = (change.type == MODIFICATION ? "" : fileNameBefore)
+		def optimizedPackageNameBefore = (change.type == MODIFICATION ? "" : packageNameBefore)
 
 		new FileChangeInfo(
 				fileName,
-				optimizedFileNameBefore(),
+				optimizedFileNameBefore,
 				packageName,
-				optimizedPackageNameBefore(),
+				optimizedPackageNameBefore,
 				change.type.toString(),
 				lineChangesStats,
 				charChangesStats
