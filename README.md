@@ -45,25 +45,26 @@ Commits are stored ordered by time from present to past as they are read from VC
 2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,.vcm_meta,,,,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,"added .classpath for eclipse"
 ```
 Columns:
- - commit date - in "yyyy-MM-dd HH:mm:ss Z" format (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details)
- - revision - format depends on underlying VCS
- - author
- - file name
- - file name before change - empty if name didn't change
- - path to file
- - path to file before change - empty if path didn't change
- - modification type - can be NEW, MODIFICATION, MOVED or DELETED. (Renaming or moving file is MOVE.)
- - lines in file before change
- - lines in file after change
- - lines added
- - lines modified
- - lines removed
- - chars in file before change
- - chars in file after change
- - chars added
- - chars modified
- - chars removed
- - commit message - new line breaks are replaced with "\\n"
+ - commit date - in "yyyy-MM-dd HH:mm:ss Z" format (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
+ - revision - format depends on underlying VCS.
+ - author - committer name from VCS.
+ - file name after change - empty if file was deleted.
+ - file name before change - empty if file was added or didn't change.
+ - path to file after change - empty if files was deleted or is in root folder.
+ - path to file before change - empty if file was added, didn't change or is in root folder.
+ - change type - can be "NEW", "MODIFICATION", "MOVED" or "DELETED". Renaming or moving file is "MOVED" even if file content has changed.
+ - number of lines in file before change - "-1" if file is binary or "Grab change size" checkbox is disabled in "Grab Project History" dialog;
+   "-2" if file was too big diff.
+ - number of lines in file after change
+ - number of lines added
+ - number of lines modified
+ - number of lines removed
+ - number of chars in file before change
+ - number of chars in file after change
+ - number of chars added
+ - number of chars modified
+ - number of chars removed
+ - commit message - new line breaks are replaced with "\\n".
 
 
 Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/rfc/rfc4180.html).
