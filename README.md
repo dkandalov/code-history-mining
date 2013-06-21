@@ -48,10 +48,10 @@ Columns:
  - __commit date__ - in "yyyy-MM-dd HH:mm:ss Z" format (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
  - __revision__ - format depends on underlying VCS.
  - __author__ - committer name from VCS.
+ - __file name before change__ - empty if file was added or name didn't change.
  - __file name after change__ - empty if file was deleted.
- - __file name before change__ - empty if file was added or didn't change.
+ - __path to file before change__ - empty if file was added, path didn't change or file is in root folder.
  - __path to file after change__ - empty if files was deleted or is in root folder.
- - __path to file before change__ - empty if file was added, didn't change or is in root folder.
  - __change type__ - can be "NEW", "MODIFICATION", "MOVED" or "DELETED". Renaming or moving file is "MOVED" even if file content has changed.
  - __number of lines in file before change__ - "-1" if file is binary or "Grab change size" checkbox is disabled in "Grab Project History" dialog;
    "-2" if file is too big for IntelliJ to diff.

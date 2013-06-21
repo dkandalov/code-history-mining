@@ -62,7 +62,7 @@ class EventStorage {
 		changeEvent.with {
 			def stringWriter = new StringWriter()
 			def csvWriter = new CSVWriter(stringWriter)
-			[format(revisionDate), revision, author, fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
+			[format(revisionDate), revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
 					escapeNewLines(commitMessage)].each { csvWriter.writeField(String.valueOf(it)) }
@@ -75,7 +75,7 @@ class EventStorage {
 		def fields = []
 		def csvReader = new CSVReader(new StringReader(line))
 		csvReader.readFields(fields)
-		def (revisionDate, revision, author, fileName, fileNameBefore, packageName, packageNameBefore, fileChangeType,
+		def (revisionDate, revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage
 		) = fields

@@ -69,6 +69,7 @@ class CommitReader {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
+			// TODO noticed that "location" can be null for git project where current branch is not master (might be IntelliJ bug)
 			return GitPluginWorkaround.getCommittedChanges_with_intellij_git_api_workarounds(project, location, fromDate, toDate)
 		}
 
