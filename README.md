@@ -20,16 +20,20 @@ This is an attempt to make looking at project history easier.
  - interactive visualization is cool because it's fun to play with and can hopefully give deeper insight into project history
 
 
-### Screenshots / Examples
-Screenshot of grab history dialog:
-<img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
-
-For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
-(It's a separate page to keep readme small and not to put SVG into markdown.)
+### How to install
+Not released yet. Will be soon in IntelliJ plugin repository.
 
 
 ### How to use
-Not released yet. Will be soon in IntelliJ plugin repository.
+Main menu -> Tools -> Code History Mining or alt + shift + H.
+<img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+ - **From/To** - mean desired dates for project history. Commits are only loaded from VCS if they are not in csv file already.
+ - **Save to** - file to save history to. Files in default folder are showed in plugin drop-down menu.
+ - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
+ Please note that this requires loading file content and can slow down grabbing history.
+ 
+For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
+(It's a separate page to keep readme small and not to put SVG into markdown.)
 
 
 ### Output csv format
