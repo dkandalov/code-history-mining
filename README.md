@@ -36,6 +36,7 @@ Main menu -> Tools -> Code History Mining or alt + shift + H.
 ##### Visualizations
 Files in "<[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)>/code-history-mining" are displayed in plugin drop-down menu.
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup_screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+
 All visualizations are self-contained one file pages.
 For interactive examples please see [JUnit code history on GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
 (It's a separate page to keep readme small and not to put SVG into markdown.)
