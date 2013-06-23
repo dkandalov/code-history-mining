@@ -9,6 +9,17 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="code-history-mining" />
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library name="LivePlugin">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../live-plugin.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../../live-plugin.jar!/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 
