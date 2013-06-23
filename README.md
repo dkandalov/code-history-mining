@@ -21,7 +21,7 @@ This is an attempt to make looking at project history easier.
 
 
 ### How to install
-Not released yet. Will be soon in IntelliJ plugin repository.
+From IntelliJ plugin repository http://plugins.jetbrains.com/plugin/7273
 
 
 ### How to use
