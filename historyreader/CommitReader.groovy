@@ -47,8 +47,8 @@ class CommitReader {
 						} catch (Exception e) { 
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-                            				LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
-                				}
+              LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
+            }
 						if (!readPresentToPast) changes = changes.reverse()
 					}
 				}
@@ -69,7 +69,7 @@ class CommitReader {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
-			// TODO noticed that "location" can be null for git project where current branch is not master (might be IntelliJ bug)
+			// TODO "location" can be null for git project when current branch is local (might be IntelliJ bug); https://github.com/dkandalov/code-history-mining/issues/5
 			return GitPluginWorkaround.getCommittedChanges_with_intellij_git_api_workarounds(project, location, fromDate, toDate)
 		}
 

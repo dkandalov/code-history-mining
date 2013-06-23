@@ -15,7 +15,8 @@ class GitPluginWorkaround {
 	/**
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
-	static List<CommittedChangeList> getCommittedChanges_with_intellij_git_api_workarounds(Project project, RepositoryLocation location, Date fromDate = null, Date toDate = null) {
+	static List<CommittedChangeList> getCommittedChanges_with_intellij_git_api_workarounds(Project project, RepositoryLocation location,
+	                                                                                       Date fromDate = null, Date toDate = null) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {
