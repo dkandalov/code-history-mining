@@ -211,7 +211,7 @@ def grabHistoryOf(Project project) {
 				def consoleTitle = "Code History Mining"
 				def message = "Saved change events to ${storage.filePath}\n" +
 						"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
-				showInConsole(message, consoleTitle, project)
+				showInNewConsole(message, consoleTitle, project)
 			}
 			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log(it) }
 		}

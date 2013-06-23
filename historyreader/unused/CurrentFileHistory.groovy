@@ -26,7 +26,7 @@ class CurrentFileHistory { // TODO this class is not used and probably broken; s
 		show("good to go")
 
 		def changeEvents = extractChangeEvents(file, revisions, project)
-		PluginUtil.showInConsole(toCsv(changeEvents.take(12)), "output", project)
+		PluginUtil.showInNewConsole(toCsv(changeEvents.take(12)), "output", project)
 
 		show("done")
 	}
