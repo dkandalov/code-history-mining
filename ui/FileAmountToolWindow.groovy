@@ -19,6 +19,7 @@ import static intellijeval.PluginUtil.registerToolWindowIn
 import static intellijeval.PluginUtil.unregisterToolWindow
 import static java.awt.GridBagConstraints.BOTH
 import static java.awt.GridBagConstraints.NORTH
+import static java.awt.GridBagConstraints.SOUTH
 
 class FileAmountToolWindow {
 	static showIn(project, fileCountByFileExtension) {
@@ -40,6 +41,18 @@ class FileAmountToolWindow {
 
 				JBTable table = createTable(fileCountByFileExtension, totalAmountOfFiles)
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
+
+				add(new JPanel().with {
+					layout = new GridBagLayout()
+					add(new JTextArea("(Please note that amount of files is based on IDE index and only shows file types IDE knows about.)").with{
+						editable = false
+						lineWrap = true
+						wrapStyleWord = true
+						background = table.background
+						it
+					}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
+					it
+				}, bag.nextLine().next().anchor(SOUTH))
 
 				it
 			}
