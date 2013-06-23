@@ -8,10 +8,9 @@ import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
-import static Analysis.CancelledException.watching
 import static java.util.concurrent.TimeUnit.*
 import static util.Analysis.Util.*
-import static util.CancelledException.watching
+import static util.CancelledException.check
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -49,7 +48,7 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
-	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events) {
+	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, indicator = null) {
 		Collection.mixin(Util)
 
 		def times = events
@@ -126,7 +125,7 @@ class Analysis {
 	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, indicator = null, int threshold = 7) {
 		Collection.mixin(Util)
 
-		events = useLatestNameForMovedFiles(events)
+		events = useLatestNameForMovedFiles(events, indicator)
 
 		def keepOneWeekOfEvents = { event, currentEvent ->
 			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
@@ -180,7 +179,7 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events) {
+	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, indicator = null) {
 		def amountOfCommitsByMinute = events
 				.groupBy{it.revision}.entrySet()*.collect{it.value.first()}.flatten()
 				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
@@ -194,8 +193,8 @@ class Analysis {
 	}
 
 	static class TreeMapView {
-		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events) {
-			def filePaths = useLatestNameForMovedFiles(events)
+		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events, indicator = null) {
+			def filePaths = useLatestNameForMovedFiles(events, indicator)
 					.collect{ nonEmptyPackageName(it) + "/" + nonEmptyFileName(it) }
 
 			def containerTree = new Container("", 0)
@@ -253,7 +252,7 @@ class Analysis {
 		}
 	}
 
-	static String createJson_CommitComments_WordCloud(events) {
+	static String createJson_CommitComments_WordCloud(events, indicator = null) {
 		def excludedWords = "also,as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
 				"which,that,this,them,they,we,an,the,is,be,are,was,do,it,so,not,no,and".split(",").toList().toSet()
 		def notExcluded = { String s -> s.length() > 1 && !excludedWords.contains(s) }
@@ -281,7 +280,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, threshold = 7) {
+	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, indicator = null, threshold = 7) {
 		Collection.mixin(Util)
 
 		events = useLatestNameForMovedFiles(events)
@@ -301,7 +300,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events) {
+	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events, indicator = null) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
@@ -315,7 +314,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events) {
+	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events, indicator = null) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
@@ -352,7 +351,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 				assert events.first().revisionDate.time > events.last().revisionDate.time : "events go from present to past"
 
 			for (int i = 0; i < events.size(); i++) {
-				watching(indicator)
+				check(indicator)
 
 				def event = events[i]
 				if (event.fileChangeType != "MOVED") continue
@@ -373,7 +372,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 						}
 						events[j] = updated(thatEvent, newFileName, newPackageName, fileChangeType)
 					}
-					watching(indicator)
+					check(indicator)
 				}
 			}
 

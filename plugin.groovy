@@ -66,7 +66,7 @@ static AnAction createActionGroup(File file) {
 		def events = new EventStorage(file.absolutePath).readAllEvents(indicator) { line, e -> log_("Failed to parse line '${line}'") }
 		log_("Finished reading all events")
 
-		def json = eventsToJson(events)
+		def json = eventsToJson(events, indicator)
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), template, json)
 
