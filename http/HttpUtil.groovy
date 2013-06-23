@@ -1,10 +1,10 @@
 package http
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.io.FileUtil
 
 import java.util.regex.Matcher
 
 import static intellijeval.PluginUtil.changeGlobalVar
-import static intellijeval.PluginUtil.log
 
 class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToTemplates, String templateFileName, String json) {
@@ -16,9 +16,9 @@ class HttpUtil {
 		text = fillProjectNamePlaceholder(text, "\"$projectId\"")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
-		log("Saved tree map into: " + tempDir.absolutePath + "/" + templateFileName)
+		log_("Saved html file into: " + tempDir.absolutePath + "/" + templateFileName)
 
-		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log(it)})
+		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log_(it.toString())})
 	}
 
 	static String fillProjectNamePlaceholder(String templateText, String projectName) {
@@ -63,5 +63,7 @@ class HttpUtil {
 			server
 		}
 	}
+
+	static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 }
 
