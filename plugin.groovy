@@ -1,4 +1,3 @@
-import util.Analysis
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -23,6 +22,7 @@ import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
+import util.Analysis
 import util.CancelledException
 import util.Measure
 
@@ -31,7 +31,6 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
-import static util.CancelledException.watching
 import static util.Measure.measure
 
 if (false) return showFileAmountByType(project)
@@ -64,7 +63,7 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 static AnAction createActionGroup(File file) {
 	def showInBrowser = { template, eventsToJson, indicator ->
 		log_("Started reading all events")
-		def events = new EventStorage(file.absolutePath).readAllEvents(watching(indicator) { line, e -> log_("Failed to parse line '${line}'") })
+		def events = new EventStorage(file.absolutePath).readAllEvents(indicator) { line, e -> log_("Failed to parse line '${line}'") }
 		log_("Finished reading all events")
 
 		def json = eventsToJson(events)
@@ -97,60 +96,30 @@ static AnAction createActionGroup(File file) {
 		}
 	}
 	new DefaultActionGroup(file.name, true).with {
-		add(new AnAction("Change Size Chart") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating change size chart") {
-					showInBrowser("changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart)
-				}
-			}
-		})
-		add(new AnAction("Changes Calendar View") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating changes calendar view") {
-					showInBrowser("calendar-view.html", Analysis.&createJson_ChangeSize_Calendar)
-				}
-			}
-		})
-		add(new AnAction("Amount Of Commits Treemap") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating amount of commits treemap") {
-					// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
-				}
-			}
-		})
-		add(new AnAction("Files In The Same Commit Graph") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating files in the same commit graph") {
-					showInBrowser("files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph)
-				}
-			}
-		})
+		add(createAction(
+				"Change Size Chart", "Creating change size chart",
+				"changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart))
+		add(createAction(
+				"Changes Calendar View", "Creating changes calendar view",
+				"calendar-view.html", Analysis.&createJson_ChangeSize_Calendar))
+		add(createAction(
+				"Amount Of Commits Treemap", "Creating amount of commits treemap",
+				"treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)) // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
+		add(createAction(
+				"Files In The Same Commit Graph", "Creating files in the same commit graph",
+				"files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph))
 		add(createAction(
 				"Committers Changing Same Files Graph", "Creating committers changing same files graph",
 				"author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
-
-		add(new AnAction("Commit Time Punchcard") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating commit time punchcard") {
-					showInBrowser("commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard)
-				}
-			}
-		})
-		add(new AnAction("Time Between Commits Histogram") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating time between commits histogram") {
-					showInBrowser("time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram)
-				}
-			}
-		})
-		add(new AnAction("Commit Messages Word Cloud") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating commit messages word cloud") {
-					showInBrowser("wordcloud.html", Analysis.&createJson_CommitComments_WordCloud)
-				}
-			}
-		})
+		add(createAction(
+				"Commit Time Punchcard", "Creating commit time punchcard",
+				"commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard))
+		add(createAction(
+				"Time Between Commits Histogram", "Creating time between commits histogram",
+				"time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram))
+		add(createAction(
+				"Commit Messages Word Cloud", "Creating commit messages word cloud",
+				"wordcloud.html", Analysis.&createJson_CommitComments_WordCloud))
 		add(new Separator())
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {

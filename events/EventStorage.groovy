@@ -5,6 +5,8 @@ import events.csv4180.CSVWriter
 
 import java.text.SimpleDateFormat
 
+import static util.CancelledException.check
+
 class EventStorage {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
@@ -14,7 +16,7 @@ class EventStorage {
 		this.filePath = filePath
 	}
 
-	List<FileChangeEvent> readAllEvents(whenFiledToParseLine = {line, e ->}) {
+	List<FileChangeEvent> readAllEvents(indicator = null, whenFiledToParseLine = {line, e ->}) {
 		def events = []
 		new File(filePath).withReader { reader ->
 			def line
@@ -24,6 +26,7 @@ class EventStorage {
 				} catch (Exception e) {
 					whenFiledToParseLine(line, e)
 				}
+				check(indicator)
 			}
 		}
 		events
