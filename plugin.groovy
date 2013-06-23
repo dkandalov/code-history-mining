@@ -4,6 +4,7 @@ import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -60,7 +61,7 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 static AnAction createActionGroup(File file, String pathToTemplates) {
 	def showInBrowser = { template, eventsToJson ->
-		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log("Failed to parse line '${line}'") }
+		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log_("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), pathToTemplates, template, json)
@@ -182,7 +183,7 @@ def grabHistoryOf(Project project) {
 		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {
 				def updateIndicatorText = { changeList, callback ->
-					log(changeList.name)
+					log_(changeList.name)
 					def date = dateFormat.format((Date) changeList.commitDate)
 					indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
 
@@ -203,20 +204,20 @@ def grabHistoryOf(Project project) {
 				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
 
 				if (storage.hasNoEvents()) {
-					log("Loading project history from ${fromDate} to ${toDate}")
+					log_("Loading project history from ${fromDate} to ${toDate}")
 					eventsReader.readPresentToPast(fromDate, toDate, indicator, updateIndicatorText, appendToStorage)
 
 				} else {
 					if (toDate > timeAfterMostRecentEventIn(storage)) {
 						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
-						log("Loading project history from $historyStart to $historyEnd")
+						log_("Loading project history from $historyStart to $historyEnd")
 						// read events from past into future because they are prepended to storage
 						eventsReader.readPastToPresent(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
 					}
 
 					if (fromDate < timeBeforeOldestEventIn(storage)) {
 						def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
-						log("Loading project history from $historyStart to $historyEnd")
+						log_("Loading project history from $historyStart to $historyEnd")
 						eventsReader.readPresentToPast(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
 					}
 				}
@@ -226,7 +227,7 @@ def grabHistoryOf(Project project) {
 						"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
 				showInNewConsole(message, consoleTitle, project)
 			}
-			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log(it) }
+			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log_(it) }
 		}
 	}
 }
@@ -271,6 +272,8 @@ static File[] filesWithCodeHistory() {
 		@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
 	})
 }
+
+static log_(message) { Logger.getInstance("CodeHistoryMining").info(message) }
 
 String pathToTemplates() { new File(this.class.classLoader.getResource("templates").toURI()).absolutePath }
 
