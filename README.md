@@ -25,19 +25,24 @@ Not released yet. Will be soon in IntelliJ plugin repository.
 
 
 ### How to use
+##### Grabbing VCS history into csv
 Main menu -> Tools -> Code History Mining or alt + shift + H.
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
  - **From/To** - desired dates for project history. Commits are loaded from version control only if they are not already in csv file.
- - **Save to** - file to save history to. Files in default folder are showed in plugin drop-down menu.
+ - **Save to** - file to save history to.
  - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
  Please note that this requires loading file content and can slow down grabbing history.
- 
-For visualization examples please see [JUnit code history on GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
+
+##### Visualizations
+Files in "<[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)>/code-history-mining" are displayed in plugin drop-down menu.
+<img src="https://raw.github.com/dkandalov/code-history-mining/master/popup_screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+All visualizations are self-contained one file pages.
+For interactive examples please see [JUnit code history on GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
 (It's a separate page to keep readme small and not to put SVG into markdown.)
-Visualizations produced by the plugin are self-contained one file pages.
 
 
-### Output csv format
+
+### Code history csv format
 Each commit is broken down into several lines. One line corresponds to one file changed in commit.
 Commits are stored ordered by time from present to past as they are read from VCS
 (although there might be exceptions because VCSs don't guarantee this order).
