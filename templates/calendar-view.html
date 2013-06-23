@@ -17,14 +17,16 @@
         stroke-width: 2px;
     }
     /* colors from colorbrewer2.org */
-    .calendar-view .q0-8{fill: rgb(247, 251, 255)}
-    .calendar-view .q1-8{fill: rgb(222, 235, 247)}
-    .calendar-view .q2-8{fill: rgb(198, 219, 239)}
-    .calendar-view .q3-8{fill: rgb(158, 202, 225)}
-    .calendar-view .q4-8{fill: rgb(107, 174, 214)}
-    .calendar-view .q5-8{fill: rgb(66, 146, 198)}
-    .calendar-view .q6-8{fill: rgb(33, 113, 181)}
-    .calendar-view .q7-8{fill: rgb(8, 81, 156)}
+    .calendar-view .q0-10{fill: rgb(255, 255, 255)}
+    .calendar-view .q1-10{fill: rgb(234,241,247)}
+    .calendar-view .q2-10{fill: rgb(214,227,238)}
+    .calendar-view .q3-10{fill: rgb(193,213,230)}
+    .calendar-view .q4-10{fill: rgb(173,199,222)}
+    .calendar-view .q5-10{fill: rgb(152,186,213)}
+    .calendar-view .q6-10{fill: rgb(132,172,205)}
+    .calendar-view .q7-10{fill: rgb(111,158,197)}
+    .calendar-view .q8-10{fill: rgb(91,144,188)}
+    .calendar-view .q9-10{fill: rgb(70,130,180)} /*steelblue*/
 </style>
 <head><title>Changes calendar view</title></head>
 <body>
@@ -145,7 +147,7 @@ date,changeSize\n\
         var maxYear = d3.max(Object.keys(data), function(d) { return dateFormat.parse(d).getFullYear(); });
 
         var color = d3.scale.quantize().domain([0.0, 1.0])
-                .range(d3.range(8).map(function(d) { return "q" + d + "-8"; }));
+                .range(d3.range(8).map(function(d) { return "q" + d + "-10"; }));
 
         const rootElement = d3.select("#" + elementId);
 
