@@ -20,7 +20,7 @@
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
     <!-- TODO uncomment after first release -->
-    <depends>com.intellij.modules.lang</depends>
+    <!--<depends>com.intellij.modules.lang</depends>-->
 
     <application-components>
         <component>
