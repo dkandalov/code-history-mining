@@ -319,6 +319,7 @@ dayOfWeek,hour,minute,value\n\
         var groupByHours = true;
 
         var rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
         headerSpan.append("h2").text("Commit time punchcard (" + projectName + ")").style({"text-align": "center"});
@@ -476,6 +477,13 @@ dayOfWeek,hour,minute,value\n\
 
             points.attr("r", function (d) { return (d.value * multiplier * adjustment * 0.5) + "px"; });
             label.html(multiplier + "x");
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            for (var i = 0; i < element.children.length; i++) {
+                parent.removeChild(element.children.item(i));
+            }
         }
     }
 

@@ -150,6 +150,7 @@ date,changeSize\n\
                 .range(d3.range(8).map(function(d) { return "q" + d + "-10"; }));
 
         const rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
         headerSpan.append("h2").text("Changes calendar view (" + projectName + ")")
@@ -245,6 +246,13 @@ date,changeSize\n\
 
         function appendBlockElementTo(element, width) {
             return element.append("span").style({display: "block", width: width + "px"});
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            for (var i = 0; i < element.children.length; i++) {
+                parent.removeChild(element.children.item(i));
+            }
         }
     }
 

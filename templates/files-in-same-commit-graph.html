@@ -234,6 +234,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
     var force = createForce(gravity);
 
     var rootElement = d3.select("#" + elementId);
+    removeChildrenOf(elementId);
 
     var header = appendBlockElementTo(rootElement, width);
     header.append("h2").text(graphName + " (" + projectName + ")").style({"text-align": "center"});
@@ -490,6 +491,13 @@ function createForcesGraphOn(elementId, graph, projectName) {
 
     function byNodeName(node) { return node.name; }
     function byLinkState(link) { return "" + link.source.index + "-" + link.target.index; }
+
+    function removeChildrenOf(elementId) {
+        var element = document.getElementById(elementId);
+        for (var i = 0; i < element.children.length; i++) {
+            parent.removeChild(element.children.item(i));
+        }
+    }
 }
 
 </script>

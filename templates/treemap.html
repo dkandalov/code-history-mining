@@ -87,6 +87,7 @@
             color = d3.scale.category20c();
 
         var rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
 
         var chart = rootElement.append("div")
                 .attr("class", "chart")
@@ -240,6 +241,13 @@
         function appendBlockElementTo(element, width) {
             return element.append("span")
                     .style("float", "left").style("display", "block").style("width", width + "px");
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            for (var i = 0; i < element.children.length; i++) {
+                parent.removeChild(element.children.item(i));
+            }
         }
     }
 

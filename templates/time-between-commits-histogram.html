@@ -1338,6 +1338,7 @@ metric\n\
             height = 500 - margin.top - margin.bottom;
 
         var rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
         headerSpan.append("h2").text("Time between commits histogram (" + projectName + ")").style({"text-align": "center"});
@@ -1399,6 +1400,13 @@ metric\n\
             svg.append("g")
                     .attr("class", "y axis")
                     .call(yAxis);
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            for (var i = 0; i < element.children.length; i++) {
+                parent.removeChild(element.children.item(i));
+            }
         }
     }
 

@@ -214,6 +214,7 @@ date,changeSize\n\
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
         var rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
         headerSpan.append("h2").text("Change size chart (" + projectName + ")").style({"text-align": "center"});
@@ -475,6 +476,13 @@ date,changeSize\n\
             datesRange.forEach(function(date) { result[date] = 0; });
             data.forEach(function(d) { result[d.date] = d.changeSize; });
             return result;
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            for (var i = 0; i < element.children.length; i++) {
+                parent.removeChild(element.children.item(i));
+            }
         }
     }
 
