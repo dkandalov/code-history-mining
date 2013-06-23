@@ -7,11 +7,11 @@ import java.util.regex.Matcher
 import static intellijeval.PluginUtil.changeGlobalVar
 
 class HttpUtil {
-	static SimpleHttpServer loadIntoHttpServer(String projectId, String pathToTemplates, String templateFileName, String json) {
+	static SimpleHttpServer loadIntoHttpServer(String projectId, String templateFileName, String json) {
 		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 
-		def text = readFile("$pathToTemplates/$templateFileName")
-		text = inlineJSLibraries(text) { jsLibFileName -> readFile(pathToTemplates + "/" + jsLibFileName) }
+		def text = readFile(templateFileName)
+		text = inlineJSLibraries(text) { jsLibFileName -> readFile(jsLibFileName) }
 		text = fillDataPlaceholder(text, json)
 		text = fillProjectNamePlaceholder(text, "\"$projectId\"")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
@@ -39,8 +39,8 @@ class HttpUtil {
 		}
 	}
 
-	private static String readFile(String template) {
-		new File(template).readLines().join("\n")
+	private static String readFile(String fileName) {
+		FileUtil.loadTextAndClose(HttpUtil.class.getResourceAsStream("/templates/$fileName"))
 	}
 
 	private static SimpleHttpServer restartHttpServer(String id, String webRootPath, Closure handler = {null}, Closure errorListener = {}) {

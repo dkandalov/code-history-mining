@@ -45,7 +45,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def projectStats = new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
-		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it, pathToTemplates()) }
+		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it) }
 	}
 }
 
@@ -59,12 +59,12 @@ registerAction("CodeHistoryMiningPopup", "alt shift H") { AnActionEvent actionEv
 if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
-static AnAction createActionGroup(File file, String pathToTemplates) {
+static AnAction createActionGroup(File file) {
 	def showInBrowser = { template, eventsToJson ->
 		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log_("Failed to parse line '${line}'") }
 		def json = eventsToJson(events)
 
-		def server = HttpUtil.loadIntoHttpServer(projectName(file), pathToTemplates, template, json)
+		def server = HttpUtil.loadIntoHttpServer(projectName(file), template, json)
 
 		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
 		if (!browserConfiguredCorrectly) {
@@ -274,8 +274,6 @@ static File[] filesWithCodeHistory() {
 }
 
 static log_(message) { Logger.getInstance("CodeHistoryMining").info(message) }
-
-String pathToTemplates() { new File(this.class.classLoader.getResource("templates").toURI()).absolutePath }
 
 String dialogStatePath() { "${PathManager.pluginsPath}/code-history-mining" }
 
