@@ -372,7 +372,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			fileChangeEvent.with{
 				new FileChangeEvent(
 						new CommitInfo(revision, author, revisionDate, commitMessage),
-						new FileChangeInfo(newFileName, "", newPackageName, "", updatedChangeType, lines, chars)
+						new FileChangeInfo("", newFileName, "", newPackageName, updatedChangeType, lines, chars)
 				)
 			}
 		}

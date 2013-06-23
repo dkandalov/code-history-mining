@@ -23,14 +23,14 @@ class ChangeEventsReaderGitTest {
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)
 		def expectedChangeEvents = [
-				new FileChangeEvent(commitInfo, new FileChangeInfo("Theories.java", "", "/src/org/junit/experimental/theories", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethodRunner.java", "TheoryMethod.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "", "NEW", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("TestMethod.java", "", "/src/org/junit/internal/runners", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "", "MODIFICATION", NA, NA))
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
+				new FileChangeEvent(commitInfo, new FileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA))
 		]
 
 		// exercise
@@ -52,11 +52,11 @@ class ChangeEventsReaderGitTest {
 		def commitComment = "Added support for iterable datapoints"
 		def commitInfo = new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), commitComment)
 		def changedFile1 = new FileChangeInfo(
-				"AllMembersSupplier.java", "", "/src/main/java/org/junit/experimental/theories/internal", "", "MODIFICATION",
+				"", "AllMembersSupplier.java", "", "/src/main/java/org/junit/experimental/theories/internal", "MODIFICATION",
 				new ChangeStats(178, 204, 23, 3, 0), new ChangeStats(6758, 7807, 878, 304, 0)
 		)
 		def changedFile2 = new FileChangeInfo(
-				"AllMembersSupplierTest.java", "", "/src/test/java/org/junit/tests/experimental/theories/internal", "", "MODIFICATION",
+				"", "AllMembersSupplierTest.java", "", "/src/test/java/org/junit/tests/experimental/theories/internal", "MODIFICATION",
 				new ChangeStats(156, 209, 54, 0, 1), new ChangeStats(5285, 6947, 1668, 0, 5)
 		)
 		def byFileAndElement = { Analysis.Util.nonEmptyFileName(it) + it.elementName }

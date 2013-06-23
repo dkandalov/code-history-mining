@@ -56,10 +56,10 @@ class CommitFilesMunger {
 		def optimizedPackageNameBefore = (change.type == MODIFICATION ? "" : packageNameBefore)
 
 		new FileChangeInfo(
-				fileName,
 				optimizedFileNameBefore,
-				packageName,
+				fileName,
 				optimizedPackageNameBefore,
+				packageName,
 				change.type.toString(),
 				lineChangesStats,
 				charChangesStats
