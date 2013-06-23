@@ -27,13 +27,14 @@ Not released yet. Will be soon in IntelliJ plugin repository.
 ### How to use
 Main menu -> Tools -> Code History Mining or alt + shift + H.
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
- - **From/To** - mean desired dates for project history. Commits are only loaded from VCS if they are not in csv file already.
+ - **From/To** - desired dates for project history. Commits are loaded from version control only if they are not already in csv file.
  - **Save to** - file to save history to. Files in default folder are showed in plugin drop-down menu.
  - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
  Please note that this requires loading file content and can slow down grabbing history.
  
-For visualization examples please see [GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
+For visualization examples please see [JUnit code history on GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
 (It's a separate page to keep readme small and not to put SVG into markdown.)
+Visualizations produced by the plugin are self-contained one file pages.
 
 
 ### Output csv format
@@ -57,7 +58,7 @@ Columns:
  - __path to file before change__ - empty if file was added, path didn't change or file is in root folder.
  - __path to file after change__ - empty if files was deleted or is in root folder.
  - __change type__ - can be "NEW", "MODIFICATION", "MOVED" or "DELETED". Renaming or moving file is "MOVED" even if file content has changed.
- - __number of lines in file before change__ - "-1" if file is binary or "Grab change size" checkbox is disabled in "Grab Project History" dialog;
+ - __number of lines in file before change__ - "-1" if file is binary or "Grab change size" checkbox is not selected in "Grab Project History" dialog;
    "-2" if file is too big for IntelliJ to diff.
  - __number of lines in file after change__ - similar to above.
  - __number of lines added__ - similar to above.
@@ -75,5 +76,6 @@ Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/r
 
 
 ### Acknowledgments
- - inspired by Michael Feathers workshop and [Delta Flora](https://github.com/michaelfeathers/delta-flora) project
- - all visualizations are based on awesome [d3.js examples](https://github.com/mbostock/d3/wiki/Gallery)
+ - inspired by Michael Feathers [workshop](http://codehistorymining.eventbrite.co.uk/)
+ and [Delta Flora](https://github.com/michaelfeathers/delta-flora) project.
+ - all visualizations are based on awesome [d3.js examples](https://github.com/mbostock/d3/wiki/Gallery).
