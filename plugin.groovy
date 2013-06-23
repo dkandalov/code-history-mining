@@ -77,6 +77,13 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 	}
 
 	new DefaultActionGroup(file.name, true).with {
+		add(new AnAction("Change Size Chart") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Creating change size chart") {
+					showInBrowser("changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart)
+				}
+			}
+		})
 		add(new AnAction("Changes Calendar View") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating changes calendar view") {
@@ -84,10 +91,11 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
-		add(new AnAction("Change Size Chart") {
+		add(new AnAction("Amount Of Commits Treemap") {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating change size chart") {
-					showInBrowser("changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart)
+				doInBackground("Creating amount of commits treemap") {
+					// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
+					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
 				}
 			}
 		})
@@ -105,21 +113,6 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				}
 			}
 		})
-		add(new AnAction("Amount Of Commits Treemap") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating amount of commits treemap") {
-					// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-					showInBrowser("treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)
-				}
-			}
-		})
-		add(new AnAction("Commit Messages Word Cloud") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating commit messages word cloud") {
-					showInBrowser("wordcloud.html", Analysis.&createJson_CommitComments_WordCloud)
-				}
-			}
-		})
 		add(new AnAction("Commit Time Punchcard") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating commit time punchcard") {
@@ -131,6 +124,13 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating time between commits histogram") {
 					showInBrowser("time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram)
+				}
+			}
+		})
+		add(new AnAction("Commit Messages Word Cloud") {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Creating commit messages word cloud") {
+					showInBrowser("wordcloud.html", Analysis.&createJson_CommitComments_WordCloud)
 				}
 			}
 		})
