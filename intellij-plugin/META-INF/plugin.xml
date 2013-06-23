@@ -11,8 +11,8 @@
             <li>reads history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
         </ul>
         For more details please see readme at https://github.com/dkandalov/code-history-mining
-        <br/>
-        (Visualization examples can be found here http://dkandalov.github.io/code-history-mining/junit.html)
+        <br/><br/>
+        Visualization examples can be found here http://dkandalov.github.io/code-history-mining/junit.html
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
