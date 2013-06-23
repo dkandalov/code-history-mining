@@ -42,12 +42,12 @@ Each commit is broken down into several lines. One line corresponds to one file 
 Commits are stored ordered by time from present to past as they are read from VCS
 (although there might be exceptions because VCSs don't guarantee this order).
 ```
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,IMoney.java,,/junit/samples/money,,MODIFICATION,38,42,4,0,0,817,888,71,0,0,"Cleaning up MoneyBag construction"
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,Money.java,,/junit/samples/money,,MODIFICATION,70,73,3,1,0,1595,1684,86,32,0,"Cleaning up MoneyBag construction"
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,MoneyBag.java,,/junit/samples/money,,MODIFICATION,140,131,8,4,23,3721,3594,214,154,511,"Cleaning up MoneyBag construction"
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,MoneyTest.java,,/junit/samples/money,,MODIFICATION,156,141,0,34,0,5187,4785,0,1594,0,"Cleaning up MoneyBag construction"
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,.classpath,,,,NEW,0,6,6,0,0,0,241,241,0,0,"added .classpath for eclipse"
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,.vcm_meta,,,,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,"added .classpath for eclipse"
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,IMoney.java,,/junit/samples/money,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,Cleaning up MoneyBag construction
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,Money.java,,/junit/samples/money,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,Cleaning up MoneyBag construction
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,MoneyBag.java,,/junit/samples/money,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,Cleaning up MoneyBag construction
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,MoneyTest.java,,/junit/samples/money,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,Cleaning up MoneyBag construction
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.classpath,,,NEW,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,added .classpath for eclipse
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.vcm_meta,,,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,added .classpath for eclipse
 ```
 Columns:
  - __commit date__ - in "yyyy-MM-dd HH:mm:ss Z" format (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
