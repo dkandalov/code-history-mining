@@ -8,8 +8,10 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -140,10 +142,21 @@ static AnAction createActionGroup(File file, String pathToTemplates) {
 				ShowFilePathAction.openFile(file)
 			}
 		})
+		add(new AnAction("Rename") {
+			@Override void actionPerformed(AnActionEvent event) {
+				def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, file.name, new InputValidator() {
+					@Override boolean checkInput(String newFileName) { newFileName.length() > 0 && !new File(file.parent + "/" + newFileName).exists() }
+					@Override boolean canClose(String newFileName) { true }
+				})
+				if (newFileName != null) {
+					FileUtil.rename(file, new File(file.parent + "/" + newFileName))
+				}
+			}
+		})
 		add(new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
-				int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
-				if (userAnswer == Messages.OK) file.delete()
+				int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
+				if (userAnswer == Messages.OK) FileUtil.delete(file)
 			}
 		})
 		it
