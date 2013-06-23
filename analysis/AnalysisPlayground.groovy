@@ -1,5 +1,6 @@
 package analysis
 import events.EventStorage
+import util.Analysis
 
 import static http.HttpUtil.fillDataPlaceholder
 import static http.HttpUtil.fillProjectNamePlaceholder
@@ -9,12 +10,13 @@ import static java.lang.System.getenv
 class AnalysisPlayground {
 	static void main(String[] args) {
 //		def projectName = "code-history-mining"
-		def projectName = "junit"
+		def projectName = "idea"
 //		def projectName = "fitnesse"
 //		def projectName = "scala"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
 		def events = new EventStorage(filePath).readAllEvents { line, e -> println("Failed to parse line '${line}'") }
 
+//		new File("commentsAfter").write(events.collect{ it.commitMessage }.join("\n"))
 		fillTemplate("calendar-view.html", projectName, Analysis.createJson_ChangeSize_Calendar(events))
 		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_ChangeSize_Chart(events))
 		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJson_FilesInTheSameCommit_Graph(events))

@@ -1,13 +1,17 @@
-package analysis
-import groovy.time.TimeCategory
+package util
+import com.intellij.openapi.diagnostic.Logger
 import events.CommitInfo
 import events.FileChangeEvent
 import events.FileChangeInfo
+import groovy.time.TimeCategory
+import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
-import static analysis.Analysis.Util.*
+import static Analysis.CancelledException.watching
 import static java.util.concurrent.TimeUnit.*
+import static util.Analysis.Util.*
+import static util.CancelledException.watching
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -119,7 +123,7 @@ class Analysis {
 		println(result.join("\n"))
 	}
 
-	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, int threshold = 7) {
+	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, indicator = null, int threshold = 7) {
 		Collection.mixin(Util)
 
 		events = useLatestNameForMovedFiles(events)
@@ -128,6 +132,8 @@ class Analysis {
 			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
 			DAYS.convert(timeDiff, MILLISECONDS) <= 7
 		}
+
+		log_("Looking for matching events")
 		def matchingEvents = events.reverse()
 				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
 					def relatedEvents = previousEvents
@@ -141,6 +147,7 @@ class Analysis {
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
 
+		log_("Linking events")
 		def notInMatchingEvents = { event ->
 			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && fullFileNameIn(it.event) == fullFileNameIn(event) }}
 		}
@@ -338,11 +345,15 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	static class Util {
-		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events) {
+		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable indicator = null) {
+			log_("Started useLatestNameForMovedFiles()")
+
 			if (events.size() > 1)
 				assert events.first().revisionDate.time > events.last().revisionDate.time : "events go from present to past"
 
 			for (int i = 0; i < events.size(); i++) {
+				watching(indicator)
+
 				def event = events[i]
 				if (event.fileChangeType != "MOVED") continue
 
@@ -362,8 +373,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 						}
 						events[j] = updated(thatEvent, newFileName, newPackageName, fileChangeType)
 					}
+					watching(indicator)
 				}
 			}
+
+			log_("Finished useLatestNameForMovedFiles()")
 			events
 		}
 
@@ -450,6 +464,8 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			if (!result.empty) result.remove(result.size() - 1)
 			result
 		}
+
+		static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 	}
 }
 

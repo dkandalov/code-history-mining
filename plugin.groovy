@@ -1,4 +1,4 @@
-import analysis.Analysis
+import util.Analysis
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -23,6 +23,7 @@ import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
+import util.CancelledException
 import util.Measure
 
 import static IntegrationTestsRunner.runIntegrationTests
@@ -30,6 +31,7 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static intellijeval.PluginUtil.*
 import static ui.Dialog.showDialog
+import static util.CancelledException.watching
 import static util.Measure.measure
 
 if (false) return showFileAmountByType(project)
@@ -60,8 +62,11 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
 static AnAction createActionGroup(File file) {
-	def showInBrowser = { template, eventsToJson ->
-		def events = new EventStorage(file.absolutePath).readAllEvents { line, e -> log_("Failed to parse line '${line}'") }
+	def showInBrowser = { template, eventsToJson, indicator ->
+		log_("Started reading all events")
+		def events = new EventStorage(file.absolutePath).readAllEvents(watching(indicator) { line, e -> log_("Failed to parse line '${line}'") })
+		log_("Finished reading all events")
+
 		def json = eventsToJson(events)
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), template, json)
@@ -79,6 +84,18 @@ static AnAction createActionGroup(File file) {
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
 	}
 
+	def createAction = { name, progressBarText, templateFile, processing ->
+		new AnAction(name) {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground(progressBarText) { indicator ->
+					try {
+						showInBrowser(templateFile, processing, indicator)
+					} catch (CancelledException ignored) {
+					}
+				}
+			}
+		}
+	}
 	new DefaultActionGroup(file.name, true).with {
 		add(new AnAction("Change Size Chart") {
 			@Override void actionPerformed(AnActionEvent event) {
@@ -109,13 +126,10 @@ static AnAction createActionGroup(File file) {
 				}
 			}
 		})
-		add(new AnAction("Committers Changing Same Files Graph") {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating committers changing same files graph") {
-					showInBrowser("author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph)
-				}
-			}
-		})
+		add(createAction(
+				"Committers Changing Same Files Graph", "Creating committers changing same files graph",
+				"author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
+
 		add(new AnAction("Commit Time Punchcard") {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating commit time punchcard") {
