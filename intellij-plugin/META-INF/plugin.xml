@@ -7,7 +7,7 @@
     <description><![CDATA[
         This plugin does two things:
         <ul>
-            <li>grabs project history from version control and saving it as csv file</li>
+            <li>grabs project history from version control and saves it as csv file</li>
             <li>reads history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
         </ul>
         For more details please see readme at https://github.com/dkandalov/code-history-mining
