@@ -283,7 +283,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, indicator = null, threshold = 7) {
 		Collection.mixin(Util)
 
-		events = useLatestNameForMovedFiles(events)
+		events = useLatestNameForMovedFiles(events, indicator)
 
 		def fileNamesByRevision = events
 				.groupBy{ it.revision }
