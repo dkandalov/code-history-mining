@@ -3,7 +3,7 @@
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community)-based IDEs to grab
 and analyze project source code history.
 
-It has has two parts:
+It has two parts:
  - reading project history from version control and saving it as csv file
  - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
 
