@@ -2,6 +2,7 @@ package events
 import com.intellij.openapi.util.io.FileUtil
 import events.csv4180.CSVReader
 import events.csv4180.CSVWriter
+import groovy.transform.CompileStatic
 
 import java.text.SimpleDateFormat
 
@@ -16,9 +17,11 @@ class EventStorage {
 		this.filePath = filePath
 	}
 
-	List<FileChangeEvent> readAllEvents(indicator = null, whenFiledToParseLine = {line, e ->}) {
+	@CompileStatic
+	List<FileChangeEvent> readAllEvents(indicator = null, Closure whenFiledToParseLine = {line, e ->}) {
 		def events = []
-		new File(filePath).withReader { reader ->
+		def reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(filePath)))
+		try {
 			def line
 			while ((line = reader.readLine()) != null) {
 				try {
@@ -28,6 +31,8 @@ class EventStorage {
 				}
 				check(indicator)
 			}
+		} finally {
+			reader.close()
 		}
 		events
 	}
