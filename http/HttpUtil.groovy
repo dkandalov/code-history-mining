@@ -4,7 +4,7 @@ import com.intellij.openapi.util.io.FileUtil
 
 import java.util.regex.Matcher
 
-import static intellijeval.PluginUtil.changeGlobalVar
+import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectId, String templateFileName, String json) {

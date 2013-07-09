@@ -12,11 +12,11 @@
     <orderEntry type="module-library" scope="PROVIDED">
       <library name="LivePlugin">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../live-plugin.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../LivePlugin/lib/LivePlugin.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../live-plugin.jar!/src" />
+          <root url="jar://$MODULE_DIR$/../../../LivePlugin/lib/LivePlugin.jar!/src" />
         </SOURCES>
       </library>
     </orderEntry>

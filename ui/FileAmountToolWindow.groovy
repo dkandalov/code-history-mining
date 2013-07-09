@@ -15,8 +15,8 @@ import java.awt.*
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
 
-import static intellijeval.PluginUtil.registerToolWindowIn
-import static intellijeval.PluginUtil.unregisterToolWindow
+import static liveplugin.PluginUtil.registerToolWindowIn
+import static liveplugin.PluginUtil.unregisterToolWindow
 import static java.awt.GridBagConstraints.BOTH
 import static java.awt.GridBagConstraints.NORTH
 import static java.awt.GridBagConstraints.SOUTH

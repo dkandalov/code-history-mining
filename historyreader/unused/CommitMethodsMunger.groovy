@@ -17,7 +17,7 @@ import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE1
 import static com.intellij.openapi.diff.impl.highlighting.FragmentSide.SIDE2
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static historyreader.CommitMungingUtil.*
-import static intellijeval.PluginUtil.runReadAction
+import static liveplugin.PluginUtil.runReadAction
 
 class CommitMethodsMunger { // TODO not really used; left here to keep it up-to-date in case other code changes
 	private final Project project

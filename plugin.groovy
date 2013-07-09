@@ -29,7 +29,7 @@ import util.Measure
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
-import static intellijeval.PluginUtil.*
+import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
 

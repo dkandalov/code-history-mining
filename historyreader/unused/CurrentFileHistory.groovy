@@ -9,9 +9,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFileFactory
 import events.FileChangeEvent
 import events.CommitInfo
-import intellijeval.PluginUtil
+import liveplugin.PluginUtil
 
-import static intellijeval.PluginUtil.show
+import static liveplugin.PluginUtil.show
 
 
 class CurrentFileHistory { // TODO this class is not used and probably broken; should fix it later

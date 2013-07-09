@@ -1,5 +1,5 @@
 import com.intellij.openapi.project.Project
-import intellijeval.PluginUtil
+import liveplugin.PluginUtil
 import org.junit.Ignore
 import org.junit.Test
 

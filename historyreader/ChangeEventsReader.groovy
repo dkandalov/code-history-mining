@@ -2,7 +2,7 @@ package historyreader
 
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import events.FileChangeEvent
-import intellijeval.PluginUtil
+import liveplugin.PluginUtil
 
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
