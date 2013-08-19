@@ -68,8 +68,8 @@ date,author,amount of commits\n\
     var xAxis = d3.svg.axis().scale(x).orient("bottom");
     var color = d3.scale.category20();
 
-    var fromDate = d3.min(data, function (d) { return d3.min(d, function (dd) { return dd.x; }); })
-    var toDate = d3.max(data, function (d) { return d3.max(d, function (dd) { return dd.x; }); })
+    var fromDate = d3.min(data, function (d) { return d3.min(d, function (dd) { return dd.x; }); });
+    var toDate = d3.max(data, function (d) { return d3.max(d, function (dd) { return dd.x; }); });
     toDate = d3.time.day.offset(toDate, 2);
     x.domain(d3.extent(d3.time.days(fromDate, toDate)));
     y.domain([0, yStackMax]);
