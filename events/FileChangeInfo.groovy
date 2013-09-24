@@ -1,7 +1,9 @@
 package events
 
+import groovy.transform.CompileStatic
 import groovy.transform.Immutable
 
+@CompileStatic
 @Immutable
 class FileChangeInfo {
 	static final ChangeStats NA = new ChangeStats(-1, -1, -1, -1, -1)

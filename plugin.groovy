@@ -62,9 +62,10 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 static AnAction createActionGroup(File file) {
 	def showInBrowser = { template, eventsToJson, indicator ->
-		log_("Started reading all events")
-		def events = new EventStorage(file.absolutePath).readAllEvents(indicator) { line, e -> log_("Failed to parse line '${line}'") }
-		log_("Finished reading all events")
+
+		def events = measure("Storage.readAllEvents") {
+			new EventStorage(file.absolutePath).readAllEvents(indicator){ line, e -> log_("Failed to parse line '${line}'") }
+		}
 
 		def json = eventsToJson(events, indicator)
 
@@ -89,6 +90,7 @@ static AnAction createActionGroup(File file) {
 				doInBackground(progressBarText) { indicator ->
 					try {
 						showInBrowser(templateFile, processing, indicator)
+						Measure.forEachDuration{ log_(it) }
 					} catch (CancelledException ignored) {
 					}
 				}
@@ -206,11 +208,17 @@ def grabHistoryOf(Project project) {
 				}
 
 				def consoleTitle = "Code History Mining"
-				def message = "Saved change events to ${storage.filePath}\n" +
-						"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
+				def message
+				if (storage.hasNoEvents()) {
+					message = "Grabbed history to ${storage.filePath}\n" +
+							"However, it has nothing in it probably because there are no commits from $fromDate to $toDate"
+				} else {
+					message = "Grabbed history to ${storage.filePath}\n" +
+							"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
+				}
 				showInNewConsole(message, consoleTitle, project)
 			}
-			Measure.durations.entrySet().collect{ it.key + ": " + it.value }.each{ log_(it) }
+			Measure.forEachDuration{ log_(it) }
 		}
 	}
 }

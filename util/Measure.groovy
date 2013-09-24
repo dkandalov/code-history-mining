@@ -11,4 +11,8 @@ class Measure {
 		durations[id] += time
 		result
 	}
+
+	static forEachDuration(Closure callback) {
+		durations.entrySet().each{ callback(it.key + ": " + it.value) }
+	}
 }

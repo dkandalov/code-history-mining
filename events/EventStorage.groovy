@@ -3,6 +3,7 @@ import com.intellij.openapi.util.io.FileUtil
 import events.csv4180.CSVReader
 import events.csv4180.CSVWriter
 import groovy.transform.CompileStatic
+import util.Measure
 
 import java.text.SimpleDateFormat
 
@@ -81,8 +82,10 @@ class EventStorage {
 
 	private static FileChangeEvent fromCsv(String line) {
 		def fields = []
-		def csvReader = new CSVReader(new StringReader(line))
-		csvReader.readFields(fields)
+		Measure.measure("csvReader.readFields") {
+			def csvReader = new CSVReader(new StringReader(line))
+			csvReader.readFields(fields)
+		}
 		def (revisionDate, revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage
