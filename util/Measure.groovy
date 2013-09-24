@@ -15,4 +15,8 @@ class Measure {
 	static forEachDuration(Closure callback) {
 		durations.entrySet().each{ callback(it.key + ": " + it.value) }
 	}
+
+	static reset() {
+		durations.clear()
+	}
 }

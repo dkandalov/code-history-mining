@@ -80,11 +80,11 @@ class EventStorage {
 		}
 	}
 
+
 	private static FileChangeEvent fromCsv(String line) {
 		def fields = []
 		Measure.measure("csvReader.readFields") {
-			def csvReader = new CSVReader(new StringReader(line))
-			csvReader.readFields(fields)
+			new CSVReader().readFields(line, fields)
 		}
 		def (revisionDate, revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,

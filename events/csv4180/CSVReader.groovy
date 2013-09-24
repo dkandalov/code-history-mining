@@ -1,7 +1,5 @@
 package events.csv4180
-
 import groovy.transform.CompileStatic
-
 /**
  * Originally copied from https://csv4180.svn.sourceforge.net/svnroot/csv4180/
  * Should be compatible with http://www.apps.ietf.org/rfc/rfc4180.html
@@ -15,20 +13,16 @@ class CSVReader {
 	private static final int QUOTED = 1
 	private static final int QUOTEDPLUS = 2
 
-	private final Reader reader
-	private final StringBuffer buffer = new StringBuffer()
+	private String csvLine
+	private final StringBuilder buffer = new StringBuilder()
 	private boolean moreFieldsOnLine = true
-	private boolean eof = false
+	private int i
 
-	CSVReader(Reader reader) {
-		this.reader = reader
-	}
-
-	@CompileStatic void readFields(List<String> fields) throws IOException {
+	@CompileStatic void readFields(String csvLine, List<String> fields) throws IOException {
+		this.csvLine = csvLine
 		fields.clear()
-		if (eof) {
-			throw new EOFException()
-		}
+		i = 0
+
 		fields.add(readField())
 		while (moreFieldsOnLine) {
 			fields.add(readField())
@@ -38,55 +32,44 @@ class CSVReader {
 	@CompileStatic private String readField() throws IOException {
 		int state = UNQUOTED
 
-		if (eof) {
-			throw new EOFException()
-		}
-
 		buffer.setLength(0)
 
-		int i
-		while ((i = reader.read()) >= 0) {
-			char c = (char) i
+		while (i < csvLine.length()) {
+			char c = csvLine.charAt(i++)
+
 			if (state == QUOTEDPLUS) {
-				switch (c) {
-					case '"':
-						buffer.append('"')
-						state = QUOTED
-						continue
-					default:
-						state = UNQUOTED
-						break
+				if (c == '"') {
+					buffer.append('"')
+					state = QUOTED
+					continue
+				} else {
+					break
 				}
 			}
 			if (state == QUOTED) {
-				switch (c) {
-					default:
-						buffer.append((char) c)
-						continue
-					case '"':
-						state = QUOTEDPLUS
-						continue
+				if (c == '"') {
+					state = QUOTEDPLUS
+					continue
+				} else {
+					buffer.append(c)
+					continue
 				}
 			}
 
 			// (state == UNQUOTED)
-			switch (c) {
-				case '"':
-					state = QUOTED
-					continue
-				case '\r':
-					continue
-				case '\n':
-				case ',':
-					moreFieldsOnLine = (c != '\n')
-					return buffer.toString()
-				default:
-					buffer.append((char) c)
-					continue
+			if (c == '"') {
+				state = QUOTED
+				continue
+			} else if (c == '\r') {
+				continue
+			} else if (c == '\n' || c == ',') {
+				moreFieldsOnLine = (c != '\n')
+				return buffer.toString()
+			} else {
+				buffer.append((char) c)
+				continue
 			}
-
 		}
-		eof = true
 		moreFieldsOnLine = false
 
 		buffer.toString()

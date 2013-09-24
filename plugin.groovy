@@ -89,6 +89,7 @@ static AnAction createActionGroup(File file) {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground(progressBarText) { indicator ->
 					try {
+						Measure.reset()
 						showInBrowser(templateFile, processing, indicator)
 						Measure.forEachDuration{ log_(it) }
 					} catch (CancelledException ignored) {
