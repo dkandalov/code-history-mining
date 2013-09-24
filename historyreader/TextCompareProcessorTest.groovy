@@ -13,7 +13,7 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 /**
  * This test exists to explore how {@link TextCompareProcessor} compares text.
  *
- * Can only be executed within IntelliJEval.
+ * Can only be executed inside LivePlugin (https://github.com/dkandalov/live-plugin).
  * (Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code)
  */
 class TextCompareProcessorTest {

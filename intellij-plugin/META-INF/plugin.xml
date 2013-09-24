@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.1 beta</version>
+    <version>0.1.1 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
@@ -19,8 +19,7 @@
     <idea-version since-build="122.600" />
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
-    <!-- TODO uncomment after first release -->
-    <!--<depends>com.intellij.modules.lang</depends>-->
+    <depends>com.intellij.modules.lang</depends>
 
     <application-components>
         <component>
