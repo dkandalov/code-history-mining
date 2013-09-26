@@ -1,7 +1,9 @@
 package historyreader
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.RepositoryLocation
+import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
@@ -45,4 +47,9 @@ class GitPluginWorkaround {
 		result.findAll{isNotMergeCommit(it)}
 	}
 
+	static RepositoryLocation getGetLocation_with_intellij_git_api_workaround(VcsRoot vcsRoot) {
+		//noinspection GrDeprecatedAPIUsage
+		VirtualFile gitRoot = GitUtil.getGitRootOrNull(FilePathImpl.create(vcsRoot.path))
+		new GitRepositoryLocation(null, new File(gitRoot.getPath()))
+	}
 }

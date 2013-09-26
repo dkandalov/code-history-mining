@@ -2,6 +2,7 @@ package historyreader
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
@@ -44,7 +45,7 @@ class CommitReader {
 						def dates = dateIterator.next()
 						try {
 							changes = requestCommitsFor(project, dates.from, dates.to)
-						} catch (Exception e) { 
+						} catch (Exception e) {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
               LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
@@ -62,14 +63,23 @@ class CommitReader {
 	}
 
 	static List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
-		def vcsRoots = vcsRootsIn(project)
-		if (vcsRoots.empty) return []
-		def vcsRoot = vcsRoots.first()
+		vcsRootsIn(project)
+				.collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
+				.sort{ it.commitDate }
+	}
 
+	private static List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
-		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
-		if (changesProvider.class.simpleName == "GitCommittedChangeListProvider") {
-			// TODO "location" can be null for git project when current branch is local (might be IntelliJ bug); https://github.com/dkandalov/code-history-mining/issues/5
+		def location = isGit(changesProvider) ?
+			GitPluginWorkaround.getGetLocation_with_intellij_git_api_workaround(vcsRoot) :
+			changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+
+		if (location == null) {
+			LOG.warn("Failed to find location for ${vcsRoot} in ${project}")
+			return []
+		}
+
+		if (isGit(changesProvider)) {
 			return GitPluginWorkaround.getCommittedChanges_with_intellij_git_api_workarounds(project, location, fromDate, toDate)
 		}
 
@@ -85,13 +95,17 @@ class CommitReader {
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
 
-	static amountOfVCSRootsIn(Project project) {
-		vcsRootsIn(project).size()
+	static boolean noVCSRootsIn(Project project) {
+		vcsRootsIn(project).size() == 0
 	}
 
 	private static List<VcsRoot> vcsRootsIn(Project project) {
 		ProjectRootManager.getInstance(project).contentSourceRoots
 				.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }
 				.findAll{ it.path != null }.unique()
+	}
+
+	private static boolean isGit(CommittedChangesProvider changesProvider) {
+		changesProvider.class.simpleName == "GitCommittedChangeListProvider"
 	}
 }

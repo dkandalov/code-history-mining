@@ -151,11 +151,8 @@ static AnAction createActionGroup(File file) {
 }
 
 def grabHistoryOf(Project project) {
-	if (CommitReader.amountOfVCSRootsIn(project) == 0) {
+	if (CommitReader.noVCSRootsIn(project)) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
-		return
-	} else if (CommitReader.amountOfVCSRootsIn(project) > 1) {
-		showWarningDialog(project, "Sorry, grabbing history for project with multiple VCS roots is not implemented.", "Code History Mining")
 		return
 	}
 

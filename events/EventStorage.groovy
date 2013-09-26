@@ -13,6 +13,9 @@ class EventStorage {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
 	final String filePath
+	private Date oldestEventTime
+	private Date mostRecentEventTime
+
 
 	EventStorage(String filePath) {
 		this.filePath = filePath
@@ -39,23 +42,31 @@ class EventStorage {
 	}
 
 	def appendToEventsFile(Collection<FileChangeEvent> changeEvents) {
+		changeEvents = changeEvents.findAll{ getOldestEventTime() == null || it.revisionDate <= getOldestEventTime() }
 		if (changeEvents.empty) return
+
 		appendTo(filePath, toCsv(changeEvents))
+		oldestEventTime = changeEvents.last().revisionDate
 	}
 
 	def prependToEventsFile(Collection<FileChangeEvent> changeEvents) {
+		changeEvents = changeEvents.findAll{ getMostRecentEventTime() == null || it.revisionDate >= getMostRecentEventTime()}
 		if (changeEvents.empty) return
+
 		prependTo(filePath, toCsv(changeEvents))
+		mostRecentEventTime = changeEvents.first().revisionDate
 	}
 
 	Date getOldestEventTime() {
+		if (oldestEventTime != null) return oldestEventTime
 		def line = readLastLine(filePath)
-		line == null ? null :fromCsv(line).revisionDate
+		oldestEventTime = (line == null ? null :fromCsv(line).revisionDate)
 	}
 
 	Date getMostRecentEventTime() {
+		if (mostRecentEventTime != null) return mostRecentEventTime
 		def line = readFirstLine(filePath)
-		line == null ? null : fromCsv(line).revisionDate
+		mostRecentEventTime = (line == null ? null : fromCsv(line).revisionDate)
 	}
 
 	boolean hasNoEvents() {
