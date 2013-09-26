@@ -16,17 +16,17 @@ class ChangeEventsReader {
 	}
 
 	def readPresentToPast(Date historyStart, Date historyEnd, indicator = null,
-	                      Closure callbackWrapper = DEFAULT_WRAPPER, Closure callback) {
-		request(historyStart, historyEnd, indicator, true, callbackWrapper, callback)
+	                      Closure callbackWrapper = DEFAULT_WRAPPER, Closure consume) {
+		request(historyStart, historyEnd, indicator, true, callbackWrapper, consume)
 	}
 
 	def readPastToPresent(Date historyStart, Date historyEnd, indicator = null,
-	                      Closure callbackWrapper = DEFAULT_WRAPPER, Closure callback) {
-		request(historyStart, historyEnd, indicator, false, callbackWrapper, callback)
+	                      Closure callbackWrapper = DEFAULT_WRAPPER, Closure consume) {
+		request(historyStart, historyEnd, indicator, false, callbackWrapper, consume)
 	}
 
 	private request(Date historyStart, Date historyEnd, indicator = null, boolean readPresentToPast,
-	            Closure callbackWrapper, Closure callback) {
+	            Closure callbackWrapper, Closure consume) {
 		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast)
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
@@ -34,7 +34,7 @@ class ChangeEventsReader {
 
 			callbackWrapper(commit) {
 				PluginUtil.catchingAll {
-					callback(extractChangeEvents(commit))
+					consume(extractChangeEvents(commit))
 				}
 			}
 		}
