@@ -28,7 +28,6 @@ import util.Measure
 
 import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
-import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
@@ -165,58 +164,16 @@ def grabHistoryOf(Project project) {
 
 		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {
-				def updateIndicatorText = { changeList, callback ->
-					log_(changeList.name)
-					def date = dateFormat.format((Date) changeList.commitDate)
-					indicator.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
-
-					callback()
-
-					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
-				}
-				def isCancelled = { indicator.canceled }
 				def storage = new EventStorage(userInput.outputFilePath)
-
 				def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
 				def eventsReader = new ChangeEventsReader(
 						new CommitReader(project, vcsRequestBatchSizeInDays),
 						new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
 				)
-				def fromDate = userInput.from
-				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
 
-				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
-				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
+				def message = HistoryGrabber.doGrabHistory(eventsReader, storage, userInput, indicator)
 
-				if (storage.hasNoEvents()) {
-					log_("Loading project history from ${fromDate} to ${toDate}")
-					eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
-
-				} else {
-					if (toDate > timeAfterMostRecentEventIn(storage)) {
-						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
-						log_("Loading project history from $historyStart to $historyEnd")
-						// read events from past into future because they are prepended to storage
-						eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
-					}
-
-					if (fromDate < timeBeforeOldestEventIn(storage)) {
-						def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
-						log_("Loading project history from $historyStart to $historyEnd")
-						eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
-					}
-				}
-
-				def consoleTitle = "Code History Mining"
-				def message
-				if (storage.hasNoEvents()) {
-					message = "Grabbed history to ${storage.filePath}\n" +
-							"However, it has nothing in it probably because there are no commits from $fromDate to $toDate"
-				} else {
-					message = "Grabbed history to ${storage.filePath}\n" +
-							"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
-				}
-				showInNewConsole(message, consoleTitle, project)
+				showInNewConsole(message.text, message.title, project)
 			}
 			Measure.forEachDuration{ log_(it) }
 		}
@@ -232,30 +189,6 @@ def showFileAmountByType(Project project) {
 	}.sort{ -it.value }
 
 	FileAmountToolWindow.showIn(project, fileCountByFileExtension)
-}
-
-
-static timeBeforeOldestEventIn(EventStorage storage) {
-	def date = storage.oldestEventTime
-	if (date == null) {
-		new Date()
-	} else {
-		// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
-		// (it means that if processing stops between two commits that happened on the same second,
-		// we will miss one of them.. considered this to be insignificant)
-		date.time -= 1000
-		date
-	}
-}
-
-static timeAfterMostRecentEventIn(EventStorage storage) {
-	def date = storage.mostRecentEventTime
-	if (date == null) {
-		new Date()
-	} else {
-		date.time += 1000  // plus one second (see comments in timeBeforeOldestEventIn())
-		date
-	}
 }
 
 static File[] filesWithCodeHistory() {
