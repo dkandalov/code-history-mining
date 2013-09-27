@@ -41,20 +41,24 @@ class EventStorage {
 		events
 	}
 
-	def appendToEventsFile(Collection<FileChangeEvent> changeEvents) {
-		changeEvents = changeEvents.findAll{ getOldestEventTime() == null || it.revisionDate <= getOldestEventTime() }
-		if (changeEvents.empty) return
+	boolean appendToEventsFile(Collection<FileChangeEvent> changeEvents) {
+		def events = changeEvents.findAll{ getOldestEventTime() == null || it.revisionDate <= getOldestEventTime() }
+		if (events.empty) return events.size() == changeEvents.size()
 
-		appendTo(filePath, toCsv(changeEvents))
-		oldestEventTime = changeEvents.last().revisionDate
+		appendTo(filePath, toCsv(events))
+		oldestEventTime = events.last().revisionDate
+
+		events.size() == changeEvents.size()
 	}
 
-	def prependToEventsFile(Collection<FileChangeEvent> changeEvents) {
-		changeEvents = changeEvents.findAll{ getMostRecentEventTime() == null || it.revisionDate >= getMostRecentEventTime()}
-		if (changeEvents.empty) return
+	boolean prependToEventsFile(Collection<FileChangeEvent> changeEvents) {
+		def events = changeEvents.findAll{ getMostRecentEventTime() == null || it.revisionDate >= getMostRecentEventTime() }
+		if (events.empty) return events.size() == changeEvents.size()
 
-		prependTo(filePath, toCsv(changeEvents))
-		mostRecentEventTime = changeEvents.first().revisionDate
+		prependTo(filePath, toCsv(events))
+		mostRecentEventTime = events.first().revisionDate
+
+		events.size() == changeEvents.size()
 	}
 
 	Date getOldestEventTime() {

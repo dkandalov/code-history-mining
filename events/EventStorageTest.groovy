@@ -58,6 +58,29 @@ class EventStorageTest {
 		assert events.first() == eventWithMultiLineComment
 	}
 
+	@Test void "should only append events with date before oldest event"() {
+		assert storage.appendToEventsFile([event1])
+		assert storage.appendToEventsFile([event2])
+
+		assert storage.appendToEventsFile([eventWithDate(event1, "19:37:57 03/02/2007")])
+		assert !storage.appendToEventsFile([eventWithDate(event1, "19:37:57 01/03/2013")])
+		assert !storage.appendToEventsFile([eventWithDate(event1, "19:37:57 11/04/2013")])
+	}
+
+	@Test void "should only prepend events with date after most recent event"() {
+		assert storage.prependToEventsFile([event2])
+		assert storage.prependToEventsFile([event1])
+
+		assert !storage.prependToEventsFile([eventWithDate(event1, "19:37:57 03/02/2007")])
+		assert !storage.prependToEventsFile([eventWithDate(event1, "19:37:57 01/03/2013")])
+		assert storage.prependToEventsFile([eventWithDate(event1, "19:37:57 11/04/2013")])
+	}
+
+	private static eventWithDate(FileChangeEvent event, String date) {
+		def commitInfo = new CommitInfo(event.commitInfo.revision, event.commitInfo.author, exactDateTime(date), event.commitInfo.commitMessage)
+		new FileChangeEvent(commitInfo, event.fileChangeInfo)
+	}
+
 	@Before void setUp() {
 		temporaryFile = new File("test-events-file${new Random().nextInt(10000)}.csv").absolutePath
 		storage = new EventStorage(temporaryFile)
