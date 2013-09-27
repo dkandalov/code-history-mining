@@ -22,8 +22,9 @@ class HistoryGrabber {
 		def fromDate = userInput.from
 		def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
 
-		def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
-		def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
+		def allEventWereStored = true
+		def appendToStorage = { commitChangeEvents -> allEventWereStored &= storage.appendToEventsFile(commitChangeEvents) }
+		def prependToStorage = { commitChangeEvents -> allEventWereStored &= storage.prependToEventsFile(commitChangeEvents) }
 
 		if (storage.hasNoEvents()) {
 			log_("Loading project history from ${fromDate} to ${toDate}")
@@ -44,13 +45,16 @@ class HistoryGrabber {
 			}
 		}
 
-		def messageText
+		def messageText = ""
 		if (storage.hasNoEvents()) {
-			messageText = "Grabbed history to ${storage.filePath}\n" +
-					"However, it has nothing in it probably because there are no commits from $fromDate to $toDate"
+			messageText += "Grabbed history to ${storage.filePath}\n"
+			messageText += "However, it has nothing in it probably because there are no commits from $fromDate to $toDate\n"
 		} else {
-			messageText = "Grabbed history to ${storage.filePath}\n" +
-					"It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'."
+			messageText += "Grabbed history to ${storage.filePath}\n"
+			messageText += "It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'.\n"
+		}
+		if (!allEventWereStored) {
+			messageText += "Some of events were not added to csv file because it already contains events within this time range\n"
 		}
 		[text: messageText, title: "Code History Mining"]
 	}
