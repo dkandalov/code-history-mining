@@ -174,6 +174,7 @@ def grabHistoryOf(Project project) {
 
 					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 				}
+				def isCancelled = { indicator.canceled }
 				def storage = new EventStorage(userInput.outputFilePath)
 
 				def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
@@ -189,20 +190,20 @@ def grabHistoryOf(Project project) {
 
 				if (storage.hasNoEvents()) {
 					log_("Loading project history from ${fromDate} to ${toDate}")
-					eventsReader.readPresentToPast(fromDate, toDate, indicator, updateIndicatorText, appendToStorage)
+					eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
 
 				} else {
 					if (toDate > timeAfterMostRecentEventIn(storage)) {
 						def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
 						log_("Loading project history from $historyStart to $historyEnd")
 						// read events from past into future because they are prepended to storage
-						eventsReader.readPastToPresent(historyStart, historyEnd, indicator, updateIndicatorText, prependToStorage)
+						eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
 					}
 
 					if (fromDate < timeBeforeOldestEventIn(storage)) {
 						def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
 						log_("Loading project history from $historyStart to $historyEnd")
-						eventsReader.readPresentToPast(historyStart, historyEnd, indicator, updateIndicatorText, appendToStorage)
+						eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
 					}
 				}
 

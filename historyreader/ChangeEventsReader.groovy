@@ -15,22 +15,22 @@ class ChangeEventsReader {
 		this.extractChangeEvents = extractChangeEvents
 	}
 
-	def readPresentToPast(Date historyStart, Date historyEnd, indicator = null, // TODO refactor indicator to Closure
+	def readPresentToPast(Date historyStart, Date historyEnd, Closure isCancelled = null,
 	                      Closure consumeWrapper = DEFAULT_WRAPPER, Closure consume) {
-		request(historyStart, historyEnd, indicator, true, consumeWrapper, consume)
+		request(historyStart, historyEnd, isCancelled, true, consumeWrapper, consume)
 	}
 
-	def readPastToPresent(Date historyStart, Date historyEnd, indicator = null,
+	def readPastToPresent(Date historyStart, Date historyEnd, Closure isCancelled = null,
 	                      Closure consumeWrapper = DEFAULT_WRAPPER, Closure consume) {
-		request(historyStart, historyEnd, indicator, false, consumeWrapper, consume)
+		request(historyStart, historyEnd, isCancelled, false, consumeWrapper, consume)
 	}
 
-	private request(Date historyStart, Date historyEnd, indicator = null, boolean readPresentToPast,
+	private request(Date historyStart, Date historyEnd, Closure isCancelled = null, boolean readPresentToPast,
 	            Closure consumeWrapper, Closure consume) {
 		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast)
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
-			if (indicator?.canceled) break
+			if (isCancelled?.call()) break
 
 			consumeWrapper(commit) {
 				PluginUtil.catchingAll {
