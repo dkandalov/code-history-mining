@@ -39,4 +39,8 @@ class ChangeEventsReader {
 			}
 		}
 	}
+
+	boolean getLastRequestHadErrors() {
+		commitReader.lastRequestHadErrors
+	}
 }

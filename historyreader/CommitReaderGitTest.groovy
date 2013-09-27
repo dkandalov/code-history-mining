@@ -8,7 +8,6 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static CommitReader.requestCommitsFor
 import static util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
@@ -40,7 +39,7 @@ class CommitReaderGitTest {
 	}
 
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def commits = requestCommitsFor(jUnitProject, from, to)
+		def commits = new CommitReader(jUnitProject).readCommits(from, to).toList()
 		assert commits.size() == 1 : "Excpected single change list but got ${commits.size()}"
 
 		def commit = commits.first()

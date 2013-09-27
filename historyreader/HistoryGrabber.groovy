@@ -53,8 +53,11 @@ class HistoryGrabber {
 			messageText += "Grabbed history to ${storage.filePath}\n"
 			messageText += "It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'.\n"
 		}
+		if (eventsReader.lastRequestHadErrors) {
+			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
+		}
 		if (!allEventWereStored) {
-			messageText += "Some of events were not added to csv file because it already contains events within this time range\n"
+			messageText += "\nSome of events were not added to csv file because it already contains events within this time range\n"
 		}
 		[text: messageText, title: "Code History Mining"]
 	}

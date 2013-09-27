@@ -18,6 +18,7 @@ class CommitReader {
 
 	private final Project project
 	private final int sizeOfVCSRequestInDays
+	boolean lastRequestHadErrors
 
 	CommitReader(Project project, int sizeOfVCSRequestInDays = 30) {
 		this.project = project
@@ -26,6 +27,7 @@ class CommitReader {
 
 	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true) {
 		assert historyStart.time < historyEnd.time
+		lastRequestHadErrors = false
 
 		Iterator dateIterator = (readPresentToPast ?
 			new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
@@ -49,6 +51,7 @@ class CommitReader {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
               LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
+							lastRequestHadErrors = true
             }
 						if (!readPresentToPast) changes = changes.reverse()
 					}
@@ -62,13 +65,13 @@ class CommitReader {
 		}
 	}
 
-	static List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
+	private List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
 		vcsRootsIn(project)
 				.collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
 				.sort{ it.commitDate }
 	}
 
-	private static List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
+	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = isGit(changesProvider) ?
 			GitPluginWorkaround.getGetLocation_with_intellij_git_api_workaround(vcsRoot) :
@@ -76,6 +79,7 @@ class CommitReader {
 
 		if (location == null) {
 			LOG.warn("Failed to find location for ${vcsRoot} in ${project}")
+			lastRequestHadErrors = true
 			return []
 		}
 
