@@ -175,16 +175,17 @@ def grabHistoryOf(Project project) {
 					indicator.text = "Grabbing project history (${date} - looking for next commit...)"
 				}
 				def storage = new EventStorage(userInput.outputFilePath)
-				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
-				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
 
-				def vcsRequestBatchSizeInDays = 1 // from personal observation this request size seems to be ok (hardcoded so that not to clutter UI dialog)
+				def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
 				def eventsReader = new ChangeEventsReader(
 						new CommitReader(project, vcsRequestBatchSizeInDays),
 						new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
 				)
 				def fromDate = userInput.from
 				def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
+
+				def appendToStorage = { commitChangeEvents -> storage.appendToEventsFile(commitChangeEvents) }
+				def prependToStorage = { commitChangeEvents -> storage.prependToEventsFile(commitChangeEvents) }
 
 				if (storage.hasNoEvents()) {
 					log_("Loading project history from ${fromDate} to ${toDate}")
