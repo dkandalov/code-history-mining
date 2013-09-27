@@ -22,7 +22,7 @@ import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
-import util.Analysis
+import analysis.Analysis
 import util.CancelledException
 import util.Measure
 

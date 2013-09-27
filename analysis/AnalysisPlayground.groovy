@@ -1,6 +1,6 @@
 package analysis
 import events.EventStorage
-import util.Analysis
+import analysis.Analysis
 
 import static http.HttpUtil.fillDataPlaceholder
 import static http.HttpUtil.fillProjectNamePlaceholder

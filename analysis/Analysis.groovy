@@ -1,4 +1,4 @@
-package util
+package analysis
 import com.intellij.openapi.diagnostic.Logger
 import events.CommitInfo
 import events.FileChangeEvent
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable
 import java.text.SimpleDateFormat
 
 import static java.util.concurrent.TimeUnit.*
-import static util.Analysis.Util.*
+import static Analysis.Util.*
 import static util.CancelledException.check
 
 class Analysis {

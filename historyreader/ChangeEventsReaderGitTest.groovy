@@ -1,6 +1,6 @@
 package historyreader
 
-import util.Analysis
+import analysis.Analysis
 import com.intellij.openapi.project.Project
 import events.*
 import historyreader.unused.CommitMethodsMunger

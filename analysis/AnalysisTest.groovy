@@ -1,6 +1,6 @@
 package analysis
 import org.junit.Test
-import util.Analysis
+import analysis.Analysis
 
 class AnalysisTest {
 	@Test void "should group elements into pairs"() {
