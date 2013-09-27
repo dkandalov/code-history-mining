@@ -1,20 +1,33 @@
 package codehistorymining;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationListener;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import groovy.lang.Binding;
+import liveplugin.IdeUtil;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 
+import static liveplugin.IdeUtil.askIsUserWantsToRestartIde;
+import static liveplugin.IdeUtil.downloadFile;
+
 public class AppComponent implements ApplicationComponent {
+	private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining/lib/";
 	private static final Logger LOG = Logger.getInstance("CodeHistoryMining");
 
 	@Override public void initComponent() {
+		boolean onClasspath = checkThatGroovyIsOnClasspath();
+		if (!onClasspath) return;
+
 		try {
 
 			Class<?> aClass = Class.forName("plugin");
@@ -66,5 +79,34 @@ public class AppComponent implements ApplicationComponent {
 
 	@NotNull @Override public String getComponentName() {
 		return this.getClass().getName();
+	}
+
+	private static boolean checkThatGroovyIsOnClasspath() {
+		if (isGroovyOnClasspath()) return true;
+
+		NotificationListener listener = new NotificationListener() {
+			@Override public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
+				boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.0.6/", "groovy-all-2.0.6.jar", PLUGIN_LIBS_PATH);
+				if (downloaded) {
+					notification.expire();
+					askIsUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
+				} else {
+					NotificationGroup.balloonGroup("Live Plugin")
+							.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
+				}
+			}
+		};
+		NotificationGroup.balloonGroup("Live Plugin").createNotification(
+				"LivePlugin didn't find Groovy libraries on classpath",
+				"Without it plugins won't work. <a href=\"\">Download Groovy libraries</a> (~6Mb)",
+				NotificationType.ERROR,
+				listener
+		).notify(null);
+
+		return false;
+	}
+
+	private static boolean isGroovyOnClasspath() {
+		return IdeUtil.isOnClasspath("org.codehaus.groovy.runtime.DefaultGroovyMethods");
 	}
 }
