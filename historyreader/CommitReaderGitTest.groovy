@@ -38,6 +38,30 @@ class CommitReaderGitTest {
 		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
+	@Test "should read commits from past to present"() {
+		def readPresentToPast = false
+		def from = dateTime("00:00 03/10/2007")
+		def to = dateTime("23:59 03/10/2007")
+
+		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast).toList()
+
+		assert commits.size() == 3
+		assert commits[0].commitDate < commits[1].commitDate
+		assert commits[1].commitDate < commits[2].commitDate
+	}
+
+	@Test "should read commits from present to past"() {
+		def readPresentToPast = true
+		def from = dateTime("00:00 03/10/2007")
+		def to = dateTime("23:59 03/10/2007")
+
+		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast).toList()
+
+		assert commits.size() == 3
+		assert commits[0].commitDate > commits[1].commitDate
+		assert commits[1].commitDate > commits[2].commitDate
+	}
+
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
 		def commits = new CommitReader(jUnitProject).readCommits(from, to).toList()
 		assert commits.size() == 1 : "Excpected single change list but got ${commits.size()}"

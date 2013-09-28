@@ -40,7 +40,7 @@ class CommitReader {
 			}
 
 			@Override Commit next() {
-				if (!changes.empty) return changes.remove(0)
+				if (!changes.empty) return changes.pop()
 
 				measure("VCS request time") {
 					while (changes.empty && dateIterator.hasNext()) {
@@ -53,10 +53,11 @@ class CommitReader {
               LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
 							lastRequestHadErrors = true
             }
+						changes = changes.sort{ it.commitDate }
 						if (!readPresentToPast) changes = changes.reverse()
 					}
 				}
-				changes.empty ? NO_MORE_COMMITS : changes.remove(0)
+				changes.empty ? NO_MORE_COMMITS : changes.pop()
 			}
 
 			@Override void remove() {
