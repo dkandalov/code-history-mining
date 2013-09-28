@@ -62,12 +62,12 @@ class Analysis {
 		asCsvStringLiteral(times, ["metric"])
 	}
 
-	static void createJson_AmountOfComitters_Chart(List<FileChangeEvent> events) {
-		def comittersByDay = events
+	static void createJson_AmountOfCommitters_Chart(List<FileChangeEvent> events) {
+		def committersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
 				.collectEntries{ [it.key, it.value.collect{it.author}.unique()]}
 				.sort{ it.key }
-		println(comittersByDay.entrySet().join("\n"))
+		println(committersByDay.entrySet().join("\n"))
 	}
 
 	static void createJson_AverageAmountOfLinesChangedByDay_Chart(List<FileChangeEvent> events) {

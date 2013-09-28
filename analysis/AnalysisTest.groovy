@@ -1,6 +1,5 @@
 package analysis
 import org.junit.Test
-import analysis.Analysis
 
 class AnalysisTest {
 	@Test void "should group elements into pairs"() {
@@ -16,8 +15,8 @@ class AnalysisTest {
 		Collection.mixin(Analysis.Util)
 
 		def keepAllHistory = { value, currentValue -> true }
-		assert [].collectWithHistory(keepAllHistory){ prevValues, value -> [prevValues.clone(), value]} == []
-		assert [1, 2, 3].collectWithHistory(keepAllHistory){ prevValues, value -> [prevValues.clone(), value]} == [
+		assert [].collectWithHistory(keepAllHistory){ history, value -> [history.clone(), value]} == []
+		assert [1, 2, 3].collectWithHistory(keepAllHistory){ history, value -> [history.clone(), value]} == [
 		    [[], 1],
 		    [[1], 2],
 		    [[1, 2], 3]
@@ -27,8 +26,8 @@ class AnalysisTest {
 	@Test void "should collect elements while keeping history of elements which satisfy condition"() {
 		Collection.mixin(Analysis.Util)
 
-		def keepValuesWithinRange = { value, currentValue -> currentValue - value < 3 }
-		assert [1, 2, 3, 4].collectWithHistory(keepValuesWithinRange){ prevValues, value -> [prevValues.clone(), value] } == [
+		def keepingValuesWithinRange = { value, currentValue -> currentValue - value < 3 }
+		assert [1, 2, 3, 4].collectWithHistory(keepingValuesWithinRange){ history, value -> [history.clone(), value] } == [
 		    [[], 1],
 		    [[1], 2],
 		    [[1, 2], 3],
