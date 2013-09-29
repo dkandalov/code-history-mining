@@ -61,12 +61,13 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 static AnAction createActionGroup(File file) {
 	def showInBrowser = { template, eventsToJson, indicator ->
+		def checkIfCancelled = CancelledException.check(indicator)
 
 		def events = measure("Storage.readAllEvents") {
-			new EventStorage(file.absolutePath).readAllEvents(indicator){ line, e -> log_("Failed to parse line '${line}'") }
+			new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
 		}
 
-		def json = eventsToJson(events, indicator)
+		def json = eventsToJson(events, checkIfCancelled)
 
 		def server = HttpUtil.loadIntoHttpServer(projectName(file), template, json)
 
@@ -86,7 +87,7 @@ static AnAction createActionGroup(File file) {
 	def createAction = { name, progressBarText, templateFile, processing ->
 		new AnAction(name) {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground(progressBarText) { indicator ->
+				doInBackground(progressBarText) { ProgressIndicator indicator ->
 					try {
 						Measure.reset()
 						showInBrowser(templateFile, processing, indicator)

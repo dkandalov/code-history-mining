@@ -8,9 +8,8 @@ import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
+import static analysis.Analysis.Util.*
 import static java.util.concurrent.TimeUnit.*
-import static Analysis.Util.*
-import static util.CancelledException.check
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -48,13 +47,13 @@ class Analysis {
 		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
 	}
 
-	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, indicator = null) {
+	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		Collection.mixin(Util)
 
 		def times = events
 				.groupBy{it.revision}.values().collect{it.first()}
-				.sort{it.revisionDate} // sort because VCS doesn't guarantee that commit time increases (e.g. observed in junit history)
 				.groupBy{it.author}.values().collectMany{ commitsByAuthor ->
+					checkIfCancelled()
 					commitsByAuthor.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
 				}
 				.findAll{it > MINUTES.toMillis(1)} // this is an attempt to exclude time diffs between merging pull requests
@@ -62,18 +61,18 @@ class Analysis {
 		asCsvStringLiteral(times, ["metric"])
 	}
 
-	static String createJson_AmountOfCommitters_Chart(List<FileChangeEvent> events, indicator = null) {
+	static String createJson_AmountOfCommitters_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def amountOfCommittersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
-				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
+				.collect{ checkIfCancelled(); [it.key, it.value.collect{it.author}.unique().size()] }
 				.sort{ it[0] }
 		def amountOfCommittersByWeek = events
 				.groupBy{ floorToWeek(it.revisionDate) }
-				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
+				.collect{ checkIfCancelled(); [it.key, it.value.collect{it.author}.unique().size()] }
 				.sort{ it[0] }
 		def amountOfCommittersByMonth = events
 				.groupBy{ floorToMonth(it.revisionDate) }
-				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
+				.collect{ checkIfCancelled(); [it.key, it.value.collect{it.author}.unique().size()] }
 				.sort{ it[0] }
 
 		"[" +
@@ -134,10 +133,10 @@ class Analysis {
 		println(result.join("\n"))
 	}
 
-	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, indicator = null, int threshold = 7) {
+	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
 		Collection.mixin(Util)
 
-		events = useLatestNameForMovedFiles(events, indicator)
+		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
 		def keepOneWeekOfEvents = { event, currentEvent ->
 			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
@@ -157,6 +156,8 @@ class Analysis {
 		def links = matchingEvents
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
+
+		checkIfCancelled()
 
 		log_("Linking events")
 		def notInMatchingEvents = { event ->
@@ -178,6 +179,8 @@ class Analysis {
 			map
 		}
 
+		checkIfCancelled()
+
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def files = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
 		def nodesJSLiteral =
@@ -191,10 +194,10 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, indicator = null) {
+	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def amountOfCommitsByMinute = events
 				.groupBy{it.revision}.entrySet()*.collect{it.value.first()}.flatten()
-				.groupBy{[dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
+				.groupBy{checkIfCancelled(); [dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{a, b -> (a.key[0] * 10000 + a.key[1] * 100 + a.key[2]) <=> (b.key[0] * 10000 + b.key[1] * 100 + b.key[2]) }
 
@@ -205,8 +208,8 @@ class Analysis {
 	}
 
 	static class TreeMapView {
-		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events, indicator = null) {
-			def filePaths = useLatestNameForMovedFiles(events, indicator)
+		static String createJson_AmountOfChangeInFolders_TreeMap(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+			def filePaths = useLatestNameForMovedFiles(events, checkIfCancelled)
 					.collect{ nonEmptyPackageName(it) + "/" + nonEmptyFileName(it) }
 
 			def containerTree = new Container("", 0)
@@ -264,7 +267,7 @@ class Analysis {
 		}
 	}
 
-	static String createJson_CommitComments_WordCloud(events, indicator = null) {
+	static String createJson_CommitComments_WordCloud(events, Closure checkIfCancelled = {}) {
 		def excludedWords = "also,as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
 				"which,that,this,them,they,we,an,the,is,be,are,was,do,it,so,not,no,and".split(",").toList().toSet()
 		def notExcluded = { String s -> s.length() > 1 && !excludedWords.contains(s) }
@@ -273,6 +276,7 @@ class Analysis {
 				.groupBy{ it.revision }.entrySet()
 				.collect{ it.value.first().commitMessage }
 				.collectMany{
+					checkIfCancelled()
 					it.split(/[\s!{}\[\]+-<>()\/\\,"'@&$=*\|\?]/)
 						.collect{it.trim().toLowerCase()}.findAll(notExcluded)
 				}
@@ -292,17 +296,20 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, indicator = null, threshold = 7) {
+	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 7) {
 		Collection.mixin(Util)
 
-		events = useLatestNameForMovedFiles(events, indicator)
+		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
 		def fileNamesByRevision = events
 				.groupBy{ it.revision }
 				.values()*.collect{ fullFileNameIn(it) }*.toList()*.unique()
+		checkIfCancelled()
 		def pairCoOccurrences = fileNamesByRevision
 				.inject([:].withDefault{0}) { map, fileNames -> fileNames.pairs().each{ map[it.sort()] += 1 }; map }
 				.findAll{ it.value > threshold }.sort{-it.value}
+
+		checkIfCancelled()
 
 		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
 		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
@@ -312,8 +319,10 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events, indicator = null) {
+	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
+
+		checkIfCancelled()
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
 		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
@@ -326,7 +335,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events, indicator = null) {
+	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def changeSizeInChars = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
@@ -335,6 +344,8 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
 
+		checkIfCancelled()
+
 		def changeSizeInLines = {
 			def totalChangeSizeByDate = events
 					.groupBy{ floorToDay(it.revisionDate) }
@@ -342,6 +353,8 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
 			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
 		}()
+
+		checkIfCancelled()
 
 		def changeSizeInCommits = {
 			def commitsAmountByDate = events
@@ -356,14 +369,14 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	static class Util {
-		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable indicator = null) {
+		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable Closure checkIfCancelled = {}) {
 			log_("Started useLatestNameForMovedFiles()")
 
 			if (events.size() > 1)
 				assert events.first().revisionDate.time > events.last().revisionDate.time : "events go from present to past"
 
 			for (int i = 0; i < events.size(); i++) {
-				check(indicator)
+				checkIfCancelled()
 
 				def event = events[i]
 				if (event.fileChangeType != "MOVED") continue
@@ -384,7 +397,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 						}
 						events[j] = updated(thatEvent, newFileName, newPackageName, fileChangeType)
 					}
-					check(indicator)
+					checkIfCancelled()
 				}
 			}
 

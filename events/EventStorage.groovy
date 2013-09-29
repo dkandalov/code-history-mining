@@ -7,8 +7,6 @@ import util.Measure
 
 import java.text.SimpleDateFormat
 
-import static util.CancelledException.check
-
 class EventStorage {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
@@ -22,7 +20,7 @@ class EventStorage {
 	}
 
 	@CompileStatic
-	List<FileChangeEvent> readAllEvents(indicator = null, Closure whenFiledToParseLine = {line, e ->}) {
+	List<FileChangeEvent> readAllEvents(Closure checkIfCancelled = {}, Closure whenFiledToParseLine = {line, e ->}) {
 		def events = []
 		def reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(filePath)))
 		try {
@@ -33,7 +31,7 @@ class EventStorage {
 				} catch (Exception e) {
 					whenFiledToParseLine(line, e)
 				}
-				check(indicator)
+				checkIfCancelled()
 			}
 		} finally {
 			reader.close()
