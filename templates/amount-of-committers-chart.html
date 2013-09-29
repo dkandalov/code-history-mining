@@ -968,10 +968,9 @@ date,amountOfCommitters\n\
                 .append("rect").attr("width", width).attr("height", height2);
 
         var rawDataIndex = 0;
-        var daysData = parseRawData(rawData[rawDataIndex], dateFormat);
+        var data = parseRawData(rawData[rawDataIndex], dateFormat);
 
         var timeInterval = d3.time.day;
-        var data = aggregate(daysData, timeInterval);
         var meanData = [];
 
         var fromDate = data[0].date;
@@ -1030,7 +1029,7 @@ date,amountOfCommitters\n\
         dropDown.append("option").attr("value", "2").html("month");
         dropDown.on("change", function() {
             rawDataIndex = +this.value;
-            daysData = parseRawData(rawData[rawDataIndex], dateFormat);
+            data = parseRawData(rawData[rawDataIndex], dateFormat);
             timeInterval = d3.time[["day", "week", "month"][rawDataIndex]];
             updateChart();
         });
@@ -1039,7 +1038,6 @@ date,amountOfCommitters\n\
 
 
         function updateChart() {
-            data = aggregate(daysData, timeInterval);
             meanData = calculateMonthlyMean(data);
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
@@ -1123,12 +1121,6 @@ date,amountOfCommitters\n\
             }
 
             zoomedView.select(".x.axis").call(xAxis);
-
-            var formatChangeSize = (function(n) {
-                var s = d3.format(",")(n);
-                return s.length < 3 ? s : d3.format(".3s")(n);
-            });
-//            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data))); // TODO remove?
         }
 
         function barWidthFor(timeInterval, fromDate, toDate) {
@@ -1146,26 +1138,6 @@ date,amountOfCommitters\n\
             });
         }
 
-        function amountOfCommitsWithin(domain, data) {
-            var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
-            var amountOfCommitters = function(d) { return d.amountOfCommitters; };
-            return d3.sum(data.filter(withinDomain), amountOfCommitters);
-        }
-
-        function aggregate(daysData, timeInterval) {
-            if (timeInterval == d3.time.day) return daysData;
-            return d3.values(d3.nest()
-                            .key(function(d) { return timeInterval.floor(d.date); })
-                            .rollup(function(days) {
-                                var totalChangeSize = d3.sum(days, function (d) { return d.amountOfCommitters; });
-                                var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                                return {date: date, amountOfCommitters: totalChangeSize };
-                            })
-                            .map(daysData)).filter(function (d) {
-                                return d.amountOfCommitters > 0;
-                            });
-        }
-
         function nonZero(length) {
             return (length > 0 ? length : 0.0000001);
         }
@@ -1178,21 +1150,21 @@ date,amountOfCommitters\n\
             var period = 30;
             var result = [];
             var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
-            var changeSize = changeSizeByDay(data, datesRange);
+            var amountOfCommitters = amountOfCommittersByDay(data, datesRange);
 
-            var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return changeSize[date]; });
+            var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return amountOfCommitters[date]; });
 
             for (var i = period; i < datesRange.length; i++) {
                 var date = datesRange[i];
                 var dateToExclude = datesRange[i - period];
-                mean += (changeSize[date] - changeSize[dateToExclude]) / period;
+                mean += (amountOfCommitters[date] - amountOfCommitters[dateToExclude]) / period;
                 result.push({date: date, mean: mean});
             }
 
             return result;
         }
 
-        function changeSizeByDay(data, datesRange) {
+        function amountOfCommittersByDay(data, datesRange) {
             var result = {};
             datesRange.forEach(function(date) { result[date] = 0; });
             data.forEach(function(d) { result[d.date] = d.amountOfCommitters; });

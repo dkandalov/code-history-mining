@@ -24,7 +24,7 @@ class AnalysisPlayground {
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(events))
 //		fillTemplate("time-between-commits-histogram.html", projectName, Analysis.createJson_TimeBetweenCommits_Histogram(events))
 
-		println(Analysis.createJson_AmountOfCommitters_Chart(events))
+		fillTemplate("amount-of-committers-chart.html", projectName, Analysis.createJson_AmountOfCommitters_Chart(events))
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
 //		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
