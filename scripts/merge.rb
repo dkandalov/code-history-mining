@@ -21,46 +21,76 @@ def extract_content_from(file_name)
   [style, script]
 end
 
-def remove_margin_style(html)
+remove_margin_style = Proc.new { |html|
   html.gsub!(/margin:.*?;/, '')
-  html
-end
+}
 
-def remove_header_span(html)
+remove_header_span = Proc.new { |html|
   html.gsub!(/var header.*?;/m, '')
   html.gsub!(/headerSpan\..*?;/m, '')
   html.gsub!(/header\..*?;/m, '')
-  html
-end
+}
 
-def reduce_width(html)
+reduce_width = Proc.new { |html|
   html.gsub!(/var width =.*?;/, 'var width = 800;')
-  html.gsub!(/width =.*?,/, 'width = 740,') # this is specific for change size chart
-  html.gsub!(/cellSize =.*?;/, 'cellSize = 14;') # this is specific for calendar view
-  html
-end
+}
 
-def merge_into(template_file, files)
+change_size_chart_fixes = Proc.new { |html|
+  html.gsub!(/width =.*?,/, 'width = 740,')
+}
+
+amount_of_committers_fixes = Proc.new { |html|
+  html.gsub!(/width =.*?,/, 'width = 740,')
+}
+
+file_in_same_commit_fixes = Proc.new{ |html|
+  html.gsub!(/width =.*?,/, 'width = 740,')
+}
+
+committer_and_files_fixes = Proc.new{ |html|
+  html.gsub!(/width =.*?,/, 'width = 800,')
+}
+
+punchcard_fixes = Proc.new{ |html|
+  html.gsub!(/width =.*?,/, 'width = 800,')
+}
+
+histogram_fixes = Proc.new{ |html|
+  html.gsub!(/width =.*?,/, 'width = 740,')
+}
+
+calendar_fixes = Proc.new{ |html|
+  html.gsub!(/cellSize =.*?;/, 'cellSize = 14;') # this is specific for calendar view
+  html.gsub!(/width =.*?,/, 'width = 800,')
+}
+
+def merge_into(template_file, files_with_fixes)
   html = File.read(template_file)
-  files.each { |file|
+  files_with_fixes.each { |file, fixes|
     p "Processing #{file}"
     style, script = extract_content_from(file)
 
-    html.insert(html.end_rindex("</style>"), remove_margin_style(style))
-    html.insert(html.end_rindex("</script>"), reduce_width(remove_header_span(script)))
+    fixes.each { |fix|
+      fix.call(style)
+      fix.call(script)
+    }
+
+    html.insert(html.end_rindex("</style>"), style)
+    html.insert(html.end_rindex("</script>"), script)
   }
   File.open(template_file, "w") { |f| f.write(html) }
 end
 
 
-merge_into('idea.html', [
-    '/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html',
-    '/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html',
-    '/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html',
-    '/Users/dima/Documents/idea-2012-2013/Committers changing same files.html',
-    #'/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html',
-    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html',
-    '/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html',
-    '/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html',
-    '/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html',
-])
+common = [remove_margin_style, remove_header_span, reduce_width]
+merge_into('idea.html', {
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html' => common + [change_size_chart_fixes],
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html' => common + [amount_of_committers_fixes],
+    #'/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html' => common + [file_in_same_commit_fixes],
+    #'/Users/dima/Documents/idea-2012-2013/Committers changing same files.html' => common + [committer_and_files_fixes],
+    ##'/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html',
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common + [punchcard_fixes],
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common + [histogram_fixes],
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common,
+    #'/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common + [calendar_fixes],
+})
