@@ -92,6 +92,7 @@ static AnAction createActionGroup(File file) {
 						showInBrowser(templateFile, processing, indicator)
 						Measure.forEachDuration{ log_(it) }
 					} catch (CancelledException ignored) {
+						log_("Cancelled building '${name}'")
 					}
 				}
 			}
