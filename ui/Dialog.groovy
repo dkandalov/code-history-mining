@@ -1,4 +1,5 @@
 package ui
+
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -80,6 +81,7 @@ class Dialog {
 			builder.dialogWrapper.close(0)
 		} as Runnable
 		builder.centerPanel = rootPanel
+		builder.dimensionServiceKey = "CodeHistoryMiningDialog"
 
 		ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
 	}
