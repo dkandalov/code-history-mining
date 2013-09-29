@@ -38,8 +38,8 @@
 <span id="amount-of-committers-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawChartData = /*data_placeholder*/
-"\
+    var rawData = /*data_placeholder*/
+["\
 date,amountOfCommitters\n\
 09/01/2001,1\n\
 10/01/2001,1\n\
@@ -501,12 +501,13 @@ date,amountOfCommitters\n\
 13/09/2013,1\n\
 14/09/2013,1\n\
 26/09/2013,1\n\
-"/*data_placeholder*/;
+"]
+/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    drawChangeSizeChart("amount-of-committers-chart", rawChartData, projectName);
+    createChart("amount-of-committers-chart", rawData, projectName);
 
-    function drawChangeSizeChart(elementId, rawData, projectName) {
+    function createChart(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
             margin2 = {top: 430, right: 20, bottom: 15, left: 40},
             width = 960 - margin.left - margin.right,
@@ -604,20 +605,20 @@ date,amountOfCommitters\n\
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
         groupByDropDown.append("option").attr("value", "day").html("days");
-        groupByDropDown.append("option").attr("value", "monday").html("weeks");
+//        groupByDropDown.append("option").attr("value", "monday").html("weeks"); // TODO group in java code (it's incorrect to group here)
         groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
             updateChart();
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
-        var leftFooter = rootElement.append("span")
-                .style("position", "absolute")
-                .style("left", function(){ return svgPos.left + margin.left + "px"; });
-        leftFooter.append("span").style("color", "#999").html("Total size: ");
-        var totalChangeSizeLabel = leftFooter
-                .append("span").style("color", "#999")
-                .append("label").html("");
+//        var leftFooter = rootElement.append("span")
+//                .style("position", "absolute")
+//                .style("left", function(){ return svgPos.left + margin.left + "px"; });
+//        leftFooter.append("span").style("color", "#999").html("Total size: "); // TODO total amount of unique committers
+//        var totalChangeSizeLabel = leftFooter
+//                .append("span").style("color", "#999")
+//                .append("label").html("");
 
 
         updateChart();
@@ -713,7 +714,7 @@ date,amountOfCommitters\n\
                 var s = d3.format(",")(n);
                 return s.length < 3 ? s : d3.format(".3s")(n);
             });
-            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data)));
+//            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data))); // TODO remove?
         }
 
         function barWidthFor(timeInterval, fromDate, toDate) {

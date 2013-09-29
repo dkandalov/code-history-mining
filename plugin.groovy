@@ -103,6 +103,9 @@ static AnAction createActionGroup(File file) {
 				"Change Size Chart", "Creating change size chart",
 				"changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart))
 		add(createAction(
+				"Amount Of Committers Chart", "Creating amount of committers chart",
+				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))
+		add(createAction(
 				"Changes Calendar View", "Creating changes calendar view",
 				"calendar-view.html", Analysis.&createJson_ChangeSize_Calendar))
 		add(createAction(

@@ -38,7 +38,7 @@
 <span id="change-size-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script>
-    var rawChartData = /*data_placeholder*/
+    var rawData = /*data_placeholder*/
 ["\
 date,changeSize\n\
 11/08/2012,14218\n\
@@ -186,9 +186,9 @@ date,changeSize\n\
 ]/*data_placeholder*/;
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 
-    drawChangeSizeChart("change-size-chart", rawChartData, projectName);
+    createChart("change-size-chart", rawData, projectName);
 
-    function drawChangeSizeChart(elementId, rawData, projectName) {
+    function createChart(elementId, rawData, projectName) {
         var margin = {top: 20, right: 20, bottom: 100, left: 40},
             margin2 = {top: 430, right: 20, bottom: 15, left: 40},
             width = 960 - margin.left - margin.right,
