@@ -40,7 +40,7 @@
 <script>
     var rawChartData = /*data_placeholder*/
 "\
-date,changeSize\n\
+date,amountOfCommitters\n\
 09/01/2001,1\n\
 10/01/2001,1\n\
 17/01/2001,1\n\
@@ -218,106 +218,6 @@ date,changeSize\n\
 16/12/2007,1\n\
 28/12/2007,1\n\
 30/12/2007,1\n\
-04/01/2008,1\n\
-10/01/2008,1\n\
-16/01/2008,1\n\
-21/01/2008,1\n\
-25/01/2008,1\n\
-05/02/2008,1\n\
-14/02/2008,1\n\
-19/03/2008,1\n\
-20/03/2008,1\n\
-07/04/2008,1\n\
-06/05/2008,1\n\
-07/05/2008,1\n\
-12/05/2008,1\n\
-13/05/2008,1\n\
-29/05/2008,1\n\
-03/06/2008,1\n\
-09/06/2008,1\n\
-10/06/2008,2\n\
-16/06/2008,1\n\
-24/06/2008,1\n\
-26/06/2008,2\n\
-01/07/2008,1\n\
-09/07/2008,1\n\
-10/07/2008,2\n\
-16/07/2008,1\n\
-22/07/2008,2\n\
-23/07/2008,2\n\
-29/07/2008,2\n\
-30/07/2008,1\n\
-31/07/2008,1\n\
-01/08/2008,2\n\
-05/08/2008,1\n\
-06/08/2008,1\n\
-08/08/2008,1\n\
-11/08/2008,1\n\
-18/08/2008,1\n\
-19/08/2008,2\n\
-05/09/2008,1\n\
-09/09/2008,1\n\
-24/09/2008,1\n\
-17/10/2008,1\n\
-23/10/2008,1\n\
-28/10/2008,1\n\
-31/10/2008,1\n\
-06/11/2008,1\n\
-12/11/2008,1\n\
-13/11/2008,1\n\
-18/11/2008,1\n\
-22/11/2008,1\n\
-20/12/2008,1\n\
-06/01/2009,1\n\
-13/01/2009,1\n\
-28/01/2009,1\n\
-03/02/2009,1\n\
-10/02/2009,1\n\
-24/02/2009,1\n\
-03/03/2009,1\n\
-10/03/2009,1\n\
-12/03/2009,1\n\
-06/04/2009,2\n\
-07/04/2009,1\n\
-14/04/2009,1\n\
-16/04/2009,1\n\
-17/04/2009,1\n\
-18/04/2009,1\n\
-20/04/2009,1\n\
-28/04/2009,1\n\
-29/04/2009,2\n\
-30/04/2009,2\n\
-04/05/2009,2\n\
-05/05/2009,3\n\
-06/05/2009,1\n\
-07/05/2009,1\n\
-08/05/2009,1\n\
-11/05/2009,1\n\
-12/05/2009,1\n\
-13/05/2009,1\n\
-26/05/2009,1\n\
-27/05/2009,1\n\
-29/05/2009,1\n\
-01/06/2009,1\n\
-02/06/2009,1\n\
-04/06/2009,1\n\
-16/06/2009,1\n\
-01/07/2009,1\n\
-02/07/2009,1\n\
-07/07/2009,1\n\
-08/07/2009,1\n\
-16/07/2009,1\n\
-17/07/2009,1\n\
-20/07/2009,1\n\
-21/07/2009,1\n\
-28/07/2009,1\n\
-31/07/2009,1\n\
-20/08/2009,1\n\
-21/08/2009,1\n\
-20/09/2009,1\n\
-23/09/2009,1\n\
-05/10/2009,1\n\
-13/10/2009,1\n\
 19/10/2009,1\n\
 20/10/2009,3\n\
 27/10/2009,1\n\
@@ -648,14 +548,14 @@ date,changeSize\n\
 
         var daysData = parseRawData(rawData, dateFormat);
 
-        var timeInterval = d3.time.week;
+        var timeInterval = d3.time.day;
         var data = aggregate(daysData, timeInterval);
         var meanData = [];
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
         x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-        y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
+        y.domain([0, d3.max(data, function(d) { return d.amountOfCommitters; })]);
         x2.domain(x.domain());
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
@@ -703,8 +603,8 @@ date,changeSize\n\
 
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
-        groupByDropDown.append("option").attr("value", "monday").html("weeks");
         groupByDropDown.append("option").attr("value", "day").html("days");
+        groupByDropDown.append("option").attr("value", "monday").html("weeks");
         groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
             updateChart();
@@ -728,7 +628,7 @@ date,changeSize\n\
             meanData = calculateMonthlyMean(data);
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
+            y.domain([0, d3.max(data, function(d) { return d.amountOfCommitters; })]);
             x2.domain(x.domain());
             y2.domain(y.domain());
 
@@ -754,8 +654,8 @@ date,changeSize\n\
                     .attr("clip-path", "url(#brushClip)")
                     .attr("x", function(d) { return x2(d.date); })
                     .attr("width", barWidth)
-                    .attr("y", function(d) { return y2(d.changeSize); })
-                    .attr("height", function(d) { return height2 - y2(d.changeSize); })
+                    .attr("y", function(d) { return y2(d.amountOfCommitters); })
+                    .attr("height", function(d) { return height2 - y2(d.amountOfCommitters); })
                     .append("title");
             element.append("g")
                     .attr("class", "x brush")
@@ -774,8 +674,8 @@ date,changeSize\n\
                     .attr("clip-path", "url(#chartClip)")
                     .attr("x", function(d) { return x(d.date); })
                     .attr("width", barWidth)
-                    .attr("y", function(d) { return y(d.changeSize); })
-                    .attr("height", function(d) { return height - y(d.changeSize); })
+                    .attr("y", function(d) { return y(d.amountOfCommitters); })
+                    .attr("height", function(d) { return height - y(d.amountOfCommitters); })
                     .append("title")
                     .text(function(d) {
                         var dateAsString;
@@ -785,7 +685,7 @@ date,changeSize\n\
                             dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
                         }
                         return xAxisLabel + ": " + dateAsString + "\n" +
-                               yAxisLabel + ": " + valueFormat(d.changeSize);
+                               yAxisLabel + ": " + valueFormat(d.amountOfCommitters);
                     });
         }
 
@@ -827,14 +727,14 @@ date,changeSize\n\
         function parseRawData(rawData, dateFormat) {
             return d3.csv.parse(rawData).map(function(d) { return {
                 date: dateFormat.parse(d.date),
-                changeSize: parseInt(d.changeSize)};
+                amountOfCommitters: parseInt(d.amountOfCommitters)};
             });
         }
 
         function amountOfCommitsWithin(domain, data) {
             var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
-            var changeSize = function(d) { return d.changeSize; };
-            return d3.sum(data.filter(withinDomain), changeSize);
+            var amountOfCommitters = function(d) { return d.amountOfCommitters; };
+            return d3.sum(data.filter(withinDomain), amountOfCommitters);
         }
 
         function aggregate(daysData, timeInterval) {
@@ -842,12 +742,12 @@ date,changeSize\n\
             return d3.values(d3.nest()
                             .key(function(d) { return timeInterval.floor(d.date); })
                             .rollup(function(days) {
-                                var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
+                                var totalChangeSize = d3.sum(days, function (d) { return d.amountOfCommitters; });
                                 var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                                return {date: date, changeSize: totalChangeSize };
+                                return {date: date, amountOfCommitters: totalChangeSize };
                             })
                             .map(daysData)).filter(function (d) {
-                        return d.changeSize > 0;
+                        return d.amountOfCommitters > 0;
                     });
         }
 
@@ -880,7 +780,7 @@ date,changeSize\n\
         function changeSizeByDay(data, datesRange) {
             var result = {};
             datesRange.forEach(function(date) { result[date] = 0; });
-            data.forEach(function(d) { result[d.date] = d.changeSize; });
+            data.forEach(function(d) { result[d.date] = d.amountOfCommitters; });
             return result;
         }
 
