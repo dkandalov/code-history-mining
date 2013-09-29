@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    body {
+        background: #f2f2f2;
+        margin: 30px;
+    }
+    #amount-of-committers-chart,
+    #amount-of-committers-chart text {
+        font: 11px sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    }
+    #amount-of-committers-chart .axis path,
+    #amount-of-committers-chart .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+    #amount-of-committers-chart .bar {
+        fill: steelblue;
+    }
+    #amount-of-committers-chart .bar:hover {
+        fill: rgb(62, 104, 146);
+    }
+    #amount-of-committers-chart .line {
+        fill: none;
+        stroke-width: 1.5px;
+        stroke: #b2182b;
+    }
+    #amount-of-committers-chart .brush .extent {
+        stroke: #fff;
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+    }
+</style>
+<head><title>Amount of committers</title></head>
+<body>
+<span id="amount-of-committers-chart"></span>
+<script src="d3.v3.min.js"></script>
+<script>
+    var rawChartData = /*data_placeholder*/
+"\
+date,changeSize\n\
+09/01/2001,1\n\
+10/01/2001,1\n\
+17/01/2001,1\n\
+18/01/2001,1\n\
+01/04/2001,1\n\
+08/04/2001,1\n\
+21/05/2001,1\n\
+08/07/2001,1\n\
+09/07/2001,1\n\
+02/10/2001,1\n\
+19/10/2001,1\n\
+20/10/2001,1\n\
+21/10/2001,1\n\
+22/10/2001,1\n\
+24/10/2001,1\n\
+25/10/2001,1\n\
+27/10/2001,1\n\
+29/10/2001,1\n\
+30/10/2001,1\n\
+31/10/2001,1\n\
+02/11/2001,1\n\
+03/11/2001,1\n\
+10/11/2001,1\n\
+12/11/2001,1\n\
+24/12/2001,1\n\
+07/01/2002,1\n\
+16/01/2002,1\n\
+05/02/2002,1\n\
+06/02/2002,1\n\
+14/02/2002,1\n\
+28/03/2002,1\n\
+29/03/2002,1\n\
+30/03/2002,2\n\
+31/03/2002,3\n\
+01/04/2002,1\n\
+02/04/2002,1\n\
+07/04/2002,1\n\
+08/04/2002,1\n\
+09/04/2002,1\n\
+10/04/2002,1\n\
+12/04/2002,1\n\
+27/04/2002,1\n\
+14/06/2002,1\n\
+18/06/2002,1\n\
+20/06/2002,1\n\
+22/06/2002,1\n\
+24/06/2002,2\n\
+25/06/2002,1\n\
+26/06/2002,1\n\
+27/06/2002,1\n\
+25/07/2002,1\n\
+19/08/2002,1\n\
+23/08/2002,1\n\
+24/08/2002,2\n\
+30/08/2002,1\n\
+31/08/2002,3\n\
+01/09/2002,1\n\
+02/09/2002,1\n\
+13/11/2002,1\n\
+19/12/2002,1\n\
+28/01/2003,1\n\
+28/02/2003,1\n\
+20/03/2003,1\n\
+22/04/2003,1\n\
+25/05/2003,1\n\
+10/12/2003,1\n\
+20/12/2003,1\n\
+21/12/2003,1\n\
+25/12/2003,1\n\
+11/02/2004,1\n\
+01/06/2004,1\n\
+01/09/2004,1\n\
+03/09/2004,1\n\
+09/09/2004,1\n\
+10/09/2004,1\n\
+11/09/2004,1\n\
+18/09/2004,1\n\
+23/09/2004,1\n\
+11/10/2004,1\n\
+22/10/2004,1\n\
+23/10/2004,1\n\
+24/10/2004,2\n\
+28/10/2004,1\n\
+13/11/2004,1\n\
+17/11/2004,1\n\
+28/12/2004,1\n\
+15/02/2006,1\n\
+16/02/2006,1\n\
+17/02/2006,1\n\
+19/02/2006,1\n\
+20/02/2006,1\n\
+24/02/2006,1\n\
+27/02/2006,1\n\
+08/03/2006,1\n\
+10/03/2006,1\n\
+14/03/2006,1\n\
+15/03/2006,1\n\
+16/03/2006,1\n\
+17/03/2006,1\n\
+23/03/2006,1\n\
+27/04/2006,1\n\
+30/05/2006,1\n\
+01/06/2006,1\n\
+24/06/2006,1\n\
+28/06/2006,1\n\
+29/06/2006,1\n\
+30/06/2006,1\n\
+21/07/2006,1\n\
+03/08/2006,1\n\
+25/08/2006,1\n\
+30/09/2006,1\n\
+05/10/2006,1\n\
+02/11/2006,1\n\
+16/11/2006,1\n\
+17/11/2006,1\n\
+20/11/2006,1\n\
+21/11/2006,1\n\
+22/11/2006,1\n\
+30/11/2006,1\n\
+06/12/2006,1\n\
+13/12/2006,1\n\
+27/12/2006,1\n\
+24/01/2007,1\n\
+26/01/2007,1\n\
+08/02/2007,1\n\
+21/02/2007,1\n\
+27/02/2007,1\n\
+02/03/2007,1\n\
+04/03/2007,1\n\
+07/03/2007,1\n\
+10/03/2007,1\n\
+20/03/2007,1\n\
+22/03/2007,1\n\
+26/04/2007,1\n\
+08/05/2007,1\n\
+31/05/2007,1\n\
+02/07/2007,1\n\
+06/07/2007,1\n\
+09/07/2007,1\n\
+12/07/2007,1\n\
+16/07/2007,1\n\
+17/07/2007,1\n\
+18/07/2007,1\n\
+19/07/2007,1\n\
+20/07/2007,1\n\
+06/08/2007,1\n\
+13/08/2007,1\n\
+15/08/2007,1\n\
+20/08/2007,1\n\
+27/08/2007,1\n\
+04/09/2007,1\n\
+28/09/2007,1\n\
+03/10/2007,1\n\
+05/10/2007,2\n\
+08/10/2007,1\n\
+09/10/2007,2\n\
+10/10/2007,2\n\
+12/10/2007,2\n\
+13/10/2007,1\n\
+16/10/2007,1\n\
+24/10/2007,1\n\
+31/10/2007,1\n\
+05/11/2007,1\n\
+07/11/2007,1\n\
+14/11/2007,1\n\
+21/11/2007,1\n\
+26/11/2007,1\n\
+27/11/2007,1\n\
+05/12/2007,1\n\
+07/12/2007,1\n\
+08/12/2007,1\n\
+10/12/2007,2\n\
+11/12/2007,1\n\
+13/12/2007,1\n\
+16/12/2007,1\n\
+28/12/2007,1\n\
+30/12/2007,1\n\
+04/01/2008,1\n\
+10/01/2008,1\n\
+16/01/2008,1\n\
+21/01/2008,1\n\
+25/01/2008,1\n\
+05/02/2008,1\n\
+14/02/2008,1\n\
+19/03/2008,1\n\
+20/03/2008,1\n\
+07/04/2008,1\n\
+06/05/2008,1\n\
+07/05/2008,1\n\
+12/05/2008,1\n\
+13/05/2008,1\n\
+29/05/2008,1\n\
+03/06/2008,1\n\
+09/06/2008,1\n\
+10/06/2008,2\n\
+16/06/2008,1\n\
+24/06/2008,1\n\
+26/06/2008,2\n\
+01/07/2008,1\n\
+09/07/2008,1\n\
+10/07/2008,2\n\
+16/07/2008,1\n\
+22/07/2008,2\n\
+23/07/2008,2\n\
+29/07/2008,2\n\
+30/07/2008,1\n\
+31/07/2008,1\n\
+01/08/2008,2\n\
+05/08/2008,1\n\
+06/08/2008,1\n\
+08/08/2008,1\n\
+11/08/2008,1\n\
+18/08/2008,1\n\
+19/08/2008,2\n\
+05/09/2008,1\n\
+09/09/2008,1\n\
+24/09/2008,1\n\
+17/10/2008,1\n\
+23/10/2008,1\n\
+28/10/2008,1\n\
+31/10/2008,1\n\
+06/11/2008,1\n\
+12/11/2008,1\n\
+13/11/2008,1\n\
+18/11/2008,1\n\
+22/11/2008,1\n\
+20/12/2008,1\n\
+06/01/2009,1\n\
+13/01/2009,1\n\
+28/01/2009,1\n\
+03/02/2009,1\n\
+10/02/2009,1\n\
+24/02/2009,1\n\
+03/03/2009,1\n\
+10/03/2009,1\n\
+12/03/2009,1\n\
+06/04/2009,2\n\
+07/04/2009,1\n\
+14/04/2009,1\n\
+16/04/2009,1\n\
+17/04/2009,1\n\
+18/04/2009,1\n\
+20/04/2009,1\n\
+28/04/2009,1\n\
+29/04/2009,2\n\
+30/04/2009,2\n\
+04/05/2009,2\n\
+05/05/2009,3\n\
+06/05/2009,1\n\
+07/05/2009,1\n\
+08/05/2009,1\n\
+11/05/2009,1\n\
+12/05/2009,1\n\
+13/05/2009,1\n\
+26/05/2009,1\n\
+27/05/2009,1\n\
+29/05/2009,1\n\
+01/06/2009,1\n\
+02/06/2009,1\n\
+04/06/2009,1\n\
+16/06/2009,1\n\
+01/07/2009,1\n\
+02/07/2009,1\n\
+07/07/2009,1\n\
+08/07/2009,1\n\
+16/07/2009,1\n\
+17/07/2009,1\n\
+20/07/2009,1\n\
+21/07/2009,1\n\
+28/07/2009,1\n\
+31/07/2009,1\n\
+20/08/2009,1\n\
+21/08/2009,1\n\
+20/09/2009,1\n\
+23/09/2009,1\n\
+05/10/2009,1\n\
+13/10/2009,1\n\
+19/10/2009,1\n\
+20/10/2009,3\n\
+27/10/2009,1\n\
+17/11/2009,1\n\
+24/11/2009,1\n\
+01/12/2009,1\n\
+03/12/2009,1\n\
+08/12/2009,1\n\
+18/12/2009,1\n\
+22/12/2009,1\n\
+23/12/2009,1\n\
+05/01/2010,1\n\
+21/01/2010,2\n\
+26/01/2010,1\n\
+01/02/2010,1\n\
+03/02/2010,1\n\
+09/02/2010,1\n\
+26/02/2010,1\n\
+09/03/2010,1\n\
+05/04/2010,1\n\
+06/04/2010,1\n\
+08/04/2010,2\n\
+13/04/2010,1\n\
+14/04/2010,1\n\
+04/05/2010,1\n\
+06/05/2010,1\n\
+12/05/2010,1\n\
+20/05/2010,1\n\
+31/08/2010,1\n\
+13/10/2010,1\n\
+26/10/2010,1\n\
+09/11/2010,1\n\
+13/11/2010,1\n\
+16/11/2010,1\n\
+28/12/2010,1\n\
+03/01/2011,1\n\
+05/01/2011,1\n\
+07/01/2011,2\n\
+08/01/2011,1\n\
+11/01/2011,1\n\
+12/01/2011,1\n\
+18/01/2011,1\n\
+19/01/2011,1\n\
+20/01/2011,1\n\
+03/02/2011,1\n\
+10/02/2011,1\n\
+04/03/2011,1\n\
+24/03/2011,1\n\
+02/04/2011,1\n\
+03/04/2011,1\n\
+04/04/2011,1\n\
+15/04/2011,1\n\
+29/04/2011,1\n\
+19/05/2011,1\n\
+31/05/2011,1\n\
+01/06/2011,1\n\
+07/06/2011,1\n\
+14/06/2011,1\n\
+17/06/2011,1\n\
+24/06/2011,1\n\
+25/06/2011,1\n\
+28/06/2011,1\n\
+05/07/2011,1\n\
+06/07/2011,2\n\
+07/07/2011,1\n\
+09/07/2011,2\n\
+12/07/2011,2\n\
+13/07/2011,1\n\
+14/07/2011,1\n\
+16/07/2011,1\n\
+28/07/2011,1\n\
+06/08/2011,1\n\
+08/08/2011,1\n\
+09/08/2011,1\n\
+10/08/2011,2\n\
+11/08/2011,2\n\
+12/08/2011,1\n\
+20/08/2011,1\n\
+22/08/2011,1\n\
+26/08/2011,1\n\
+08/09/2011,1\n\
+09/09/2011,1\n\
+13/09/2011,1\n\
+14/09/2011,2\n\
+15/09/2011,1\n\
+18/09/2011,1\n\
+19/09/2011,1\n\
+21/09/2011,1\n\
+22/09/2011,2\n\
+23/09/2011,1\n\
+27/09/2011,1\n\
+28/09/2011,2\n\
+29/09/2011,1\n\
+05/10/2011,1\n\
+07/10/2011,1\n\
+16/10/2011,1\n\
+17/10/2011,1\n\
+18/10/2011,1\n\
+21/10/2011,1\n\
+11/11/2011,1\n\
+28/11/2011,1\n\
+03/01/2012,3\n\
+17/01/2012,1\n\
+19/01/2012,1\n\
+31/01/2012,1\n\
+02/02/2012,1\n\
+03/02/2012,1\n\
+08/02/2012,1\n\
+15/02/2012,1\n\
+16/02/2012,1\n\
+19/02/2012,1\n\
+21/02/2012,1\n\
+02/03/2012,1\n\
+05/03/2012,1\n\
+06/03/2012,1\n\
+09/03/2012,1\n\
+10/03/2012,1\n\
+21/03/2012,1\n\
+22/03/2012,1\n\
+29/03/2012,1\n\
+30/03/2012,1\n\
+03/04/2012,3\n\
+04/04/2012,2\n\
+06/04/2012,1\n\
+09/04/2012,3\n\
+10/04/2012,1\n\
+12/04/2012,2\n\
+14/04/2012,1\n\
+19/04/2012,1\n\
+21/04/2012,1\n\
+22/04/2012,1\n\
+23/04/2012,2\n\
+25/04/2012,1\n\
+27/04/2012,1\n\
+28/04/2012,1\n\
+09/05/2012,1\n\
+10/05/2012,1\n\
+18/05/2012,1\n\
+21/05/2012,2\n\
+22/05/2012,2\n\
+24/05/2012,2\n\
+25/05/2012,2\n\
+27/05/2012,1\n\
+29/05/2012,1\n\
+30/05/2012,1\n\
+31/05/2012,1\n\
+01/06/2012,1\n\
+03/06/2012,2\n\
+04/06/2012,1\n\
+15/06/2012,1\n\
+19/06/2012,1\n\
+20/06/2012,1\n\
+21/06/2012,1\n\
+23/06/2012,1\n\
+24/06/2012,1\n\
+25/06/2012,2\n\
+30/06/2012,1\n\
+15/07/2012,1\n\
+19/07/2012,2\n\
+20/07/2012,1\n\
+02/08/2012,2\n\
+03/08/2012,1\n\
+10/08/2012,1\n\
+12/08/2012,1\n\
+13/08/2012,2\n\
+17/08/2012,2\n\
+18/08/2012,1\n\
+20/08/2012,2\n\
+21/08/2012,2\n\
+22/08/2012,1\n\
+27/08/2012,1\n\
+06/09/2012,2\n\
+08/09/2012,1\n\
+12/09/2012,1\n\
+13/09/2012,1\n\
+14/09/2012,1\n\
+17/09/2012,1\n\
+19/09/2012,1\n\
+20/09/2012,1\n\
+21/09/2012,1\n\
+22/09/2012,1\n\
+23/09/2012,1\n\
+24/09/2012,1\n\
+26/09/2012,1\n\
+27/09/2012,2\n\
+28/09/2012,1\n\
+29/09/2012,1\n\
+01/10/2012,1\n\
+04/10/2012,1\n\
+05/10/2012,1\n\
+11/10/2012,1\n\
+15/10/2012,1\n\
+16/10/2012,1\n\
+21/10/2012,2\n\
+24/10/2012,2\n\
+07/11/2012,1\n\
+10/11/2012,1\n\
+11/11/2012,1\n\
+12/11/2012,2\n\
+13/11/2012,2\n\
+14/11/2012,3\n\
+15/11/2012,3\n\
+16/11/2012,2\n\
+17/11/2012,1\n\
+18/11/2012,1\n\
+19/11/2012,2\n\
+20/11/2012,1\n\
+23/11/2012,1\n\
+03/12/2012,1\n\
+04/12/2012,1\n\
+05/12/2012,2\n\
+06/12/2012,2\n\
+09/12/2012,1\n\
+10/12/2012,1\n\
+11/12/2012,1\n\
+12/12/2012,1\n\
+18/12/2012,1\n\
+22/12/2012,2\n\
+23/12/2012,2\n\
+24/12/2012,1\n\
+28/12/2012,1\n\
+03/01/2013,1\n\
+04/01/2013,2\n\
+05/01/2013,1\n\
+07/01/2013,1\n\
+08/01/2013,2\n\
+09/01/2013,1\n\
+12/01/2013,2\n\
+13/01/2013,3\n\
+15/01/2013,1\n\
+16/01/2013,1\n\
+17/01/2013,2\n\
+18/01/2013,1\n\
+28/01/2013,2\n\
+31/01/2013,1\n\
+05/02/2013,2\n\
+06/02/2013,2\n\
+09/02/2013,1\n\
+12/02/2013,1\n\
+15/02/2013,1\n\
+17/02/2013,1\n\
+19/02/2013,1\n\
+03/03/2013,1\n\
+06/03/2013,1\n\
+07/03/2013,1\n\
+10/03/2013,1\n\
+11/03/2013,1\n\
+13/03/2013,1\n\
+14/03/2013,1\n\
+16/03/2013,1\n\
+17/03/2013,1\n\
+18/03/2013,1\n\
+19/03/2013,1\n\
+22/03/2013,1\n\
+31/03/2013,1\n\
+01/04/2013,2\n\
+06/04/2013,1\n\
+07/04/2013,2\n\
+08/05/2013,1\n\
+09/05/2013,1\n\
+11/05/2013,1\n\
+19/05/2013,1\n\
+22/05/2013,1\n\
+24/05/2013,1\n\
+27/05/2013,1\n\
+04/06/2013,1\n\
+05/06/2013,2\n\
+08/06/2013,1\n\
+19/06/2013,1\n\
+02/07/2013,1\n\
+03/07/2013,1\n\
+13/07/2013,1\n\
+30/07/2013,1\n\
+07/08/2013,1\n\
+10/08/2013,1\n\
+15/08/2013,1\n\
+18/08/2013,1\n\
+21/08/2013,1\n\
+23/08/2013,1\n\
+02/09/2013,1\n\
+13/09/2013,1\n\
+14/09/2013,1\n\
+26/09/2013,1\n\
+"/*data_placeholder*/;
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+
+    drawChangeSizeChart("amount-of-committers-chart", rawChartData, projectName);
+
+    function drawChangeSizeChart(elementId, rawData, projectName) {
+        var margin = {top: 20, right: 20, bottom: 100, left: 40},
+            margin2 = {top: 430, right: 20, bottom: 15, left: 40},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom,
+            height2 = 500 - margin2.top - margin2.bottom;
+
+        var dateFormat = d3.time.format("%d/%m/%Y");
+        var valueFormat = function(n) {
+            var s = d3.format(",")(n);
+            return s.length < 6 ? s : d3.format("s")(n);
+        };
+
+        var x = d3.time.scale().nice().rangeRound([0, width]);
+        var x2 = d3.time.scale().nice().rangeRound([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+        var y2 = d3.scale.linear().range([height2, 0]);
+        var xAxis = d3.svg.axis().scale(x).orient("bottom");
+        var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
+        var xAxisLabel = "Date";
+        var yAxisLabel = "Amount of committers";
+        var showOneMonthMean = false;
+
+        var brush = d3.svg.brush().x(x2).on("brush", onBrush);
+
+        var rootElement = d3.select("#" + elementId);
+        removeChildrenOf(elementId);
+
+        var headerSpan = appendBlockElementTo(rootElement, width);
+        headerSpan.append("h2").text("Amount of committers (" + projectName + ")").style({"text-align": "center"});
+
+        var svg = rootElement.append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom);
+        var svgPos = svg[0][0].getBoundingClientRect();
+        svg.append("defs").append("clipPath").attr("id", "chartClip")
+                .append("rect").attr("width", width).attr("height", height);
+        svg.append("defs").append("clipPath").attr("id", "brushClip")
+                .append("rect").attr("width", width).attr("height", height2);
+
+        var daysData = parseRawData(rawData, dateFormat);
+
+        var timeInterval = d3.time.week;
+        var data = aggregate(daysData, timeInterval);
+        var meanData = [];
+
+        var fromDate = data[0].date;
+        var toDate = data[data.length - 1].date;
+        x.domain([fromDate, timeInterval.offset(toDate, 1)]);
+        y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
+        x2.domain(x.domain());
+        y2.domain(y.domain());
+        var barWidth = barWidthFor(timeInterval, fromDate, toDate);
+
+        var meanLine = d3.svg.line()
+                .x(function(d) { return x(d.date); })
+                .y(function(d) { return y(d.mean); });
+
+        var zoomedView = svg.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        zoomedView.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+        zoomedView.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text(yAxisLabel);
+
+        var brushFooter = svg.append("g")
+                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+        var nothingToShowLabel = rootElement.append("div")
+                .html("Unfortunately, there is nothing to show.")
+                .style("position", "absolute")
+                .style("top", function(){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
+                .style("left", function(){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
+                .style("opacity", 0);
+
+
+        var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
+
+        footerSpan.append("label").html("One month average: ");
+        footerSpan.append("input").attr("type", "checkbox").on("click", function() {
+            showOneMonthMean = !showOneMonthMean;
+            updateChart();
+        });
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
+
+        footerSpan.append("label").html("Group by: ");
+        var groupByDropDown = footerSpan.append("select");
+        groupByDropDown.append("option").attr("value", "monday").html("weeks");
+        groupByDropDown.append("option").attr("value", "day").html("days");
+        groupByDropDown.on("change", function() {
+            timeInterval = d3.time[this.value];
+            updateChart();
+        });
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
+
+        var leftFooter = rootElement.append("span")
+                .style("position", "absolute")
+                .style("left", function(){ return svgPos.left + margin.left + "px"; });
+        leftFooter.append("span").style("color", "#999").html("Total size: ");
+        var totalChangeSizeLabel = leftFooter
+                .append("span").style("color", "#999")
+                .append("label").html("");
+
+
+        updateChart();
+
+
+        function updateChart() {
+            data = aggregate(daysData, timeInterval);
+            meanData = calculateMonthlyMean(data);
+
+            x.domain([fromDate, timeInterval.offset(toDate, 1)]);
+            y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
+            x2.domain(x.domain());
+            y2.domain(y.domain());
+
+            barWidth = barWidthFor(timeInterval, fromDate, toDate);
+
+            showDataOn(zoomedView);
+            showBrushOn(brushFooter);
+
+            zoomedView.select(".y.axis").call(yAxis);
+
+            nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
+
+            onBrush();
+        }
+
+        function showBrushOn(element) {
+            element.selectAll("g").remove();
+            element.append("g")
+                    .selectAll(".bar2")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("clip-path", "url(#brushClip)")
+                    .attr("x", function(d) { return x2(d.date); })
+                    .attr("width", barWidth)
+                    .attr("y", function(d) { return y2(d.changeSize); })
+                    .attr("height", function(d) { return height2 - y2(d.changeSize); })
+                    .append("title");
+            element.append("g")
+                    .attr("class", "x brush")
+                    .call(brush)
+                    .selectAll("rect")
+                    .attr("y", -6)
+                    .attr("height", height2 + 7);
+        }
+
+        function showDataOn(element) {
+            element.selectAll(".bar").remove();
+            element.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("clip-path", "url(#chartClip)")
+                    .attr("x", function(d) { return x(d.date); })
+                    .attr("width", barWidth)
+                    .attr("y", function(d) { return y(d.changeSize); })
+                    .attr("height", function(d) { return height - y(d.changeSize); })
+                    .append("title")
+                    .text(function(d) {
+                        var dateAsString;
+                        if (timeInterval == d3.time.day) {
+                            dateAsString = dateFormat(d.date);
+                        } else {
+                            dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
+                        }
+                        return xAxisLabel + ": " + dateAsString + "\n" +
+                               yAxisLabel + ": " + valueFormat(d.changeSize);
+                    });
+        }
+
+        function onBrush() {
+            var domain = brush.empty() ? x2.domain() : brush.extent();
+            x.domain(domain);
+            barWidth = barWidthFor(timeInterval, domain[0], domain[1]);
+            zoomedView.selectAll(".bar")
+                    .data(data)
+                    .attr("x", function(d) { return x(d.date); })
+                    .attr("width", barWidth);
+
+            zoomedView.selectAll(".line").remove();
+            if (showOneMonthMean) {
+                zoomedView.append("path")
+                        .datum(meanData)
+                        .attr("class", "line")
+                        .attr("clip-path", "url(#chartClip)")
+                        .attr("d", meanLine);
+            }
+
+            zoomedView.select(".x.axis").call(xAxis);
+
+            var formatChangeSize = (function(n) {
+                var s = d3.format(",")(n);
+                return s.length < 3 ? s : d3.format(".3s")(n);
+            });
+            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data)));
+        }
+
+        function barWidthFor(timeInterval, fromDate, toDate) {
+            var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
+            barWidth = Math.floor(barWidth);
+            return barWidth < 1 ? 1 : barWidth;
+        }
+
+        <!-- static methods -->
+
+        function parseRawData(rawData, dateFormat) {
+            return d3.csv.parse(rawData).map(function(d) { return {
+                date: dateFormat.parse(d.date),
+                changeSize: parseInt(d.changeSize)};
+            });
+        }
+
+        function amountOfCommitsWithin(domain, data) {
+            var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
+            var changeSize = function(d) { return d.changeSize; };
+            return d3.sum(data.filter(withinDomain), changeSize);
+        }
+
+        function aggregate(daysData, timeInterval) {
+            if (timeInterval == d3.time.day) return daysData;
+            return d3.values(d3.nest()
+                            .key(function(d) { return timeInterval.floor(d.date); })
+                            .rollup(function(days) {
+                                var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
+                                var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
+                                return {date: date, changeSize: totalChangeSize };
+                            })
+                            .map(daysData)).filter(function (d) {
+                        return d.changeSize > 0;
+                    });
+        }
+
+        function nonZero(length) {
+            return (length > 0 ? length : 0.0000001);
+        }
+
+        function appendBlockElementTo(element, width) {
+            return element.append("span").style({display: "block", width: width + "px"});
+        }
+
+        function calculateMonthlyMean(data) {
+            var period = 30;
+            var result = [];
+            var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
+            var changeSize = changeSizeByDay(data, datesRange);
+
+            var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return changeSize[date]; });
+
+            for (var i = period; i < datesRange.length; i++) {
+                var date = datesRange[i];
+                var dateToExclude = datesRange[i - period];
+                mean += (changeSize[date] - changeSize[dateToExclude]) / period;
+                result.push({date: date, mean: mean});
+            }
+
+            return result;
+        }
+
+        function changeSizeByDay(data, datesRange) {
+            var result = {};
+            datesRange.forEach(function(date) { result[date] = 0; });
+            data.forEach(function(d) { result[d.date] = d.changeSize; });
+            return result;
+        }
+
+        function removeChildrenOf(elementId) {
+            var element = document.getElementById(elementId);
+            while (element.children.length > 0) {
+                var child = element.children.item(0);
+                child.parentNode.removeChild(child);
+            }
+        }
+    }
+
+</script>
+</body>
