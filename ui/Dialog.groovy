@@ -25,7 +25,9 @@ import static java.awt.GridBagConstraints.HORIZONTAL
 class Dialog {
 	static showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
 		def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
+		fromDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
 		def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
+		toDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
 		def filePathTextField = new TextFieldWithBrowseButton()
 		filePathTextField.text = state.outputFilePath
 		def grabChangeSizeCheckBox = new JCheckBox()
