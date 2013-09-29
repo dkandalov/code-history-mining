@@ -1,6 +1,12 @@
 package analysis
 import org.junit.Test
 
+import static analysis.Analysis.Util.floorToDay
+import static analysis.Analysis.Util.floorToMonth
+import static analysis.Analysis.Util.floorToWeek
+import static util.DateTimeUtil.date
+import static util.DateTimeUtil.exactDateTime
+
 class AnalysisTest {
 	@Test void "should group elements into pairs"() {
 		Collection.mixin(Analysis.Util)
@@ -33,5 +39,16 @@ class AnalysisTest {
 		    [[1, 2], 3],
 		    [[2, 3], 4]
 		]
+	}
+
+	@Test public void "should floor time to day/week/month"() {
+		assert floorToDay(exactDateTime("15:42:16 03/10/2013")) == date("03/10/2013")
+
+		assert floorToWeek(exactDateTime("15:42:16 03/10/2013")) == date("30/09/2013")
+		assert floorToWeek(exactDateTime("15:42:16 30/09/2013")) == date("30/09/2013")
+		assert floorToWeek(exactDateTime("15:42:16 30/01/2012")) == date("30/01/2012")
+		assert floorToWeek(exactDateTime("15:42:16 31/01/2012")) == date("30/01/2012")
+
+		assert floorToMonth(exactDateTime("15:42:16 03/10/2013")) == date("01/10/2013")
 	}
 }

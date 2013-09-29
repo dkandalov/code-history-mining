@@ -63,12 +63,23 @@ class Analysis {
 	}
 
 	static String createJson_AmountOfCommitters_Chart(List<FileChangeEvent> events, indicator = null) {
-		def committersByDay = events
+		def amountOfCommittersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
 				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
 				.sort{ it[0] }
+		def amountOfCommittersByWeek = events
+				.groupBy{ floorToWeek(it.revisionDate) }
+				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
+				.sort{ it[0] }
+		def amountOfCommittersByMonth = events
+				.groupBy{ floorToMonth(it.revisionDate) }
+				.collect{ [it.key, it.value.collect{it.author}.unique().size()] }
+				.sort{ it[0] }
 
-		asCsvStringLiteral(committersByDay, ["date", "amountOfCommitters"])
+		"[" +
+			asCsvStringLiteral(amountOfCommittersByDay, ["date", "amountOfCommitters"]) + ",\n" +
+			asCsvStringLiteral(amountOfCommittersByWeek, ["date", "amountOfCommitters"]) + ",\n" +
+			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
 	static void createJson_AverageAmountOfLinesChangedByDay_Chart(List<FileChangeEvent> events) {
@@ -429,6 +440,24 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			date[Calendar.SECOND] = 0
 			date[Calendar.MINUTE] = 0
 			date[Calendar.HOUR_OF_DAY] = 0
+			date
+		}
+
+		static Date floorToWeek(Date date) {
+			date[Calendar.MILLISECOND] = 0
+			date[Calendar.SECOND] = 0
+			date[Calendar.MINUTE] = 0
+			date[Calendar.HOUR_OF_DAY] = 0
+			date[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
+			date
+		}
+
+		static Date floorToMonth(Date date) {
+			date[Calendar.MILLISECOND] = 0
+			date[Calendar.SECOND] = 0
+			date[Calendar.MINUTE] = 0
+			date[Calendar.HOUR_OF_DAY] = 0
+			date[Calendar.DAY_OF_MONTH] = 1
 			date
 		}
 

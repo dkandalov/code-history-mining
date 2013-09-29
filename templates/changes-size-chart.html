@@ -286,8 +286,8 @@ date,changeSize\n\
 
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
-        groupByDropDown.append("option").attr("value", "day").html("days");
-        groupByDropDown.append("option").attr("value", "monday").html("weeks");
+        groupByDropDown.append("option").attr("value", "day").html("day");
+        groupByDropDown.append("option").attr("value", "monday").html("week");
         groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
             updateChart();
@@ -441,8 +441,8 @@ date,changeSize\n\
                                 return {date: date, changeSize: totalChangeSize };
                             })
                             .map(daysData)).filter(function (d) {
-                        return d.changeSize > 0;
-                    });
+                                return d.changeSize > 0;
+                            });
         }
 
         function nonZero(length) {
