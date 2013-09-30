@@ -29,14 +29,12 @@
         <p>
             This is analysis and visualization of <a href="https://github.com/JetBrains/intellij-community">IntelliJ community edition</a>
             code history using <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and <a href="http://d3js.org/">d3.js</a>.
-        </p>
-        <p>
             There is no particular method behind this so if you have a suggestion for visualisation,
             please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">create an issue</a>.
         </p>
 
         <h4>Change size chart</h4>
-        Shows amount of commit by day/week. Red line is one month moving average.
+        Shows amount of commits by day/week. Red line is one month moving average.
         <br/>
         Note downward trends around New Year and spikes in November/December which somewhat correlate with major releases.
         <p id="change-size-chart"></p>
@@ -44,7 +42,7 @@
 
         <h4>Amount of committers</h4>
         Shows how many different people committed over month/week/day.
-        The idea is to see how many people collaborate or contribute to the project. It's open for interpretation though.
+        The idea is to see amount of people contributing to the project.
         <p id="amount-of-committers-chart"></p>
         <br/><br/>
 
@@ -53,7 +51,7 @@
         Thickness of edges is proportional to the number of commits.
         The idea is to discover de facto dependencies between files.
         <br/>
-        Click on nodes to see all files in cluster.
+        You can click on nodes to see file names in cluster.
         <p id="files-in-the-same-commit"></p>
         <br/><br/>
 
@@ -79,21 +77,21 @@
         Shows amount of commits at certain time of day (similar to
         <a href="https://github.com/blog/1093-introducing-the-new-github-graphs">GitHub punchcard</a>).
         <br/>
-        Sometimes there is a lunch-time line around 12:30pm, not in this case :)
+        Sometimes there is a "lunch-time line" around 12:30 pm, not in this case :)
         <p id="commit-time-punchcard"></p>
         <br/><br/>
 
         <h4>Time between commits histogram</h4>
-        Shows histogram of time between commits by each committer.
+        (Time is tracked separately for each committer.)
         <br/>
-        This distribution will probably be the same for any project.
-        I.e. you are most likely to commit again within 5 hours or at least within a day.
+        This distribution will probably be the same for any project,
+        i.e. you are most likely to commit again within 5 hours or at least within a day.
         <p id="time-between-commits-histogram"></p>
         <br/><br/>
 
         <h4>Commit messages wordcloud</h4>
-        Word cloud from commit messages excluding some of prepositions and articles.
-        The idea is to see what happened with code by observing human language.
+        Some prepositions and articles are excluded as well as "idea", "ideadev" which are used for issue tracking.
+        The idea is to see what happenes with code by observing human language.
         <br/>
         (Alt-click on words to exclude them.)
         <p id="commit-word-cloud"></p>
@@ -101,7 +99,6 @@
 
 
         <h4>Changes calendar view</h4>
-        Shows amount of changes by day in a calendar layout.
         Each square represents a day. The more commits on the day, the more intense its color.
         <p id="calendar-view"></p>
         <br/><br/>
