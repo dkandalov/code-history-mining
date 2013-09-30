@@ -968,9 +968,9 @@ date,amountOfCommitters\n\
                 .append("rect").attr("width", width).attr("height", height2);
 
         var rawDataIndex = 0;
+        var timeInterval = timeIntervalFor(rawDataIndex);
         var data = parseRawData(rawData[rawDataIndex], dateFormat);
 
-        var timeInterval = d3.time.day;
         var meanData = [];
 
         var fromDate = data[0].date;
@@ -1024,13 +1024,14 @@ date,amountOfCommitters\n\
 
         footerSpan.append("label").html("Unique committers per: ");
         var dropDown = footerSpan.append("select");
-        dropDown.append("option").attr("value", "0").html("day");
-        dropDown.append("option").attr("value", "1").html("week");
-        dropDown.append("option").attr("value", "2").html("month");
+        for (var i = 0; i < 3; i++) {
+            var option = dropDown.append("option").attr("value", i).html(timeIntervalNameFor(i));
+            if (i == rawDataIndex) option.attr("selected", "selected");
+        }
         dropDown.on("change", function() {
-            rawDataIndex = +this.value;
+            var rawDataIndex = +this.value;
             data = parseRawData(rawData[rawDataIndex], dateFormat);
-            timeInterval = d3.time[["day", "week", "month"][rawDataIndex]];
+            timeInterval = timeIntervalFor(rawDataIndex);
             updateChart();
         });
 
@@ -1130,6 +1131,13 @@ date,amountOfCommitters\n\
         }
 
         <!-- static methods -->
+
+        function timeIntervalNameFor(rawDataIndex) {
+            return ["day", "week", "month"][rawDataIndex];
+        }
+        function timeIntervalFor(rawDataIndex) {
+            return d3.time[timeIntervalNameFor(rawDataIndex)];
+        }
 
         function parseRawData(rawData, dateFormat) {
             return d3.csv.parse(rawData).map(function(d) { return {
