@@ -14,7 +14,7 @@ def extract_content_from(file_name)
   to = html.end_index('</style>')
   style = html[from..to]
 
-  from = html.rindex('<script>')
+  from = html.rindex('<script')
   to = html.end_rindex('</script>')
   script = html[from..to]
 
@@ -28,7 +28,7 @@ remove_margin_style = Proc.new { |html|
 remove_header_span = Proc.new { |html|
   html.gsub!(/var header.*?;/m, '')
   html.gsub!(/headerSpan\..*?;/m, '')
-  html.gsub!(/header\..*?;/m, '')
+  html.gsub!(/[\s\t]header\..*?;/m, '')
 }
 
 reduce_width = Proc.new { |html|
@@ -37,31 +37,50 @@ reduce_width = Proc.new { |html|
 
 change_size_chart_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
+  html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
+  html.gsub!('return svgPos.left + margin.left', 'return margin.left')
 }
 
 amount_of_committers_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!(/var rawDataIndex =.*?;/, 'var rawDataIndex = 2;')
+  html.gsub!(/var timeInterval =.*?;/, 'var timeInterval = d3.time.month;')
 }
 
 file_in_same_commit_fixes = Proc.new{ |html|
-  html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!(/width =.*?,/, 'width = 800,')
+  html.gsub!('var minClusterSize = 2;', 'var minClusterSize = 3;')
 }
 
 committer_and_files_fixes = Proc.new{ |html|
   html.gsub!(/width =.*?,/, 'width = 800,')
+  html.gsub!('var minLinkStrength = linkValuesExtent[0];', 'var minLinkStrength = 7;')
+}
+
+treemap_fixes = Proc.new{ |html|
+  html.gsub!(/var w =.*?,/, 'var w = 800,')
+  html.gsub!(/font:.*?;/, '')
+  # TODO on master branch
+  # remove -> overflow: hidden
+  #.attr("width", function(d) { return d.dx > 0 ? d.dx - 1 : 0; })
+  #.attr("height", function(d) { return d.dy > 0 ? d.dy -1 : 0; })
 }
 
 punchcard_fixes = Proc.new{ |html|
-  html.gsub!(/width =.*?,/, 'width = 800,')
+  html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!('var defaultCommitSizeMultiplier = 1;', 'var defaultCommitSizeMultiplier = 2;')
 }
 
 histogram_fixes = Proc.new{ |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!(/var defaultPercentile =.*?;/, 'var defaultPercentile = 0.8;')
 }
 
 calendar_fixes = Proc.new{ |html|
   html.gsub!(/cellSize =.*?;/, 'cellSize = 14;') # this is specific for calendar view
   html.gsub!(/width =.*?,/, 'width = 800,')
+  html.gsub!('#body {', '#calendar-view {')
 }
 
 def merge_into(template_file, files_with_fixes)
@@ -84,13 +103,13 @@ end
 
 common = [remove_margin_style, remove_header_span, reduce_width]
 merge_into('idea.html', {
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html' => common + [change_size_chart_fixes],
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html' => common + [amount_of_committers_fixes],
-    #'/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html' => common + [file_in_same_commit_fixes],
-    #'/Users/dima/Documents/idea-2012-2013/Committers changing same files.html' => common + [committer_and_files_fixes],
-    ##'/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html',
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common + [punchcard_fixes],
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common + [histogram_fixes],
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common,
-    #'/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common + [calendar_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html' => common + [change_size_chart_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html' => common + [amount_of_committers_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html' => common + [file_in_same_commit_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Committers changing same files.html' => common + [committer_and_files_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html' => common + [treemap_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common + [punchcard_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common + [histogram_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common,
+    '/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common + [calendar_fixes],
 })
