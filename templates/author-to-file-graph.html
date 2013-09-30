@@ -117,7 +117,7 @@ const authorToFileGraph = {
         {"source": 28, "target": 0, "value": 1}]
         /*data_placeholder*/
 };
-var projectName = /*project_name_placeholder*/"junit"/*project_name_placeholder*/;
+var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
 var graphName = "Committers changing same files";
 
 createForcesGraphOn("author-to-file-graph", authorToFileGraph, projectName);
@@ -344,7 +344,8 @@ function createForcesGraphOn(elementId, graph, projectName) {
     span.append("label").html("Min cluster size: ");
     var clusterSizeDropDown = span.append("select");
     d3.range(2, 11).forEach(function (i) {
-        clusterSizeDropDown.append("option").attr("value", i).html(i);
+        var option = clusterSizeDropDown.append("option").attr("value", i).html(i);
+        if (minClusterSize == i) option.attr("selected", "selected");
     });
     clusterSizeDropDown.on("change", function () {
         minClusterSize = +this.value;
@@ -355,7 +356,8 @@ function createForcesGraphOn(elementId, graph, projectName) {
     span.append("label").html("Min link strength: ");
     var linkStrengthDropDown = span.append("select");
     d3.range(linkValuesExtent[0], linkValuesExtent[1]).forEach(function (i) {
-        linkStrengthDropDown.append("option").attr("value", i).html(i);
+        var option = linkStrengthDropDown.append("option").attr("value", i).html(i);
+        if (minLinkStrength == i) option.attr("selected", "selected");
     });
     linkStrengthDropDown.on("change", function() {
         minLinkStrength = +this.value;
@@ -367,6 +369,9 @@ function createForcesGraphOn(elementId, graph, projectName) {
     subFooterSpan.append("span").style({float: "left"})
             .append("div").style("color", "#999")
             .html("alt+click or alt+shift+click to remove node or group of nodes");
+
+
+    filterNodes();
 
 
     function createForce(gravity) {
