@@ -85,6 +85,11 @@ calendar_fixes = Proc.new{ |html|
   html.gsub!(/cellSize =.*?;/, 'cellSize = 14;')
   html.gsub!(/width =.*?,/, 'width = 800,')
   html.gsub!('#body {', '#calendar-view {')
+
+  html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
+  html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
+
+  html.gsub!(/.+2004,.+\\n\\\n/, '') # exclude 2004 just because it looks white compared to other years
 }
 
 word_cloud_fixes = Proc.new{ |html|
