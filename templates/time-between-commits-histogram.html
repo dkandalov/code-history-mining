@@ -1331,8 +1331,6 @@ metric\n\
     createHistogram("time-between-commits-histogram", timeBetweenCommitsRawData, projectName);
 
     function createHistogram(elementId, rawData, projectName) {
-        var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
-
         var margin = {top: 20, right: 20, bottom: 40, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
@@ -1349,29 +1347,30 @@ metric\n\
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        updateHistogram();
+        var defaultPercentile = 0.8;
+        updateHistogram(defaultPercentile);
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
         footerSpan.append("label").html("Percentile: ");
         var groupByDropDown = footerSpan.append("select");
         for (var i = 100; i > 0; i -= 10) {
-            groupByDropDown.append("option").attr("value", i).html(i);
+            var option = groupByDropDown.append("option").attr("value", i).html(i);
+            if (defaultPercentile * 100 == i) option.attr("selected", "selected");
         }
         groupByDropDown.on("change", function() {
-            data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
-            var sortedData = data.sort(function (a, b) { return a - b; });
+            updateHistogram(+this.value / 100);
+        });
 
-            var percentile = +this.value / 100;
+        function updateHistogram(percentile) {
+            var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
             var i = Math.round((data.length - 1) * percentile);
+
+            var sortedData = data.sort(function (a, b) { return a - b; });
             var n = sortedData[i];
             while (sortedData[i] == n && i < sortedData.length) i++;
 
             data = data.filter(function(d) { return d <= n; });
 
-            updateHistogram();
-        });
-
-        function updateHistogram() {
             var x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
             var binnedData = d3.layout.histogram().bins(x.ticks(200))(data);
             var y = d3.scale.linear().domain([0, d3.max(binnedData, function(d) { return d.y; })]).range([height, 0]);
