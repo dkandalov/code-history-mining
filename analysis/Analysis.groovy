@@ -54,7 +54,7 @@ class Analysis {
 				.groupBy{it.revision}.values().collect{it.first()}
 				.groupBy{it.author}.values().collectMany{ commitsByAuthor ->
 					checkIfCancelled()
-					commitsByAuthor.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
+					commitsByAuthor.sort{it.revisionDate}.pairs().collect{ first, second -> second.revisionDate.time - first.revisionDate.time }
 				}
 				.findAll{it > MINUTES.toMillis(1)} // this is an attempt to exclude time diffs between merging pull requests
 
