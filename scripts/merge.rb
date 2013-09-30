@@ -40,6 +40,10 @@ change_size_chart_fixes = Proc.new { |html|
   html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
   html.gsub!('return svgPos.left + margin.left', 'return margin.left')
+  html.gsub!('var showOneMonthMean = false;', 'var showOneMonthMean = true;') # TODO
+  #if (showOneMonthMean) {
+  #    checkbox.attr("checked", "checked");
+  #}
 }
 
 amount_of_committers_fixes = Proc.new { |html|
@@ -83,6 +87,28 @@ calendar_fixes = Proc.new{ |html|
   html.gsub!('#body {', '#calendar-view {')
 }
 
+word_cloud_fixes = Proc.new{ |html|
+  html.gsub!('normalizeWordSize(data.words);', 'excludeWords(["idea", "ideadev"]); normalizeWordSize(data.words);')
+}
+# TODO
+#function excludeWords(wordsToExclude) {
+#  var words = data.words;
+#
+#  var i = 0;
+#  while (i < words.length) {
+#      if (wordsToExclude.length == 0) break;
+#
+#      var index = wordsToExclude.indexOf(words[i].text)
+#      if (index != -1) {
+#          words.splice(i, 1);
+#      wordsToExclude.splice(index, 1);
+#      } else {
+#          i++;
+#      }
+#      }
+#      }
+
+
 def merge_into(template_file, files_with_fixes)
   html = File.read(template_file)
   files_with_fixes.each { |file, fixes|
@@ -110,6 +136,6 @@ merge_into('idea.html', {
     '/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html' => common + [treemap_fixes],
     '/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common + [punchcard_fixes],
     '/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common + [histogram_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common,
+    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common + [word_cloud_fixes],
     '/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common + [calendar_fixes],
 })
