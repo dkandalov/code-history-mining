@@ -78,7 +78,7 @@ histogram_fixes = Proc.new{ |html|
 }
 
 calendar_fixes = Proc.new{ |html|
-  html.gsub!(/cellSize =.*?;/, 'cellSize = 14;') # this is specific for calendar view
+  html.gsub!(/cellSize =.*?;/, 'cellSize = 14;')
   html.gsub!(/width =.*?,/, 'width = 800,')
   html.gsub!('#body {', '#calendar-view {')
 }
