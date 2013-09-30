@@ -222,6 +222,22 @@
         normalizeWordSize(data.words);
         createWordCloud();
 
+        function excludeWords(wordsToExclude) {
+            var words = data.words;
+            var i = 0;
+            while (i < words.length) {
+                if (wordsToExclude.length == 0) break;
+
+                var index = wordsToExclude.indexOf(words[i].text)
+                if (index != -1) {
+                    words.splice(i, 1);
+                    wordsToExclude.splice(index, 1);
+                } else {
+                    i++;
+                }
+            }
+        }
+
         function createWordCloud() {
             d3.layout.cloud()
                     .size([width, height])
@@ -258,16 +274,9 @@
                     .text(function(d) { return d.text; })
                     .on("click", function (d) {
                         if (!d3.event.altKey) return;
-                        var words = data.words;
-                        for (var i = 0; i < words.length; i++) {
-                            var word = words[i];
-                            if (word.text == d.text && word.size == d.size) {
-                                words.splice(i, 1);
-                                normalizeWordSize(data.words);
-                                createWordCloud();
-                                break;
-                            }
-                        }
+                        excludeWords(d.text);
+                        normalizeWordSize(data.words);
+                        createWordCloud();
                     });
 
             rootElement.select("#footer").remove();

@@ -5,7 +5,6 @@
     <script src="d3.v3.min.js"></script>
     <style type="text/css">
         body {
-            overflow: hidden;
             margin: 30px;
             font: 11px sans-serif;
             font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
@@ -149,8 +148,8 @@
                     });
 
             cell.append("svg:rect")
-                    .attr("width", function(d) { return d.dx - 1; })
-                    .attr("height", function(d) { return d.dy - 1; })
+                    .attr("width", function(d) { return d.dx > 0 ? d.dx - 1 : 0; })
+                    .attr("height", function(d) { return d.dy > 0 ? d.dy -1 : 0; })
                     .style("fill", function(d) { return color(d.name); })
                     .on("mouseover", function(d) {
                         if (d.hasLabel) return;

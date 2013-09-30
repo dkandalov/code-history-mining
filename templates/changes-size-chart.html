@@ -278,10 +278,12 @@ date,changeSize\n\
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
         footerSpan.append("label").html("One month average: ");
-        footerSpan.append("input").attr("type", "checkbox").on("click", function() {
+        var checkbox = footerSpan.append("input").attr("type", "checkbox").on("click", function() {
             showOneMonthMean = !showOneMonthMean;
             updateChart();
         });
+        if (showOneMonthMean) checkbox.attr("checked", "checked");
+
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
         footerSpan.append("label").html("Group by: ");
