@@ -91,14 +91,14 @@ public class AppComponent implements ApplicationComponent {
 					notification.expire();
 					askIsUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
 				} else {
-					NotificationGroup.balloonGroup("Live Plugin")
+					NotificationGroup.balloonGroup("CodeHistoryMining")
 							.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
 				}
 			}
 		};
-		NotificationGroup.balloonGroup("Live Plugin").createNotification(
-				"LivePlugin didn't find Groovy libraries on classpath",
-				"Without it plugins won't work. <a href=\"\">Download Groovy libraries</a> (~6Mb)",
+		NotificationGroup.balloonGroup("CodeHistoryMining").createNotification(
+				"Code History Mining plugin didn't find Groovy libraries on classpath",
+				"Without it plugin won't work. <a href=\"\">Download Groovy libraries</a> (~6Mb)",
 				NotificationType.ERROR,
 				listener
 		).notify(null);
