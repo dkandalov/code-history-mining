@@ -1,15 +1,13 @@
 ### What is this?
 
-This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community)-based IDEs to grab
-and analyze project source code history.
+This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
+and analyze project source code history. See code history visualisation examples for
+[JUnit](http://dkandalov.github.io/code-history-mining/junit.html) and
+[IntelliJ](http://dkandalov.github.io/code-history-mining/idea.html)
 
-It has two parts:
+The plugin has two parts:
  - reading project history from version control and saving it as csv file
  - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
-
-Warnings:
- - all VCS supported by IntelliJ should work but I only tried Git and Svn
- - all browsers with SVG support should work but I only tried Chrome and Safari
 
 
 ### Why?
@@ -24,8 +22,7 @@ This is an attempt to make looking at project history easier.
 From IntelliJ plugin repository http://plugins.jetbrains.com/plugin/7273
 
 
-### How to use
-##### Grabbing VCS history into csv
+### Grabbing VCS history into csv
 Main menu -> Tools -> Code History Mining or alt + shift + H.
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
  - **From/To** - desired dates for project history. Commits are loaded from version control only if they are not already in csv file.
@@ -33,14 +30,17 @@ Main menu -> Tools -> Code History Mining or alt + shift + H.
  - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
  Please note that this requires loading file content and can slow down grabbing history.
 
-##### Visualizations
+### Visualizations
 Files in "<[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)>/code-history-mining" are displayed in plugin drop-down menu.
+After you choose one plugin reads csv files and build visualisation
+All visualizations are self-contained one file pages (i.e. you should be able to save them as standalone file).
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup_screenshot.png" alt="screenshot" title="screenshot" align="center"/>
 
-All visualizations are self-contained one file pages.
-For interactive examples please see [JUnit code history on GitHub pages](http://dkandalov.github.com/code-history-mining/junit.html).
-(It's a separate page to keep readme small and not to put SVG into markdown.)
-
+### Limitations
+ - all VCS supported by IntelliJ should work but I only tried Git and Svn
+ - visualisations are only tested Chrome and Safari; they work in Firefox but might have minor glitches; mostly broken in IE9
+ - some of visulisations are too slow for long history of a big project.
+ E.g. building treemap view of commits for project with 1M LOC for 10 years will take forever.
 
 
 ### Code history csv format

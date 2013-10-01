@@ -1,18 +1,19 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.1.1 beta</version>
+    <version>0.1.2 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
-        This plugin does two things:
+        This plugin:
         <ul>
             <li>grabs project history from version control and saves it as csv file</li>
             <li>reads history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
         </ul>
-        For more details please see readme at https://github.com/dkandalov/code-history-mining
+        For more details please see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
         <br/><br/>
-        Visualization examples can be found here http://dkandalov.github.io/code-history-mining/junit.html
+        See also example visualisations for <a href="http://dkandalov.github.io/code-history-mining/junit.html">JUnit</a>
+        and <a href="http://dkandalov.github.io/code-history-mining/idea.html">IntelliJ</a>.
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
