@@ -41,9 +41,6 @@ change_size_chart_fixes = Proc.new { |html|
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
   html.gsub!('return svgPos.left + margin.left', 'return margin.left')
   html.gsub!('var showOneMonthMean = false;', 'var showOneMonthMean = true;') # TODO
-  #if (showOneMonthMean) {
-  #    checkbox.attr("checked", "checked");
-  #}
 }
 
 amount_of_committers_fixes = Proc.new { |html|
@@ -54,7 +51,7 @@ amount_of_committers_fixes = Proc.new { |html|
 
 file_in_same_commit_fixes = Proc.new{ |html|
   html.gsub!(/width =.*?,/, 'width = 800,')
-  html.gsub!('var minClusterSize = 2;', 'var minClusterSize = 3;')
+  html.gsub!(/var gravity = gravityValues.*?;/, 'var gravity = gravityValues.High;')
 }
 
 committer_and_files_fixes = Proc.new{ |html|
@@ -65,10 +62,6 @@ committer_and_files_fixes = Proc.new{ |html|
 treemap_fixes = Proc.new{ |html|
   html.gsub!(/var w =.*?,/, 'var w = 800,')
   html.gsub!(/font:.*?;/, '')
-  # TODO on master branch
-  # remove -> overflow: hidden
-  #.attr("width", function(d) { return d.dx > 0 ? d.dx - 1 : 0; })
-  #.attr("height", function(d) { return d.dy > 0 ? d.dy -1 : 0; })
 }
 
 punchcard_fixes = Proc.new{ |html|
@@ -89,29 +82,12 @@ calendar_fixes = Proc.new{ |html|
   html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
 
-  html.gsub!(/.+2004,.+\\n\\\n/, '') # exclude 2004 just because it looks white compared to other years
+  html.gsub!(/.+2004,.+\\n\\\n/, '') # exclude 2004 just because it looks white for IntelliJ compared to other years
 }
 
 word_cloud_fixes = Proc.new{ |html|
   html.gsub!('normalizeWordSize(data.words);', 'excludeWords(["idea", "ideadev"]); normalizeWordSize(data.words);')
 }
-# TODO
-#function excludeWords(wordsToExclude) {
-#  var words = data.words;
-#
-#  var i = 0;
-#  while (i < words.length) {
-#      if (wordsToExclude.length == 0) break;
-#
-#      var index = wordsToExclude.indexOf(words[i].text)
-#      if (index != -1) {
-#          words.splice(i, 1);
-#      wordsToExclude.splice(index, 1);
-#      } else {
-#          i++;
-#      }
-#      }
-#      }
 
 
 def merge_into(template_file, files_with_fixes)
