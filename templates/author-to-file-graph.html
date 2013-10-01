@@ -207,7 +207,12 @@ function createForcesGraphOn(elementId, graph, projectName) {
 
     var color = d3.scale.category20();
     var showLongFileNames = false;
-    var gravity = -120;
+    var gravityValues = {
+        Low: -320,
+        Medium: -120,
+        High: -50
+    };
+    var gravity = gravityValues.Medium;
     var minClusterSize = 2;
     var linkValuesExtent = d3.extent(graph.links, function (link) { return link.value; })
     var minLinkStrength = linkValuesExtent[0];
@@ -325,14 +330,13 @@ function createForcesGraphOn(elementId, graph, projectName) {
 
     span.append("label").html("Gravity: ");
     var gravityDropDown = span.append("select");
-    gravityDropDown.append("option").attr("value", "high").html("High");
-    gravityDropDown.append("option").attr("value", "medium").attr("selected", "true").html("Medium");
-    gravityDropDown.append("option").attr("value", "low").html("Low");
+    for (var attribute in gravityValues) {
+        var option = gravityDropDown.append("option").attr("value", attribute).html(attribute);
+        if (gravityValues[attribute] == gravity) option.attr("selected", "selected");
+    }
 
     gravityDropDown.on("change", function () {
-        if (this.value == "high") gravity = -50;
-        else if (this.value == "medium") gravity = -120;
-        else if (this.value == "low") gravity = -320;
+        gravity = gravityValues[this.value];
 
         force = createForce(gravity);
         force.on("tick", onForceTick);
