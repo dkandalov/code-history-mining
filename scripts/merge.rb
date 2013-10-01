@@ -40,7 +40,7 @@ change_size_chart_fixes = Proc.new { |html|
   html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
   html.gsub!('return svgPos.left + margin.left', 'return margin.left')
-  html.gsub!('var showOneMonthMean = false;', 'var showOneMonthMean = true;') # TODO
+  html.gsub!('var showOneMonthMean = false;', 'var showOneMonthMean = true;')
 }
 
 amount_of_committers_fixes = Proc.new { |html|
