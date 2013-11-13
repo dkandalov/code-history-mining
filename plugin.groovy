@@ -48,8 +48,8 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it) }
 	}
 }
+registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
 
-registerAction("CodeHistoryMiningMenu", "", "ToolsMenu", "Code History Mining", actionGroup)
 registerAction("CodeHistoryMiningPopup", "alt shift H") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Code History Mining", actionGroup, actionEvent.dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
