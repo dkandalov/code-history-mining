@@ -200,7 +200,8 @@
         }
 
         function textFitsInto(rect, extent) {
-            return rect.dx > extent.getComputedTextLength() && rect.dy > extent.getExtentOfChar().height;
+            var someChar = "A";
+            return rect.dx > extent.getComputedTextLength() && rect.dy > extent.getExtentOfChar(someChar).height;
         }
 
         function copyWithoutChildrenOfChildren(node) {
