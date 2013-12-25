@@ -12,7 +12,7 @@
     }
     #author-to-file-graph .node {
         stroke: #fff;
-        stroke-width: 1.5px;
+        stroke-width: 2px;
     }
     #author-to-file-graph .link {
         stroke: #999;
@@ -160,11 +160,11 @@ function createForcesGraphOn(elementId, graph, projectName) {
     };
     GraphEditor.prototype.deleteNodes = function(nodes) {
         for (var i = 0; i < nodes.length; i++) {
-            this.delete(nodes[i]);
+            this.deleteNode(nodes[i]);
         }
         this.quickFind = createQuickFindIndex(this.graph);
     };
-    GraphEditor.prototype.delete = function(nodeToRemove) {
+    GraphEditor.prototype.deleteNode = function(nodeToRemove) {
         var nodeIndex = this.graph.nodes.indexOf(nodeToRemove);
         var linksToRemove = this.graph.links.filter(function(link) { return link.source == nodeToRemove || link.target == nodeToRemove; });
 
@@ -214,7 +214,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
     };
     var gravity = gravityValues.Medium;
     var minClusterSize = 2;
-    var linkValuesExtent = d3.extent(graph.links, function (link) { return link.value; })
+    var linkValuesExtent = d3.extent(graph.links, function (link) { return link.value; });
     var minLinkStrength = linkValuesExtent[0];
     var force = createForce(gravity);
 
