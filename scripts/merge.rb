@@ -1,9 +1,9 @@
 class String
   def end_index(s)
-    index(s) + s.size()
+    index(s) + s.size
   end
   def end_rindex(s)
-    rindex(s) + s.size()
+    rindex(s) + s.size
   end
 end
 
@@ -108,15 +108,15 @@ def merge_into(template_file, files_with_fixes)
 end
 
 
-common = [remove_margin_style, remove_header_span, reduce_width]
+common_fixes = [remove_margin_style, remove_header_span, reduce_width]
 merge_into('idea.html', {
-    '/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html' => common + [change_size_chart_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html' => common + [amount_of_committers_fixes],
-    '/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html' => common + [file_in_same_commit_fixes],
-    '/Users/dima/Documents/idea-2012-2013/Committers changing same files.html' => common + [committer_and_files_fixes],
-    '/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html' => common + [treemap_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common + [punchcard_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common + [histogram_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common + [word_cloud_fixes],
-    '/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common + [calendar_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Change size chart.html' => common_fixes + [change_size_chart_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Amount of committers.html' => common_fixes + [amount_of_committers_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Files changed in the same commit.html' => common_fixes + [file_in_same_commit_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Committers changing same files.html' => common_fixes + [committer_and_files_fixes],
+    '/Users/dima/Documents/idea-2012-2013/Amount of commits treemap.html' => common_fixes + [treemap_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Commit time punchcard.html' => common_fixes + [punchcard_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Time between commits histogram.html' => common_fixes + [histogram_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Commit messages word cloud.html' => common_fixes + [word_cloud_fixes],
+    '/Users/dima/Documents/idea-upto-21-09-2013/Changes calendar view.html' => common_fixes + [calendar_fixes],
 })
