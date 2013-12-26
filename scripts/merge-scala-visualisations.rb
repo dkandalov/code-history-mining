@@ -18,7 +18,7 @@ def extract_content_from(file_name)
 
   from = html.rindex('<script')
   to = html.end_rindex('</script>')
-  script = html[from..to]
+  script = html[from..to-1]
 
   [style, script]
 end

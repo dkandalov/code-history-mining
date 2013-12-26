@@ -7974,7 +7974,7 @@ function createTreeMapOn(elementId, root, projectName) {
     }
 
     function textFitsInto(rect, extent) {
-        return rect.dx > extent.getComputedTextLength() && rect.dy > extent.getExtentOfChar().height;
+        return rect.dx > extent.getComputedTextLength() && rect.dy > extent.getExtentOfChar("A").height;
     }
 
     function copyWithoutChildrenOfChildren(node) {
