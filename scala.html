@@ -275,8 +275,10 @@
             This is analysis and visualization of <a href="https://github.com/scala/scala">Scala programming language</a>
             code history from 03/01/2005 to 19/12/2013
             using <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and <a href="http://d3js.org/">d3.js</a>.
-            There is no particular method behind this so if you have a suggestion for visualisation,
+            There is no particular method behind this so if you have a suggestion,
             please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">create an issue</a>.
+            (You can find csv file with events and original visualizations
+            <a href="https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk">here on google drive</a>.)
         </p>
 
         <h4>Change size chart</h4>
@@ -69923,7 +69925,7 @@ metric\n\
                     .text(function(d) { return d.text; })
                     .on("click", function (d) {
                         if (!d3.event.altKey) return;
-                        excludeWords(d.text);
+                        excludeWords([d.text]);
                         excludeWords(["si"]); normalizeWordSize(data.words);
                         createWordCloud();
                     });
