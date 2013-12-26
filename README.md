@@ -1,9 +1,10 @@
 ### What is this?
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
-and analyze project source code history. See code history visualisation examples for
-[JUnit](http://dkandalov.github.io/code-history-mining/junit.html) and
-[IntelliJ](http://dkandalov.github.io/code-history-mining/idea.html)
+and analyze project source code history. It's probably better to understand by looking at example:
+ - [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html)
+ - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
+ - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
 
 The plugin has two parts:
  - reading project history from version control and saving it as csv file
