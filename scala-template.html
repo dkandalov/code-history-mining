@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+    <meta name="description" content="JUnit code history"/>
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Scala code history</title>
+    <style>
+    </style>
+</head>
+
+<body>
+<!-- HEADER -->
+<div id="header_wrap" class="outer" style="max-height: 120px">
+    <header class="inner">
+        <a id="forkme_banner" href="https://github.com/dkandalov/code-history-mining">View on GitHub</a>
+        <h1 id="project_title">Scala code history</h1>
+        <h2 id="project_tagline"></h2>
+    </header>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+        <p>
+            This is analysis and visualization of <a href="https://github.com/scala/scala">Scala programming language</a>
+            code history from 03/01/2005 to 19/12/2013
+            using <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and <a href="http://d3js.org/">d3.js</a>.
+            There is no particular method behind this so if you have a suggestion,
+            please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">create an issue</a>.
+        </p>
+
+        <h4>Change size chart</h4>
+        Shows amount of commits by day/week. Red line is one month moving average.
+        <p id="change-size-chart"></p>
+        <br/><br/>
+
+        <h4>Amount of committers</h4>
+        Shows how many different people committed over month/week/day.
+        The idea is to see amount of people contributing to the project.
+        <p id="amount-of-committers-chart"></p>
+        <br/><br/>
+
+        <h4>Files changed in the same commit</h4>
+        Shows files which were changed in the same commit at least 8 times.
+        Thickness of edges is proportional to the number of commits.
+        The idea is to discover de facto dependencies between files.
+        <br/>
+        You can click on nodes to see file names in cluster.
+        <p id="files-in-the-same-commit"></p>
+        <br/><br/>
+
+        <h4>Committers changing same files</h4>
+        Shows people and files they changed within a week.
+        If file was edited by two people within a week, a link is added.
+        If it happened at least 7 times, link is added to the graph.
+        The is idea is to discover communication patterns and shared code ownership.
+
+        <p id="author-to-file-graph"></p>
+        <br/><br/>
+
+        <h4>Amount of commits treemap</h4>
+        Shows a break-down of commits by package.
+        Renamed and moved package are tracked but only current package name is displayed.
+        The idea is to see which parts of the project have more attention.
+        <br/>
+        E.g. ratio between commits to production code and tests.
+        <p id="commit-treemap"></p>
+        <br/><br/>
+
+        <h4>Commit time punchcard</h4>
+        Shows amount of commits at certain time of day (similar to
+        <a href="https://github.com/blog/1093-introducing-the-new-github-graphs">GitHub punchcard</a>).
+        <br/>
+        Sometimes there is a "lunch-time line" around 12:30 pm, not in this case :)
+        <p id="commit-time-punchcard"></p>
+        <br/><br/>
+
+        <h4>Time between commits histogram</h4>
+        This distribution will probably be the same for any project,
+        i.e. you are most likely to commit again within 5 hours or at least within a day.
+        (Time is tracked separately for each committer.)
+        <p id="time-between-commits-histogram"></p>
+        <br/><br/>
+
+        <h4>Commit messages wordcloud</h4>
+        Some prepositions and articles are excluded as well as "SI" which is used for issue tracking.
+        The idea is to see what happens with code by observing human language.
+        <p id="commit-word-cloud"></p>
+        <br/><br/>
+    </section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+    <footer class="inner">
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a>.</p>
+        <p class="copyright">Please feel free to drop <a href="https://twitter.com/dmitrykandalov">me</a> a line
+            or create an issue on <a href="https://github.com/dkandalov/code-history-mining/issues">GitHub</a>.
+        </p>
+    </footer>
+</div>
+
+<script src="html/d3.v3.min.js"></script>
+<script src="html/d3.layout.cloud.js"></script>
+
+
+</body>
+</html>
