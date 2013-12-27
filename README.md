@@ -5,6 +5,7 @@ and analyze project source code history. It's probably better to understand by l
  - [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html)
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
+ - [Clojure code history](http://dkandalov.github.io/code-history-mining/clojure.html)
 
 The plugin has two parts:
  - reading project history from version control and saving it as csv file
