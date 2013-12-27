@@ -274,7 +274,7 @@
                     .text(function(d) { return d.text; })
                     .on("click", function (d) {
                         if (!d3.event.altKey) return;
-                        excludeWords(d.text);
+                        excludeWords([d.text]);
                         normalizeWordSize(data.words);
                         createWordCloud();
                     });
