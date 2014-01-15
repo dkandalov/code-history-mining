@@ -93,17 +93,28 @@ class Analysis {
 		println(averageChangeSizeByDay.entrySet().join("\n"))
 	}
 
-	static void createJson_AverageAmountOfFilesInCommitByDay_Chart(List<FileChangeEvent> events) {
-		def amountOfFilesIn = { eventsList -> eventsList.collect{nonEmptyFileName(it.fileName) + it.packageNameBefore + it.packageName}.unique().size() }
+	static String createJson_AverageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		// TODO add Util.collectDoing(checkIfCancelled)
+
 		def averageChangeSize = { eventsByRevision ->
-			if (eventsByRevision.empty) 0
-			else eventsByRevision.entrySet().sum(0){ amountOfFilesIn(it.value) } / eventsByRevision.size()
+			def amountOfCommits = eventsByRevision.size()
+			def totalAmountOfFiles = eventsByRevision.values().flatten().size()
+			amountOfCommits == 0 ? 0 : totalAmountOfFiles / amountOfCommits
 		}
-		def changeSizeByDay = events
-				.groupBy({floorToDay(it.revisionDate) }, {it.revision})
-				.collectEntries{ [it.key, averageChangeSize(it.value)] }
-				.sort{ it.key }
-		println(changeSizeByDay.entrySet().join("\n"))
+		def changeSizeBy = { floorToTimeInterval ->
+				events
+					.groupBy({floorToTimeInterval(it.revisionDate) }, {it.revision})
+					.collect{ checkIfCancelled(); [it.key, averageChangeSize(it.value)] }
+					.sort{ it[0] }
+		}
+		def filesInCommitByDay = changeSizeBy(Util.&floorToDay)
+		def filesInCommitByWeek = changeSizeBy(Util.&floorToWeek)
+		def filesInCommitByMonth = changeSizeBy(Util.&floorToMonth)
+
+		"[" +
+				asCsvStringLiteral(filesInCommitByDay, ["date", "filesAmountInCommit"]) + ",\n" +
+				asCsvStringLiteral(filesInCommitByWeek, ["date", "filesAmountInCommit"]) + ",\n" +
+				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
 	}
 
 	static void createJson_CommitsWithAndWithoutTests_Chart(List<FileChangeEvent> events) {

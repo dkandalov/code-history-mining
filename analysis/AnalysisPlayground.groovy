@@ -12,7 +12,7 @@ class AnalysisPlayground {
 //		def projectName = "fitnesse"
 //		def projectName = "scala"
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
-		def events = new EventStorage(filePath).readAllEvents(null) { line, e -> println("Failed to parse line '${line}'") }
+		def events = new EventStorage(filePath).readAllEvents({}) { line, e -> println("Failed to parse line '${line}'") }
 
 //		new File("commentsAfter").write(events.collect{ it.commitMessage }.join("\n"))
 //		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_ChangeSize_Chart(events))
@@ -23,9 +23,9 @@ class AnalysisPlayground {
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(events))
 //		fillTemplate("time-between-commits-histogram.html", projectName, Analysis.createJson_TimeBetweenCommits_Histogram(events))
 
-		fillTemplate("amount-of-committers-chart.html", projectName, Analysis.createJson_AmountOfCommitters_Chart(events))
+//		fillTemplate("amount-of-committers-chart.html", projectName, Analysis.createJson_AmountOfCommitters_Chart(events))
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
-//		Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events)
+		fillTemplate("amount-of-files-in-commit-chart.html", projectName, Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events))
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 	}
 

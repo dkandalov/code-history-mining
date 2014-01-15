@@ -105,6 +105,9 @@ static AnAction createActionGroup(File file) {
 				"Amount Of Committers Chart", "Creating amount of committers chart",
 				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))
 		add(createAction(
+				"Amount Of Files In Commit Chart", "Creating amount of files in commit chart",
+				"amount-of-files-in-commit-chart.html", Analysis.&createJson_AverageAmountOfFilesInCommit_Chart))
+		add(createAction(
 				"Amount Of Commits Treemap", "Creating amount of commits treemap",
 				"treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)) // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 		add(createAction(
