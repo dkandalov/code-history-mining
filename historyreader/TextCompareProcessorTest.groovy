@@ -1,5 +1,4 @@
 package historyreader
-
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum
@@ -9,7 +8,6 @@ import org.junit.Test
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.IGNORE_SPACE
 import static com.intellij.openapi.diff.impl.ComparisonPolicy.TRIM_SPACE
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-
 /**
  * This test exists to explore how {@link TextCompareProcessor} compares text.
  *
@@ -17,12 +15,6 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
  * (Couldn't make it a proper unit test because of CommonBundle.message invocations in IntelliJ code)
  */
 class TextCompareProcessorTest {
-	private final Project project
-
-	TextCompareProcessorTest(Project project) {
-		this.project = project
-	}
-
 	@Test def "basic text comparisons"() {
 		new TextCompareProcessor(TRIM_SPACE).with {
 			process("", "").with {
@@ -160,5 +152,11 @@ class TextCompareProcessorTest {
 			assert [startingLine2, endLine2] == rightRange
 		}
 	}
+
+	TextCompareProcessorTest(Map context) {
+		this.project = context.project
+	}
+
+	private final Project project
 }
 

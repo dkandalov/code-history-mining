@@ -1,3 +1,4 @@
+import analysis.Analysis
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -22,11 +23,9 @@ import http.HttpUtil
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
-import analysis.Analysis
 import util.CancelledException
 import util.Measure
 
-import static IntegrationTestsRunner.runIntegrationTests
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
@@ -34,7 +33,6 @@ import static util.Measure.measure
 
 if (false) return showFileAmountByType(project)
 if (false) return CommitMunging_Playground.playOnIt()
-if (false) return runIntegrationTests(project, [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest])
 
 
 def actionGroup = new ActionGroup("Code History Mining", true) {

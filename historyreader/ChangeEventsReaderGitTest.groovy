@@ -8,7 +8,7 @@ import historyreader.unused.MethodChangeEvent
 import org.junit.Test
 
 import static CommitReaderGitTest.findJUnitProject
-import static events.FileChangeInfo.getNA
+import static events.FileChangeInfo.*
 import static util.DateTimeUtil.dateTime
 import static util.DateTimeUtil.exactDateTime
 
