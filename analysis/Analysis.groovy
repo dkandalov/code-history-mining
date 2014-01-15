@@ -335,39 +335,6 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
-	static String createJson_ChangeSize_Calendar(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
-		def changeSizeInChars = {
-			def totalChangeSizeByDate = events
-					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{ it.key }
-			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
-		}()
-
-		checkIfCancelled()
-
-		def changeSizeInLines = {
-			def totalChangeSizeByDate = events
-					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{ it.key }
-			def changesSizeRelativeToAll_ByDate = totalChangeSizeByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
-		}()
-
-		checkIfCancelled()
-
-		def changeSizeInCommits = {
-			def commitsAmountByDate = events
-					.groupBy{ it.revision }.collect{ it.value.first() }
-					.groupBy{ floorToDay(it.revisionDate) }
-					.collectEntries{ [it.key, it.value.size()] }.sort()
-			def changesSizeRelativeToAll_ByDate = commitsAmountByDate.collect{ [it.key, it.value] }
-			asCsvStringLiteral(changesSizeRelativeToAll_ByDate, ["date", "changeSize"])
-		}()
-
-		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
-	}
-
 	static class Util {
 		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable Closure checkIfCancelled = {}) {
 			log_("Started useLatestNameForMovedFiles()")

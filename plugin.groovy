@@ -105,9 +105,6 @@ static AnAction createActionGroup(File file) {
 				"Amount Of Committers Chart", "Creating amount of committers chart",
 				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))
 		add(createAction(
-				"Changes Calendar View", "Creating changes calendar view",
-				"calendar-view.html", Analysis.&createJson_ChangeSize_Calendar))
-		add(createAction(
 				"Amount Of Commits Treemap", "Creating amount of commits treemap",
 				"treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)) // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 		add(createAction(
@@ -200,11 +197,17 @@ static File[] filesWithCodeHistory() {
 	})
 }
 
-static log_(message) { Logger.getInstance("CodeHistoryMining").info(message) }
+static log_(message) {
+	Logger.getInstance("CodeHistoryMining").info(message)
+}
 
-String dialogStatePath() { "${PathManager.pluginsPath}/code-history-mining" }
+String dialogStatePath() {
+	"${PathManager.pluginsPath}/code-history-mining"
+}
 
-static String pathToHistoryFiles() { "${PathManager.pluginsPath}/code-history-mining" }
+static String pathToHistoryFiles() {
+	"${PathManager.pluginsPath}/code-history-mining"
+}
 
 static String projectName(File file) {
 	file.name.replace(".csv", "").replace("-file-events", "")

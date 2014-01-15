@@ -15,7 +15,6 @@ class AnalysisPlayground {
 		def events = new EventStorage(filePath).readAllEvents(null) { line, e -> println("Failed to parse line '${line}'") }
 
 //		new File("commentsAfter").write(events.collect{ it.commitMessage }.join("\n"))
-//		fillTemplate("calendar-view.html", projectName, Analysis.createJson_ChangeSize_Calendar(events))
 //		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_ChangeSize_Chart(events))
 //		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJson_FilesInTheSameCommit_Graph(events))
 //		fillTemplate("author-to-file-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
