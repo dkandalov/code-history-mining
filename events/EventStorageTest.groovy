@@ -1,11 +1,10 @@
 package events
-import org.junit.After
-import org.junit.Before
+
 import org.junit.Test
 
-import static util.DateTimeUtil.exactDateTime
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
+import static util.DateTimeUtil.exactDateTime
 
 class EventStorageTest {
 
@@ -81,18 +80,14 @@ class EventStorageTest {
 		new FileChangeEvent(commitInfo, event.fileChangeInfo)
 	}
 
-	@Before void setUp() {
-		temporaryFile = new File("test-events-file${new Random().nextInt(10000)}.csv").absolutePath
-		storage = new EventStorage(temporaryFile)
-	}
-
-	@After void tearDown() {
+	private static createTemporaryFile() {
+		def temporaryFile = new File("test-events-file.csv").absolutePath
 		if (new File(temporaryFile).exists()) {
 			new File(temporaryFile).delete()
 		}
+		temporaryFile
 	}
 
-	private String temporaryFile
 	private final event1 = new FileChangeEvent(
 			new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), "Added support for iterable datapoints"),
 			new FileChangeInfo("", "AllMembersSupplier.java", "", "/src/main/java/org/junit/experimental/theories/internal", "MODIFICATION",
@@ -115,6 +110,12 @@ class EventStorageTest {
 			)
 	)
 
-	private EventStorage storage
+	EventStorageTest() {
+		temporaryFile = createTemporaryFile()
+		storage = new EventStorage(temporaryFile)
+	}
+
+	private final String temporaryFile
+	private final EventStorage storage
 
 }

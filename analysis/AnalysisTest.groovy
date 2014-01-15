@@ -41,7 +41,7 @@ class AnalysisTest {
 		]
 	}
 
-	@Test public void "should floor time to day/week/month"() {
+	@Test void "should floor time to day/week/month"() {
 		assert floorToDay(exactDateTime("15:42:16 03/10/2013")) == date("03/10/2013")
 
 		assert floorToWeek(exactDateTime("15:42:16 03/10/2013")) == date("30/09/2013")
