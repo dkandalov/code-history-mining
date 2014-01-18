@@ -956,7 +956,7 @@ date,filesAmountInCommit\n\
         removeChildrenOf(elementId);
 
         var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Amount of files in commit (" + projectName + ")").style({"text-align": "center"});
+        headerSpan.append("h2").text("Average amount of files in commit (" + projectName + ")").style({"text-align": "center"});
 
         var svg = rootElement.append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -969,6 +969,8 @@ date,filesAmountInCommit\n\
 
         var rawDataIndex = 0;
         var timeInterval = timeIntervalFor(rawDataIndex);
+        var defaultPercentile = 1.0;
+        var percentile = defaultPercentile;
         var data = parseRawData(rawData[rawDataIndex], dateFormat);
 
         var meanData = [];
@@ -1018,27 +1020,43 @@ date,filesAmountInCommit\n\
         footerSpan.append("label").html("One month average: ");
         footerSpan.append("input").attr("type", "checkbox").on("click", function() {
             showOneMonthMean = !showOneMonthMean;
-            updateChart();
+            updateChart(percentile);
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
-        footerSpan.append("label").html("Amount of files in commit per: ");
-        var dropDown = footerSpan.append("select");
+        footerSpan.append("label").html("Percentile: ");
+        var percentileDropDown = footerSpan.append("select");
+        for (var i2 = 100; i2 >= 95; i2 -= 0.5) {
+            var option2 = percentileDropDown.append("option").attr("value", i2).html(i2);
+            if (defaultPercentile * 100 == i2) option2.attr("selected", "selected");
+        }
+
+        percentileDropDown.on("change", function() {
+            percentile = +this.value / 100;
+            updateChart(percentile);
+        });
+        footerSpan.append("span").style({width: "20px", display: "inline-block"});
+
+        footerSpan.append("label").html("Group by: ");
+        var timeIntervalDropDown = footerSpan.append("select");
         for (var i = 0; i < 3; i++) {
-            var option = dropDown.append("option").attr("value", i).html(timeIntervalNameFor(i));
+            var option = timeIntervalDropDown.append("option").attr("value", i).html(timeIntervalNameFor(i));
             if (i == rawDataIndex) option.attr("selected", "selected");
         }
-        dropDown.on("change", function() {
-            var rawDataIndex = +this.value;
+        timeIntervalDropDown.on("change", function() {
+            rawDataIndex = +this.value;
             data = parseRawData(rawData[rawDataIndex], dateFormat);
             timeInterval = timeIntervalFor(rawDataIndex);
-            updateChart();
+            updateChart(percentile);
         });
 
-        updateChart();
+        updateChart(percentile);
 
 
-        function updateChart() {
+        function updateChart(percentile) {
+            data = filter(parseRawData(rawData[rawDataIndex], dateFormat), percentile, function(it) { return it.filesAmountInCommit; });
+            data.sort(function (a, b){ return a.date - b.date; });
+
             meanData = calculateMonthlyMean(data);
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
@@ -1056,6 +1074,12 @@ date,filesAmountInCommit\n\
             nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
 
             onBrush();
+        }
+
+        function filter(data, percentile, valueOf) {
+            var sortedData = data.sort(function (a, b){ return valueOf(a) - valueOf(b); });
+            var n = sortedData[Math.round((data.length - 1) * percentile)];
+            return data.filter(function(d) { return valueOf(d) <= valueOf(n); });
         }
 
         function showBrushOn(element) {

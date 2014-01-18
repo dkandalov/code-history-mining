@@ -1352,23 +1352,19 @@ metric\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
         footerSpan.append("label").html("Percentile: ");
-        var groupByDropDown = footerSpan.append("select");
+        var percentileDropDown = footerSpan.append("select");
         for (var i = 100; i > 0; i -= 10) {
-            var option = groupByDropDown.append("option").attr("value", i).html(i);
+            var option = percentileDropDown.append("option").attr("value", i).html(i);
             if (defaultPercentile * 100 == i) option.attr("selected", "selected");
         }
-        groupByDropDown.on("change", function() {
+        percentileDropDown.on("change", function() {
             updateHistogram(+this.value / 100);
         });
 
         function updateHistogram(percentile) {
             var data = d3.csv.parse(rawData).map(function (d) { return parseInt(d.metric); });
-            var i = Math.round((data.length - 1) * percentile);
-
             var sortedData = data.sort(function (a, b) { return a - b; });
-            var n = sortedData[i];
-            while (sortedData[i] == n && i < sortedData.length) i++;
-
+            var n = sortedData[Math.round((data.length - 1) * percentile)];
             data = data.filter(function(d) { return d <= n; });
 
             var x = d3.scale.linear().domain([0, Math.round(d3.max(data) / 10) * 10]).range([0, width]);
