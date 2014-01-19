@@ -25,7 +25,7 @@ class AnalysisPlayground {
 
 //		fillTemplate("amount-of-committers-chart.html", projectName, Analysis.createJson_AmountOfCommitters_Chart(events))
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
-		fillTemplate("amount-of-files-in-commit-chart.html", projectName, Analysis.createJson_AverageAmountOfFilesInCommitByDay_Chart(events))
+		fillTemplate("amount-of-files-in-commit-chart.html", projectName, Analysis.createJson_AverageAmountOfFilesInCommit_Chart(events))
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 	}
 

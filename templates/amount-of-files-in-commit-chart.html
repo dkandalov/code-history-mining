@@ -1166,7 +1166,7 @@ date,filesAmountInCommit\n\
         function parseRawData(rawData, dateFormat) {
             return d3.csv.parse(rawData).map(function(d) { return {
                 date: dateFormat.parse(d.date),
-                filesAmountInCommit: parseInt(d.filesAmountInCommit)};
+                filesAmountInCommit: parseFloat(d.filesAmountInCommit)};
             });
         }
 
