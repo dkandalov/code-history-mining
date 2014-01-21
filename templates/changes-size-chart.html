@@ -231,7 +231,8 @@ date,changeSize\n\
         var rawDataIndex = 0;
         var daysData = parseRawData(rawData[rawDataIndex], dateFormat);
 
-        var timeInterval = d3.time.day;
+        var defaultTimeInterval = "month";
+        var timeInterval = d3.time[defaultTimeInterval];
         var data = aggregate(daysData, timeInterval);
         var meanData = [];
 
@@ -288,8 +289,13 @@ date,changeSize\n\
 
         footerSpan.append("label").html("Group by: ");
         var groupByDropDown = footerSpan.append("select");
-        groupByDropDown.append("option").attr("value", "day").html("day");
-        groupByDropDown.append("option").attr("value", "monday").html("week");
+        function isSelected(interval) { return defaultTimeInterval == interval ? "selected" : ""; }
+        var day = groupByDropDown.append("option").attr("value", "day").html("day");
+        if (isSelected("day")) day.attr("selected", "selected");
+        var week = groupByDropDown.append("option").attr("value", "monday").html("week");
+        if (isSelected("monday")) week.attr("selected", "selected");
+        var month = groupByDropDown.append("option").attr("value", "month").html("month");
+        if (isSelected("month")) month.attr("selected", "selected");
         groupByDropDown.on("change", function() {
             timeInterval = d3.time[this.value];
             updateChart();
