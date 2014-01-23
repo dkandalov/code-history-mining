@@ -39,7 +39,7 @@ reduce_width = Proc.new { |html|
 
 change_size_chart_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
-  html.gsub!('var timeInterval = d3.time.day;', 'var timeInterval = d3.time.monday;') # TODO not selected in UI
+  html.gsub!('var defaultTimeInterval = "monday";', 'var defaultTimeInterval = "month";')
   html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
   html.gsub!('return svgPos.left + margin.left', 'return margin.left')
