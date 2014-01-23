@@ -1,15 +1,15 @@
 describe("change size chart", function () {
 	var date = function(s) { return d3.time.format("%d/%m/%Y").parse(s); };
 
-	it("should calculate rolling average for three day interval", function() {
-		var rollingAverageOfThreeDays = function(data) { return rollingAverage(data, d3.time.day, 3); };
+	it("should calculate moving average for three day interval", function() {
+		var movingAverageOfThreeDays = function(data) { return movingAverage(data, d3.time.day, 3); };
 
-		expect(rollingAverageOfThreeDays([
+		expect(movingAverageOfThreeDays([
 			{date: date("01/01/2010"), changeSize: 10},
 			{date: date("02/01/2010"), changeSize: 10}
 		])).toEqual([]);
 
-		expect(rollingAverageOfThreeDays([
+		expect(movingAverageOfThreeDays([
 			{date: date("01/01/2010"), changeSize: 11},
 			{date: date("03/01/2010"), changeSize: 13},
 			{date: date("04/01/2010"), changeSize: 5}
@@ -19,15 +19,15 @@ describe("change size chart", function () {
 		]);
 	});
 
-	it("should calculate rolling average for three month interval", function() {
-		var rollingAverageOfThreeWeeks = function(data) { return rollingAverage(data, d3.time.month, 3); };
+	it("should calculate moving average for three month interval", function() {
+		var movingAverageOfThreeWeeks = function(data) { return movingAverage(data, d3.time.month, 3); };
 
-		expect(rollingAverageOfThreeWeeks([
+		expect(movingAverageOfThreeWeeks([
 			{date: date("01/01/2010"), changeSize: 10},
 			{date: date("01/02/2010"), changeSize: 10}
 		])).toEqual([]);
 
-		expect(rollingAverageOfThreeWeeks([
+		expect(movingAverageOfThreeWeeks([
 			{date: date("01/01/2010"), changeSize: 10},
 			{date: date("01/02/2010"), changeSize: 10},
 			{date: date("01/03/2010"), changeSize: 10},

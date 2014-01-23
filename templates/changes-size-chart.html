@@ -210,7 +210,7 @@ date,changeSize\n\
         var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
         var xAxisLabel = "Date";
         var yAxisLabel = "Change size";
-        var showRollingAverage = false;
+        var showMovingAverage = false;
 
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
@@ -235,7 +235,7 @@ date,changeSize\n\
         var defaultTimeInterval = "monday";
         var timeInterval = d3.time[defaultTimeInterval];
         var data = aggregate(daysData, timeInterval);
-        var rollingAverageData = [];
+        var movingAverageData = [];
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -279,12 +279,12 @@ date,changeSize\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
-        footerSpan.append("label").html("Rolling average: ");
+        footerSpan.append("label").html("Moving average: ");
         var checkbox = footerSpan.append("input").attr("type", "checkbox").on("click", function() {
-            showRollingAverage = !showRollingAverage;
+            showMovingAverage = !showMovingAverage;
             updateChart();
         });
-        if (showRollingAverage) checkbox.attr("checked", "checked");
+        if (showMovingAverage) checkbox.attr("checked", "checked");
 
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
 
@@ -328,7 +328,7 @@ date,changeSize\n\
 
         function updateChart() {
             data = aggregate(daysData, timeInterval);
-            rollingAverageData = rollingAverage(data, timeInterval);
+            movingAverageData = movingAverage(data, timeInterval);
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
             y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
@@ -402,9 +402,9 @@ date,changeSize\n\
                     .attr("width", barWidth);
 
             zoomedView.selectAll(".line").remove();
-            if (showRollingAverage) {
+            if (showMovingAverage) {
                 zoomedView.append("path")
-                        .datum(rollingAverageData)
+                        .datum(movingAverageData)
                         .attr("class", "line")
                         .attr("clip-path", "url(#chartClip)")
                         .attr("d", meanLine);

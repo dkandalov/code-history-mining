@@ -1,4 +1,4 @@
-function rollingAverage(data, timeInterval, period) {
+function movingAverage(data, timeInterval, period) {
 	if (data.length < 2) return [];
 
 	period = (period == null ? Math.round(data.length / 10) : period);
