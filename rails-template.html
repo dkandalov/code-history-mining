@@ -29,30 +29,34 @@
         <p>
             This is analysis and visualization of <a href="https://github.com/rails/rails">Ruby on Rails</a> project
             code history from November 2004 to January 2014.
-            It was done with <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and <a href="http://d3js.org/">d3.js</a>.
-            There is no particular method behind this so if you have a suggestion,
-            please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">create an issue</a>.
+            It was done with <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and some scripts.
+            There is no particular method behind this so if you have an idea,
+            please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">suggest it</a>.
             (You can find csv file with events and original visualizations
-            <a href="https://drive.google.com/#folders/0B5PfR1lF8o5SZ1RNUjloYldWeFE">here on google drive</a>.)
+            <a href="https://drive.google.com/#folders/0B5PfR1lF8o5SWGRYYmlISmZtUU0">on google drive</a>.)
         </p>
 
         <h4>Change size chart</h4>
-        Shows amount of commits by day/week. Red line is one month moving average.
+        Shows amount of commits by day/week/month
+        (similar to <a href="https://help.github.com/articles/using-graphs#contributors">github contributors graph</a>
+        but without interpolation).
         <p id="change-size-chart"></p>
         <br/><br/>
 
         <h4>Amount of committers</h4>
         Shows how many different people committed over month/week/day.
-        The idea is to see amount of people contributing to the project.
+        The idea is to see the amount of people contributing to the project.
         <p id="amount-of-committers-chart"></p>
         <br/><br/>
 
         <h4>Amount of files in commit</h4>
+        Shows average amount of files in commit by day/week/month.
+        Assuming that commit is a finished unit of work, the idea is to see how its size changes over time.
         <p id="amount-of-files-in-commit-chart"></p>
         <br/><br/>
 
         <h4>Files changed in the same commit</h4>
-        Shows files which were changed in the same commit at least 8 times.
+        Shows files which were changed in the same commit several times.
         Thickness of edges is proportional to the number of commits.
         The idea is to discover de facto dependencies between files.
         <br/>
@@ -61,26 +65,26 @@
         <br/><br/>
 
         <h4>Committers changing same files</h4>
-        Shows people and files they changed within a week.
-        If file was edited by two people within a week, a link is added.
-        If it happened at least 7 times, link is added to the graph.
-        The is idea is to discover communication patterns and shared code ownership.
+        Shows people connection to files they both changed within a week.
+        That is if file was modified by two persons within a week, a link is added.
+        The is idea is to discover how people "communicate" through changing same files.
 
         <p id="author-to-file-graph"></p>
         <br/><br/>
 
         <h4>Amount of commits treemap</h4>
-        Shows a break-down of commits by package.
-        Renamed and moved package are tracked but only current package name is displayed.
-        The idea is to see which parts of the project have more attention.
+        Shows a break-down of commits by package/folder.
+        Size of rectangles corresponds to amount of commits.
+        The idea is to see which parts of the project have more attention
+        (e.g. ratio between commits to production code and tests).
         <br/>
-        E.g. ratio between commits to production code and tests.
+        (Renamed and moved package are tracked but only current package name is displayed.)
         <p id="commit-treemap"></p>
         <br/><br/>
 
         <h4>Commit time punchcard</h4>
         Shows amount of commits at certain time of day (similar to
-        <a href="https://github.com/blog/1093-introducing-the-new-github-graphs">GitHub punchcard</a>).
+        <a href="https://help.github.com/articles/using-graphs#punchcard">github punchcard</a>).
         <p id="commit-time-punchcard"></p>
         <br/><br/>
 
@@ -92,9 +96,8 @@
         <br/><br/>
 
         <h4>Commit messages wordcloud</h4>
-        Some prepositions and articles are excluded as well as "SI" which is used for issue tracking.
-        The idea is to see what happens with code by observing human language.
-        (Some words were filtered out to exclude meta-information like "Signed-off-by: Stuart Halloway")
+        Some prepositions and articles are excluded as well as some words specific for the project but not related to code.
+        The idea is to see what happened with code by observing human language.
         <p id="commit-word-cloud"></p>
         <br/><br/>
     </section>
@@ -104,8 +107,8 @@
 <div id="footer_wrap" class="outer">
     <footer class="inner">
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a>.</p>
-        <p class="copyright">Please feel free to drop <a href="https://twitter.com/dmitrykandalov">me</a> a line
-            or create an issue on <a href="https://github.com/dkandalov/code-history-mining/issues">GitHub</a>.
+        <p class="copyright">Please feel free to <a href="https://twitter.com/dmitrykandalov">drop me a line</a>
+            or <a href="https://github.com/dkandalov/code-history-mining/issues">create an issue</a> on GitHub.
         </p>
     </footer>
 </div>
