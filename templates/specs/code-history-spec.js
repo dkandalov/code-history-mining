@@ -1,8 +1,9 @@
 describe("change size chart", function () {
 	var date = function(s) { return d3.time.format("%d/%m/%Y").parse(s); };
+	var getChangeSize = function(it) { return it.changeSize; };
 
 	it("should calculate moving average for three day interval", function() {
-		var movingAverageOfThreeDays = function(data) { return movingAverage(data, d3.time.day, 3); };
+		var movingAverageOfThreeDays = function(data) { return movingAverage(data, d3.time.day, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeDays([
 			{date: date("01/01/2010"), changeSize: 10},
@@ -20,7 +21,7 @@ describe("change size chart", function () {
 	});
 
 	it("should calculate moving average for three month interval", function() {
-		var movingAverageOfThreeWeeks = function(data) { return movingAverage(data, d3.time.month, 3); };
+		var movingAverageOfThreeWeeks = function(data) { return movingAverage(data, d3.time.month, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeWeeks([
 			{date: date("01/01/2010"), changeSize: 10},

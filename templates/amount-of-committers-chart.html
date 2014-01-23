@@ -37,6 +37,7 @@
 <body>
 <span id="amount-of-committers-chart"></span>
 <script src="d3.v3.min.js"></script>
+<script src="code-history.js"></script>
 <script>
     var rawData = /*data_placeholder*/
                     ["\
@@ -948,7 +949,7 @@ date,amountOfCommitters\n\
         var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
         var xAxisLabel = "Date";
         var yAxisLabel = "Amount of committers";
-        var showOneMonthMean = false;
+        var showMovingAverage = false;
 
         var brush = d3.svg.brush().x(x2).on("brush", onBrush);
 
@@ -971,7 +972,7 @@ date,amountOfCommitters\n\
         var timeInterval = timeIntervalFor(rawDataIndex);
         var data = parseRawData(rawData[rawDataIndex], dateFormat);
 
-        var meanData = [];
+        var movingAverageData = [];
 
         var fromDate = data[0].date;
         var toDate = data[data.length - 1].date;
@@ -981,7 +982,7 @@ date,amountOfCommitters\n\
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
-        var meanLine = d3.svg.line()
+        var movingAverageLine = d3.svg.line()
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.mean); });
 
@@ -1015,9 +1016,9 @@ date,amountOfCommitters\n\
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
 
-        footerSpan.append("label").html("One month average: ");
+        footerSpan.append("label").html("Moving average: ");
         footerSpan.append("input").attr("type", "checkbox").on("click", function() {
-            showOneMonthMean = !showOneMonthMean;
+            showMovingAverage = !showMovingAverage;
             updateChart();
         });
         footerSpan.append("span").style({width: "20px", display: "inline-block"});
@@ -1039,10 +1040,10 @@ date,amountOfCommitters\n\
 
 
         function updateChart() {
-            meanData = calculateMonthlyMean(data);
+            movingAverageData = movingAverage(data, timeInterval, function(d){ return d.amountOfCommitters; });
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function(d) { return d.amountOfCommitters; })]);
+            y.domain([0, d3.max(data, function(d){ return d.amountOfCommitters; })]);
             x2.domain(x.domain());
             y2.domain(y.domain());
 
@@ -1113,12 +1114,12 @@ date,amountOfCommitters\n\
                     .attr("width", barWidth);
 
             zoomedView.selectAll(".line").remove();
-            if (showOneMonthMean) {
+            if (showMovingAverage) {
                 zoomedView.append("path")
-                        .datum(meanData)
+                        .datum(movingAverageData)
                         .attr("class", "line")
                         .attr("clip-path", "url(#chartClip)")
-                        .attr("d", meanLine);
+                        .attr("d", movingAverageLine);
             }
 
             zoomedView.select(".x.axis").call(xAxis);
@@ -1136,7 +1137,9 @@ date,amountOfCommitters\n\
             return ["day", "week", "month"][rawDataIndex];
         }
         function timeIntervalFor(rawDataIndex) {
-            return d3.time[timeIntervalNameFor(rawDataIndex)];
+            if (rawDataIndex == 0) return d3.time.day;
+            else if (rawDataIndex == 1) return d3.time.monday;
+            else return d3.time.month;
         }
 
         function parseRawData(rawData, dateFormat) {
@@ -1152,31 +1155,6 @@ date,amountOfCommitters\n\
 
         function appendBlockElementTo(element, width) {
             return element.append("span").style({display: "block", width: width + "px"});
-        }
-
-        function calculateMonthlyMean(data) {
-            var period = 30;
-            var result = [];
-            var datesRange = d3.time.day.range(data[0].date, data[data.length - 1].date);
-            var amountOfCommitters = amountOfCommittersByDay(data, datesRange);
-
-            var mean = d3.mean(datesRange.slice(0, period - 1), function(date){ return amountOfCommitters[date]; });
-
-            for (var i = period; i < datesRange.length; i++) {
-                var date = datesRange[i];
-                var dateToExclude = datesRange[i - period];
-                mean += (amountOfCommitters[date] - amountOfCommitters[dateToExclude]) / period;
-                result.push({date: date, mean: mean});
-            }
-
-            return result;
-        }
-
-        function amountOfCommittersByDay(data, datesRange) {
-            var result = {};
-            datesRange.forEach(function(date) { result[date] = 0; });
-            data.forEach(function(d) { result[d.date] = d.amountOfCommitters; });
-            return result;
         }
 
         function removeChildrenOf(elementId) {

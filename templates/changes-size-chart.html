@@ -245,7 +245,7 @@ date,changeSize\n\
         y2.domain(y.domain());
         var barWidth = barWidthFor(timeInterval, fromDate, toDate);
 
-        var meanLine = d3.svg.line()
+        var movingAverageLine = d3.svg.line()
                 .x(function(d) { return x(d.date); })
                 .y(function(d) { return y(d.mean); });
 
@@ -328,7 +328,7 @@ date,changeSize\n\
 
         function updateChart() {
             data = aggregate(daysData, timeInterval);
-            movingAverageData = movingAverage(data, timeInterval);
+            movingAverageData = movingAverage(data, timeInterval, function(it) { return it.changeSize; });
 
             x.domain([fromDate, timeInterval.offset(toDate, 1)]);
             y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
@@ -407,7 +407,7 @@ date,changeSize\n\
                         .datum(movingAverageData)
                         .attr("class", "line")
                         .attr("clip-path", "url(#chartClip)")
-                        .attr("d", meanLine);
+                        .attr("d", movingAverageLine);
             }
 
             zoomedView.select(".x.axis").call(xAxis);
