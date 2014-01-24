@@ -39,6 +39,7 @@ reduce_width = Proc.new { |html|
 
 change_size_chart_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!('var defaultTimeInterval = "monday";', 'var defaultTimeInterval = "month";')
   html.gsub!('dropDown.append("option").attr("value", "1").html("lines");', '')
   html.gsub!('dropDown.append("option").attr("value", "2").html("characters");', '')
   html.gsub!('return svgPos.left + margin.left', 'return margin.left')
@@ -46,6 +47,12 @@ change_size_chart_fixes = Proc.new { |html|
 
 amount_of_committers_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!(/var rawDataIndex = 0;/, 'var rawDataIndex = 2;')
+}
+
+avg_amount_of_files_fixes = Proc.new { |html|
+  html.gsub!(/width =.*?,/, 'width = 740,')
+  html.gsub!('var defaultPercentile = 1.0;', 'var defaultPercentile = 0.975;')
   html.gsub!(/var rawDataIndex = 0;/, 'var rawDataIndex = 2;')
 }
 
@@ -102,6 +109,7 @@ base_path = '/Users/dima/Google Drive/visualisations/clojure-code-history/'
 merge_into('../clojure-template.html', '../clojure.html', {
     base_path + '/Change size chart.html' => common_fixes + [change_size_chart_fixes],
     base_path + '/Amount of committers.html' => common_fixes + [amount_of_committers_fixes],
+    base_path + '/Average amount of files in commit.html' => common_fixes + [avg_amount_of_files_fixes],
     base_path + '/Files changed in the same commit.html' => common_fixes + [file_in_same_commit_fixes],
     base_path + '/Committers changing same files.html' => common_fixes + [committer_and_files_fixes],
     base_path + '/Amount of commits treemap.html' => common_fixes + [treemap_fixes],
