@@ -56,14 +56,14 @@ word_cloud_fixes = Proc.new{ |html|
 }
 
 src_path = '/Users/dima/Google Drive/visualisations/'
-merge_into(src_path, '../idea-template.html', '../idea.html', {
-    '/idea-upto-21-09-2013/Change size chart.html' => [change_size_chart_fixes],
-    '/idea-upto-21-09-2013/Amount of committers.html' => [amount_of_committers_fixes],
-    '/idea-2012-2013/Files changed in the same commit.html' => [file_in_same_commit_fixes],
-    '/idea-2012-2013/Committers changing same files.html' => [committer_and_files_fixes],
-    '/idea-2012-2013/Amount of commits treemap.html' => [treemap_fixes],
-    '/idea-upto-21-09-2013/Commit time punchcard.html' => [punchcard_fixes],
-    '/idea-upto-21-09-2013/Time between commits histogram.html' => [histogram_fixes],
-    '/idea-upto-21-09-2013/Commit messages word cloud.html' => [word_cloud_fixes],
-    '/idea-upto-21-09-2013/Changes calendar view.html' => [calendar_fixes],
+merge_visualizations(src_path, 'idea', {
+    'idea-upto-21-09-2013/Change size chart.html' => [change_size_chart_fixes],
+    'idea-upto-21-09-2013/Amount of committers.html' => [amount_of_committers_fixes],
+    'idea-2012-2013/Files changed in the same commit.html' => [file_in_same_commit_fixes],
+    'idea-2012-2013/Committers changing same files.html' => [committer_and_files_fixes],
+    'idea-2012-2013/Amount of commits treemap.html' => [treemap_fixes],
+    'idea-upto-21-09-2013/Commit time punchcard.html' => [punchcard_fixes],
+    'idea-upto-21-09-2013/Time between commits histogram.html' => [histogram_fixes],
+    'idea-upto-21-09-2013/Commit messages word cloud.html' => [word_cloud_fixes],
+    'idea-upto-21-09-2013/Changes calendar view.html' => [calendar_fixes],
 })

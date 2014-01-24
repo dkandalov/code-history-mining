@@ -25,7 +25,11 @@ def extract_content_from(file_name)
 end
 
 
-def merge_into(src_path, template_file, target_file, files_with_fixes)
+def merge_visualizations(src_path, project_name, fixes_by_filename)
+  do_merge(src_path, "../#{project_name}-template.html", "../#{project_name}.html", fixes_by_filename)
+end
+
+def do_merge(src_path, template_file, target_file, fixes_by_filename)
   remove_margin_style = Proc.new { |html|
     html.gsub!(/margin:.*?;/, '')
   }
@@ -43,9 +47,9 @@ def merge_into(src_path, template_file, target_file, files_with_fixes)
 
 
   html = File.read(template_file)
-  files_with_fixes.each { |file, fixes|
-    p "Processing #{file}"
-    style, script = extract_content_from(src_path + file)
+  fixes_by_filename.each { |filename, fixes|
+    p "Processing #{filename}"
+    style, script = extract_content_from(src_path + '/' + filename)
 
     (fixes + common_fixes).each { |fix|
       fix.call(style)
