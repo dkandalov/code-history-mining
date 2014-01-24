@@ -1,41 +1,5 @@
 #!/usr/bin/ruby
-
-class String
-  def end_index(s)
-    index(s) + s.size
-  end
-  def end_rindex(s)
-    rindex(s) + s.size
-  end
-end
-
-def extract_content_from(file_name)
-  html = File.read(file_name)
-
-  from = html.index('<style')
-  to = html.end_index('</style>')
-  style = html[from..to]
-
-  from = html.rindex('<script')
-  to = html.end_rindex('</script>')
-  script = html[from..to-1]
-
-  [style, script]
-end
-
-remove_margin_style = Proc.new { |html|
-  html.gsub!(/margin:.*?;/, '')
-}
-
-remove_header_span = Proc.new { |html|
-  html.gsub!(/var header.*?;/m, '')
-  html.gsub!(/headerSpan\..*?;/m, '')
-  html.gsub!(/[\s\t]header\..*?;/m, '')
-}
-
-reduce_width = Proc.new { |html|
-  html.gsub!(/var width =.*?;/, 'var width = 800;')
-}
+require './merge.rb'
 
 change_size_chart_fixes = Proc.new { |html|
   html.gsub!(/width =.*?,/, 'width = 740,')
@@ -90,35 +54,15 @@ word_cloud_fixes = Proc.new{ |html|
   html.gsub!('normalizeWordSize(data.words);', 'excludeWords(["svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"]); normalizeWordSize(data.words);')
 }
 
-
-def merge_into(template_file, target_file, files_with_fixes)
-  html = File.read(template_file)
-  files_with_fixes.each { |file, fixes|
-    p "Processing #{file}"
-    style, script = extract_content_from(file)
-
-    fixes.each { |fix|
-      fix.call(style)
-      fix.call(script)
-    }
-
-    html.insert(html.end_rindex("</style>"), style)
-    html.insert(html.end_rindex("</script>"), script)
-  }
-  File.open(target_file, "w") { |f| f.write(html) }
-end
-
-
-common_fixes = [remove_margin_style, remove_header_span, reduce_width]
-base_path = '/Users/dima/Google Drive/visualisations/junit/'
-merge_into('../junit-template.html', '../junit.html', {
-    base_path + '/Change size chart.html' => common_fixes + [change_size_chart_fixes],
-    base_path + '/Amount of committers.html' => common_fixes + [amount_of_committers_fixes],
-    base_path + '/Average amount of files in commit.html' => common_fixes + [avg_amount_of_files_fixes],
-    base_path + '/Files changed in the same commit.html' => common_fixes + [file_in_same_commit_fixes],
-    base_path + '/Committers changing same files.html' => common_fixes + [committer_and_files_fixes],
-    base_path + '/Amount of commits treemap.html' => common_fixes + [treemap_fixes],
-    base_path + '/Commit time punchcard.html' => common_fixes + [punchcard_fixes],
-    base_path + '/Time between commits histogram.html' => common_fixes + [histogram_fixes],
-    base_path + '/Commit messages word cloud.html' => common_fixes + [word_cloud_fixes],
+src_path = '/Users/dima/Google Drive/visualisations/junit/'
+merge_into(src_path, '../junit-template.html', '../junit.html', {
+    '/Change size chart.html' => [change_size_chart_fixes],
+    '/Amount of committers.html' => [amount_of_committers_fixes],
+    '/Average amount of files in commit.html' => [avg_amount_of_files_fixes],
+    '/Files changed in the same commit.html' => [file_in_same_commit_fixes],
+    '/Committers changing same files.html' => [committer_and_files_fixes],
+    '/Amount of commits treemap.html' => [treemap_fixes],
+    '/Commit time punchcard.html' => [punchcard_fixes],
+    '/Time between commits histogram.html' => [histogram_fixes],
+    '/Commit messages word cloud.html' => [word_cloud_fixes],
 })
