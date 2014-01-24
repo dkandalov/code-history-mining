@@ -30,3 +30,21 @@ function valuesForEachDate(data, datesRange, getValue) {
 	data.forEach(function(d) { result[d.date] = getValue(d); });
 	return result;
 }
+
+// this is intended for projector in case default colors are too pale to see
+function enableDarkColorsShortcut() {
+	document.onkeydown = function(e) {
+		e = window.event || e;
+		if (String.fromCharCode(e.keyCode) == 'D') {
+			d3.selectAll(".link")[0].forEach(function(link) {
+				link.style["stroke"] = "#333000";
+				link.style["stroke-opacity"] = 1.0;
+			});
+			d3.selectAll(".node")[0].forEach(function(node) {
+				if (node.style["fill"] == "#1f77b4") node.style["fill"] = "#1033a2";
+				else if (node.style["fill"] == "#aec7e8") node.style["fill"] = "#cc6666";
+			});
+		}
+	};
+}
+enableDarkColorsShortcut();

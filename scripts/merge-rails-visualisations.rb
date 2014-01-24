@@ -59,7 +59,7 @@ avg_amount_of_files_fixes = Proc.new { |html|
 file_in_same_commit_fixes = Proc.new{ |html|
   html.gsub!(/width =.*?,/, 'width = 800,')
   html.gsub!(/var gravity = gravityValues.*?;/, 'var gravity = gravityValues.High;')
-  html.gsub!('var minLinkStrength = linkValuesExtent[0];', 'var minLinkStrength = 23;')
+  html.gsub!('var minLinkStrength = linkValuesExtent[0];', 'var minLinkStrength = 20;')
 }
 
 committer_and_files_fixes = Proc.new{ |html|

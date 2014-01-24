@@ -20148,7 +20148,7 @@ function createForcesGraphOn(elementId, graph, projectName) {
     var gravity = gravityValues.High;
     var minClusterSize = 2;
     var linkValuesExtent = d3.extent(graph.links, function (link) { return link.value; });
-    var minLinkStrength = 23;
+    var minLinkStrength = 20;
     var force = createForce(gravity);
 
     var rootElement = d3.select("#" + elementId);
