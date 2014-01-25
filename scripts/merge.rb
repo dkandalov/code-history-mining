@@ -21,6 +21,10 @@ class CodeHistoryTemplate < Mustache
     'TODO'
   end
 
+  def files_graph_comment
+    ''
+  end
+
   def committers_files_graph_comment
     ''
   end

@@ -46059,7 +46059,7 @@ metric\n\
        
 
         adjustSizeOfShortWords(data.words);
-        excludeWords(["svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"]); normalizeWordSize(data.words);
+        excludeWords([]); normalizeWordSize(data.words);
         createWordCloud();
 
         function excludeWords(wordsToExclude) {
@@ -46115,7 +46115,7 @@ metric\n\
                     .on("click", function (d) {
                         if (!d3.event.altKey) return;
                         excludeWords([d.text]);
-                        excludeWords(["svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"]); normalizeWordSize(data.words);
+                        excludeWords([]); normalizeWordSize(data.words);
                         createWordCloud();
                     });
 
