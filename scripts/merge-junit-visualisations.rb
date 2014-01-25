@@ -1,6 +1,28 @@
 #!/usr/bin/ruby
+require 'mustache'
 require './merge.rb'
 extend VisualizationsConfig
+
+class Template < Mustache
+  def project_name
+    'JUnit'
+  end
+
+  def url_to_project_page
+    'https://github.com/junit-team/junit'
+  end
+
+  def google_drive_url
+    'https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ'
+  end
+
+  def committers_files_graph_comment
+    '<br/>This particular graph is not very accurate because of different
+     VCS user names for the same person (e.g. "dsaff" and "David Saff").'
+  end
+end
+Template.template_file = '../template.html'
+File.open("../junit-template.html", "w"){ |f| f.write(Template.render) }
 
 src_path = '/Users/dima/Google Drive/visualisations/junit/'
 merge_visualizations(src_path, 'junit', {
