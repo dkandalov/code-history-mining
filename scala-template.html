@@ -47,6 +47,12 @@
         <p id="amount-of-committers-chart"></p>
         <br/><br/>
 
+        <h4>Amount of files in commit</h4>
+        Shows average amount of files in commit by day/week/month.
+        Assuming that commit is a finished unit of work, the idea is to see how its size changes over time.
+        <p id="amount-of-files-in-commit-chart"></p>
+        <br/><br/>
+
         <h4>Files changed in the same commit</h4>
         Shows files which were changed in the same commit at least 8 times.
         Thickness of edges is proportional to the number of commits.
@@ -109,7 +115,7 @@
 
 <script src="html/d3.v3.min.js"></script>
 <script src="html/d3.layout.cloud.js"></script>
-
+<script src="html/code-history.js"></script>
 
 </body>
 </html>

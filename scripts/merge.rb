@@ -67,7 +67,7 @@ module VisualizationsConfig
   def with_histogram(percentile = nil)
     Proc.new{ |html|
       html.gsub!(/width =.*?,/, 'width = 740,')
-      html.gsub!(/var defaultPercentile =.*?;/, 'var defaultPercentile = 0.6;') unless percentile.nil?
+      html.gsub!(/var defaultPercentile =.*?;/, "var defaultPercentile = #{percentile};") unless percentile.nil?
     }
   end
 
