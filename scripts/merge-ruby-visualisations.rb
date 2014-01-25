@@ -15,7 +15,7 @@ class Template < CodeHistoryTemplate
   end
 
   def url_to_project_page
-    'https://github.com/ghc/ghc'
+    'https://github.com/ruby/ruby'
   end
 
   def code_history_dates
@@ -23,7 +23,7 @@ class Template < CodeHistoryTemplate
   end
 
   def google_drive_url
-    'https://github.com/ruby/ruby'
+    'https://drive.google.com/#folders/0B5PfR1lF8o5SYnlobWU3eVhOaDg'
   end
 
   def files_graph_comment
