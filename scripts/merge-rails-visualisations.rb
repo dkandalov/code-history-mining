@@ -12,5 +12,5 @@ merge_visualizations(src_path, 'rails', {
     'Amount of commits treemap.html' => [with_treemap],
     'Commit time punchcard.html' => [with_punchcard(multiplier = '2')],
     'Time between commits histogram.html' => [with_histogram(percentile = '0.6')],
-    'Commit messages word cloud.html' => [with_wordcloud(exclusions  ='"svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"')],
+    'Commit messages word cloud.html' => [with_wordcloud(exclusions ='"svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"')],
 })
