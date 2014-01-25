@@ -315,7 +315,9 @@
         </p>
 
         <h4>Change size chart</h4>
-        Shows amount of changes by day/week. The idea is to see overall trend of the project.
+        Shows the amount of changes by day/week/month. The idea is to see overall trend of the project.
+        (Similar to <a href="https://help.github.com/articles/using-graphs#contributors">github contributors graph</a>
+        but without interpolation.)
         <p id="change-size-chart"></p>
         <br/><br/>
 
@@ -370,14 +372,14 @@
         <br/><br/>
 
         <h4>Time between commits histogram</h4>
-        Shows histogram of time between commits by each committer.
-        <br/>
-        (If time between commits is less than 1 minute, it's discarded assuming it was a merge from pull request.)
+        This distribution will probably be the same for any project,
+        i.e. you are most likely to commit again within 5 hours or at least within a day.
+        (Time is tracked separately for each committer.)
         <p id="time-between-commits-histogram"></p>
         <br/><br/>
 
         <h4>Commit messages wordcloud</h4>
-        This is a word cloud from commit messages excluding some of prepositions and articles.
+        Some prepositions and articles are excluded as well as some words specific for the project but not related to code.
         The idea is to see what happened with code by observing human language.
         <br/>
         This particular cloud might not be very representative because of commit messages

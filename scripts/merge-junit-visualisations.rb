@@ -12,6 +12,10 @@ class Template < Mustache
     'https://github.com/junit-team/junit'
   end
 
+  def code_history_dates
+    ' from January 2001 to September 2013'
+  end
+
   def google_drive_url
     'https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ'
   end
@@ -19,6 +23,13 @@ class Template < Mustache
   def committers_files_graph_comment
     '<br/>This particular graph is not very accurate because of different
      VCS user names for the same person (e.g. "dsaff" and "David Saff").'
+  end
+
+  def wordcloud_comment
+    '<br/>
+        This particular cloud might not be very representative because of commit messages
+        with meta-information (that\'s why cloud has "threeriversinstitute" in it).
+        You can alt-click on words to exclude them.'
   end
 end
 Template.template_file = '../template.html'
