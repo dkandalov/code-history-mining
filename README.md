@@ -6,7 +6,10 @@ and analyze project source code history. It's probably better to understand by l
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
  - [Clojure code history](http://dkandalov.github.io/code-history-mining/clojure.html)
+ - [Ruby](http://dkandalov.github.io/code-history-mining/ruby.html)
  - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/rails.html)
+ - [Node.js code history](http://dkandalov.github.io/code-history-mining/nodejs.html)
+ - [GHC code history](http://dkandalov.github.io/code-history-mining/ghc.html)
 
 The plugin has two parts:
  - reading project history from version control and saving it as csv file
