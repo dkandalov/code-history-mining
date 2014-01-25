@@ -3,7 +3,9 @@ require 'mustache'
 require './merge.rb'
 extend VisualizationsConfig
 
-class Template < Mustache
+class Template < CodeHistoryTemplate
+  self.template_file = '../template.html'
+
   def project_name
     'JUnit'
   end
@@ -32,7 +34,6 @@ class Template < Mustache
         You can alt-click on words to exclude them.'
   end
 end
-Template.template_file = '../template.html'
 File.open("../junit-template.html", "w"){ |f| f.write(Template.render) }
 
 src_path = '/Users/dima/Google Drive/visualisations/junit/'

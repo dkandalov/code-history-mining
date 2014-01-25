@@ -1,5 +1,35 @@
 #!/usr/bin/ruby
 
+class CodeHistoryTemplate < Mustache
+  def project_name
+    'TODO'
+  end
+
+  def full_project_name
+    project_name
+  end
+
+  def url_to_project_page
+    'TODO'
+  end
+
+  def code_history_dates
+    ''
+  end
+
+  def google_drive_url
+    'TODO'
+  end
+
+  def committers_files_graph_comment
+    ''
+  end
+
+  def wordcloud_comment
+    ''
+  end
+end
+
 module VisualizationsConfig
   def with_change_size_chart(grouped_by = nil, moving_average = false)
     Proc.new { |html|
@@ -22,9 +52,10 @@ module VisualizationsConfig
     }
   end
 
-  def with_avg_amount_of_files(percentile = nil, grouped_by = nil)
+  def with_avg_amount_of_files(percentile = nil, grouped_by = nil, moving_average = false)
     Proc.new { |html|
       html.gsub!(/width =.*?,/, 'width = 740,')
+      html.gsub!('var showMovingAverage = false;', "var showMovingAverage = #{moving_average};")
       html.gsub!('var defaultPercentile = 1.0;', "var defaultPercentile = #{percentile};")
       unless grouped_by.nil?
         i = ['day', 'week', 'month'].index(grouped_by)
