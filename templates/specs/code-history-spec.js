@@ -1,8 +1,24 @@
+describe("quick find", function () {
+	it("finds if points are connected", function() {
+		var quickFind = new QuickFind(3);
+		expect(quickFind.areConnected(1, 2)).toBe(false);
+		expect(quickFind.areConnected(1, 3)).toBe(false);
+
+		quickFind.connect(1, 2);
+		expect(quickFind.areConnected(1, 2)).toBe(true);
+		expect(quickFind.areConnected(1, 3)).toBe(false);
+
+		quickFind.connect(2, 3);
+		expect(quickFind.areConnected(1, 2)).toBe(true);
+		expect(quickFind.areConnected(1, 3)).toBe(true);
+	});
+});
+
 describe("change size chart", function () {
 	var date = function(s) { return d3.time.format("%d/%m/%Y").parse(s); };
 	var getChangeSize = function(it) { return it.changeSize; };
 
-	it("should calculate moving average for three day interval", function() {
+	it("can calculate moving average for three day interval", function() {
 		var movingAverageOfThreeDays = function(data) { return movingAverage(data, d3.time.day, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeDays([
@@ -20,7 +36,7 @@ describe("change size chart", function () {
 		]);
 	});
 
-	it("should calculate moving average for three month interval", function() {
+	it("can calculate moving average for three month interval", function() {
 		var movingAverageOfThreeWeeks = function(data) { return movingAverage(data, d3.time.month, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeWeeks([

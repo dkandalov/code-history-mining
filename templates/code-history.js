@@ -1,3 +1,25 @@
+function QuickFind(size) {
+	this.size = size;
+	this.connections = new Array(size);
+	for (var i = 0; i < this.connections.length; i++) {
+		this.connections[i] = i;
+	}
+}
+QuickFind.prototype.areConnected = function(p1, p2) {
+	return this.connections[p1] == this.connections[p2];
+};
+QuickFind.prototype.connect = function(p1, p2) {
+	var p1Root = this.rootOf(this.connections[p1]);
+	var p2Root = this.rootOf(this.connections[p2]);
+	for (var i = 0; i < this.connections.length; i++) {
+		if (this.connections[i] == p1Root) this.connections[i] = p2Root;
+	}
+};
+QuickFind.prototype.rootOf = function(p) {
+	return this.connections[p] == p ? p : this.rootOf(this.connections[p]);
+};
+
+
 function movingAverage(data, timeInterval, getValue, period) {
 	if (data.length < 2) return [];
 
