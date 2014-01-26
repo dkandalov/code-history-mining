@@ -194,13 +194,42 @@ class Analysis {
 
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def files = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
-		def nodesJSLiteral =
-			(files.collect{'{"name": "' + it + '", "group": 1}'} +
-			authors.collect{'{"name": "' + it + '", "group": 2}'}).join(",\n")
+		def nodesJSLiteral = (
+			files.collect{'{"name": "' + it + '", "group": 1}'} +
+			authors.collect{'{"name": "' + it + '", "group": 2}'}
+		).join(",\n")
 
 		def nodes = files + authors
 		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(nonEmptyFileName(it.key)), it.value] }
 		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+	}
+
+	static String committersChangingFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		events = useLatestNameForMovedFiles(events, checkIfCancelled)
+
+		def fileNames = events.collect{ event -> fullFileNameIn(event) }
+		def authors = events.collect{ it.author }.unique()
+
+		def nodesJSLiteral = (
+			 fileNames.collect{'{"name": "' + it + '", "group": 1}'} +
+			 authors.collect{'{"name": "' + it + '", "group": 2}'}
+		).join(",\n")
+
+		def allNodes = fileNames + authors
+		def eventsByAuthor = events.groupBy{ it.author }
+		def links = authors.collectMany{ author ->
+			def authorIndex = allNodes.indexOf(author)
+			eventsByAuthor[author]
+				.collect{ fullFileNameIn(it) }
+				.groupBy{it}.entrySet().collect{
+					def fileName = it.key
+					def changeCount = it.value.size()
+					[authorIndex, fileNames.indexOf(fileName), changeCount]
+				}
+		}
+		def relationsJSLiteral = links.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}

@@ -114,8 +114,11 @@ static AnAction createActionGroup(File file) {
 				"Files In The Same Commit Graph", "Creating files in the same commit graph",
 				"files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph))
 		add(createAction(
+				"Committers Changing Files Graph", "Creating committers changing files graph",
+				"committers-changing-files-graph.html", Analysis.&committersChangingFilesGraph))
+		add(createAction(
 				"Committers Changing Same Files Graph", "Creating committers changing same files graph",
-				"author-to-file-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
+				"committers-changing-same-files-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
 		add(createAction(
 				"Commit Time Punchcard", "Creating commit time punchcard",
 				"commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard))

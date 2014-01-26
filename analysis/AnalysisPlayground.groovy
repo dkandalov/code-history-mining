@@ -7,7 +7,7 @@ import static java.lang.System.getenv
 class AnalysisPlayground {
 	static void main(String[] args) {
 //		def projectName = "code-history-mining"
-		def projectName = "junit"
+		def projectName = "junit-2013"
 //		def projectName = "idea"
 //		def projectName = "fitnesse"
 //		def projectName = "scala"
@@ -17,7 +17,7 @@ class AnalysisPlayground {
 //		new File("commentsAfter").write(events.collect{ it.commitMessage }.join("\n"))
 //		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_ChangeSize_Chart(events))
 //		fillTemplate("files-in-same-commit-graph.html", projectName, Analysis.createJson_FilesInTheSameCommit_Graph(events))
-//		fillTemplate("author-to-file-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
+//		fillTemplate("committers-changing-same-files-graph.html", projectName, Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph(events))
 //		fillTemplate("commit-time-punchcard.html", projectName, Analysis.createJson_CommitsByDayOfWeekAndTime_PunchCard(events))
 //		fillTemplate("wordcloud.html", projectName, Analysis.createJson_CommitComments_WordCloud(events))
 //		fillTemplate("treemap.html", projectName, Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(events))
@@ -25,7 +25,8 @@ class AnalysisPlayground {
 
 //		fillTemplate("amount-of-committers-chart.html", projectName, Analysis.createJson_AmountOfCommitters_Chart(events))
 //		Analysis.createJson_AverageAmountOfLinesChangedByDay_Chart(events)
-		fillTemplate("amount-of-files-in-commit-chart.html", projectName, Analysis.createJson_AverageAmountOfFilesInCommit_Chart(events))
+//		fillTemplate("amount-of-files-in-commit-chart.html", projectName, Analysis.createJson_AverageAmountOfFilesInCommit_Chart(events))
+		fillTemplate("committers-changing-same-files-graph.html", projectName, Analysis.committersChangingFilesGraph(events))
 //		Analysis.createJson_CommitsWithAndWithoutTests_Chart(events)
 	}
 
