@@ -1,3 +1,4 @@
+import analysis.Analysis
 import analysis.AnalysisTest
 import events.EventStorageTest
 import historyreader.ChangeEventsReaderGitTest
