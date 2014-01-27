@@ -455,30 +455,39 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 			event.fileName != "" ? event.fileName : event.fileNameBefore
 		}
 
-		static Date floorToDay(Date date) {
-			date[Calendar.MILLISECOND] = 0
-			date[Calendar.SECOND] = 0
-			date[Calendar.MINUTE] = 0
-			date[Calendar.HOUR_OF_DAY] = 0
-			date
+		static Date floorToDay(Date date, TimeZone timeZone = TimeZone.default) {
+			Calendar.getInstance(timeZone).with{
+				time = date
+				set(MILLISECOND, 0)
+				set(SECOND, 0)
+				set(MINUTE, 0)
+				set(HOUR_OF_DAY, 0)
+				time
+			}
 		}
 
-		static Date floorToWeek(Date date) {
-			date[Calendar.MILLISECOND] = 0
-			date[Calendar.SECOND] = 0
-			date[Calendar.MINUTE] = 0
-			date[Calendar.HOUR_OF_DAY] = 0
-			date[Calendar.DAY_OF_WEEK] = Calendar.MONDAY
-			date
+		static Date floorToWeek(Date date, TimeZone timeZone = TimeZone.default) {
+			Calendar.getInstance(timeZone).with{
+				time = date
+				set(MILLISECOND, 0)
+				set(SECOND, 0)
+				set(MINUTE, 0)
+				set(HOUR_OF_DAY, 0)
+				set(DAY_OF_WEEK, MONDAY)
+				time
+			}
 		}
 
-		static Date floorToMonth(Date date) {
-			date[Calendar.MILLISECOND] = 0
-			date[Calendar.SECOND] = 0
-			date[Calendar.MINUTE] = 0
-			date[Calendar.HOUR_OF_DAY] = 0
-			date[Calendar.DAY_OF_MONTH] = 1
-			date
+		static Date floorToMonth(Date date, TimeZone timeZone = TimeZone.default) {
+			Calendar.getInstance(timeZone).with{
+				time = date
+				set(MILLISECOND, 0)
+				set(SECOND, 0)
+				set(MINUTE, 0)
+				set(HOUR_OF_DAY, 0)
+				set(DAY_OF_MONTH, 1)
+				time
+			}
 		}
 
 		static int dayOfWeekOf(Date date) {

@@ -11,7 +11,8 @@ class CommitMungingUtil {
 		new CommitInfo(
 				revisionNumberOf(commit),
 				removeEmailFrom(commit.committerName),
-				commit.commitDate, commit.comment.trim()
+				commit.commitDate,
+				commit.comment.trim()
 		)
 	}
 

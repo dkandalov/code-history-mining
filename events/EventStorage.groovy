@@ -8,15 +8,16 @@ import util.Measure
 import java.text.SimpleDateFormat
 
 class EventStorage {
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
-
 	final String filePath
 	private Date oldestEventTime
 	private Date mostRecentEventTime
 
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
-	EventStorage(String filePath) {
+
+	EventStorage(String filePath, TimeZone timeZone = TimeZone.default) {
 		this.filePath = filePath
+		this.dateFormat.timeZone = timeZone
 	}
 
 	@CompileStatic
@@ -76,15 +77,15 @@ class EventStorage {
 		!file.exists() || file.length() == 0
 	}
 
-	private static String toCsv(Collection<FileChangeEvent> changeEvents) {
-		changeEvents.collect{toCsv(it)}.join("\n") + "\n"
+	private String toCsv(Collection<FileChangeEvent> changeEvents) {
+		changeEvents.collect{ toCsv(it) }.join("\n") + "\n"
 	}
 
-	private static String toCsv(FileChangeEvent changeEvent) {
+	private String toCsv(FileChangeEvent changeEvent) {
 		changeEvent.with {
 			def stringWriter = new StringWriter()
 			def csvWriter = new CSVWriter(stringWriter)
-			[format(revisionDate), revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
+			[dateFormat.format(revisionDate), revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
 					escapeNewLines(commitMessage)].each { csvWriter.writeField(String.valueOf(it)) }
@@ -94,7 +95,7 @@ class EventStorage {
 	}
 
 
-	private static FileChangeEvent fromCsv(String line) {
+	private FileChangeEvent fromCsv(String line) {
 		def fields = []
 		Measure.measure("csvReader.readFields") {
 			new CSVReader().readFields(line, fields)
@@ -103,7 +104,7 @@ class EventStorage {
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage
 		) = fields
-		revisionDate = DATE_FORMAT.parse(revisionDate)
+		revisionDate = dateFormat.parse(revisionDate)
 
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, unescapeNewLines(commitMessage)),
@@ -120,9 +121,6 @@ class EventStorage {
 
 	private static int asInt(String s) { s.toInteger() }
 
-	private static String format(Date date) {
-		DATE_FORMAT.format(date)
-	}
 
 	private static String readFirstLine(String filePath) {
 		def file = new File(filePath)

@@ -14,7 +14,7 @@ class CommitReaderGitTest {
 	private final Project jUnitProject = findJUnitProject()
 
 	@Test "should interpret renamed file as a single event"() {
-		def commit = readSingleCommit("43b0fe3", dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007"))
+		def commit = readSingleCommit("43b0fe3", dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
 
 		assert change.type == Change.Type.MOVED
@@ -23,7 +23,7 @@ class CommitReaderGitTest {
 	}
 
 	@Test "should interpret moved file as a single event"() {
-		def commit = readSingleCommit("a19e98f", dateTime("08:50 28/07/2011"), dateTime("09:00 28/07/2011"))
+		def commit = readSingleCommit("a19e98f", dateTime("07:50 28/07/2011"), dateTime("08:00 28/07/2011"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
 
 		assert change.type == Change.Type.MOVED
@@ -32,7 +32,7 @@ class CommitReaderGitTest {
 	}
 
 	@Test "should ignore merge commits and include merge changes as separate change lists"() {
-		def commits = readSingleCommit("dc730e3", dateTime("10:00 09/05/2013"), dateTime("17:02 09/05/2013"))
+		def commits = readSingleCommit("dc730e3", dateTime("09:00 09/05/2013"), dateTime("16:02 09/05/2013"))
 
 		def changes = commits.changes
 		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
@@ -63,11 +63,11 @@ class CommitReaderGitTest {
 	}
 
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def commits = new CommitReader(jUnitProject).readCommits(from, to).toList()
-		assert commits.size() == 1 : "Excpected single change list but got ${commits.size()}"
+		def commits = new CommitReader(jUnitProject).readCommits(from, to).toList().findAll{it != null}
+		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
 
 		def commit = commits.first()
-		(commit as VcsRevisionNumberAware ).revisionNumber.asString().with {
+		(commit as VcsRevisionNumberAware).revisionNumber.asString().with {
 			assert it.startsWith(expectedGitHash) : "Expected hash $expectedGitHash but got $it"
 		}
 		commit
