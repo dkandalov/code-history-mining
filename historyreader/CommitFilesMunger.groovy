@@ -20,24 +20,26 @@ import static util.Measure.measure
 class CommitFilesMunger {
 	private final Project project
 	private final boolean countChangeSizeInLines
+	private final List fileChangeAttributeMungers
 
-	CommitFilesMunger(Project project, boolean countChangeSizeInLines) {
+	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List fileChangeAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
+		this.fileChangeAttributeMungers = fileChangeAttributeMungers
 	}
 
 	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines))
+				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines, fileChangeAttributeMungers))
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
 	}
 
-	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent) {
+	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent, List fileChangeAttributeMungers) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
@@ -55,6 +57,8 @@ class CommitFilesMunger {
 		def optimizedFileNameBefore = (change.type == MODIFICATION ? "" : fileNameBefore)
 		def optimizedPackageNameBefore = (change.type == MODIFICATION ? "" : packageNameBefore)
 
+		def additionalAttributes = fileChangeAttributeMungers.collectMany{ it.call(change, project) }
+
 		new FileChangeInfo(
 				optimizedFileNameBefore,
 				fileName,
@@ -62,7 +66,8 @@ class CommitFilesMunger {
 				packageName,
 				change.type.toString(),
 				lineChangesStats,
-				charChangesStats
+				charChangesStats,
+				additionalAttributes
 		)
 	}
 

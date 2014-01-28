@@ -14,6 +14,7 @@ class FileChangeInfo {
 	String fileChangeType
 	ChangeStats lines
 	ChangeStats chars
+	Collection additionalAttributes = []
 
 
 	@Override String toString() {
