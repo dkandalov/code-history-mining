@@ -37,7 +37,7 @@ class CommitFilesMunger {
 		}
 	}
 
-	static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent) {
+	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
