@@ -112,9 +112,9 @@ class EventStorage {
 				new CommitInfo(revision, author, revisionDate, unescapeNewLines(commitMessage)),
 				new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
-						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved)),
-						additionalAttributes
-				)
+						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved))
+				),
+				additionalAttributes
 		)
 		event
 	}

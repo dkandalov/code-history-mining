@@ -22,10 +22,10 @@ class CommitFilesMunger {
 	private final boolean countChangeSizeInLines
 	private final List fileChangeAttributeMungers
 
-	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List fileChangeAttributeMungers = []) {
+	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
-		this.fileChangeAttributeMungers = fileChangeAttributeMungers
+		this.fileChangeAttributeMungers = additionalAttributeMungers
 	}
 
 	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {

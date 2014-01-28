@@ -14,13 +14,9 @@ class FileChangeInfo {
 	String fileChangeType
 	ChangeStats lines
 	ChangeStats chars
-	Collection additionalAttributes
 
 
 	@Override String toString() {
-		"FileChangeInfo(" +
-				"\"$fileNameBefore\",\"$fileName\",\"$packageNameBefore\",\"$packageName\",\"$fileChangeType\"," +
-				"$lines,$chars,$additionalAttributes" +
-		")"
+		"FileChangeInfo(\"$fileNameBefore\",\"$fileName\",\"$packageNameBefore\",\"$packageName\",\"$fileChangeType\",$lines,$chars)"
 	}
 }
