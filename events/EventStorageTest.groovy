@@ -57,7 +57,11 @@ class EventStorageTest {
 	}
 
 	@Test void "should read/write events with additional attributes"() {
-		assert "not implemented" == ""
+		storage.appendToEventsFile([eventWithAdditionalAttributes])
+		def events = storage.readAllEvents()
+
+		assert events.size() == 1
+		assert events.first() == eventWithAdditionalAttributes
 	}
 
 	@Test void "should only append events with date before oldest event"() {
@@ -110,6 +114,14 @@ class EventStorageTest {
 			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "This\nis\na multi-line\ncommit message"),
 			new FileChangeInfo("", "Some.java", "", "/src/somewhere", "MODIFICATION",
 					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0), []
+			)
+	)
+
+	private final eventWithAdditionalAttributes = new FileChangeEvent(
+			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "commit message"),
+			new FileChangeInfo("", "Some.java", "", "/src/somewhere", "MODIFICATION",
+					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0),
+					["attribute1", "attribute2"]
 			)
 	)
 

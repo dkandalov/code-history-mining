@@ -85,10 +85,10 @@ class EventStorage {
 		changeEvent.with {
 			def stringWriter = new StringWriter()
 			def csvWriter = new CSVWriter(stringWriter)
-			[dateFormat.format(revisionDate), revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
+			([dateFormat.format(revisionDate), revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 					lines.before, lines.after, lines.added, lines.modified, lines.removed,
 					chars.before, chars.after, chars.added, chars.modified, chars.removed,
-					escapeNewLines(commitMessage)].each { csvWriter.writeField(String.valueOf(it)) }
+					escapeNewLines(commitMessage)] + additionalAttributes).each { csvWriter.writeField(String.valueOf(it)) }
 			csvWriter.close()
 			stringWriter.toString()
 		}
@@ -106,12 +106,14 @@ class EventStorage {
 		) = fields
 		revisionDate = dateFormat.parse(revisionDate)
 
+		def additionalAttributes = fields.drop(19)
+
 		def event = new FileChangeEvent(
 				new CommitInfo(revision, author, revisionDate, unescapeNewLines(commitMessage)),
 				new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 						new ChangeStats(asInt(linesBefore), asInt(linesAfter), asInt(linesAdded), asInt(linesModified), asInt(linesRemoved)),
 						new ChangeStats(asInt(charsBefore), asInt(charsAfter), asInt(charsAdded), asInt(charsModified), asInt(charsRemoved)),
-						[] // TODO
+						additionalAttributes
 				)
 		)
 		event
