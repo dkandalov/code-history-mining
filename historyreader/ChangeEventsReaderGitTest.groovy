@@ -20,7 +20,7 @@ class ChangeEventsReaderGitTest {
 		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, false).&mungeCommit)
 
 		def commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
-		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), commitComment)
+		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("14:42:16 03/10/2007"), commitComment)
 		def expectedChangeEvents = [
 				new FileChangeEvent(commitInfo, new FileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
 				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
@@ -33,13 +33,20 @@ class ChangeEventsReaderGitTest {
 		]
 
 		// exercise
-		eventsReader.readPresentToPast(dateTime("15:40 03/10/2007"), dateTime("15:45 03/10/2007")) { List changeEvents ->
-			// verify
-			assert expectedChangeEvents.size() == changeEvents.size()
-			changeEvents.eachWithIndex { event, i ->
-				def expectedEvent = expectedChangeEvents[i]
-				assert event == expectedEvent
-			}
+		def eventsConsumer = new EventConsumer()
+		eventsReader.readPresentToPast(dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"), eventsConsumer.consume)
+		def changeEvents = eventsConsumer.changeEvents
+
+		// verify
+		assert expectedChangeEvents.size() == changeEvents.size()
+		changeEvents.eachWithIndex { event, i ->
+			def expectedEvent = expectedChangeEvents[i]
+			assert event == expectedEvent
 		}
+	}
+
+	private static class EventConsumer {
+		List changeEvents
+		Closure consume = { List changeEvents -> this.changeEvents = changeEvents }
 	}
 }
