@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+require 'mustache'
 
 class CodeHistoryTemplate < Mustache
   def project_name
@@ -139,12 +140,15 @@ def extract_content_from(file_name)
 end
 
 
-def merge_visualizations(src_path, project_name, fixes_by_filename)
-  do_merge(src_path, "../#{project_name}-template.html", "../#{project_name}.html", fixes_by_filename)
+def merge_visualizations(src_path, template_filler, project_name, fixes_by_filename)
+  do_merge(src_path, template_filler, "../#{project_name}-template.html", "../#{project_name}.html", fixes_by_filename)
 end
 
 
-def do_merge(src_path, template_file, target_file, fixes_by_filename)
+def do_merge(src_path, template_class, template_file, target_file, fixes_by_filename)
+  template_class.template_file = '../template.html'
+  File.open(template_file, "w"){ |f| f.write(template_class.render) }
+
   remove_margin_style = Proc.new { |html|
     html.gsub!(/margin:.*?;/, '')
   }

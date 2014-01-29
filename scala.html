@@ -305,23 +305,25 @@
 <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
         <p>
-            This is analysis and visualization of <a href="https://github.com/scala/scala">Scala programming language</a>
-            code history from 03/01/2005 to 19/12/2013
-            using <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and <a href="http://d3js.org/">d3.js</a>.
-            There is no particular method behind this so if you have a suggestion,
-            please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">create an issue</a>.
+            This is visualization of <a href="https://github.com/scala/scala‎">Scala programming language</a> project
+            code history from 03/01/2005 to 19/12/2013.
+            It was made with <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and some scripts.
+            There is no particular method behind this so if you have an idea,
+            please feel free to <a href="https://github.com/dkandalov/code-history-mining/issues/new">suggest it</a>.
             (You can find csv file with events and original visualizations
-            <a href="https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk">here on google drive</a>.)
+            <a href="https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk">on google drive</a>.)
         </p>
 
         <h4>Change size chart</h4>
-        Shows amount of commits by day/week. Red line is one month moving average.
+        Shows the amount of changes by day/week/month. The idea is to see overall trend of the project.
+        (Similar to <a href="https://help.github.com/articles/using-graphs#contributors">github contributors graph</a>
+        but without interpolation.)
         <p id="change-size-chart"></p>
         <br/><br/>
 
         <h4>Amount of committers</h4>
         Shows how many different people committed over month/week/day.
-        The idea is to see amount of people contributing to the project.
+        The idea is to see the amount of people contributing to the project.
         <p id="amount-of-committers-chart"></p>
         <br/><br/>
 
@@ -332,37 +334,39 @@
         <br/><br/>
 
         <h4>Files changed in the same commit</h4>
-        Shows files which were changed in the same commit at least 8 times.
+        Shows files which were changed in the same commit several times.
         Thickness of edges is proportional to the number of commits.
         The idea is to discover de facto dependencies between files.
         <br/>
         You can click on nodes to see file names in cluster.
+        
         <p id="files-in-the-same-commit"></p>
         <br/><br/>
 
         <h4>Committers changing same files</h4>
-        Shows people and files they changed within a week.
-        If file was edited by two people within a week, a link is added.
-        If it happened at least 7 times, link is added to the graph.
-        The is idea is to discover communication patterns and shared code ownership.
-
+        Shows commiters connections to files they have both changed within a week.
+        That is if file was modified by two persons within a week, a link is added.
+        The is idea is to discover how people "communicate" through changing same files.
+        
         <p id="author-to-file-graph"></p>
         <br/><br/>
 
         <h4>Amount of commits treemap</h4>
-        Shows a break-down of commits by package.
-        Renamed and moved package are tracked but only current package name is displayed.
-        The idea is to see which parts of the project have more attention.
+        Shows a break-down of commits by package/folder.
+        Size of rectangles corresponds to amount of commits.
+        The idea is to see which parts of the project have more attention
+        (e.g. ratio between commits to production code and tests).
         <br/>
-        E.g. ratio between commits to production code and tests.
+        (Renamed and moved package are tracked but only current package name is displayed.)
         <p id="commit-treemap"></p>
         <br/><br/>
 
         <h4>Commit time punchcard</h4>
         Shows amount of commits at certain time of day (similar to
-        <a href="https://github.com/blog/1093-introducing-the-new-github-graphs">GitHub punchcard</a>).
+        <a href="https://help.github.com/articles/using-graphs#punchcard">github punchcard</a>).
         <br/>
-        Sometimes there is a "lunch-time line" around 12:30 pm, not in this case :)
+        Note that you can also group commits by minute (inspired by
+        <a href="http://dtrace.org/blogs/brendan/2012/03/26/subsecond-offset-heat-maps/">subsecond offset heatmaps</a>).
         <p id="commit-time-punchcard"></p>
         <br/><br/>
 
@@ -374,8 +378,9 @@
         <br/><br/>
 
         <h4>Commit messages wordcloud</h4>
-        Some prepositions and articles are excluded as well as "SI" which is used for issue tracking.
-        The idea is to see what happens with code by observing human language.
+        Some prepositions and articles are excluded as well as some words specific for the project but not related to code.
+        The idea is to see what happened with code by observing human language.
+        
         <p id="commit-word-cloud"></p>
         <br/><br/>
     </section>
@@ -385,8 +390,8 @@
 <div id="footer_wrap" class="outer">
     <footer class="inner">
         <p>Published with <a href="http://pages.github.com">GitHub Pages</a>.</p>
-        <p class="copyright">Please feel free to drop <a href="https://twitter.com/dmitrykandalov">me</a> a line
-            or create an issue on <a href="https://github.com/dkandalov/code-history-mining/issues">GitHub</a>.
+        <p class="copyright">Please feel free to <a href="https://twitter.com/dmitrykandalov">drop me a line</a>
+            or <a href="https://github.com/dkandalov/code-history-mining/issues">create an issue</a> on GitHub.
         </p>
     </footer>
 </div>
@@ -73526,6 +73531,7 @@ metric\n\
         }
     }
 </script>
+
 
 </body>
 </html>

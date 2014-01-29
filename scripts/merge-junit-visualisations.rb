@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
-require 'mustache'
 require './merge.rb'
 extend VisualizationsConfig
 
 class Template < CodeHistoryTemplate
-  self.template_file = '../template.html'
-
   def project_name
     'JUnit'
   end
@@ -34,10 +31,9 @@ class Template < CodeHistoryTemplate
         You can alt-click on words to exclude them.'
   end
 end
-File.open("../junit-template.html", "w"){ |f| f.write(Template.render) }
 
 src_path = '/Users/dima/Google Drive/visualisations/junit/'
-merge_visualizations(src_path, 'junit', {
+merge_visualizations(src_path, Template, 'junit', {
     'Change size chart.html' => [with_change_size_chart(grouped_by = 'month', moving_average = false)],
     'Amount of committers.html' => [with_amount_of_committers(grouped_by = 'month')],
     'Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.95', grouped_by = 'month')],

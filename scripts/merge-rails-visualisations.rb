@@ -2,8 +2,26 @@
 require './merge.rb'
 extend VisualizationsConfig
 
+class Template < CodeHistoryTemplate
+  def project_name
+    'Ruby on Rails'
+  end
+
+  def url_to_project_page
+    'https://github.com/rails/rails‎'
+  end
+
+  def code_history_dates
+    ' from November 2004 to January 2014'
+  end
+
+  def google_drive_url
+    'https://drive.google.com/#folders/0B5PfR1lF8o5SWGRYYmlISmZtUU0'
+  end
+end
+
 src_path = '/Users/dima/Google Drive/visualisations/rails/'
-merge_visualizations(src_path, 'rails', {
+merge_visualizations(src_path, Template, 'rails', {
     'Change size chart.html' => [with_change_size_chart(grouped_by = 'month')],
     'Amount of committers.html' => [with_amount_of_committers(grouped_by = 'month')],
     'Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.975', grouped_by = 'month')],

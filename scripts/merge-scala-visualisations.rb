@@ -2,8 +2,30 @@
 require './merge.rb'
 extend VisualizationsConfig
 
+class Template < CodeHistoryTemplate
+  def project_name
+    'Scala'
+  end
+
+  def full_project_name
+    'Scala programming language'
+  end
+
+  def url_to_project_page
+    'https://github.com/scala/scala‎'
+  end
+
+  def code_history_dates
+    ' from 03/01/2005 to 19/12/2013'
+  end
+
+  def google_drive_url
+    'https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk'
+  end
+end
+
 src_path = '/Users/dima/Google Drive/visualisations/scala-code-history/'
-merge_visualizations(src_path, 'scala', {
+merge_visualizations(src_path, Template, 'scala', {
     'Change size chart.html' => [with_change_size_chart(grouped_by = 'month', moving_average = true)],
     'Amount of committers.html' => [with_amount_of_committers(grouped_by = 'month')],
     'Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.975', grouped_by = 'month')],

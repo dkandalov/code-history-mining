@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
-require 'mustache'
 require './merge.rb'
 extend VisualizationsConfig
 
 class Template < CodeHistoryTemplate
-  self.template_file = '../template.html'
-
   def project_name
     'GHC'
   end
@@ -26,10 +23,9 @@ class Template < CodeHistoryTemplate
     'https://drive.google.com/#folders/0B5PfR1lF8o5SaC1ncG84V29wQTQ'
   end
 end
-File.open("../ghc-template.html", "w"){ |f| f.write(Template.render) }
 
 src_path = '/Users/dima/Google Drive/visualisations/ghc/'
-merge_visualizations(src_path, 'ghc', {
+merge_visualizations(src_path, Template, 'ghc', {
     'Change size chart.html' => [with_change_size_chart(grouped_by = 'month', moving_average = false)],
     'Amount of committers.html' => [with_amount_of_committers(grouped_by = 'month')],
     'Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.95', grouped_by = 'week')],

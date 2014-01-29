@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
-require 'mustache'
 require './merge.rb'
 extend VisualizationsConfig
 
 class Template < CodeHistoryTemplate
-  self.template_file = '../template.html'
-
   def project_name
     'node.js'
   end
@@ -22,10 +19,9 @@ class Template < CodeHistoryTemplate
     'https://drive.google.com/#folders/0B5PfR1lF8o5SS01PdWtPUk5tQ1E'
   end
 end
-File.open("../nodejs-template.html", "w"){ |f| f.write(Template.render) }
 
 src_path = '/Users/dima/Google Drive/visualisations/nodejs/'
-merge_visualizations(src_path, 'nodejs', {
+merge_visualizations(src_path, Template, 'nodejs', {
     'Change size chart.html' => [with_change_size_chart(grouped_by = 'week', moving_average = false)],
     'Amount of committers.html' => [with_amount_of_committers(grouped_by = 'week')],
     'Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.98', grouped_by = 'week')],

@@ -305,7 +305,7 @@
 <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
         <p>
-            This is visualization of <a href="https://github.com/rails/rails">Ruby on Rails</a> project
+            This is visualization of <a href="https://github.com/rails/rails‎">Ruby on Rails</a> project
             code history from November 2004 to January 2014.
             It was made with <a href="https://github.com/dkandalov/code-history-mining">this IntelliJ plugin</a> and some scripts.
             There is no particular method behind this so if you have an idea,
@@ -315,9 +315,9 @@
         </p>
 
         <h4>Change size chart</h4>
-        Shows amount of commits by day/week/month
-        (similar to <a href="https://help.github.com/articles/using-graphs#contributors">github contributors graph</a>
-        but without interpolation).
+        Shows the amount of changes by day/week/month. The idea is to see overall trend of the project.
+        (Similar to <a href="https://help.github.com/articles/using-graphs#contributors">github contributors graph</a>
+        but without interpolation.)
         <p id="change-size-chart"></p>
         <br/><br/>
 
@@ -339,6 +339,7 @@
         The idea is to discover de facto dependencies between files.
         <br/>
         You can click on nodes to see file names in cluster.
+        
         <p id="files-in-the-same-commit"></p>
         <br/><br/>
 
@@ -346,7 +347,7 @@
         Shows commiters connections to files they have both changed within a week.
         That is if file was modified by two persons within a week, a link is added.
         The is idea is to discover how people "communicate" through changing same files.
-
+        
         <p id="author-to-file-graph"></p>
         <br/><br/>
 
@@ -363,6 +364,9 @@
         <h4>Commit time punchcard</h4>
         Shows amount of commits at certain time of day (similar to
         <a href="https://help.github.com/articles/using-graphs#punchcard">github punchcard</a>).
+        <br/>
+        Note that you can also group commits by minute (inspired by
+        <a href="http://dtrace.org/blogs/brendan/2012/03/26/subsecond-offset-heat-maps/">subsecond offset heatmaps</a>).
         <p id="commit-time-punchcard"></p>
         <br/><br/>
 
@@ -376,6 +380,7 @@
         <h4>Commit messages wordcloud</h4>
         Some prepositions and articles are excluded as well as some words specific for the project but not related to code.
         The idea is to see what happened with code by observing human language.
+        
         <p id="commit-word-cloud"></p>
         <br/><br/>
     </section>
