@@ -1,7 +1,7 @@
 ### What is this?
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
-and analyze project source code history. It's probably better to understand by looking at example:
+and analyze project source code history. Take a look at examples:
  - [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html)
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
