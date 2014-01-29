@@ -20,9 +20,9 @@ import static util.Measure.measure
 class CommitFilesMunger {
 	private final Project project
 	private final boolean countChangeSizeInLines
-	private final List fileChangeAttributeMungers
+	private final List<Closure> fileChangeAttributeMungers
 
-	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List additionalAttributeMungers = []) {
+	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List<Closure> additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
 		this.fileChangeAttributeMungers = additionalAttributeMungers
@@ -32,14 +32,15 @@ class CommitFilesMunger {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines, fileChangeAttributeMungers))
+				def additionalAttributes = fileChangeAttributeMungers.collect{ it.call(commit, change, project) }
+				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines), additionalAttributes)
 			}
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
 	}
 
-	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent, List fileChangeAttributeMungers) {
+	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
@@ -57,8 +58,6 @@ class CommitFilesMunger {
 		def optimizedFileNameBefore = (change.type == MODIFICATION ? "" : fileNameBefore)
 		def optimizedPackageNameBefore = (change.type == MODIFICATION ? "" : packageNameBefore)
 
-		def additionalAttributes = fileChangeAttributeMungers.collectMany{ it.call(change, project) }
-
 		new FileChangeInfo(
 				optimizedFileNameBefore,
 				fileName,
@@ -66,8 +65,7 @@ class CommitFilesMunger {
 				packageName,
 				change.type.toString(),
 				lineChangesStats,
-				charChangesStats,
-				additionalAttributes
+				charChangesStats
 		)
 	}
 
