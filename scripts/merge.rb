@@ -22,6 +22,10 @@ class CodeHistoryTemplate < Mustache
     'TODO'
   end
 
+  def change_size_chart_comment
+    ''
+  end
+
   def files_graph_comment
     ''
   end
