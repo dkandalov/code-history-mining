@@ -6,7 +6,7 @@ import events.FileChangeEvent
 import events.FileChangeInfo
 import org.junit.Test
 
-import static events.FileChangeInfo.getNA
+import static events.ChangeStats.NA
 import static historyreader.CommitReaderGitTest.findJUnitProject
 import static util.DateTimeUtil.dateTime
 import static util.DateTimeUtil.exactDateTime

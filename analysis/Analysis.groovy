@@ -1,5 +1,6 @@
 package analysis
 import com.intellij.openapi.diagnostic.Logger
+import events.ChangeStats
 import events.CommitInfo
 import events.FileChangeEvent
 import events.FileChangeInfo
@@ -424,11 +425,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		}
 		
 		static def changeSizeInChars(FileChangeEvent event) {
-			if (event.chars == FileChangeInfo.NA || event.chars == FileChangeInfo.TOO_BIG_TO_DIFF) 0
+			if (event.chars == ChangeStats.NA || event.chars == ChangeStats.TOO_BIG_TO_DIFF) 0
 			else event.chars.added + event.chars.modified + event.chars.removed
 		}
 		static def changeSizeInLines(FileChangeEvent event) {
-			if (event.lines == FileChangeInfo.NA || event.lines == FileChangeInfo.TOO_BIG_TO_DIFF) 0
+			if (event.lines == ChangeStats.NA || event.lines == ChangeStats.TOO_BIG_TO_DIFF) 0
 			else event.lines.added + event.lines.modified + event.lines.removed
 		}
 

@@ -6,6 +6,9 @@ import groovy.transform.Immutable
 @CompileStatic
 @Immutable
 class ChangeStats {
+	static final ChangeStats NA = new ChangeStats(-1, -1, -1, -1, -1)
+	static final ChangeStats TOO_BIG_TO_DIFF = new ChangeStats(-2, -2, -2, -2, -2)
+
 	int before
 	int after
 	int added

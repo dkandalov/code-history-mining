@@ -44,7 +44,7 @@ class CommitFilesMunger {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
-		def (lineChangesStats, charChangesStats) = [FileChangeInfo.NA, FileChangeInfo.NA]
+		def (lineChangesStats, charChangesStats) = [ChangeStats.NA, ChangeStats.NA]
 		if (readFileContent) {
 			(lineChangesStats, charChangesStats) = readChangeStats(change)
 		}
@@ -81,7 +81,7 @@ class CommitFilesMunger {
 			fragmentsByType = new TextCompareProcessor(ComparisonPolicy.IGNORE_SPACE)
 					.process(beforeText, afterText).groupBy{ it.type }
 		} catch (FilesTooBigForDiffException ignored) {
-			return [FileChangeInfo.TOO_BIG_TO_DIFF, FileChangeInfo.TOO_BIG_TO_DIFF]
+			return [ChangeStats.TOO_BIG_TO_DIFF, ChangeStats.TOO_BIG_TO_DIFF]
 		}
 		if (!fragmentsByType.containsKey(INSERT)) fragmentsByType[INSERT] = []
 		if (!fragmentsByType.containsKey(CHANGED)) fragmentsByType[CHANGED] = []
