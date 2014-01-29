@@ -13,7 +13,7 @@ import static util.DateTimeUtil.exactDateTime
 
 class ChangeEventsReaderGitTest {
 
-	@Test "should read file events for a commit"() {
+	@Test "should read file events"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def countChangeSizeInLines = false
@@ -36,7 +36,7 @@ class ChangeEventsReaderGitTest {
 		assert asString(eventsConsumer.changeEvents) == asString(expectedChangeEvents)
 	}
 
-	@Test "should read file events with change size details for a commit"() {
+	@Test "should read file events with change size details"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
 		def countChangeSizeInLines = true
@@ -59,12 +59,39 @@ class ChangeEventsReaderGitTest {
 		assert asString(eventsConsumer.changeEvents) == asString(expectedChangeEvents)
 	}
 
+	@Test "should read file events with additional custom attributes"() {
+		// setup
+		def commitReader = new CommitReader(jUnitProject, 1)
+		def countChangeSizeInLines = false
+		def additionalAttributeMungers = [{ context ->
+			String textBefore = context.change.beforeRevision?.content
+			textBefore == null ? 0 : textBefore.findAll("import org.junit").size()
+		}]
+		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, countChangeSizeInLines, additionalAttributeMungers).&mungeCommit)
+
+		def expectedChangeEvents = [
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA), [4]),
+				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA), [9]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA), [8]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA), [0]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA), [6]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [3]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [5]),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA), [5])
+		]
+
+		// exercise / verify
+		def eventsConsumer = new EventConsumer()
+		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
+		assert asString(eventsConsumer.changeEvents) == asString(expectedChangeEvents)
+	}
+
 
 	private static asString(Collection collection) {
 		collection.join(",\n")
 	}
-	private static fileChangeEvent(commitInfo, fileChangeInfo) {
-		new FileChangeEvent(commitInfo, fileChangeInfo)
+	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = []) {
+		new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
 	}
 	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType, lines, chars) {
 		new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType, lines, chars)

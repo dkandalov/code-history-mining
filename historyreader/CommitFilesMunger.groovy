@@ -20,19 +20,20 @@ import static util.Measure.measure
 class CommitFilesMunger {
 	private final Project project
 	private final boolean countChangeSizeInLines
-	private final List<Closure> fileChangeAttributeMungers
+	private final List<Closure> additionalAttributeMungers
 
 	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List<Closure> additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
-		this.fileChangeAttributeMungers = additionalAttributeMungers
+		this.additionalAttributeMungers = additionalAttributeMungers
 	}
 
 	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
-				def additionalAttributes = fileChangeAttributeMungers.collect{ it.call(commit, change, project) }
+				def context = [commit: commit, change: change, project: project]
+				def additionalAttributes = additionalAttributeMungers.collect{ it.call(context) }
 				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines), additionalAttributes)
 			}
 		} catch (ProcessCanceledException ignore) {
