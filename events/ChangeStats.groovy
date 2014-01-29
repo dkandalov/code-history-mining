@@ -13,6 +13,6 @@ class ChangeStats {
 	int removed
 
 	@Override String toString() {
-		"ChangeStats($before, $after, $added, $modified, $removed)"
+		"changeStats($before, $after, $added, $modified, $removed)"
 	}
 }
