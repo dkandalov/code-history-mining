@@ -16,6 +16,8 @@ class ChangeStats {
 	int removed
 
 	@Override String toString() {
-		"changeStats($before, $after, $added, $modified, $removed)"
+		if (this == NA) "NA"
+		else if (this == TOO_BIG_TO_DIFF) "TOO_BIG_TO_DIFF"
+		else "changeStats($before, $after, $added, $modified, $removed)"
 	}
 }

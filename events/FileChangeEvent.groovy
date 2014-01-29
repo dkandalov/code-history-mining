@@ -15,7 +15,10 @@ class FileChangeEvent {
 	}
 
 	@Override String toString() {
-		"fileChangeEvent($commitInfo, $fileChangeInfo, $additionalAttributes)"
+		if (additionalAttributes.empty)
+			"fileChangeEvent($commitInfo, $fileChangeInfo)"
+		else
+			"fileChangeEvent($commitInfo, $fileChangeInfo, $additionalAttributes)"
 	}
 
 	@Override boolean equals(o) {

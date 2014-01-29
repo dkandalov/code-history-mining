@@ -16,17 +16,18 @@ class ChangeEventsReaderGitTest {
 	@Test "should read file events for a commit"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
-		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, false).&mungeCommit)
+		def countChangeSizeInLines = false
+		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, countChangeSizeInLines).&mungeCommit)
 
 		def expectedChangeEvents = [
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
-				new FileChangeEvent(commitInfo, new FileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA))
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA))
 		]
 
 		// exercise / verify
@@ -38,7 +39,8 @@ class ChangeEventsReaderGitTest {
 	@Test "should read file events with change size details for a commit"() {
 		// setup
 		def commitReader = new CommitReader(jUnitProject, 1)
-		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, true).&mungeCommit)
+		def countChangeSizeInLines = true
+		def eventsReader = new ChangeEventsReader(commitReader, new CommitFilesMunger(jUnitProject, countChangeSizeInLines).&mungeCommit)
 
 		def expectedChangeEvents = [
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
@@ -56,6 +58,7 @@ class ChangeEventsReaderGitTest {
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 		assert asString(eventsConsumer.changeEvents) == asString(expectedChangeEvents)
 	}
+
 
 	private static asString(Collection collection) {
 		collection.join(",\n")

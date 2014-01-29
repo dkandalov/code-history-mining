@@ -15,6 +15,6 @@ class FileChangeInfo {
 
 
 	@Override String toString() {
-		"fileChangeInfo(\"$fileNameBefore\",\"$fileName\",\"$packageNameBefore\",\"$packageName\",\"$fileChangeType\",$lines,$chars)"
+		"fileChangeInfo(\"$fileNameBefore\", \"$fileName\", \"$packageNameBefore\", \"$packageName\", \"$fileChangeType\", $lines, $chars)"
 	}
 }
