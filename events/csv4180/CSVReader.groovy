@@ -42,7 +42,7 @@ class CSVReader {
 					buffer.append('"')
 					state = QUOTED
 				} else {
-					break
+					return buffer.toString()
 				}
 			} else if (state == QUOTED) {
 				if (c == '"') {
