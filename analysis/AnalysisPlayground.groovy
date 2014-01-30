@@ -6,11 +6,11 @@ import static java.lang.System.getenv
 
 class AnalysisPlayground {
 	static void main(String[] args) {
-		def projectName = "junit-2013"
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events.csv"
+		def projectName = "junit"
+		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events-full.csv"
 		def events = new EventStorage(filePath).readAllEvents({}) { line, e -> println("Failed to parse line '${line}'") }
 
-		fillTemplate("committers-changing-same-files-graph.html", projectName, Analysis.committersChangingFilesGraph(events))
+		fillTemplate("changes-size-chart.html", projectName, Analysis.createJson_WiltComplexity_Chart(events))
 	}
 
 	static void fillTemplate(String template, String projectName, String jsValue) {

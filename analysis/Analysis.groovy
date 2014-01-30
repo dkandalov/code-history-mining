@@ -82,6 +82,39 @@ class Analysis {
 			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
+	static String createJson_WiltComplexity_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		def wiltOf = { eventList ->
+			eventList.collect{ event ->
+				def wiltBefore = event.additionalAttributes[0]
+				def wiltAfter = event.additionalAttributes[1]
+				Integer.valueOf(wiltAfter) - Integer.valueOf(wiltBefore)
+			}.sum(0)
+		}
+		def wiltBy = { floorToInterval ->
+			events
+					.groupBy{ floorToInterval(it.revisionDate) }
+					.collect{ checkIfCancelled(); [it.key, wiltOf(it.value)] }
+					.sort{ it[0] }
+					.inject([]) { List list, entry ->
+						if (list.empty) {
+							list << [entry[0], entry[1]]
+						} else {
+							list << [entry[0], list.last()[1] + entry[1]]
+						}
+						list
+					}
+		}
+
+		def wiltByDay = wiltBy(Util.&floorToDay)
+		def wiltByWeek = wiltBy(Util.&floorToWeek)
+		def wiltByMonth = wiltBy(Util.&floorToMonth)
+
+		"[" +
+			asCsvStringLiteral(wiltByDay, ["date", "changeSize"]) + ",\n" +
+			asCsvStringLiteral(wiltByWeek, ["date", "changeSize"]) + ",\n" +
+			asCsvStringLiteral(wiltByMonth, ["date", "changeSize"]) + "]"
+	}
+
 	static void createJson_AverageAmountOfLinesChangedByDay_Chart(List<FileChangeEvent> events) {
 		def averageChangeSize = { eventList ->
 			if (eventList.empty) 0
