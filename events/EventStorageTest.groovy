@@ -118,7 +118,7 @@ class EventStorageTest {
 	)
 
 	private final eventWithAdditionalAttributes = new FileChangeEvent(
-			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "commit message"),
+			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "Commit message, with comma"),
 			new FileChangeInfo("", "Some.java", "", "/src/somewhere", "MODIFICATION",
 					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0)
 			),
