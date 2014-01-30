@@ -41,33 +41,25 @@ class CSVReader {
 				if (c == '"') {
 					buffer.append('"')
 					state = QUOTED
-					continue
 				} else {
 					break
 				}
-			}
-			if (state == QUOTED) {
+			} else if (state == QUOTED) {
 				if (c == '"') {
 					state = QUOTEDPLUS
-					continue
 				} else {
 					buffer.append(c)
-					continue
 				}
-			}
-
-			// (state == UNQUOTED)
-			if (c == '"') {
-				state = QUOTED
-				continue
-			} else if (c == '\r') {
-				continue
-			} else if (c == '\n' || c == ',') {
-				moreFieldsOnLine = (c != '\n')
-				return buffer.toString()
-			} else {
-				buffer.append((char) c)
-				continue
+			} else { // (state == UNQUOTED)
+				if (c == '"') {
+					state = QUOTED
+				} else if (c == '\r') {
+				} else if (c == '\n' || c == ',') {
+					moreFieldsOnLine = (c != '\n')
+					return buffer.toString()
+				} else {
+					buffer.append((char) c)
+				}
 			}
 		}
 		moreFieldsOnLine = false
