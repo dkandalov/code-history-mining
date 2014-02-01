@@ -414,7 +414,7 @@ function enableDarkColorsShortcut() {
 		if (String.fromCharCode(e.keyCode) == 'D') {
 			d3.selectAll(".link")[0].forEach(function(link) {
 				link.style["stroke"] = "#333000";
-				link.style["stroke-opacity"] = 1.0;
+				link.style["stroke-opacity"] = 0.8;
 			});
 			d3.selectAll(".node")[0].forEach(function(node) {
 				if (node.style["fill"] == "#1f77b4") node.style["fill"] = "#1033a2";
