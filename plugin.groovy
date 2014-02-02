@@ -179,7 +179,7 @@ def grabHistoryOf(Project project) {
 
 				def message = HistoryGrabber.doGrabHistory(eventsReader, storage, userInput, indicator)
 
-				showInNewConsole(message.text, message.title, project)
+				showInConsole(message.text, message.title, project)
 			}
 			Measure.forEachDuration{ log_(it) }
 		}
