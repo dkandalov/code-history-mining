@@ -32,7 +32,9 @@ import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
 
+//noinspection GroovyConstantIfStatement
 if (false) return showFileAmountByType(project)
+//noinspection GroovyConstantIfStatement
 if (false) return CommitMunging_Playground.playOnIt()
 
 
@@ -86,13 +88,15 @@ static AnAction createActionGroup(File file) {
 		BrowserUtil.launchBrowser("http://localhost:${server.port}/$templateFileName")
 	}
 
-	def createAction = { name, progressBarText, templateFile, processing ->
+	def createAction = { String name, templateFile, processing ->
 		new AnAction(name) {
 			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground(progressBarText) { ProgressIndicator indicator ->
+				doInBackground("Creating ${name.toLowerCase()}") { ProgressIndicator indicator ->
 					try {
 						Measure.reset()
+
 						showInBrowser(templateFile, processing, CancelledException.check(indicator))
+
 						Measure.forEachDuration{ log_(it) }
 					} catch (CancelledException ignored) {
 						log_("Cancelled building '${name}'")
@@ -103,34 +107,34 @@ static AnAction createActionGroup(File file) {
 	}
 	new DefaultActionGroup(file.name, true).with {
 		add(createAction(
-				"Change Size Chart", "Creating change size chart",
+				"Change Size Chart",
 				"changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart))
 		add(createAction(
-				"Amount Of Committers Chart", "Creating amount of committers chart",
+				"Amount Of Committers Chart",
 				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))
 		add(createAction(
-				"Amount Of Files In Commit Chart", "Creating amount of files in commit chart",
+				"Amount Of Files In Commit Chart",
 				"amount-of-files-in-commit-chart.html", Analysis.&createJson_AverageAmountOfFilesInCommit_Chart))
 		add(createAction(
-				"Amount Of Commits Treemap", "Creating amount of commits treemap",
+				"Amount Of Commits Treemap",
 				"treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)) // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 		add(createAction(
-				"Files In The Same Commit Graph", "Creating files in the same commit graph",
+				"Files In The Same Commit Graph",
 				"files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph))
 		add(createAction(
-				"Committers Changing Files Graph", "Creating committers changing files graph",
+				"Committers Changing Files Graph",
 				"committers-changing-files-graph.html", Analysis.&committersChangingFilesGraph))
 		add(createAction(
-				"Committers Changing Same Files Graph", "Creating committers changing same files graph",
+				"Committers Changing Same Files Graph",
 				"committers-changing-same-files-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
 		add(createAction(
-				"Commit Time Punchcard", "Creating commit time punchcard",
+				"Commit Time Punchcard",
 				"commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard))
 		add(createAction(
-				"Time Between Commits Histogram", "Creating time between commits histogram",
+				"Time Between Commits Histogram",
 				"time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram))
 		add(createAction(
-				"Commit Messages Word Cloud", "Creating commit messages word cloud",
+				"Commit Messages Word Cloud",
 				"wordcloud.html", Analysis.&createJson_CommitComments_WordCloud))
 		add(new Separator())
 		add(new AnAction("Show in File Manager") {
@@ -207,7 +211,7 @@ static File[] filesWithCodeHistory() {
 	})
 }
 
-static log_(message) {
+static log_(String message) {
 	Logger.getInstance("CodeHistoryMining").info(message)
 }
 
