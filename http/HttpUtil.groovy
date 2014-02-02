@@ -20,6 +20,7 @@ class HttpUtil {
 
 	static String fillTemplate(String templateText, String projectName, String json, Closure<String> fileReader = { readFile(it) }) {
 		templateText = inlineJSLibraries(templateText, fileReader)
+		templateText = inlineStylesheets(templateText, fileReader)
 		templateText = fillDataPlaceholder(templateText, json)
 		fillProjectNamePlaceholder(templateText, "\"$projectName\"")
 	}
@@ -32,12 +33,23 @@ class HttpUtil {
 		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
 	}
 
-	private static String inlineJSLibraries(String html, Closure<String> sourceCodeReader) {
+	private static String inlineStylesheets(String html, Closure<String> fileReader) {
+		(html =~ /(?sm).*?<link.*? rel="stylesheet".*? href="(.*?)".*/).with{
+			if (!matches()) html
+			else inlineStylesheets(
+					html.replaceFirst(/(?sm)\n*\s*?<link.* rel="stylesheet".* href="(${group(1)})".*?>/, "")
+							.replaceFirst(/\s*?<\/head>/, "<style>${fileReader(group(1))}</style></head>"),
+					fileReader
+			)
+		}
+	}
+
+	private static String inlineJSLibraries(String html, Closure<String> fileReader) {
 		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
 			if (!matches()) html
 			else inlineJSLibraries(
-					html.replace("<script src=\"${group(1)}\"></script>", "<script>${sourceCodeReader(group(1))}</script>"),
-					sourceCodeReader
+					html.replace("<script src=\"${group(1)}\"></script>", "<script>${fileReader(group(1))}</script>"),
+					fileReader
 			)
 		}
 	}
