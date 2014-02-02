@@ -7,15 +7,15 @@ import java.util.regex.Matcher
 import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
-	static SimpleHttpServer loadIntoHttpServer(String projectId, String templateFileName, String json) {
-		def text = fillTemplate(readFile(templateFileName), projectId, json)
+	static SimpleHttpServer loadIntoHttpServer(String projectName, String templateFileName, String json) {
+		def text = fillTemplate(readFile(templateFileName), projectName, json)
 
-		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
+		def tempDir = FileUtil.createTempDirectory(projectName + "_", "")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
 		log_("Saved html file into: " + tempDir.absolutePath + "/" + templateFileName)
 
-		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log_(it.toString())})
+		restartHttpServer(projectName, tempDir.absolutePath, {null}, {log_(it.toString())})
 	}
 
 	static String fillTemplate(String templateText, String projectName, String json, Closure<String> fileReader = { readFile(it) }) {
