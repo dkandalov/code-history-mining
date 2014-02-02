@@ -1,7 +1,6 @@
 package historyreader
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
@@ -105,9 +104,7 @@ class CommitReader {
 	}
 
 	private static List<VcsRoot> vcsRootsIn(Project project) {
-		ProjectRootManager.getInstance(project).contentSourceRoots
-				.collect{ ProjectLevelVcsManager.getInstance(project).getVcsRootObjectFor(it) }
-				.findAll{ it.path != null }.unique()
+		ProjectLevelVcsManager.getInstance(project).allVcsRoots
 	}
 
 	private static boolean isGit(CommittedChangesProvider changesProvider) {
