@@ -1,5 +1,6 @@
 package analysis
 import events.EventStorage
+import http.Template
 
 import static http.HttpUtil.*
 import static java.lang.System.getenv
@@ -15,7 +16,11 @@ class AnalysisPlayground {
 
 	static void fillAndSaveTemplate(String template, String projectName, String json) {
 		def templateText = new File("templates/${template}").readLines().join("\n")
-		def text = fillTemplate(templateText, projectName, json)// { fileName -> new File("templates/$fileName").readLines().join("\n") }
+		def text = new Template(templateText)
+				.inlineImports{ readFile(it) }
+				.fillProjectName(projectName)
+				.fillData(json)
+				.text
 		new File("templates/${projectName}_${template}").write(text)
 	}
 }

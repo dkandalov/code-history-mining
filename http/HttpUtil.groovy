@@ -2,13 +2,15 @@ package http
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.io.FileUtil
 
-import java.util.regex.Matcher
-
 import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectName, String templateFileName, String json) {
-		def text = fillTemplate(readFile(templateFileName), projectName, json)
+		def text = new Template(readFile(templateFileName))
+				.inlineImports{ readFile(it) }
+				.fillProjectName(projectName)
+				.fillData(json)
+				.text
 
 		def tempDir = FileUtil.createTempDirectory(projectName + "_", "")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
@@ -18,43 +20,7 @@ class HttpUtil {
 		restartHttpServer(projectName, tempDir.absolutePath, {null}, {log_(it.toString())})
 	}
 
-	static String fillTemplate(String templateText, String projectName, String json, Closure<String> fileReader = { readFile(it) }) {
-		templateText = inlineJSLibraries(templateText, fileReader)
-		templateText = inlineStylesheets(templateText, fileReader)
-		templateText = fillDataPlaceholder(templateText, json)
-		fillProjectNamePlaceholder(templateText, "\"$projectName\"")
-	}
-
-	private static String fillProjectNamePlaceholder(String templateText, String projectName) {
-		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
-	}
-
-	private static String fillDataPlaceholder(String templateText, String jsValue) {
-		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
-	}
-
-	private static String inlineStylesheets(String html, Closure<String> fileReader) {
-		(html =~ /(?sm).*?<link.*? rel="stylesheet".*? href="(.*?)".*/).with{
-			if (!matches()) html
-			else inlineStylesheets(
-					html.replaceFirst(/(?sm)\n*\s*?<link.* rel="stylesheet".* href="(${group(1)})".*?>/, "")
-							.replaceFirst(/\s*?<\/head>/, "<style>${fileReader(group(1))}</style></head>"),
-					fileReader
-			)
-		}
-	}
-
-	private static String inlineJSLibraries(String html, Closure<String> fileReader) {
-		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
-			if (!matches()) html
-			else inlineJSLibraries(
-					html.replace("<script src=\"${group(1)}\"></script>", "<script>${fileReader(group(1))}</script>"),
-					fileReader
-			)
-		}
-	}
-
-	private static String readFile(String fileName) {
+	static String readFile(String fileName) {
 		FileUtil.loadTextAndClose(HttpUtil.class.getResourceAsStream("/templates/$fileName"))
 	}
 
