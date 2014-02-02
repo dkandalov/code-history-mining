@@ -8,12 +8,9 @@ import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
 	static SimpleHttpServer loadIntoHttpServer(String projectId, String templateFileName, String json) {
-		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
+		def text = fillTemplate(readFile(templateFileName), projectId, json)
 
-		def text = readFile(templateFileName)
-		text = inlineJSLibraries(text) { jsLibFileName -> readFile(jsLibFileName) }
-		text = fillDataPlaceholder(text, json)
-		text = fillProjectNamePlaceholder(text, "\"$projectId\"")
+		def tempDir = FileUtil.createTempDirectory(projectId + "_", "")
 		new File("$tempDir.absolutePath/$templateFileName").write(text)
 
 		log_("Saved html file into: " + tempDir.absolutePath + "/" + templateFileName)
@@ -21,15 +18,21 @@ class HttpUtil {
 		restartHttpServer(projectId, tempDir.absolutePath, {null}, {log_(it.toString())})
 	}
 
-	static String fillProjectNamePlaceholder(String templateText, String projectName) {
+	static String fillTemplate(String templateText, String projectName, String json, Closure<String> fileReader = { readFile(it) }) {
+		templateText = inlineJSLibraries(templateText, fileReader)
+		templateText = fillDataPlaceholder(templateText, json)
+		fillProjectNamePlaceholder(templateText, "\"$projectName\"")
+	}
+
+	private static String fillProjectNamePlaceholder(String templateText, String projectName) {
 		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
 	}
 
-	static String fillDataPlaceholder(String templateText, String jsValue) {
+	private static String fillDataPlaceholder(String templateText, String jsValue) {
 		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
 	}
 
-	static String inlineJSLibraries(String html, Closure<String> sourceCodeReader) {
+	private static String inlineJSLibraries(String html, Closure<String> sourceCodeReader) {
 		(html =~ /(?sm).*?<script src="(.*?)"><\/script>.*/).with{
 			if (!matches()) html
 			else inlineJSLibraries(
@@ -64,6 +67,6 @@ class HttpUtil {
 		}
 	}
 
-	static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
+	private static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 }
 
