@@ -20,6 +20,7 @@ import com.intellij.util.ui.UIUtil
 import events.EventStorage
 import historyreader.*
 import http.HttpUtil
+import http.Template
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
@@ -58,16 +59,19 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
 static AnAction createActionGroup(File file) {
-	def showInBrowser = { template, eventsToJson, indicator ->
-		def checkIfCancelled = CancelledException.check(indicator)
-
+	def showInBrowser = { templateFileName, eventsToJson, checkIfCancelled ->
 		def events = measure("Storage.readAllEvents") {
 			new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
 		}
 
 		def json = eventsToJson(events, checkIfCancelled)
 
-		def server = HttpUtil.loadIntoHttpServer(projectName(file), template, json)
+		def text = new Template(HttpUtil.readFile(templateFileName))
+				.inlineImports(HttpUtil.&readFile)
+				.fillProjectName(projectName(file))
+				.fillData(json)
+				.text
+		def server = HttpUtil.loadIntoHttpServer(text, projectName(file), templateFileName)
 
 		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
 		if (!browserConfiguredCorrectly) {
@@ -79,7 +83,7 @@ static AnAction createActionGroup(File file) {
 			}
 			// don't return to try to open url anyway in case the above check is wrong
 		}
-		BrowserUtil.launchBrowser("http://localhost:${server.port}/$template")
+		BrowserUtil.launchBrowser("http://localhost:${server.port}/$templateFileName")
 	}
 
 	def createAction = { name, progressBarText, templateFile, processing ->
@@ -88,7 +92,7 @@ static AnAction createActionGroup(File file) {
 				doInBackground(progressBarText) { ProgressIndicator indicator ->
 					try {
 						Measure.reset()
-						showInBrowser(templateFile, processing, indicator)
+						showInBrowser(templateFile, processing, CancelledException.check(indicator))
 						Measure.forEachDuration{ log_(it) }
 					} catch (CancelledException ignored) {
 						log_("Cancelled building '${name}'")

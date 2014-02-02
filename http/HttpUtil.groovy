@@ -5,15 +5,9 @@ import com.intellij.openapi.util.io.FileUtil
 import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
-	static SimpleHttpServer loadIntoHttpServer(String projectName, String templateFileName, String json) {
-		def text = new Template(readFile(templateFileName))
-				.inlineImports{ readFile(it) }
-				.fillProjectName(projectName)
-				.fillData(json)
-				.text
-
-		def tempDir = FileUtil.createTempDirectory(projectName + "_", "")
-		new File("$tempDir.absolutePath/$templateFileName").write(text)
+	static SimpleHttpServer loadIntoHttpServer(String html, String projectName, String templateFileName) {
+		def tempDir = FileUtil.createTempDirectory(projectName + "_", "") // TODO use randomly named temp file
+		new File("$tempDir.absolutePath/$templateFileName").write(html)
 
 		log_("Saved html file into: " + tempDir.absolutePath + "/" + templateFileName)
 
