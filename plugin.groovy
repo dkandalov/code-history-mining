@@ -1,4 +1,5 @@
 import analysis.Analysis
+import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -105,10 +106,46 @@ static AnAction createActionGroup(File file) {
 			}
 		}
 	}
+	def projectName = projectName(file)
+	def createAction_NEW = { Visualization visualization ->
+		new AnAction(visualization.name) {
+			@Override void actionPerformed(AnActionEvent event) {
+				doInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
+					try {
+						Measure.reset()
+
+						def checkIfCancelled = CancelledException.check(indicator)
+						def events = measure("Storage.readAllEvents") {
+							new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
+						}
+						def context = new Visualization.Context(events, projectName, checkIfCancelled)
+						def html = visualization.generate(context)
+
+						def url = HttpUtil.loadIntoHttpServer_NEW(html, projectName, visualization.name + ".html")
+
+						// TODO seems like com.intellij.ide.BrowserUtil.browse already shows a message for misconfigured browser path
+						def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
+						if (!browserConfiguredCorrectly) {
+							UIUtil.invokeLaterIfNeeded {
+								showWarningDialog(
+										"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
+										"Code History Mining"
+								)
+							}
+							// don't return to try to open url anyway in case the above check is wrong
+						}
+						BrowserUtil.launchBrowser(url)
+
+						Measure.forEachDuration{ log_(it) }
+					} catch (CancelledException ignored) {
+						log_("Cancelled building '${visualization.name}'")
+					}
+				}
+			}
+		}
+	}
 	new DefaultActionGroup(file.name, true).with {
-		add(createAction(
-				"Change Size Chart",
-				"changes-size-chart.html", Analysis.&createJson_ChangeSize_Chart))
+		add(createAction_NEW(Visualization.changeSizeChart))
 		add(createAction(
 				"Amount Of Committers Chart",
 				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))

@@ -460,6 +460,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}
 
+
 	static class Util {
 		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable Closure checkIfCancelled = {}) {
 			log_("Started useLatestNameForMovedFiles()")
