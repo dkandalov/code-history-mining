@@ -1,5 +1,4 @@
 package http
-
 import java.util.regex.Matcher
 
 class Template {
@@ -10,11 +9,11 @@ class Template {
 	}
 
 	Template fillProjectName(String projectName) {
-		new Template(fillProjectNamePlaceholder(text, "\"$projectName\""))
+		new Template(fillProjectNamePlaceholder(text, projectName))
 	}
 
 	Template fillData(String jsValue) {
-		new Template(fillDataPlaceholder(text, jsValue))
+		new Template(fillDataPlaceholder(jsValue, text))
 	}
 
 	Template inlineImports(Closure<String> readFile) {
@@ -39,12 +38,21 @@ class Template {
 	}
 
 
-	private static String fillProjectNamePlaceholder(String templateText, String projectName) {
-		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
+	private static String fillProjectNamePlaceholder(String inText, String withProjectName) {
+		def text = fillJsPlaceholder("project_name_placeholder", "\"$withProjectName\"", inText)
+		fillMustachePlaceholder("project-name", withProjectName, text)
 	}
 
-	private static String fillDataPlaceholder(String templateText, String jsValue) {
-		templateText.replaceFirst(/(?s)\/\*data_placeholder\*\/.*\/\*data_placeholder\*\//, Matcher.quoteReplacement(jsValue))
+	private static String fillDataPlaceholder(String withJsValue, String inText) {
+		fillJsPlaceholder("data_placeholder", withJsValue, inText)
+	}
+
+	private static String fillJsPlaceholder(String name, String withJsValue, String inText) {
+		inText.replaceAll(/(?s)\/\*${name}\*\/.*\/\*${name}\*\//, Matcher.quoteReplacement(withJsValue))
+	}
+
+	private static String fillMustachePlaceholder(String name, String withText, String inText) {
+		inText.replace("{{${name}}}", withText)
 	}
 
 	private static String inlineStylesheets(String html, Closure<String> fileReader) {

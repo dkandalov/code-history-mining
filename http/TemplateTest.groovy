@@ -5,9 +5,14 @@ import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
 class TemplateTest {
-	@Test void "fills in project name"() {
+	@Test void "fills in project name in js literal"() {
 		def template = new Template("var name = /*project_name_placeholder*/\"some project\"/*project_name_placeholder*/;")
 		assert template.fillProjectName("myProject").text == "var name = \"myProject\";"
+	}
+
+	@Test void "fills in project name in html tag"() {
+		def template = new Template("<title>{{project-name}}</title>")
+		assert template.fillProjectName("myProject").text == "<title>myProject</title>"
 	}
 
 	@Test void "fills in data placeholder"() {
