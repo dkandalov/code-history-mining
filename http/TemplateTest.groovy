@@ -5,17 +5,17 @@ import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
 class TemplateTest {
-	@Test void "fill in project name in template"() {
+	@Test void "fills in project name"() {
 		def template = new Template("var name = /*project_name_placeholder*/\"some project\"/*project_name_placeholder*/;")
 		assert template.fillProjectName("myProject").text == "var name = \"myProject\";"
 	}
 
-	@Test void "fill in data in a template"() {
+	@Test void "fills in data placeholder"() {
 		def template = new Template("var data = /*data_placeholder*/[1,2,3]/*data_placeholder*/;")
 		assert template.fillData("[5,6,7]").text ==  "var data = [5,6,7];"
 	}
 
-	@Test void "inline javascript libraries in template"() {
+	@Test void "inlines javascript libraries"() {
 		def template = new Template("""
 			<body>
 				<script src="lib1.js"></script>
@@ -36,7 +36,7 @@ class TemplateTest {
 		"""))
 	}
 
-	@Test void "inline css in template"() {
+	@Test void "inlines imported css files"() {
 		def template = new Template("""
 			<head>
 				<stuff/>
@@ -56,7 +56,7 @@ class TemplateTest {
 		"""))
 	}
 
-	@Test void "append style to template"() {
+	@Test void "appends style tag at insert point"() {
 		def template = new Template("""
 			<style>
 			</style>
@@ -70,7 +70,7 @@ class TemplateTest {
 		"""))
 	}
 
-	@Test void "append script to template"() {
+	@Test void "appends script tag at insert point"() {
 		def template = new Template("""
 			<script/>
 			/*script-insert-point*/
@@ -80,5 +80,24 @@ class TemplateTest {
 			<script/>
 			<script>var i = 1;</script>/*script-insert-point*/
 		"""))
+	}
+
+	@Test void "extracts last style tag"() {
+		def template = new Template("""
+			<meta charset="utf-8">
+			<style>css1 {}</style>
+			<style>css2 {}</style>
+		  <body></body>
+""")
+		assert template.styleTag == "<style>css2 {}</style>"
+	}
+
+	@Test void "extracts last script tag"() {
+		def template = new Template("""
+		  <body>
+		    <script>var i = 1;</script>
+		  </body>
+""")
+		assert template.scriptTag == "<script>var i = 1;</script>"
 	}
 }

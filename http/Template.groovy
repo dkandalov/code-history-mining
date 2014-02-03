@@ -31,6 +31,25 @@ class Template {
 		new Template(text.replace(insertPoint, scriptTag + insertPoint))
 	}
 
+	String getStyleTag() {
+		tagContent("<style>", "</style>")
+	}
+
+	String getScriptTag() {
+		tagContent("<script>", "</script>")
+	}
+
+	private tagContent(String openTag, String closeTag) {
+		def from = text.lastIndexOf(openTag)
+		if (from == -1) return ""
+
+		def to = text.indexOf(closeTag, from)
+		if (to == -1) return ""
+
+		text.substring(from, to + closeTag.length())
+	}
+
+
 	private static String fillProjectNamePlaceholder(String templateText, String projectName) {
 		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
 	}
