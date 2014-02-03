@@ -55,4 +55,30 @@ class TemplateTest {
 				<stuff/><style>css1 {}</style><style>css2 {}</style></head>
 		"""))
 	}
+
+	@Test void "append style to template"() {
+		def template = new Template("""
+			<style>
+			</style>
+			/*style-insert-point*/
+		""")
+
+		assertThat(template.appendStyle("<style>css{}</style>").text, equalTo("""
+			<style>
+			</style>
+			<style>css{}</style>/*style-insert-point*/
+		"""))
+	}
+
+	@Test void "append script to template"() {
+		def template = new Template("""
+			<script/>
+			/*script-insert-point*/
+		""")
+
+		assertThat(template.appendScript("<script>var i = 1;</script>").text, equalTo("""
+			<script/>
+			<script>var i = 1;</script>/*script-insert-point*/
+		"""))
+	}
 }

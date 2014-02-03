@@ -21,6 +21,16 @@ class Template {
 		new Template(inlineJSLibraries(inlineStylesheets(text, readFile), readFile))
 	}
 
+	Template appendStyle(String styleTag) {
+		def insertPoint = "/*style-insert-point*/"
+		new Template(text.replace(insertPoint, styleTag + insertPoint))
+	}
+
+	Template appendScript(String scriptTag) {
+		def insertPoint = "/*script-insert-point*/"
+		new Template(text.replace(insertPoint, scriptTag + insertPoint))
+	}
+
 	private static String fillProjectNamePlaceholder(String templateText, String projectName) {
 		templateText.replaceFirst(/(?s)\/\*project_name_placeholder\*\/.*\/\*project_name_placeholder\*\//, Matcher.quoteReplacement(projectName))
 	}
@@ -49,5 +59,4 @@ class Template {
 			)
 		}
 	}
-
 }
