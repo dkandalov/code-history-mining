@@ -3,30 +3,22 @@ package http
 import java.util.regex.Matcher
 
 class Template {
-	private String text
+	final String text
 
 	Template(String text) {
 		this.text = text
 	}
 
 	Template fillProjectName(String projectName) {
-		text = fillProjectNamePlaceholder(text, "\"$projectName\"")
-		this
+		new Template(fillProjectNamePlaceholder(text, "\"$projectName\""))
 	}
 
 	Template fillData(String jsValue) {
-		text = fillDataPlaceholder(text, jsValue)
-		this
+		new Template(fillDataPlaceholder(text, jsValue))
 	}
 
 	Template inlineImports(Closure<String> readFile) {
-		text = inlineStylesheets(text, readFile)
-		text = inlineJSLibraries(text, readFile)
-		this
-	}
-
-	String getText() {
-		text
+		new Template(inlineJSLibraries(inlineStylesheets(text, readFile), readFile))
 	}
 
 	private static String fillProjectNamePlaceholder(String templateText, String projectName) {

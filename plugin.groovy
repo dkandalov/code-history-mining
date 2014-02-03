@@ -1,4 +1,3 @@
-import analysis.Analysis
 import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -21,7 +20,6 @@ import com.intellij.util.ui.UIUtil
 import events.EventStorage
 import historyreader.*
 import http.HttpUtil
-import http.Template
 import org.jetbrains.annotations.Nullable
 import ui.DialogState
 import ui.FileAmountToolWindow
@@ -32,7 +30,6 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
-
 //noinspection GroovyConstantIfStatement
 if (false) return showFileAmountByType(project)
 //noinspection GroovyConstantIfStatement
@@ -62,52 +59,8 @@ if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
 static AnAction createActionGroup(File file) {
-	def showInBrowser = { templateFileName, eventsToJson, checkIfCancelled ->
-		def events = measure("Storage.readAllEvents") {
-			new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
-		}
-
-		def json = eventsToJson(events, checkIfCancelled)
-
-		def text = new Template(HttpUtil.readFile(templateFileName))
-				.inlineImports(HttpUtil.&readFile)
-				.fillProjectName(projectName(file))
-				.fillData(json)
-				.text
-		def server = HttpUtil.loadIntoHttpServer(text, projectName(file), templateFileName)
-
-		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
-		if (!browserConfiguredCorrectly) {
-			UIUtil.invokeLaterIfNeeded {
-				showWarningDialog(
-						"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
-						"Code History Mining"
-				)
-			}
-			// don't return to try to open url anyway in case the above check is wrong
-		}
-		BrowserUtil.launchBrowser("http://localhost:${server.port}/$templateFileName")
-	}
-
-	def createAction = { String name, templateFile, processing ->
-		new AnAction(name) {
-			@Override void actionPerformed(AnActionEvent event) {
-				doInBackground("Creating ${name.toLowerCase()}") { ProgressIndicator indicator ->
-					try {
-						Measure.reset()
-
-						showInBrowser(templateFile, processing, CancelledException.check(indicator))
-
-						Measure.forEachDuration{ log_(it) }
-					} catch (CancelledException ignored) {
-						log_("Cancelled building '${name}'")
-					}
-				}
-			}
-		}
-	}
 	def projectName = projectName(file)
-	def createAction_NEW = { Visualization visualization ->
+	def showInBrowserAction = { Visualization visualization ->
 		new AnAction(visualization.name) {
 			@Override void actionPerformed(AnActionEvent event) {
 				doInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
@@ -145,34 +98,16 @@ static AnAction createActionGroup(File file) {
 		}
 	}
 	new DefaultActionGroup(file.name, true).with {
-		add(createAction_NEW(Visualization.changeSizeChart))
-		add(createAction(
-				"Amount Of Committers Chart",
-				"amount-of-committers-chart.html", Analysis.&createJson_AmountOfCommitters_Chart))
-		add(createAction(
-				"Amount Of Files In Commit Chart",
-				"amount-of-files-in-commit-chart.html", Analysis.&createJson_AverageAmountOfFilesInCommit_Chart))
-		add(createAction(
-				"Amount Of Commits Treemap",
-				"treemap.html", Analysis.TreeMapView.&createJson_AmountOfChangeInFolders_TreeMap)) // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-		add(createAction(
-				"Files In The Same Commit Graph",
-				"files-in-same-commit-graph.html", Analysis.&createJson_FilesInTheSameCommit_Graph))
-		add(createAction(
-				"Committers Changing Files Graph",
-				"committers-changing-files-graph.html", Analysis.&committersChangingFilesGraph))
-		add(createAction(
-				"Committers Changing Same Files Graph",
-				"committers-changing-same-files-graph.html", Analysis.&createJson_AuthorConnectionsThroughChangedFiles_Graph))
-		add(createAction(
-				"Commit Time Punchcard",
-				"commit-time-punchcard.html", Analysis.&createJson_CommitsByDayOfWeekAndTime_PunchCard))
-		add(createAction(
-				"Time Between Commits Histogram",
-				"time-between-commits-histogram.html", Analysis.&createJson_TimeBetweenCommits_Histogram))
-		add(createAction(
-				"Commit Messages Word Cloud",
-				"wordcloud.html", Analysis.&createJson_CommitComments_WordCloud))
+		add(showInBrowserAction(Visualization.changeSizeChart))
+		add(showInBrowserAction(Visualization.amountOfCommittersChart))
+		add(showInBrowserAction(Visualization.amountOfFilesInCommitChart))
+		add(showInBrowserAction(Visualization.amountOfCommitsTreemap))
+		add(showInBrowserAction(Visualization.filesInTheSameCommitGraph))
+		add(showInBrowserAction(Visualization.committersChangingFilesGraph))
+		add(showInBrowserAction(Visualization.committersChangingSameFilesGraph))
+		add(showInBrowserAction(Visualization.commitTimePunchcard))
+		add(showInBrowserAction(Visualization.timeBetweenCommitsHistogram))
+		add(showInBrowserAction(Visualization.commitMessageWordCloud))
 		add(new Separator())
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {
