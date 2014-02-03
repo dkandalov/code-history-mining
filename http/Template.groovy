@@ -21,25 +21,14 @@ class Template {
 		new Template(inlineJSLibraries(inlineStylesheets(text, readFile), readFile))
 	}
 
-	Template appendStyle(String styleTag) {
-		def insertPoint = "/*style-insert-point*/"
-		new Template(text.replace(insertPoint, styleTag + insertPoint))
+	Template appendAt(String insertPoint, String s) {
+		new Template(text.replace(insertPoint, s + insertPoint))
 	}
 
-	Template appendScript(String scriptTag) {
-		def insertPoint = "/*script-insert-point*/"
-		new Template(text.replace(insertPoint, scriptTag + insertPoint))
-	}
+	String contentOfLastTag(String tagName) {
+		def openTag = "<$tagName>"
+		def closeTag = "</$tagName>"
 
-	String getStyleTag() {
-		tagContent("<style>", "</style>")
-	}
-
-	String getScriptTag() {
-		tagContent("<script>", "</script>")
-	}
-
-	private tagContent(String openTag, String closeTag) {
 		def from = text.lastIndexOf(openTag)
 		if (from == -1) return ""
 

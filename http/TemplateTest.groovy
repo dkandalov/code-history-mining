@@ -57,29 +57,18 @@ class TemplateTest {
 	}
 
 	@Test void "appends style tag at insert point"() {
+		def insertPoint = "<!--style-insert-point-->"
 		def template = new Template("""
 			<style>
 			</style>
-			/*style-insert-point*/
+			${insertPoint}
 		""")
 
-		assertThat(template.appendStyle("<style>css{}</style>").text, equalTo("""
+		assertThat(template.appendAt(insertPoint, "<style>css{}</style>").text, equalTo("""
 			<style>
 			</style>
-			<style>css{}</style>/*style-insert-point*/
-		"""))
-	}
-
-	@Test void "appends script tag at insert point"() {
-		def template = new Template("""
-			<script/>
-			/*script-insert-point*/
-		""")
-
-		assertThat(template.appendScript("<script>var i = 1;</script>").text, equalTo("""
-			<script/>
-			<script>var i = 1;</script>/*script-insert-point*/
-		"""))
+			<style>css{}</style>${insertPoint}
+		""".toString()))
 	}
 
 	@Test void "extracts last style tag"() {
@@ -88,16 +77,7 @@ class TemplateTest {
 			<style>css1 {}</style>
 			<style>css2 {}</style>
 		  <body></body>
-""")
-		assert template.styleTag == "<style>css2 {}</style>"
-	}
-
-	@Test void "extracts last script tag"() {
-		def template = new Template("""
-		  <body>
-		    <script>var i = 1;</script>
-		  </body>
-""")
-		assert template.scriptTag == "<script>var i = 1;</script>"
+		""")
+		assert template.contentOfLastTag("style") == "<style>css2 {}</style>"
 	}
 }
