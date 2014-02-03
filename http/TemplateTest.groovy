@@ -69,7 +69,7 @@ class TemplateTest {
 			${insertPoint}
 		""")
 
-		assertThat(template.appendAt(insertPoint, "<style>css{}</style>").text, equalTo("""
+		assertThat(template.addBefore(insertPoint, "<style>css{}</style>").text, equalTo("""
 			<style>
 			</style>
 			<style>css{}</style>${insertPoint}
@@ -83,6 +83,15 @@ class TemplateTest {
 			<style>css2 {}</style>
 		  <body></body>
 		""")
-		assert template.contentOfLastTag("style") == "<style>css2 {}</style>"
+		assert template.lastTag("style") == "<style>css2 {}</style>"
+	}
+
+	@Test void "extracts content of title tag"() {
+		def template = new Template("""
+			<meta charset="utf-8">
+			<title>A title</title>
+		  <body></body>
+		""")
+		assert template.contentOfTag("title") == "A title"
 	}
 }

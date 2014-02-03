@@ -20,11 +20,11 @@ class Template {
 		new Template(inlineJSLibraries(inlineStylesheets(text, readFile), readFile))
 	}
 
-	Template appendAt(String insertPoint, String s) {
-		new Template(text.replace(insertPoint, s + insertPoint))
+	Template addBefore(String marker, String textToAdd) {
+		new Template(text.replace(marker, textToAdd + marker))
 	}
 
-	String contentOfLastTag(String tagName) {
+	String lastTag(String tagName) {
 		def openTag = "<$tagName>"
 		def closeTag = "</$tagName>"
 
@@ -35,6 +35,18 @@ class Template {
 		if (to == -1) return ""
 
 		text.substring(from, to + closeTag.length())
+	}
+
+	String contentOfTag(String tagName) {
+		def tag = lastTag(tagName)
+		if (tag.empty) ""
+		else tag.replace("<$tagName>", "").replace("</$tagName>", "")
+	}
+
+	String getMainTagId() {
+		(text =~ /<span id="(.*?)"><\/span>/).with {
+			matches() ? group(1) : ""
+		}
 	}
 
 
