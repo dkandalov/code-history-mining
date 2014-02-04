@@ -12,6 +12,7 @@ class AllTemplates {
 	static timeBetweenCommitsHistogramTemplate = template("time-between-commits-histogram.html")
 	static commitMessageWordCloudTemplate = template("wordcloud.html")
 
+	static allVisualizationsTemplate = template("all-visualizations.html")
 
 	private static Template template(String fileName) {
 		new Template(HttpUtil.readFile(fileName)).inlineImports(HttpUtil.&readFile)

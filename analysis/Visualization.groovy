@@ -9,7 +9,6 @@ class Visualization {
 	final String name
 	final Closure<String> generate
 
-
 	static changeSizeChart = new Visualization("Change Size Chart", { Context context ->
 		def json = Analysis.createJson_ChangeSize_Chart(context.events, context.checkIfCancelled)
 		changeSizeChartTemplate.fillData(json).fillProjectName(context.projectName).text
@@ -61,6 +60,36 @@ class Visualization {
 		commitMessageWordCloudTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
+	static all = new Visualization("All Visualizations", { Context context ->
+		def templates = [
+				changeSizeChartTemplate.fillData(Analysis.createJson_ChangeSize_Chart(context.events, context.checkIfCancelled)),
+				amountOfCommittersChartTemplate.fillData(Analysis.createJson_AmountOfCommitters_Chart(context.events, context.checkIfCancelled))
+		]
+
+		def template = allVisualizationsTemplate.fillProjectName(context.projectName.capitalize())
+		templates.each{
+			template = template.addBefore(
+					"<!--style-insert-point-->",
+					it.lastTag("style").replaceAll(/margin:.*?;/, '')
+			)
+			template = template.addBefore(
+					"<!--script-insert-point-->",
+					it.lastTag("script")
+						.replaceAll(/(?m)var header.*?;/, '')
+						.replaceAll(/(?m)headerSpan\..*?;/, '')
+						.replaceAll(/(?m)[\s\t]header\..*?;/, '')
+						.replaceAll(/width =.*?,/, 'width = 740,') // TODO specific for chart
+						.replace('return svgPos.left + margin.left', 'return margin.left') // TODO specific for chart
+			)
+			template = template.addBefore("<!--tag-insert-point-->", """
+				<h4>${it.contentOfTag('title')}</h4>
+        <p id="${it.mainTagId}"></p>
+        <br/><br/>
+			""")
+		}
+		template.text
+	})
+
 
 	static class Context {
 		final List<FileChangeEvent> events
@@ -73,4 +102,5 @@ class Visualization {
 			this.checkIfCancelled = checkIfCancelled
 		}
 	}
+
 }

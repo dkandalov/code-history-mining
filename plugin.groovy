@@ -109,6 +109,8 @@ static AnAction createActionGroup(File file) {
 		add(showInBrowserAction(Visualization.timeBetweenCommitsHistogram))
 		add(showInBrowserAction(Visualization.commitMessageWordCloud))
 		add(new Separator())
+		add(showInBrowserAction(Visualization.all))
+		add(new Separator())
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {
 				ShowFilePathAction.openFile(file)
