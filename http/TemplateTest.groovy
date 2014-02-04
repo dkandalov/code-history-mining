@@ -94,4 +94,13 @@ class TemplateTest {
 		""")
 		assert template.contentOfTag("title") == "A title"
 	}
+
+	@Test def "gets id from span tag"() {
+		def template = new Template("""
+			<body>
+			<span id="change-size-chart"></span>
+		  </body>
+		""")
+		assert template.mainTagId == "change-size-chart"
+	}
 }

@@ -44,7 +44,7 @@ class Template {
 	}
 
 	String getMainTagId() {
-		(text =~ /<span id="(.*?)"><\/span>/).with {
+		(text =~ /(?s).*<span id="(.*?)"><\/span>.*/).with {
 			matches() ? group(1) : ""
 		}
 	}
