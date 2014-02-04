@@ -44,7 +44,9 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def projectStats = new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
-		[grabHistory, projectStats, new Separator()] + filesWithCodeHistory().collect{ createActionGroup(it) }
+		def codeHistoryActions = filesWithCodeHistory().collect{ createActionGroup(it) }
+
+		[grabHistory, projectStats, Separator.instance] + codeHistoryActions
 	}
 }
 registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
@@ -108,9 +110,9 @@ static AnAction createActionGroup(File file) {
 		add(showInBrowserAction(Visualization.commitTimePunchcard))
 		add(showInBrowserAction(Visualization.timeBetweenCommitsHistogram))
 		add(showInBrowserAction(Visualization.commitMessageWordCloud))
-		add(new Separator())
+		add(Separator.instance)
 		add(showInBrowserAction(Visualization.all))
-		add(new Separator())
+		add(Separator.instance)
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {
 				ShowFilePathAction.openFile(file)
