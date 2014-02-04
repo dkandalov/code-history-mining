@@ -84,7 +84,7 @@ class Visualization {
 			)
 			template = template.addBefore("<!--tag-insert-point-->", """
 				<h4>${it.contentOfTag('title')}</h4>
-        <p id="${it.mainTagId}"></p>
+        <span id="${it.mainTagId}"></span>
         <br/><br/>
 			""")
 		}
