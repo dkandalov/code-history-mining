@@ -314,9 +314,11 @@ date,changeSize\n\
             updateChart();
         });
 
+        var someShift = 30;
         var leftFooter = rootElement.append("span")
                 .style("position", "absolute")
-                .style("left", function(){ return svgPos.left + margin.left + "px"; });
+                .style("left", function(){
+                    return someShift + margin.left + "px"; });
         leftFooter.append("span").style("color", "#999").html("Total size: ");
         var totalChangeSizeLabel = leftFooter
                 .append("span").style("color", "#999")

@@ -78,9 +78,7 @@ class Visualization {
 			)
 			template = template.addBefore(
 					"<!--script-insert-point-->",
-					it.removeJsAddedHeader().width(800)
-							.lastTag("script")
-							.replace('return svgPos.left + margin.left', 'return margin.left') // TODO specific for chart
+					it.removeJsAddedHeader().width(800).lastTag("script")
 			)
 			template = template.addBefore("<!--tag-insert-point-->", """
 				<h4>${it.contentOfTag('title')}</h4>
