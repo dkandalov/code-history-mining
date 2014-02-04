@@ -41,7 +41,7 @@
         pointer-events: none;
     }
 </style>
-<head><title>Committers changing same files</title></head>
+<head><title>Latest commits as graph</title></head>
 <body>
 <script src="d3.v3.min.js"></script>
 <script src="code-history.js"></script>
@@ -119,7 +119,7 @@ const authorToFileGraph = {
         /*data_placeholder*/
 };
 var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-var graphName = "Committers changing same files";
+var graphName = "Latest commits as graph";
 var onNodeSelection = function(graphEditor, node) {
     return graphEditor.immediateConnectionsOf(node);
 };

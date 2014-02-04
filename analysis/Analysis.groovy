@@ -292,14 +292,19 @@ class Analysis {
 	}
 
 	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		use(TimeCategory) {
+			def now = new Date()
+			events = events.findAll{ it.revisionDate < now - 1.month }
+			if (events.size() > 100) events = events.take(100)
+		}
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
 		def fileNames = events.collect{ event -> fullFileNameIn(event) }
 		def authors = events.collect{ it.author }.unique()
 
 		def nodesJSLiteral = (
-			 fileNames.collect{'{"name": "' + it + '", "group": 1}'} +
-			 authors.collect{'{"name": "' + it + '", "group": 2}'}
+		fileNames.collect{ '{"name": "' + it + '", "group": 1}' } +
+				authors.collect{ '{"name": "' + it + '", "group": 2}' }
 		).join(",\n")
 
 		def allNodes = fileNames + authors
@@ -307,14 +312,14 @@ class Analysis {
 		def links = authors.collectMany{ author ->
 			def authorIndex = allNodes.indexOf(author)
 			eventsByAuthor[author]
-				.collect{ fullFileNameIn(it) }
-				.groupBy{it}.entrySet().collect{
-					def fileName = it.key
-					def changeCount = it.value.size()
-					[authorIndex, fileNames.indexOf(fileName), changeCount]
-				}
+					.collect{ fullFileNameIn(it) }
+					.groupBy{ it }.entrySet().collect{
+				def fileName = it.key
+				def changeCount = it.value.size()
+				[authorIndex, fileNames.indexOf(fileName), changeCount]
+			}
 		}
-		def relationsJSLiteral = links.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+		def relationsJSLiteral = links.collect{ '{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}" }.join(",\n")
 
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}

@@ -89,7 +89,7 @@ class Visualization {
 		template.removeJsAddedHeader().width(800).text
 	})
 
-	static commitLogAsGraph = new Visualization("Commit Log As Graph", { Context context ->
+	static commitLogAsGraph = new Visualization("Latest Commits As Graph", { Context context ->
 		def json = commitLogAsGraph(context.events, context.checkIfCancelled)
 		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})

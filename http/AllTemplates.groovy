@@ -12,7 +12,7 @@ class AllTemplates {
 	static commitMessageWordCloudTemplate = template("wordcloud.html")
 
 	static allVisualizationsTemplate = template("all-visualizations.html")
-	static commitLogAsGraphTemplate = template("commit-log-as-graph.html")
+	static commitLogAsGraphTemplate = template("latest-commits-as-graph.html")
 
 	private static Template template(String fileName) {
 		new Template(HttpUtil.readFile(fileName)).inlineImports(HttpUtil.&readFile)
