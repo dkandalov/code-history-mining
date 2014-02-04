@@ -11,10 +11,6 @@ and analyze project source code history. Take a look at examples:
  - [Node.js code history](http://dkandalov.github.io/code-history-mining/nodejs.html)
  - [GHC code history](http://dkandalov.github.io/code-history-mining/ghc.html)
 
-The plugin has two parts:
- - reading project history from version control and saving it as csv file
- - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
-
 
 ### Why?
 There seems to be a lot of interesting data captured in version control systems, yet we don't use it that much.
@@ -25,28 +21,39 @@ This is an attempt to make looking at project history easier.
 
 
 ### How to install
-From IntelliJ plugin repository http://plugins.jetbrains.com/plugin/7273
+ - from IntelliJ [plugin repository](http://plugins.jetbrains.com/plugin/7273)
+ - as a plugin for [live-plugin](https://github.com/dkandalov/live-plugin)
 
 
-### Grabbing VCS history into csv
-Main menu -> Tools -> Code History Mining or alt + shift + H.
+### How to use
+The plugin has two parts:
+ - reading project history from version control and saving it as csv file
+ - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
+
+#### Grab VCS history into csv
+"Main menu -> VCS -> Code History Mining" or "alt + shift + H".
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
  - **From/To** - desired dates for project history. Commits are loaded from version control only if they are not already in csv file.
  - **Save to** - file to save history to.
  - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
  Please note that this requires loading file content and can slow down grabbing history.
 
-### Visualizations
-Files in "<[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)>/code-history-mining" are displayed in plugin drop-down menu.
-After you choose one plugin reads csv files and build visualisation
+#### Visualize
+By default cvs files with history are saved to "[\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
+Files from this folder are displayed in plugin menu.
 All visualizations are self-contained one file pages (i.e. you should be able to save them as standalone file).
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup_screenshot.png" alt="screenshot" title="screenshot" align="center"/>
 
+#### Meaning of visualizations
+Please look at comments for [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html).
+
+
 ### Limitations
  - all VCS supported by IntelliJ should work but I only tried Git and Svn
- - visualisations are only tested Chrome and Safari; they work in Firefox but might have minor glitches; mostly broken in IE9
- - some of visualisations might be slow for long history of a big project.
- E.g. building treemap view of commits for project with 1M LOC for 10 years will take forever.
+ - visualisations are only tested Chrome; they will work in Safari, Firefox but might have minor glitches; mostly broken in IE9
+ - some of visualisations might be slow for long history of a big project
+ (e.g. building treemap view of commits for project with 1M LOC for 10 years might take forever).
+ If this is the case, splitting history into smaller chunks should help.
 
 
 ### Code history csv format
