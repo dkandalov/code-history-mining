@@ -41,12 +41,15 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 		def grabHistory = new AnAction("Grab Project History") {
 			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
 		}
+		def codeHistoryActions = filesWithCodeHistory().collect{ createActionGroup(it) }
 		def projectStats = new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
 		}
-		def codeHistoryActions = filesWithCodeHistory().collect{ createActionGroup(it) }
+		def openReadme = new AnAction("Read Me (page on GitHub)") {
+			@Override void actionPerformed(AnActionEvent event) { BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use") }
+		}
 
-		[grabHistory, projectStats, Separator.instance] + codeHistoryActions
+		[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, projectStats, openReadme]
 	}
 }
 registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
