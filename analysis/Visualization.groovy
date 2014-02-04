@@ -25,12 +25,6 @@ class Visualization {
 		amountOfFilesInCommitChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
-	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
-		def json = TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
-		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
-		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-	})
-
 	static filesInTheSameCommitGraph = new Visualization("Files In The Same Commit Graph", { Context context ->
 		def json = createJson_FilesInTheSameCommit_Graph(context.events, context.checkIfCancelled)
 		filesInTheSameCommitGraphTemplate.fillData(json).fillProjectName(context.projectName).text
@@ -39,6 +33,12 @@ class Visualization {
 	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph", { Context context ->
 		def json = createJson_AuthorConnectionsThroughChangedFiles_Graph(context.events, context.checkIfCancelled)
 		committersChangingSameFilesGraphTemplate.fillData(json).fillProjectName(context.projectName).text
+	})
+
+	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
+		def json = TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
+		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
+		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 	})
 
 	static commitTimePunchcard = new Visualization("Commit Time Punchcard", { Context context ->
@@ -63,7 +63,10 @@ class Visualization {
 				amountOfFilesInCommitChartTemplate.fillData(createJson_AverageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
 				filesInTheSameCommitGraphTemplate.fillData(createJson_FilesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
 				committersChangingSameFilesGraphTemplate.fillData(createJson_AuthorConnectionsThroughChangedFiles_Graph(context.events, context.checkIfCancelled)),
-				amountOfCommitsTreemapTemplate.fillData(TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled))
+				amountOfCommitsTreemapTemplate.fillData(TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
+				commitTimePunchcardTemplate.fillData(createJson_CommitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
+				timeBetweenCommitsHistogramTemplate.fillData(createJson_TimeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
+				commitMessageWordCloudTemplate.fillData(createJson_CommitComments_WordCloud(context.events, context.checkIfCancelled))
 		]
 
 		def template = allVisualizationsTemplate.fillProjectName(context.projectName.capitalize())

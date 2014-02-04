@@ -3,16 +3,21 @@ import org.junit.Test
 
 import static http.AllTemplates.*
 
-class AllTemplatesTest {
+class TemplatesModificationTest {
 	private ArrayList<Template> allTemplates = [
 			changeSizeChartTemplate, amountOfCommittersChartTemplate, amountOfFilesInCommitChartTemplate,
 			filesInTheSameCommitGraphTemplate, committersChangingSameFilesGraphTemplate,
-			committersChangingSameFilesGraphTemplate, amountOfCommitsTreemapTemplate
+			committersChangingSameFilesGraphTemplate, amountOfCommitsTreemapTemplate,
+			commitTimePunchcardTemplate, timeBetweenCommitsHistogramTemplate, commitMessageWordCloudTemplate
 	]
 
-	@Test void "removes header from templates"() {
+	@Test void "can remove template header"() {
 		allTemplates.each{ template ->
 			assertHeaderIsNoLongerPresentIn(template)
+		}
+	}
+	@Test void "can change template width"() {
+		allTemplates.each{ template ->
 			assertWidthCanBeAdjustedIn(template)
 		}
 	}

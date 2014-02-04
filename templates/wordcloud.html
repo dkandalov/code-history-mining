@@ -207,16 +207,14 @@
     function createWordCloud(elementId, data, projectName) {
         var solidFill = d3.scale.category10();
         var mixedFill = d3.scale.category20();
-        var width = 1000;
-        var height = 700;
+        var width = 1000,
+            height = 700;
 
         var rootElement = d3.select("#" + elementId);
         removeChildrenOf(elementId);
 
-        var header = appendBlockElementTo(rootElement, width);
-        header.append("h2").text("Commit messages word cloud (" + projectName + ")")
-                .style("text-align", "center")
-                .style("margin", "30px");
+        var headerSpan = appendBlockElementTo(rootElement, width);
+        headerSpan.append("h2").text("Commit messages word cloud (" + projectName + ")").style("text-align", "center").style("margin", "30px");
 
         adjustSizeOfShortWords(data.words);
         normalizeWordSize(data.words);

@@ -5,8 +5,8 @@ import static org.hamcrest.CoreMatchers.not
 import static org.junit.Assert.assertThat
 import static org.junit.matchers.JUnitMatchers.containsString
 
-class VisualizationTest {
-	@Test void "combining all visualizations"() {
+class CombiningVisualizationTest {
+	@Test void "includes only one title and several scripts"() {
 		def context = new Visualization.Context([], "AProject")
 		def html = Visualization.all.generate(context)
 
