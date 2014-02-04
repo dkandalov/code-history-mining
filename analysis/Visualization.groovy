@@ -2,16 +2,7 @@ package analysis
 import events.FileChangeEvent
 import groovy.transform.Immutable
 
-import static analysis.Analysis.TreeMapView.createJson_AmountOfChangeInFolders_TreeMap
-import static analysis.Analysis.commitLogAsGraph
-import static analysis.Analysis.createJson_AmountOfCommitters_Chart
-import static analysis.Analysis.createJson_AuthorConnectionsThroughChangedFiles_Graph
-import static analysis.Analysis.createJson_AverageAmountOfFilesInCommit_Chart
-import static analysis.Analysis.createJson_ChangeSize_Chart
-import static analysis.Analysis.createJson_CommitComments_WordCloud
-import static analysis.Analysis.createJson_CommitsByDayOfWeekAndTime_PunchCard
-import static analysis.Analysis.createJson_FilesInTheSameCommit_Graph
-import static analysis.Analysis.createJson_TimeBetweenCommits_Histogram
+import static analysis.Analysis.*
 import static http.AllTemplates.*
 
 @Immutable
@@ -34,6 +25,12 @@ class Visualization {
 		amountOfFilesInCommitChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
+	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
+		def json = TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
+		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
+		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
+	})
+
 	static filesInTheSameCommitGraph = new Visualization("Files In The Same Commit Graph", { Context context ->
 		def json = createJson_FilesInTheSameCommit_Graph(context.events, context.checkIfCancelled)
 		filesInTheSameCommitGraphTemplate.fillData(json).fillProjectName(context.projectName).text
@@ -42,12 +39,6 @@ class Visualization {
 	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph", { Context context ->
 		def json = createJson_AuthorConnectionsThroughChangedFiles_Graph(context.events, context.checkIfCancelled)
 		committersChangingSameFilesGraphTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
-
-	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
-		def json = createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
-		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
-		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 	})
 
 	static commitTimePunchcard = new Visualization("Commit Time Punchcard", { Context context ->
@@ -64,7 +55,6 @@ class Visualization {
 		def json = createJson_CommitComments_WordCloud(context.events, context.checkIfCancelled)
 		commitMessageWordCloudTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
-
 
 	static all = new Visualization("All Visualizations", { Context context ->
 		def templates = [
@@ -103,8 +93,6 @@ class Visualization {
 		def json = commitLogAsGraph(context.events, context.checkIfCancelled)
 		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
-
-
 
 	static class Context {
 		final List<FileChangeEvent> events
