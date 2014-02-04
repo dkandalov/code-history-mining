@@ -41,9 +41,9 @@ The plugin has two parts:
 #### Visualize
 By default cvs files with history are saved to "[\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
 Files from this folder are displayed in plugin menu.
-All visualizations are self-contained one file pages (i.e. you should be able to save them as standalone file).
+All visualizations are self-contained one file pages (i.e. you should be able to save them as standalone files).
 
-<img src="https://raw.github.com/dkandalov/code-history-mining/master/popup_screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+<img src="https://raw.github.com/dkandalov/code-history-mining/master/popup-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
 
 #### Meaning of visualizations
 Please look at comments for [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html).
