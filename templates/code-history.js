@@ -81,8 +81,8 @@ function createForcesGraphOn(elementId, graph, projectName, onNodeSelection) {
 	var rootElement = d3.select("#" + elementId);
 	removeChildrenOf(elementId);
 
-	var header = appendBlockElementTo(rootElement, width);
-	header.append("h2").text(graphName + " (" + projectName + ")").style({"text-align": "center"});
+	var headerSpan = appendBlockElementTo(rootElement, width);
+	headerSpan.append("h2").text(graphName + " (" + projectName + ")").style({"text-align": "center"});
 
 	var svg = rootElement.append("svg").attr("width", width).attr("height", height);
 	var svgLinks = svg.append("g");

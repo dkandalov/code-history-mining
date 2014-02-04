@@ -24,6 +24,17 @@ class Template {
 		new Template(text.replace(marker, textToAdd + marker))
 	}
 
+	Template removeJsAddedHeader() {
+		new Template(text
+				.replaceAll(/(?m)var headerSpan.*?;/, "")
+				.replaceAll(/(?m)headerSpan\..*?;/, "")
+		)
+	}
+
+	Template width(int value) {
+		new Template(text.replaceAll(/width =.*?,/, "width = ${value},"))
+	}
+
 	String lastTag(String tagName) {
 		def openTag = "<$tagName>"
 		def closeTag = "</$tagName>"
