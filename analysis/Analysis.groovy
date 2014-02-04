@@ -291,7 +291,7 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String committersChangingFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
 		def fileNames = events.collect{ event -> fullFileNameIn(event) }

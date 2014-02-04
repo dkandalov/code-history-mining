@@ -100,18 +100,18 @@ static AnAction createActionGroup(File file) {
 		}
 	}
 	new DefaultActionGroup(file.name, true).with {
+		add(showInBrowserAction(Visualization.all))
+		add(showInBrowserAction(Visualization.commitLogAsGraph))
+		add(Separator.instance)
 		add(showInBrowserAction(Visualization.changeSizeChart))
 		add(showInBrowserAction(Visualization.amountOfCommittersChart))
 		add(showInBrowserAction(Visualization.amountOfFilesInCommitChart))
 		add(showInBrowserAction(Visualization.amountOfCommitsTreemap))
 		add(showInBrowserAction(Visualization.filesInTheSameCommitGraph))
-		add(showInBrowserAction(Visualization.committersChangingFilesGraph))
 		add(showInBrowserAction(Visualization.committersChangingSameFilesGraph))
 		add(showInBrowserAction(Visualization.commitTimePunchcard))
 		add(showInBrowserAction(Visualization.timeBetweenCommitsHistogram))
 		add(showInBrowserAction(Visualization.commitMessageWordCloud))
-		add(Separator.instance)
-		add(showInBrowserAction(Visualization.all))
 		add(Separator.instance)
 		add(new AnAction("Show in File Manager") {
 			@Override void actionPerformed(AnActionEvent event) {

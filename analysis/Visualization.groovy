@@ -35,9 +35,9 @@ class Visualization {
 		filesInTheSameCommitGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
-	static committersChangingFilesGraph = new Visualization("Committers Changing Files Graph", { Context context ->
-		def json = Analysis.committersChangingFilesGraph(context.events, context.checkIfCancelled)
-		committersChangingFilesGraphTemplate.fillData(json).fillProjectName(context.projectName).text
+	static commitLogAsGraph = new Visualization("Commit Log As Graph", { Context context ->
+		def json = Analysis.commitLogAsGraph(context.events, context.checkIfCancelled)
+		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
 	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph", { Context context ->
