@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <script src="d3.v3.min.js"></script>
-    <style type="text/css">
+    <style>
         body {
             margin: 30px;
             font: 11px sans-serif;
@@ -50,7 +50,7 @@
 <div id="body">
     <span id="commit-treemap"></span>
 </div>
-<script type="text/javascript">
+<script>
     var root = /*data_placeholder*/
             {"name": "", "size": "327", "children": [
                 {"name": "intellij-eval-plugins/project-treemap", "size": "327", "children": [
@@ -79,10 +79,10 @@
     createTreeMapOn("commit-treemap", root, projectName);
 
     function createTreeMapOn(elementId, root, projectName) {
-        var w = 1100 - 80,
-            h = 800 - 180,
-            x = d3.scale.linear().range([0, w]),
-            y = d3.scale.linear().range([0, h]),
+        var width = 1100 - 80,
+            height = 800 - 180,
+            x = d3.scale.linear().range([0, width]),
+            y = d3.scale.linear().range([0, height]),
             color = d3.scale.category20c();
 
         var rootElement = d3.select("#" + elementId);
@@ -90,20 +90,18 @@
 
         var chart = rootElement.append("div")
                 .attr("class", "chart")
-                .style("width", w + "px")
-                .style("height", h + "px");
+                .style("width", width + "px")
+                .style("height", height + "px");
 
-        var header = appendBlockElementTo(chart, w);
-        header.append("h2").text("Amount of commits treemap (" + projectName + ")")
-                .style("text-align", "center")
-                .style("margin-bottom", "30px");
+        var headerSpan = appendBlockElementTo(chart, width);
+        headerSpan.append("h2").text("Amount of commits treemap (" + projectName + ")").style("text-align", "center").style("margin-bottom", "30px");
 
         var svg = chart.append("svg:svg")
-                .attr("width", w)
-                .attr("height", h);
+                .attr("width", width)
+                .attr("height", height);
         var svgPos = svg[0][0];
 
-        var footer = appendBlockElementTo(chart, w).attr("id", "footer");
+        var footer = appendBlockElementTo(chart, width).attr("id", "footer");
         var packageNameLabel = footer.append("div");
         footer.append("div").attr("class", "hint").html("click or alt+click to descend or ascend");
 
@@ -114,7 +112,7 @@
 
         var treemap = d3.layout.treemap()
                 .round(true)
-                .size([w, h])
+                .size([width, height])
                 .value(function(d) { return d.size; });
 
         root["parent"] = root;

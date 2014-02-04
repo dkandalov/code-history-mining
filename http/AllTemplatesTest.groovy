@@ -7,7 +7,7 @@ class AllTemplatesTest {
 	private ArrayList<Template> allTemplates = [
 			changeSizeChartTemplate, amountOfCommittersChartTemplate, amountOfFilesInCommitChartTemplate,
 			filesInTheSameCommitGraphTemplate, committersChangingSameFilesGraphTemplate,
-			committersChangingSameFilesGraphTemplate/*, amountOfCommitsTreemapTemplate*/
+			committersChangingSameFilesGraphTemplate, amountOfCommitsTreemapTemplate
 	]
 
 	@Test void "removes header from templates"() {
@@ -22,13 +22,9 @@ class AllTemplatesTest {
 	}
 
 	private static assertHeaderIsNoLongerPresentIn(Template template) {
-		template.text.with{
-			assert contains("var headerSpan")
-			assert contains("headerSpan.")
-		}
-		template.removeJsAddedHeader().text.with{
-			assert !contains("var headerSpan")
-			assert !contains("headerSpan.")
-		}
+		assert template.text.contains("var headerSpan")
+		assert template.text.contains("headerSpan.")
+		assert !template.removeJsAddedHeader().text.contains("var headerSpan")
+		assert !template.removeJsAddedHeader().text.contains("headerSpan.")
 	}
 }
