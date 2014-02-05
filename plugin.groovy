@@ -82,7 +82,7 @@ static AnAction createActionGroup(File file) {
 						def context = new Visualization.Context(events, projectName, checkIfCancelled)
 						def html = visualization.generate(context)
 
-						def url = HttpUtil.loadIntoHttpServer_NEW(html, projectName, visualization.name + ".html")
+						def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
 
 						// TODO seems like com.intellij.ide.BrowserUtil.browse already shows a message for misconfigured browser path
 						def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
