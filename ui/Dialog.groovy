@@ -1,5 +1,4 @@
 package ui
-
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -11,11 +10,15 @@ import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.ui.DocumentAdapter
+import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
+import events.EventStorage
 import historyreader.HistoryGrabberConfig
 
 import javax.swing.*
+import javax.swing.event.DocumentEvent
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
@@ -33,6 +36,7 @@ class Dialog {
 		filePathTextField.text = grabberConfig.outputFilePath
 		def grabChangeSizeCheckBox = new JCheckBox()
 		grabChangeSizeCheckBox.selected = grabberConfig.grabChangeSizeInLines
+		def historyRangeLabel = new JLabel()
 
 		grabChangeSizeCheckBox.toolTipText = "Requires loading files content. Can slow down history grabbing."
 
@@ -51,11 +55,20 @@ class Dialog {
 				@Override void actionPerformed(ActionEvent e) {
 					def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
 					VirtualFile file = FileChooser.chooseFile(fileChooserDescriptor(csvFileType), project, VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text))
-					if (file != null) filePathTextField.text = file.path
+					if (file != null) {
+						filePathTextField.text = file.path
+						updateDateRangeText(historyRangeLabel, filePathTextField)
+					}
 				}
 			}
 			filePathTextField.addActionListener(actionListener)
+			filePathTextField.childComponent.document.addDocumentListener(new DocumentAdapter() {
+				@Override protected void textChanged(DocumentEvent e) {
+					updateDateRangeText(historyRangeLabel, filePathTextField)
+				}
+			})
 			add(filePathTextField, bag.next().coverLine().weightx(1).fillCellHorizontally())
+			add(historyRangeLabel, bag.nextLine().next().next().coverLine())
 
 			add(new JPanel().with {
 				layout = new GridBagLayout()
@@ -68,6 +81,7 @@ class Dialog {
 			def text = new JLabel("(Please note that grabbing history can slow down IDE and/or take a really long time.)")
 			add(text, bag.nextLine().coverLine())
 
+			updateDateRangeText(historyRangeLabel, filePathTextField)
 			it
 		}
 
@@ -87,6 +101,18 @@ class Dialog {
 		builder.dimensionServiceKey = "CodeHistoryMiningDialog"
 
 		ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
+	}
+
+	private static updateDateRangeText(JLabel label, TextFieldWithBrowseButton filePathTextField) {
+		def file = new File(filePathTextField.text)
+		if (!file.exists()) {
+			label.text = "(contains no history)"
+		} else {
+			def eventStorage = new EventStorage(file.absolutePath)
+			def fromDate = DateFormatUtil.formatDate(eventStorage.oldestEventTime)
+			def toDate = DateFormatUtil.formatDate(eventStorage.mostRecentEventTime)
+			label.text = "(contains history from ${fromDate} to ${toDate})"
+		}
 	}
 
 	private static FileChooserDescriptor fileChooserDescriptor(FileType csvFileType) {
