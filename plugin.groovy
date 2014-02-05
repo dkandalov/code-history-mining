@@ -21,7 +21,6 @@ import events.EventStorage
 import historyreader.*
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
-import historyreader.HistoryGrabberConfig
 import ui.FileAmountToolWindow
 import util.CancelledException
 import util.Measure
@@ -84,7 +83,7 @@ static AnAction createActionGroup(File file) {
 
 						def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
 
-						// TODO seems like com.intellij.ide.BrowserUtil.browse already shows a message for misconfigured browser path
+						// need to check if browser configured correctly because it looks like IntelliJ won't do it
 						def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
 						if (!browserConfiguredCorrectly) {
 							UIUtil.invokeLaterIfNeeded {
@@ -93,7 +92,7 @@ static AnAction createActionGroup(File file) {
 										"Code History Mining"
 								)
 							}
-							// don't return to try to open url anyway in case the above check is wrong
+							// don't return and try to open url anyway in case the above check is wrong
 						}
 						BrowserUtil.launchBrowser(url)
 
