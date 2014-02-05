@@ -2,7 +2,7 @@ package analysis
 import events.FileChangeEvent
 import groovy.transform.Immutable
 
-import static analysis.Analysis.*
+import static analysis._private.Analysis.*
 import static http.AllTemplates.*
 
 @Immutable

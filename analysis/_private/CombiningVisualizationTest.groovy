@@ -1,4 +1,6 @@
-package analysis
+package analysis._private
+
+import analysis.Visualization
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.not

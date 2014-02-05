@@ -1,4 +1,4 @@
-package analysis
+package analysis._private
 import events.EventStorage
 import http.Template
 

@@ -1,5 +1,5 @@
-import analysis.Analysis
-import analysis.AnalysisTest
+import analysis._private.Analysis
+import analysis._private.AnalysisTest
 import events.EventStorageTest
 import historyreader._private.ChangeEventsReaderGitTest
 import historyreader._private.CommitReaderGitTest
@@ -13,6 +13,9 @@ import util.TimeIteratorsTest
 [Analysis.class]
 
 /* CombiningVisualizationTest <- importing it causes groovy compilation error in live plugin but not in standalone groovy */
-def unitTests = [AnalysisTest, EventStorageTest, TimeIteratorsTest, WiltTest, TemplateTest, TemplatesModificationTest]
+def unitTests = [
+		AnalysisTest, EventStorageTest, TimeIteratorsTest, WiltTest, TemplateTest,
+		TemplatesModificationTest
+]
 def integrationTests = [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest]
 IntegrationTestsRunner.runIntegrationTests(unitTests + integrationTests, project, pluginPath)

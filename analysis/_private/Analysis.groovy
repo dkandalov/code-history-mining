@@ -1,4 +1,4 @@
-package analysis
+package analysis._private
 import com.intellij.openapi.diagnostic.Logger
 import events.ChangeStats
 import events.CommitInfo
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable
 
 import java.text.SimpleDateFormat
 
-import static analysis.Analysis.Util.*
+import static Analysis.Util.*
 import static java.util.concurrent.TimeUnit.*
 
 class Analysis {

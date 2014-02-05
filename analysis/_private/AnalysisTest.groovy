@@ -1,7 +1,7 @@
-package analysis
+package analysis._private
 import org.junit.Test
 
-import static analysis.Analysis.Util.*
+import static analysis._private.Analysis.Util.*
 import static util.DateTimeUtil.*
 
 class AnalysisTest {
