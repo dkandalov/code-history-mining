@@ -15,22 +15,22 @@ class HistoryGrabberConfig {
 	String outputFilePath
 	boolean grabChangeSizeInLines
 
-	static HistoryGrabberConfig loadDialogStateFor(Project project, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
+	static HistoryGrabberConfig loadGrabberConfigFor(Project project, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
 		def result = stateByProject.get(project.name)
 		result != null ? result : createDefault()
 	}
 
-	static saveDialogStateOf(Project project, String pathToFolder, HistoryGrabberConfig dialogState) {
+	static saveGrabberConfigOf(Project project, String pathToFolder, HistoryGrabberConfig grabberConfig) {
 		def stateByProject = loadStateByProject(pathToFolder)
-		stateByProject.put(project.name, dialogState)
+		stateByProject.put(project.name, grabberConfig)
 		FileUtil.writeToFile(new File(pathToFolder + "/dialog-state.json"), JsonOutput.toJson(stateByProject))
 	}
 
 	private static Map<String, HistoryGrabberConfig> loadStateByProject(String pathToFolder) {
 		try {
 			def parseDate = { new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(it) }
-			def toDialogState = { map -> new HistoryGrabberConfig(
+			def toGrabberConfig = { map -> new HistoryGrabberConfig(
 					parseDate(map.from),
 					parseDate(map.to),
 					map.outputFilePath,
@@ -38,7 +38,7 @@ class HistoryGrabberConfig {
 			)}
 
 			def json = FileUtil.loadFile(new File(pathToFolder + "/dialog-state.json"))
-			new JsonSlurper().parseText(json).collectEntries{ [it.key, toDialogState(it.value)] }
+			new JsonSlurper().parseText(json).collectEntries{ [it.key, toGrabberConfig(it.value)] }
 		} catch (IOException ignored) {
 			[:]
 		}
