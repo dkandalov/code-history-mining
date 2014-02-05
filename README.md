@@ -20,12 +20,12 @@ This is an attempt to make looking at project history easier.
  - interactive visualization is cool because it's fun to play with and can hopefully give deeper insight into project history
 
 
-### How to install
+### How to install?
  - from IntelliJ [plugin repository](http://plugins.jetbrains.com/plugin/7273)
  - as a plugin for [live-plugin](https://github.com/dkandalov/live-plugin)
 
 
-### How to use
+### How to use?
 The plugin has two parts:
  - reading project history from version control and saving it as csv file
  - reading history from csv, analyzing and visualizing it with [d3.js](http://d3js.org/) (needs a browser with SVG support)
