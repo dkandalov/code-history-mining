@@ -21,7 +21,7 @@ import static liveplugin.IdeUtil.askIsUserWantsToRestartIde;
 import static liveplugin.IdeUtil.downloadFile;
 
 public class AppComponent implements ApplicationComponent {
-	private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining/lib/";
+	private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining-plugin/lib/";
 	private static final Logger LOG = Logger.getInstance("CodeHistoryMining");
 
 	@Override public void initComponent() {
