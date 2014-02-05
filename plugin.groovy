@@ -21,7 +21,7 @@ import events.EventStorage
 import historyreader.*
 import http.HttpUtil
 import org.jetbrains.annotations.Nullable
-import ui.DialogState
+import historyreader.HistoryGrabberConfig
 import ui.FileAmountToolWindow
 import util.CancelledException
 import util.Measure
@@ -148,12 +148,12 @@ def grabHistoryOf(Project project) {
 		return
 	}
 
-	def state = DialogState.loadDialogStateFor(project, dialogStatePath()) {
+	def state = HistoryGrabberConfig.loadDialogStateFor(project, dialogStatePath()) {
 		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
-		new DialogState(new Date() - 300, new Date(), outputFilePath, false)
+		new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false)
 	}
-	showDialog(state, "Grab History Of Current Project", project) { DialogState userInput ->
-		DialogState.saveDialogStateOf(project, dialogStatePath(), userInput)
+	showDialog(state, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
+		HistoryGrabberConfig.saveDialogStateOf(project, dialogStatePath(), userInput)
 
 		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {

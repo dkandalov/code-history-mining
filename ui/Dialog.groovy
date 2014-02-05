@@ -13,6 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
+import historyreader.HistoryGrabberConfig
 
 import javax.swing.*
 import java.awt.*
@@ -23,15 +24,15 @@ import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
 
 class Dialog {
-	static showDialog(DialogState state, String dialogTitle, Project project, Closure onOkCallback) {
-		def fromDatePicker = new DatePicker(state.from, dateFormat.delegate)
+	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project, Closure onOkCallback) {
+		def fromDatePicker = new DatePicker(grabberConfig.from, dateFormat.delegate)
 		fromDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
-		def toDatePicker = new DatePicker(state.to, dateFormat.delegate)
+		def toDatePicker = new DatePicker(grabberConfig.to, dateFormat.delegate)
 		toDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
 		def filePathTextField = new TextFieldWithBrowseButton()
-		filePathTextField.text = state.outputFilePath
+		filePathTextField.text = grabberConfig.outputFilePath
 		def grabChangeSizeCheckBox = new JCheckBox()
-		grabChangeSizeCheckBox.selected = state.grabChangeSizeInLines
+		grabChangeSizeCheckBox.selected = grabberConfig.grabChangeSizeInLines
 
 		grabChangeSizeCheckBox.toolTipText = "Requires loading files content. Can slow down history grabbing."
 
@@ -74,7 +75,7 @@ class Dialog {
 		builder.title = dialogTitle
 		builder.okActionEnabled = true
 		builder.okOperation = {
-			onOkCallback(new DialogState(
+			onOkCallback(new HistoryGrabberConfig(
 					fromDatePicker.date,
 					toDatePicker.date,
 					filePathTextField.text,

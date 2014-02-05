@@ -2,12 +2,11 @@ package historyreader
 
 import com.intellij.openapi.diagnostic.Logger
 import events.EventStorage
-import ui.DialogState
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 
 class HistoryGrabber {
-	static doGrabHistory(ChangeEventsReader eventsReader, EventStorage storage, DialogState userInput, indicator = null) {
+	static doGrabHistory(ChangeEventsReader eventsReader, EventStorage storage, HistoryGrabberConfig config, indicator = null) {
 		def updateIndicatorText = { changeList, callback ->
 			log_(changeList.name)
 			def date = dateFormat.format((Date) changeList.commitDate)
@@ -19,8 +18,8 @@ class HistoryGrabber {
 		}
 		def isCancelled = { indicator?.canceled }
 
-		def fromDate = userInput.from
-		def toDate = userInput.to + 1 // "+1" add a day to make date in UI inclusive
+		def fromDate = config.from
+		def toDate = config.to + 1 // "+1" add a day to make date in UI inclusive
 
 		def allEventWereStored = true
 		def appendToStorage = { commitChangeEvents -> allEventWereStored &= storage.appendToEventsFile(commitChangeEvents) }
