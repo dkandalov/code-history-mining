@@ -1,4 +1,6 @@
 package historyreader
+
+import historyreader._private.CommitReaderGitTest
 import liveplugin.PluginUtil
 
 import static util.DateTimeUtil.dateTime

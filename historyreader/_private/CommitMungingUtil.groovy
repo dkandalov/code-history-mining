@@ -1,4 +1,4 @@
-package historyreader
+package historyreader._private
 
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList

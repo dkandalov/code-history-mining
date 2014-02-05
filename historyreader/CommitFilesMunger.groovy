@@ -14,7 +14,7 @@ import events.FileChangeInfo
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
-import static historyreader.CommitMungingUtil.*
+import static historyreader._private.CommitMungingUtil.*
 import static util.Measure.measure
 
 class CommitFilesMunger {

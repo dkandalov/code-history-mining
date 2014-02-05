@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
+import historyreader._private.GitPluginWorkaround
 import util.PastToPresentIterator
 import util.PresentToPastIterator
 
