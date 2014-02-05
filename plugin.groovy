@@ -35,12 +35,15 @@ if (false) return showFileAmountByType(project)
 //noinspection GroovyConstantIfStatement
 if (false) return CommitMunging_Playground.playOnIt()
 
+def grabHistory = registerAction("GrabProjectHistory", "", "", "Grab Project History") { AnActionEvent event ->
+	grabHistoryOf(event.project)
+}
+def grabOnVcsUpdates = registerAction("GrabHistoryOnVcsUpdates", "", "", "Grab History on VCS Updates") {
+	// TODO
+}
 
 def actionGroup = new ActionGroup("Code History Mining", true) {
 	@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
-		def grabHistory = new AnAction("Grab Project History") {
-			@Override void actionPerformed(AnActionEvent event) { grabHistoryOf(event.project) }
-		}
 		def codeHistoryActions = filesWithCodeHistory().collect{ createActionGroup(it) }
 		def projectStats = new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) { showFileAmountByType(event.project) }
@@ -54,7 +57,7 @@ def actionGroup = new ActionGroup("Code History Mining", true) {
 }
 registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
 
-registerAction("CodeHistoryMiningPopup", "alt shift H") { AnActionEvent actionEvent ->
+registerAction("CodeHistoryMiningPopup", "alt shift H", "", "Show Code History Mining Popup") { AnActionEvent actionEvent ->
 	JBPopupFactory.instance.createActionGroupPopup(
 			"Code History Mining", actionGroup, actionEvent.dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
 	).showCenteredInCurrentWindow(actionEvent.project)
@@ -148,12 +151,12 @@ def grabHistoryOf(Project project) {
 		return
 	}
 
-	def state = HistoryGrabberConfig.loadDialogStateFor(project, dialogStatePath()) {
+	def state = HistoryGrabberConfig.loadGrabberConfigFor(project, dialogStatePath()) {
 		def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
 		new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false)
 	}
 	showDialog(state, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
-		HistoryGrabberConfig.saveDialogStateOf(project, dialogStatePath(), userInput)
+		HistoryGrabberConfig.saveGrabberConfigOf(project, dialogStatePath(), userInput)
 
 		doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			measure("Total time") {
