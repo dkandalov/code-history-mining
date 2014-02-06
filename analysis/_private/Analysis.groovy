@@ -377,13 +377,13 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		log_("Looking for matching events")
 		def matchingEvents = events.reverse()
 				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
-			def relatedEvents = previousEvents
-					.findAll{ fullFileNameIn(it) == fullFileNameIn(event) && it.author != event.author }
-			relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
-		}
-		.findAll{it != null}
+						def relatedEvents = previousEvents.findAll{ fullFileNameIn(it) == fullFileNameIn(event) && it.author != event.author }
+						relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
+				}
+				.findAll{it != null}
 				.groupBy{[author: it.event.author, fileName: fullFileNameIn(it.event)]}
 				.findAll{it.value.size() >= threshold}
+
 		def links = matchingEvents
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
@@ -426,7 +426,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 7) {
+	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 8) {
 		Collection.mixin(Util)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
@@ -437,7 +437,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		checkIfCancelled()
 		def pairCoOccurrences = fileNamesByRevision
 				.inject([:].withDefault{0}) { map, fileNames -> fileNames.pairs().each{ map[it.sort()] += 1 }; map }
-				.findAll{ it.value > threshold }.sort{-it.value}
+				.findAll{ it.value >= threshold }.sort{-it.value}
 
 		checkIfCancelled()
 

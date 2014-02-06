@@ -9,11 +9,11 @@ import static util.DateTimeUtil.date
 
 class AnalysisTest {
 
-	@Test void "creates json for latest commits as graph"() {
+	@Test void "graph with all files and all committers"() {
 		def changeEvents = [
-			commitBy(TimPerry, "03/04/2013"){ modified("/theories/internal/AllMembersSupplier.java") },
-			commitBy(DavidSaff, "02/04/2013"){ modified("/theories/internal/AllMembersSupplier.java") },
-			commitBy(KentBeck, "02/04/2013"){ modified("/theories/Theories.java") },
+			commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+			commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java"))
 		].flatten()
 
 		def now = date("04/04/2013")
@@ -30,11 +30,49 @@ class AnalysisTest {
 		""".stripMargin("|").trim()
 	}
 
-	private List<FileChangeEvent> commitBy(String author, String dateAsString, Closure createFileChangeInfos) {
+	@Test void "graph with authors changing same files within a week"() {
+		def changeEvents = [
+			commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+			commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java")),
+			commitBy(TimPerry,  "01/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+			commitBy(DavidSaff, "01/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+		].flatten()
+
+		def threshold = 2
+		assert Analysis.authorChangingSameFilesGraph(changeEvents, {}, threshold) == """
+      |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
+      |{"name": "Tim Perry", "group": 2},
+      |{"name": "David Saff", "group": 2}],
+      |"links": [{"source": 1, "target": 0, "value": 2},
+      |{"source": 2, "target": 0, "value": 2}]
+		""".stripMargin("|").trim()
+	}
+
+	@Test void "graph with files changed in the same commit"() {
+		def changeEvents = [
+			commitBy(TimPerry,  "03/04/2013",
+				modified("/theories/internal/AllMembersSupplier.java"),
+				modified("/theories/Theories.java")
+			),
+			commitBy(TimPerry,  "01/04/2013",
+				modified("/theories/internal/AllMembersSupplier.java"),
+				modified("/theories/Theories.java"),
+				modified("/textui/ResultPrinter.java")
+			)
+		].flatten()
+
+		def threshold = 2
+		assert Analysis.filesInTheSameCommitGraph(changeEvents, {}, threshold) == """
+      |"nodes": [{"name": "/theories/Theories.java", "group": 1},
+      |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1}],
+      |"links": [{"source": 0, "target": 1, "value": 2}]
+		""".stripMargin("|").trim()
+	}
+
+	private List<FileChangeEvent> commitBy(String author, String dateAsString, FileChangeInfo... fileChanges) {
 		def commitInfo = new CommitInfo(someRevision(), author, date(dateAsString), someCommitMessage)
-		createFileChangeInfos().collect {
-			new FileChangeEvent(commitInfo, it)
-		}
+		fileChanges.collect { new FileChangeEvent(commitInfo, it) }
 	}
 
 	private static FileChangeInfo modified(String filePath) {
