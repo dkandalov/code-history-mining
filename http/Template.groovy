@@ -1,5 +1,6 @@
 package http
-import java.util.regex.Matcher
+
+import static java.util.regex.Matcher.quoteReplacement
 
 class Template {
 	final String text
@@ -71,7 +72,7 @@ class Template {
 	}
 
 	private static String fillJsPlaceholder(String name, String withJsValue, String inText) {
-		inText.replaceAll(/(?s)\/\*${name}\*\/.*\/\*${name}\*\//, Matcher.quoteReplacement(withJsValue))
+		inText.replaceAll(/(?s)\/\*${name}\*\/.*\/\*${name}\*\//, quoteReplacement(withJsValue))
 	}
 
 	private static String fillMustachePlaceholder(String name, String withText, String inText) {
