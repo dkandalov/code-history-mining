@@ -4,7 +4,7 @@ import org.junit.Test
 import static analysis._private.Analysis.Util.*
 import static util.DateTimeUtil.*
 
-class AnalysisTest {
+class AnalysisUtilTest {
 	@Test void "should group elements into pairs"() {
 		Collection.mixin(Analysis.Util)
 		assert [].pairs() == []
