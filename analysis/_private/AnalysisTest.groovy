@@ -12,17 +12,21 @@ class AnalysisTest {
 	@Test void "creates json for latest commits as graph"() {
 		def changeEvents = [
 			commitBy(TimPerry, "03/04/2013"){ modified("/theories/internal/AllMembersSupplier.java") },
-			commitBy(DavidSaff, "02/04/2013"){ modified("/theories/internal/AllMembersSupplier.java") }
+			commitBy(DavidSaff, "02/04/2013"){ modified("/theories/internal/AllMembersSupplier.java") },
+			commitBy(KentBeck, "02/04/2013"){ modified("/theories/Theories.java") },
 		].flatten()
 
 		def now = date("04/04/2013")
 		assert Analysis.commitLogAsGraph(changeEvents, {}, 100, now) == """
-			|"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
-			|{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
-			|{"name": "Tim Perry", "group": 2},
-			|{"name": "David Saff", "group": 2}],
-			|"links": [{"source": 2, "target": 0, "value": 1},
-			|{"source": 3, "target": 0, "value": 1}]
+      |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
+      |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
+      |{"name": "/theories/Theories.java", "group": 1},
+      |{"name": "Tim Perry", "group": 2},
+      |{"name": "David Saff", "group": 2},
+      |{"name": "Kent Beck", "group": 2}],
+      |"links": [{"source": 3, "target": 0, "value": 1},
+      |{"source": 4, "target": 0, "value": 1},
+      |{"source": 5, "target": 2, "value": 1}]
 		""".stripMargin("|").trim()
 	}
 
@@ -42,6 +46,7 @@ class AnalysisTest {
 
 	private static final String TimPerry = "Tim Perry"
 	private static final String DavidSaff = "David Saff"
+	private static final String KentBeck = "Kent Beck"
 
 	private int revision = 1
 	private final Closure<String> someRevision = { (revision++).toString() }
