@@ -1,6 +1,7 @@
 package historyreader._private
 
 import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vcs.changes.ContentRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import events.CommitInfo
@@ -34,6 +35,15 @@ class CommitMungingUtil {
 		} else {
 			commit.number.toString()
 		}
+	}
+
+	static String packageNameOf(ContentRevision contentRevision, String commonAncestorPath) {
+		def path = contentRevision?.file?.parentPath?.path
+		if (path == null || path == "") return ""
+
+		// was observed in svn that some commits contain changes to file which are not part of project
+		def isPartOfProject = path.contains(commonAncestorPath)
+		isPartOfProject ? path.replace(commonAncestorPath, "") : null
 	}
 
 	private static String removeEmailFrom(String committerName) {

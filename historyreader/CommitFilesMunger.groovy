@@ -12,8 +12,9 @@ import events.FileChangeEvent
 import events.FileChangeInfo
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
-import static com.intellij.openapi.util.io.FileUtil.toCanonicalPath
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
+import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
+import static historyreader.ChangeEventsReader.vcsRootsIn
 import static historyreader._private.CommitMungingUtil.*
 import static util.Measure.measure
 
@@ -21,27 +22,33 @@ class CommitFilesMunger {
 	private final Project project
 	private final boolean countChangeSizeInLines
 	private final List<Closure> additionalAttributeMungers
+	private final String commonAncestorPath
 
 	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List<Closure> additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
 		this.additionalAttributeMungers = additionalAttributeMungers
+		this.commonAncestorPath = withDefault("", getCommonAncestor(vcsRootsIn(project).collect{it.path})?.canonicalPath)
 	}
 
 	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
 		try {
 			def commitInfo = commitInfoOf(commit)
 			commit.changes.collect { Change change ->
+				def fileChangeInfo = fileChangeInfoOf(change, commonAncestorPath, countChangeSizeInLines)
+				if (fileChangeInfo == null) return null
+
 				def context = [commit: commit, change: change, project: project]
 				def additionalAttributes = additionalAttributeMungers.collect{ it.call(context) }
-				new FileChangeEvent(commitInfo, fileChangeInfoOf(change, project, countChangeSizeInLines), additionalAttributes)
-			}
+				new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
+
+			}.findAll{ it != null }
 		} catch (ProcessCanceledException ignore) {
 			[]
 		}
 	}
 
-	private static FileChangeInfo fileChangeInfoOf(Change change, Project project, boolean readFileContent) {
+	private static FileChangeInfo fileChangeInfoOf(Change change, String commonAncestorPath, boolean readFileContent) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
@@ -50,11 +57,11 @@ class CommitFilesMunger {
 			(lineChangesStats, charChangesStats) = readChangeStats(change)
 		}
 
-		def projectPath = toCanonicalPath(project.basePath)
 		def fileNameBefore = withDefault("", change.beforeRevision?.file?.name)
 		def fileName = withDefault("", change.afterRevision?.file?.name)
-		def packageNameBefore = measure("VCS content time"){ withDefault("", change.beforeRevision?.file?.parentPath?.path).replace(projectPath, "") }
-		def packageName = measure("VCS content time"){ withDefault("", change.afterRevision?.file?.parentPath?.path).replace(projectPath, "") }
+		def packageNameBefore = measure("VCS content time"){ packageNameOf(change.beforeRevision, commonAncestorPath) }
+		def packageName = measure("VCS content time"){ packageNameOf(change.afterRevision, commonAncestorPath) }
+		if (packageNameBefore == null || packageName == null) return null
 
 		def optimizedFileNameBefore = (change.type == MODIFICATION ? "" : fileNameBefore)
 		def optimizedPackageNameBefore = (change.type == MODIFICATION ? "" : packageNameBefore)

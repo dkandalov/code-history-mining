@@ -10,7 +10,7 @@ import historyreader.CommitFilesMunger
 import historyreader.CommitReader
 import org.junit.Test
 
-import static events.ChangeStats.getNA
+import static events.ChangeStats.*
 import static util.DateTimeUtil.dateTime
 import static util.DateTimeUtil.exactDateTime
 
