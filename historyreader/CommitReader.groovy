@@ -3,7 +3,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
-import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import historyreader._private.GitPluginWorkaround
@@ -25,7 +24,7 @@ class CommitReader {
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
 	}
 
-	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true) {
+	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true, List<VcsRoot> vcsRoots) {
 		assert historyStart.time < historyEnd.time
 		lastRequestHadErrors = false
 
@@ -46,7 +45,7 @@ class CommitReader {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
 						try {
-							changes = requestCommitsFor(project, dates.from, dates.to)
+							changes = requestCommitsFrom(vcsRoots, project, dates.from, dates.to)
 						} catch (Exception e) {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
@@ -66,8 +65,8 @@ class CommitReader {
 		}
 	}
 
-	private List<Commit> requestCommitsFor(Project project, Date fromDate = null, Date toDate = null) {
-		vcsRootsIn(project)
+	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate = null, Date toDate = null) {
+		vcsRoots
 				.collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
 				.sort{ it.commitDate }
 	}
@@ -98,14 +97,6 @@ class CommitReader {
 			settings.dateBefore = toDate
 		}
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
-	}
-
-	static boolean noVCSRootsIn(Project project) {
-		vcsRootsIn(project).size() == 0
-	}
-
-	private static List<VcsRoot> vcsRootsIn(Project project) {
-		ProjectLevelVcsManager.getInstance(project).allVcsRoots
 	}
 
 	private static boolean isGit(CommittedChangesProvider changesProvider) {

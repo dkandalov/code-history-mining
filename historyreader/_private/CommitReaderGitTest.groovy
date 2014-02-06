@@ -9,6 +9,7 @@ import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import historyreader.CommitReader
 import org.junit.Test
 
+import static historyreader.ChangeEventsReader.vcsRootsIn
 import static util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
@@ -44,7 +45,7 @@ class CommitReaderGitTest {
 		def from = dateTime("00:00 03/10/2007")
 		def to = dateTime("23:59 03/10/2007")
 
-		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast).toList()
+		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast, vcsRootsIn(jUnitProject)).toList()
 
 		assert commits.size() == 3
 		assert commits[0].commitDate < commits[1].commitDate
@@ -56,7 +57,7 @@ class CommitReaderGitTest {
 		def from = dateTime("00:00 03/10/2007")
 		def to = dateTime("23:59 03/10/2007")
 
-		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast).toList()
+		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast, vcsRootsIn(jUnitProject)).toList()
 
 		assert commits.size() == 3
 		assert commits[0].commitDate > commits[1].commitDate
@@ -64,7 +65,7 @@ class CommitReaderGitTest {
 	}
 
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def commits = new CommitReader(jUnitProject).readCommits(from, to).toList().findAll{it != null}
+		def commits = new CommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject)).toList().findAll{it != null}
 		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
 
 		def commit = commits.first()

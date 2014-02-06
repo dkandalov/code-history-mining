@@ -29,6 +29,7 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
+
 //noinspection GroovyConstantIfStatement
 if (false) return showFileAmountByType(project)
 //noinspection GroovyConstantIfStatement
@@ -36,9 +37,6 @@ if (false) return CommitMunging_Playground.playOnIt()
 
 def grabHistory = registerAction("GrabProjectHistory", "", "", "Grab Project History") { AnActionEvent event ->
 	grabHistoryOf(event.project)
-}
-def grabOnVcsUpdates = registerAction("GrabHistoryOnVcsUpdates", "", "", "Grab History on VCS Updates") {
-	// TODO
 }
 
 def actionGroup = new ActionGroup("Code History Mining", true) {
@@ -145,7 +143,7 @@ static AnAction createActionGroup(File file) {
 }
 
 def grabHistoryOf(Project project) {
-	if (CommitReader.noVCSRootsIn(project)) {
+	if (ChangeEventsReader.noVCSRootsIn(project)) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 		return
 	}
@@ -162,6 +160,7 @@ def grabHistoryOf(Project project) {
 				def storage = new EventStorage(userInput.outputFilePath)
 				def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
 				def eventsReader = new ChangeEventsReader(
+						project,
 						new CommitReader(project, vcsRequestBatchSizeInDays),
 						new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
 				)

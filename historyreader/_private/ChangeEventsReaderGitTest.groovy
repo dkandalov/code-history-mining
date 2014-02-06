@@ -77,7 +77,7 @@ class ChangeEventsReaderGitTest {
 
 	private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
 		def eventsConsumer = new EventConsumer()
-		def eventsReader = new ChangeEventsReader(new CommitReader(project, 1), commitMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, 1), commitMunger.&mungeCommit)
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 		eventsConsumer.changeEvents
 	}
