@@ -291,11 +291,11 @@ class Analysis {
 		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
-	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {},
+	                               int amountOfChanges = 500, Date now = new Date()) {
 		use(TimeCategory) {
-			def now = new Date()
-			events = events.findAll{ it.revisionDate < now - 1.month }
-			if (events.size() > 100) events = events.take(100)
+			events = events.findAll{ it.revisionDate >= now - 1.month }
+			if (events.size() > amountOfChanges) events = events.take(amountOfChanges)
 		}
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
