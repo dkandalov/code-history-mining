@@ -9,6 +9,7 @@ import historyreader.wilt.WiltTest
 import http.TemplateTest
 import http.TemplatesModificationTest
 import liveplugin.testrunner.IntegrationTestsRunner
+import util.CollectionUtilTest
 import util.TimeIteratorsTest
 // some classes to keep imports, without it groovy compilation fails
 [Analysis.class]
@@ -16,7 +17,7 @@ import util.TimeIteratorsTest
 /* CombiningVisualizationTest <- importing it causes groovy compilation error in live plugin but not in standalone groovy */
 def unitTests = [
 		AnalysisUtilTest, AnalysisTest, EventStorageTest, TimeIteratorsTest,
-		WiltTest, TemplateTest, TemplatesModificationTest
+		WiltTest, TemplateTest, TemplatesModificationTest, CollectionUtilTest
 ]
 def integrationTests = [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest]
 IntegrationTestsRunner.runIntegrationTests(unitTests + integrationTests, project, pluginPath)

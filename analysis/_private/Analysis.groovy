@@ -6,6 +6,7 @@ import events.FileChangeEvent
 import events.FileChangeInfo
 import groovy.time.TimeCategory
 import org.jetbrains.annotations.Nullable
+import util.CollectionUtil
 
 import java.text.SimpleDateFormat
 
@@ -50,7 +51,7 @@ class Analysis {
 	}
 
 	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
-		Collection.mixin(Util)
+		Collection.mixin(CollectionUtil)
 
 		def times = events
 				.groupBy{it.revision}.values().collect{it.first()}
@@ -184,7 +185,7 @@ class Analysis {
 	}
 
 	static String createJson_CommitsWithAndWithoutTests_Chart(List<FileChangeEvent> events) {
-		Collection.mixin(Util)
+		Collection.mixin(CollectionUtil)
 
 		def withoutExtension = { String s -> s.contains(".") ? s.substring(0, s.lastIndexOf(".")) : s }
 		def containUnitTests = { eventList -> eventList.any{ withoutExtension(nonEmptyFileName(it)).endsWith("Test") } }
@@ -360,7 +361,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	static String authorChangingSameFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
-		Collection.mixin(Util)
+		Collection.mixin(CollectionUtil)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
@@ -417,7 +418,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 8) {
-		Collection.mixin(Util)
+		Collection.mixin(CollectionUtil)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
 
@@ -454,7 +455,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 	}
 
 	private static String asJsGraphLiteral(Collection relations, Collection ... nodeGroups) {
-		Collection.mixin(Util)
+		Collection.mixin(CollectionUtil)
 
 		def nodesJSLiteral = nodeGroups.toList().collectWithIndex{ nodes, i ->
 			nodes.collect{ '{"name": "' + quoteReplacement(it) + '", "group": ' + (i + 1) + '}' }
@@ -590,42 +591,6 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		static int hourOf(Date date) { date.getAt(Calendar.HOUR_OF_DAY) }
 		static int minuteOf(Date date) { date.getAt(Calendar.MINUTE) }
 
-		static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
-			def result = []
-			def previousValues = new LinkedList()
-
-			for (value in collection) {
-				while (!previousValues.empty && !shouldKeepElement(previousValues.first(), value)) {
-					previousValues = previousValues.tail()
-				}
-
-				result << callback(previousValues, value)
-
-				if (shouldKeepElement(value, value)) previousValues << value
-			}
-			result
-		}
-
-		static <T> Collection<T> collectWithIndex(Collection<T> collection, Closure callback) {
-			def result = new ArrayList<T>()
-			int i = 0
-			def iterator = collection.iterator()
-			while (iterator.hasNext()) {
-				T element =  iterator.next();
-				result.add(callback(element, i))
-				i++
-			}
-			result
-		}
-
-		static <T> Collection<Collection<T>> pairs(Collection<T> collection) {
-			Collection<Collection<T>> result = collection.inject([]) { acc, value ->
-				if (!acc.empty) acc.last() << value
-				acc + [[value]]
-			}
-			if (!result.empty) result.remove(result.size() - 1)
-			result
-		}
 
 		static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 	}
