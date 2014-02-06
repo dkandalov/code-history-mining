@@ -342,11 +342,6 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		def fileNames = events.collect{ event -> fullFileNameIn(event) }
 		def authors = events.collect{ it.author }.unique()
 
-		def nodesJSLiteral = (
-			fileNames.collect{ '{"name": "' + it + '", "group": 1}' } +
-			authors.collect{ '{"name": "' + it + '", "group": 2}' }
-		).join(",\n")
-
 		def allNodes = fileNames + authors
 		def eventsByAuthor = events.groupBy{ it.author }
 		def relations = authors.collectMany{ author ->
@@ -359,9 +354,8 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 				[authorIndex, fileNames.indexOf(fileName), changeCount]
 			}
 		}
-		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
-		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+		asJsGraphLiteral(relations, fileNames, authors)
 	}
 
 	static String authorChangingSameFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
@@ -414,16 +408,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 		def authors = allLinks.keySet().collect{it.author}.unique().toList()
 		def fileNames = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
-		def nodesJSLiteral = (
-			fileNames.collect{'{"name": "' + it + '", "group": 1}'} +
-			authors.collect{'{"name": "' + it + '", "group": 2}'}
-		).join(",\n")
 
 		def nodes = fileNames + authors
 		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(nonEmptyFileName(it.key)), it.value] }
-		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
-		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+		asJsGraphLiteral(relations, fileNames, authors)
 	}
 
 	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 8) {
@@ -443,10 +432,8 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 		def nodes = pairCoOccurrences.keySet().flatten().unique().toList()
 		def relations = pairCoOccurrences.entrySet().collect{ [nodes.indexOf(it.key[0]), nodes.indexOf(it.key[1]), it.value] }
-		def nodesJSLiteral = nodes.collect{'{"name": "' + it + '", "group": 1}'}.join(",\n")
-		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
 
-		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+		asJsGraphLiteral(relations, nodes)
 	}
 
 	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
@@ -463,6 +450,18 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "changeSize"])
 
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
+	}
+
+	private static String asJsGraphLiteral(Collection relations, Collection ... nodeGroups) {
+		Collection.mixin(Util)
+
+		def nodesJSLiteral = nodeGroups.toList().collectWithIndex{ nodes, i ->
+			nodes.collect{ '{"name": "' + it + '", "group": ' + (i + 1) + '}' }
+		}.flatten().join(",\n")
+
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
 	}
 
 
@@ -602,6 +601,18 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 				result << callback(previousValues, value)
 
 				if (shouldKeepElement(value, value)) previousValues << value
+			}
+			result
+		}
+
+		static <T> Collection<T> collectWithIndex(Collection<T> collection, Closure callback) {
+			def result = new ArrayList<T>()
+			int i = 0
+			def iterator = collection.iterator()
+			while (iterator.hasNext()) {
+				T element =  iterator.next();
+				result.add(callback(element, i))
+				i++
 			}
 			result
 		}

@@ -5,6 +5,11 @@ import static analysis._private.Analysis.Util.*
 import static util.DateTimeUtil.*
 
 class AnalysisUtilTest {
+	@Test def "collecining elements with index"() {
+		Collection.mixin(Analysis.Util)
+		assert ["a", "b", "c"].collectWithIndex{ value, i -> value + i} == ["a0", "b1", "c2"]
+	}
+
 	@Test void "should group elements into pairs"() {
 		Collection.mixin(Analysis.Util)
 		assert [].pairs() == []
