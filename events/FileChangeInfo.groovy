@@ -9,7 +9,7 @@ class FileChangeInfo {
 	String fileName
 	String packageNameBefore
 	String packageName
-	String fileChangeType
+	String fileChangeType // see com.intellij.openapi.vcs.changes.Change.Type
 	ChangeStats lines
 	ChangeStats chars
 
