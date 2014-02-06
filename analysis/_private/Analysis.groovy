@@ -229,101 +229,6 @@ class Analysis {
 		asCsvStringLiteral(withTests + withNoTests, ["date", "author", "amount of commits"])
 	}
 
-	static String createJson_AuthorConnectionsThroughChangedFiles_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
-		Collection.mixin(Util)
-
-		events = useLatestNameForMovedFiles(events, checkIfCancelled)
-
-		def keepOneWeekOfEvents = { event, currentEvent ->
-			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
-			DAYS.convert(timeDiff, MILLISECONDS) <= 7
-		}
-
-		log_("Looking for matching events")
-		def matchingEvents = events.reverse()
-				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
-					def relatedEvents = previousEvents
-							.findAll{ fullFileNameIn(it) == fullFileNameIn(event) && it.author != event.author }
-					relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
-				}
-				.findAll{it != null}
-				.groupBy{[author: it.event.author, fileName: fullFileNameIn(it.event)]}
-				.findAll{it.value.size() >= threshold}
-		def links = matchingEvents
-				.collectEntries{[it.key, it.value.size()]}
-				.sort{-it.value}
-
-		checkIfCancelled()
-
-		log_("Linking events")
-		def notInMatchingEvents = { event ->
-			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && fullFileNameIn(it.event) == fullFileNameIn(event) }}
-		}
-		def relatedLinks = matchingEvents.values()
-				.inject([]){ result, entries -> result.addAll(entries.collectMany{it.relatedEvents}.unique()); result }.unique()
-				.findAll{ notInMatchingEvents(it) }
-				.groupBy{[author: it.author, fileName: fullFileNameIn(it)]}
-				.collectEntries{[it.key, it.value.size()]}
-				.sort{-it.value}
-
-		def allLinks = relatedLinks.entrySet().inject(links) { map, entry ->
-			if (map.containsKey(entry.key)) {
-				map[entry.key] += entry.value
-			} else {
-				map.put(entry.key, entry.value)
-			}
-			map
-		}
-
-		checkIfCancelled()
-
-		def authors = allLinks.keySet().collect{it.author}.unique().toList()
-		def files = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
-		def nodesJSLiteral = (
-			files.collect{'{"name": "' + it + '", "group": 1}'} +
-			authors.collect{'{"name": "' + it + '", "group": 2}'}
-		).join(",\n")
-
-		def nodes = files + authors
-		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(nonEmptyFileName(it.key)), it.value] }
-		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
-
-		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
-	}
-
-	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {},
-	                               int amountOfChanges = 500, Date now = new Date()) {
-		use(TimeCategory) {
-			events = events.findAll{ it.revisionDate >= now - 1.month }
-			if (events.size() > amountOfChanges) events = events.take(amountOfChanges)
-		}
-		events = useLatestNameForMovedFiles(events, checkIfCancelled)
-
-		def fileNames = events.collect{ event -> fullFileNameIn(event) }
-		def authors = events.collect{ it.author }.unique()
-
-		def nodesJSLiteral = (
-		fileNames.collect{ '{"name": "' + it + '", "group": 1}' } +
-				authors.collect{ '{"name": "' + it + '", "group": 2}' }
-		).join(",\n")
-
-		def allNodes = fileNames + authors
-		def eventsByAuthor = events.groupBy{ it.author }
-		def links = authors.collectMany{ author ->
-			def authorIndex = allNodes.indexOf(author)
-			eventsByAuthor[author]
-					.collect{ fullFileNameIn(it) }
-					.groupBy{ it }.entrySet().collect{
-				def fileName = it.key
-				def changeCount = it.value.size()
-				[authorIndex, fileNames.indexOf(fileName), changeCount]
-			}
-		}
-		def relationsJSLiteral = links.collect{ '{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}" }.join(",\n")
-
-		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
-	}
-
 	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def amountOfCommitsByMinute = events
 				.groupBy{it.revision}.entrySet()*.collect{it.value.first()}.flatten()
@@ -426,7 +331,102 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String createJson_FilesInTheSameCommit_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 7) {
+	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {},
+	                               int amountOfChanges = 500, Date now = new Date()) {
+		use(TimeCategory) {
+			events = events.findAll{ it.revisionDate >= now - 1.month }
+			if (events.size() > amountOfChanges) events = events.take(amountOfChanges)
+		}
+		events = useLatestNameForMovedFiles(events, checkIfCancelled)
+
+		def fileNames = events.collect{ event -> fullFileNameIn(event) }
+		def authors = events.collect{ it.author }.unique()
+
+		def nodesJSLiteral = (
+			fileNames.collect{ '{"name": "' + it + '", "group": 1}' } +
+			authors.collect{ '{"name": "' + it + '", "group": 2}' }
+		).join(",\n")
+
+		def allNodes = fileNames + authors
+		def eventsByAuthor = events.groupBy{ it.author }
+		def relations = authors.collectMany{ author ->
+			def authorIndex = allNodes.indexOf(author)
+			eventsByAuthor[author]
+					.collect{ fullFileNameIn(it) }
+					.groupBy{ it }.entrySet().collect{
+				def fileName = it.key
+				def changeCount = it.value.size()
+				[authorIndex, fileNames.indexOf(fileName), changeCount]
+			}
+		}
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+	}
+
+	static String authorChangingSameFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
+		Collection.mixin(Util)
+
+		events = useLatestNameForMovedFiles(events, checkIfCancelled)
+
+		def keepOneWeekOfEvents = { event, currentEvent ->
+			long timeDiff = currentEvent.revisionDate.time - event.revisionDate.time
+			DAYS.convert(timeDiff, MILLISECONDS) <= 7
+		}
+
+		log_("Looking for matching events")
+		def matchingEvents = events.reverse()
+				.collectWithHistory(keepOneWeekOfEvents) { previousEvents, event ->
+			def relatedEvents = previousEvents
+					.findAll{ fullFileNameIn(it) == fullFileNameIn(event) && it.author != event.author }
+			relatedEvents.empty ? null : [event: event, relatedEvents: relatedEvents]
+		}
+		.findAll{it != null}
+				.groupBy{[author: it.event.author, fileName: fullFileNameIn(it.event)]}
+				.findAll{it.value.size() >= threshold}
+		def links = matchingEvents
+				.collectEntries{[it.key, it.value.size()]}
+				.sort{-it.value}
+
+		checkIfCancelled()
+
+		log_("Linking events")
+		def notInMatchingEvents = { event ->
+			!matchingEvents.values().any{it.any{ it.event.revision == event.revision && fullFileNameIn(it.event) == fullFileNameIn(event) }}
+		}
+		def relatedLinks = matchingEvents.values()
+				.inject([]){ result, entries -> result.addAll(entries.collectMany{it.relatedEvents}.unique()); result }.unique()
+				.findAll{ notInMatchingEvents(it) }
+				.groupBy{[author: it.author, fileName: fullFileNameIn(it)]}
+				.collectEntries{[it.key, it.value.size()]}
+				.sort{-it.value}
+
+		def allLinks = relatedLinks.entrySet().inject(links) { map, entry ->
+			if (map.containsKey(entry.key)) {
+				map[entry.key] += entry.value
+			} else {
+				map.put(entry.key, entry.value)
+			}
+			map
+		}
+
+		checkIfCancelled()
+
+		def authors = allLinks.keySet().collect{it.author}.unique().toList()
+		def fileNames = allLinks.keySet().collect{nonEmptyFileName(it)}.unique().toList()
+		def nodesJSLiteral = (
+			fileNames.collect{'{"name": "' + it + '", "group": 1}'} +
+			authors.collect{'{"name": "' + it + '", "group": 2}'}
+		).join(",\n")
+
+		def nodes = fileNames + authors
+		def relations = allLinks.entrySet().collect{ [nodes.indexOf(it.key.author), nodes.indexOf(nonEmptyFileName(it.key)), it.value] }
+		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
+
+		'"nodes": [' + nodesJSLiteral + '],\n' + '"links": [' + relationsJSLiteral + ']'
+	}
+
+	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 7) {
 		Collection.mixin(Util)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)

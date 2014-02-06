@@ -26,12 +26,12 @@ class Visualization {
 	})
 
 	static filesInTheSameCommitGraph = new Visualization("Files In The Same Commit Graph", { Context context ->
-		def json = createJson_FilesInTheSameCommit_Graph(context.events, context.checkIfCancelled)
+		def json = filesInTheSameCommitGraph(context.events, context.checkIfCancelled)
 		filesInTheSameCommitGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
 	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph", { Context context ->
-		def json = createJson_AuthorConnectionsThroughChangedFiles_Graph(context.events, context.checkIfCancelled)
+		def json = authorChangingSameFilesGraph(context.events, context.checkIfCancelled)
 		committersChangingSameFilesGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
@@ -61,8 +61,8 @@ class Visualization {
 				changeSizeChartTemplate.fillData(createJson_ChangeSize_Chart(context.events, context.checkIfCancelled)),
 				amountOfCommittersChartTemplate.fillData(createJson_AmountOfCommitters_Chart(context.events, context.checkIfCancelled)),
 				amountOfFilesInCommitChartTemplate.fillData(createJson_AverageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
-				filesInTheSameCommitGraphTemplate.fillData(createJson_FilesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
-				committersChangingSameFilesGraphTemplate.fillData(createJson_AuthorConnectionsThroughChangedFiles_Graph(context.events, context.checkIfCancelled)),
+				filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommitGraph(context.events, context.checkIfCancelled)),
+				committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFilesGraph(context.events, context.checkIfCancelled)),
 				amountOfCommitsTreemapTemplate.fillData(TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
 				commitTimePunchcardTemplate.fillData(createJson_CommitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
 				timeBetweenCommitsHistogramTemplate.fillData(createJson_TimeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
