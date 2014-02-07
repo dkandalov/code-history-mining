@@ -1,3 +1,4 @@
+import analysis.Context
 import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -136,7 +137,7 @@ class UI {
 		}
 	}
 
-	static AnAction createActionGroup(File file) {
+	AnAction createActionGroup(File file) {
 		def projectName = projectName(file)
 		def showInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
@@ -149,7 +150,7 @@ class UI {
 							def events = measure("Storage.readAllEvents") {
 								new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
 							}
-							def context = new Visualization.Context(events, projectName, checkIfCancelled)
+							def context = new Context(events, projectName, checkIfCancelled)
 							def html = visualization.generate(context)
 
 							def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
