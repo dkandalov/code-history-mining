@@ -46,7 +46,9 @@ All visualizations are self-contained one file pages (i.e. you should be able to
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
 
 #### Meaning of visualizations
-Please look at comments for [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html).
+"Latest Commits as Graph" - shows graph of committers connected to file for 1 month before last commit (but not more than 500 changes).
+
+For other visualizations please see comments for [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html).
 
 
 ### Limitations
