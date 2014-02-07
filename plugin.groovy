@@ -2,11 +2,7 @@ import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.AnAction
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.Separator
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
@@ -33,16 +29,17 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
+
 //noinspection GroovyConstantIfStatement
-if (false) return showFileAmountByType(project)
+//if (false) return showFileAmountByType(project)
 //noinspection GroovyConstantIfStatement
 if (false) return CommitMunging_Playground.playOnIt()
 
 class Miner {
-	UI ideUI
+	UI ui
 
-	Miner(UI ideUI) {
-		this.ideUI = ideUI
+	Miner(UI ui) {
+		this.ui = ui
 	}
 
 	def fileCountByFileExtension(Project project) {
@@ -52,6 +49,32 @@ class Miner {
 			if (fileCount > 0) map.put(fileType.defaultExtension, fileCount)
 			map
 		}.sort{ -it.value }
+	}
+
+	def grabHistoryOf(Project project) {
+		if (ChangeEventsReader.noVCSRootsIn(project)) {
+			ui.showNoVcsRootMessage(project)
+			return
+		}
+
+		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
+			doInBackground("Grabbing project history") { ProgressIndicator indicator ->
+				measure("Total time") {
+					def storage = new EventStorage(userInput.outputFilePath)
+					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
+					def eventsReader = new ChangeEventsReader(
+							project,
+							new CommitReader(project, vcsRequestBatchSizeInDays),
+							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
+					)
+
+					def message = HistoryGrabber.doGrabHistory(eventsReader, storage, userInput, indicator)
+
+					ui.showGrabbingFinishedMessage(message.text, message.title, project)
+				}
+				Measure.forEachDuration{ ui.log_(it) }
+			}
+		}
 	}
 }
 
@@ -67,6 +90,17 @@ class HistoryStorage {
 			@Override boolean accept(File pathName) { pathName.name.endsWith(".csv") }
 		})
 	}
+
+	HistoryGrabberConfig loadGrabberConfigFor(Project project) {
+		HistoryGrabberConfig.loadGrabberConfigFor(project, basePath) {
+			def outputFilePath = "${basePath}/${project.name + "-file-events.csv"}"
+			new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false)
+		}
+	}
+
+	def saveGrabberConfigFor(Project project, HistoryGrabberConfig config) {
+		HistoryGrabberConfig.saveGrabberConfigOf(project, basePath, config)
+	}
 }
 
 class UI {
@@ -75,7 +109,7 @@ class UI {
 
 	UI() {
 		def grabHistory = registerAction("GrabProjectHistory", "", "", "Grab Project History") { AnActionEvent event ->
-			grabHistoryOf(event.project)
+			miner.grabHistoryOf(event.project)
 		}
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
@@ -83,7 +117,7 @@ class UI {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionGroup(it) }
 				def projectStats = new AnAction("Amount of Files in Project") {
 					@Override void actionPerformed(AnActionEvent event) {
-						FileAmountToolWindow.showIn(event.project, miner.fileCountByFileExtension(event.project))
+						FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
 					}
 				}
 				def openReadme = new AnAction("Read Me (page on GitHub)") {
@@ -181,52 +215,28 @@ class UI {
 		}
 	}
 
-	def grabHistoryOf(Project project) {
-		if (ChangeEventsReader.noVCSRootsIn(project)) {
-			showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
-			return
-		}
-
-		def state = HistoryGrabberConfig.loadGrabberConfigFor(project, dialogStatePath()) {
-			def outputFilePath = "${pathToHistoryFiles()}/${project.name + "-file-events.csv"}"
-			new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false)
-		}
-		showDialog(state, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
-			HistoryGrabberConfig.saveGrabberConfigOf(project, dialogStatePath(), userInput)
-
-			doInBackground("Grabbing project history") { ProgressIndicator indicator ->
-				measure("Total time") {
-					def storage = new EventStorage(userInput.outputFilePath)
-					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
-					def eventsReader = new ChangeEventsReader(
-							project,
-							new CommitReader(project, vcsRequestBatchSizeInDays),
-							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
-					)
-
-					def message = HistoryGrabber.doGrabHistory(eventsReader, storage, userInput, indicator)
-
-					showInConsole(message.text, message.title, project)
-				}
-				Measure.forEachDuration{ log_(it) }
-			}
-		}
-	}
-
-	static log_(String message) {
+	def log_(String message) {
 		Logger.getInstance("CodeHistoryMining").info(message)
-	}
-
-	String dialogStatePath() {
-		"${PathManager.pluginsPath}/code-history-mining"
-	}
-
-	static String pathToHistoryFiles() {
-		"${PathManager.pluginsPath}/code-history-mining"
 	}
 
 	static String projectName(File file) {
 		file.name.replace(".csv", "").replace("-file-events", "")
+	}
+
+	def showNoVcsRootMessage(Project project) {
+		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+	}
+
+	def showGrabbingFinishedMessage(String message, String title, Project project) {
+		showInConsole(message, title, project)
+	}
+
+	def showGrabbingDialog(Project project, Closure onOkCallback) {
+		def grabberConfig = storage.loadGrabberConfigFor(project)
+		showDialog(grabberConfig, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
+			storage.saveGrabberConfigFor(project, userInput)
+			onOkCallback.call(userInput)
+		}
 	}
 }
 
