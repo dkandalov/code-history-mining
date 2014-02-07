@@ -1,5 +1,5 @@
 package analysis
-import events.FileChangeEvent
+
 import groovy.transform.Immutable
 
 import static analysis._private.Analysis.*
@@ -93,17 +93,5 @@ class Visualization {
 		def json = commitLogAsGraph(context.events, context.checkIfCancelled)
 		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
-
-	static class Context {
-		final List<FileChangeEvent> events
-		final String projectName
-		final Closure<Boolean> checkIfCancelled
-
-		Context(List<FileChangeEvent> events, String projectName, Closure checkIfCancelled = {}) {
-			this.events = events
-			this.projectName = projectName
-			this.checkIfCancelled = checkIfCancelled
-		}
-	}
 
 }

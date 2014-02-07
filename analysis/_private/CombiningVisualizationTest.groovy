@@ -1,15 +1,21 @@
 package analysis._private
 
+import analysis.Context
 import analysis.Visualization
+import events.ChangeStats
+import events.CommitInfo
+import events.FileChangeEvent
+import events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.not
 import static org.junit.Assert.assertThat
 import static org.junit.matchers.JUnitMatchers.containsString
+import static util.DateTimeUtil.exactDateTime
 
 class CombiningVisualizationTest {
 	@Test void "includes only one title but several tags and scripts"() {
-		def context = new Visualization.Context([], "AProject")
+		def context = new Context([singleEvent], "AProject")
 		def html = Visualization.all.generate(context)
 
 		assertThat(html, containsString("<title>AProject code history</title>"))
@@ -24,4 +30,11 @@ class CombiningVisualizationTest {
 		assertThat(html, containsString("createChart(\"change-size-chart\", rawData, projectName);"))
 		assertThat(html, containsString("createChart(\"amount-of-committers-chart\", rawData, projectName);"))
 	}
+
+	private final singleEvent = new FileChangeEvent(
+			new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), "Added support for iterable datapoints"),
+			new FileChangeInfo("", "AllMembersSupplier.java", "", "/src/main/java/org/junit/experimental/theories/internal", "MODIFICATION",
+					new ChangeStats(178, 204, 23, 3, 0), new ChangeStats(6758, 7807, 878, 304, 0)
+			)
+	)
 }
