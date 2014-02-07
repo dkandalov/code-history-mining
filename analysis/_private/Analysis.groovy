@@ -333,10 +333,10 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {},
-	                               int amountOfChanges = 500, Date now = new Date()) {
+	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int amountOfChanges = 500) {
 		use(TimeCategory) {
-			events = events.findAll{ it.revisionDate >= now - 1.month }
+			def latestCommitDate = events.first().revisionDate
+			events = events.findAll{ it.revisionDate >= latestCommitDate - 1.month }
 			if (events.size() > amountOfChanges) events = events.take(amountOfChanges)
 		}
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)

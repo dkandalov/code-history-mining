@@ -16,8 +16,7 @@ class AnalysisTest {
 			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java"))
 		].flatten()
 
-		def now = date("04/04/2013")
-		assert Analysis.commitLogAsGraph(changeEvents, {}, 100, now) == """
+		assert Analysis.commitLogAsGraph(changeEvents, {}, 100) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/Theories.java", "group": 1},
