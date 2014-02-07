@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.GridBag
+import com.intellij.util.ui.UIUtil
 
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
@@ -42,13 +43,15 @@ class FileAmountToolWindow {
 				JBTable table = createTable(fileCountByFileExtension, totalAmountOfFiles)
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 
+				def panelBackground = it.background
 				add(new JPanel().with {
 					layout = new GridBagLayout()
 					add(new JTextArea("(Please note that amount of files is based on IDE index and only shows file types IDE knows about.)").with{
 						editable = false
 						lineWrap = true
 						wrapStyleWord = true
-						background = table.background
+						background = panelBackground
+						UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, it)
 						it
 					}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
 					it
