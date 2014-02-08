@@ -61,7 +61,7 @@ class Miner {
 		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
 			doInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				measure("Total time") {
-					def storage = new EventStorage(userInput.outputFilePath)
+					def eventStorage = new EventStorage(userInput.outputFilePath)
 					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
 					def eventsReader = new ChangeEventsReader(
 							project,
@@ -69,7 +69,7 @@ class Miner {
 							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
 					)
 
-					def message = HistoryGrabber.doGrabHistory(eventsReader, storage, userInput, indicator)
+					def message = HistoryGrabber.doGrabHistory(eventsReader, eventStorage, userInput, indicator)
 
 					ui.showGrabbingFinishedMessage(message.text, message.title, project)
 				}
@@ -115,15 +115,9 @@ class UI {
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
-				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionGroup(it) }
-				def projectStats = new AnAction("Amount of Files in Project") {
-					@Override void actionPerformed(AnActionEvent event) {
-						FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
-					}
-				}
-				def openReadme = new AnAction("Read Me (page on GitHub)") {
-					@Override void actionPerformed(AnActionEvent event) { BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use") }
-				}
+				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
+				def projectStats = createProjectStatsAction()
+				def openReadme = createReadmeAction()
 
 				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, projectStats, openReadme]
 			}
@@ -137,7 +131,23 @@ class UI {
 		}
 	}
 
-	AnAction createActionGroup(File file) {
+	private AnAction createProjectStatsAction() {
+		new AnAction("Amount of Files in Project") {
+			@Override void actionPerformed(AnActionEvent event) {
+				FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
+			}
+		}
+	}
+
+	private static AnAction createReadmeAction() {
+		new AnAction("Read Me (page on GitHub)") {
+			@Override void actionPerformed(AnActionEvent event) {
+				BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use")
+			}
+		}
+	}
+
+	private AnAction createActionsOnHistoryFile(File file) {
 		def projectName = projectName(file)
 		def showInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
