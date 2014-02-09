@@ -30,7 +30,6 @@ import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
-
 //noinspection GroovyConstantIfStatement
 //if (false) return showFileAmountByType(project)
 //noinspection GroovyConstantIfStatement
@@ -59,7 +58,7 @@ class Miner {
 		}
 
 		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
-			doInBackground("Grabbing project history") { ProgressIndicator indicator ->
+			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				measure("Total time") {
 					def eventStorage = new EventStorage(userInput.outputFilePath)
 					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
@@ -77,6 +76,34 @@ class Miner {
 			}
 		}
 	}
+
+	void createVisualization(File file, Visualization visualization) {
+		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
+			try {
+				def projectName = projectName(file)
+				Measure.reset()
+
+				def checkIfCancelled = CancelledException.check(indicator)
+				def events = measure("Storage.readAllEvents"){
+					new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> ui.log_("Failed to parse line '${line}'") }
+				}
+				def context = new Context(events, projectName, checkIfCancelled)
+				def html = visualization.generate(context)
+
+				ui.showInBrowser(html, projectName, visualization)
+
+				Measure.forEachDuration{ ui.log_(it) }
+			} catch (CancelledException ignored) {
+				log_("Cancelled building '${visualization.name}'")
+			}
+		}
+	}
+
+	static String projectName(File file) {
+		file.name.replace(".csv", "").replace("-file-events", "")
+	}
+
+
 }
 
 class HistoryStorage {
@@ -147,58 +174,44 @@ class UI {
 		}
 	}
 
+	void showInBrowser(String html, String projectName, Visualization visualization) {
+		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
+
+		// need to check if browser configured correctly because it looks like IntelliJ won't do it
+		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
+		if (!browserConfiguredCorrectly) {
+			UIUtil.invokeLaterIfNeeded{
+				showWarningDialog(
+						"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
+						"Code History Mining"
+				)
+			}
+			// don't return and try to open url anyway in case the above check is wrong
+		}
+		BrowserUtil.launchBrowser(url)
+	}
+
 	private AnAction createActionsOnHistoryFile(File file) {
-		def projectName = projectName(file)
-		def showInBrowserAction = { Visualization visualization ->
+		Closure<AnAction> createShowInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
 				@Override void actionPerformed(AnActionEvent event) {
-					doInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
-						try {
-							Measure.reset()
-
-							def checkIfCancelled = CancelledException.check(indicator)
-							def events = measure("Storage.readAllEvents") {
-								new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> log_("Failed to parse line '${line}'") }
-							}
-							def context = new Context(events, projectName, checkIfCancelled)
-							def html = visualization.generate(context)
-
-							def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
-
-							// need to check if browser configured correctly because it looks like IntelliJ won't do it
-							def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
-							if (!browserConfiguredCorrectly) {
-								UIUtil.invokeLaterIfNeeded {
-									showWarningDialog(
-											"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
-											"Code History Mining"
-									)
-								}
-								// don't return and try to open url anyway in case the above check is wrong
-							}
-							BrowserUtil.launchBrowser(url)
-
-							Measure.forEachDuration{ log_(it) }
-						} catch (CancelledException ignored) {
-							log_("Cancelled building '${visualization.name}'")
-						}
-					}
+					miner.createVisualization(file, visualization)
 				}
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(showInBrowserAction(Visualization.all))
-			add(showInBrowserAction(Visualization.commitLogAsGraph))
+			add(createShowInBrowserAction(Visualization.all))
+			add(createShowInBrowserAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
-			add(showInBrowserAction(Visualization.changeSizeChart))
-			add(showInBrowserAction(Visualization.amountOfCommittersChart))
-			add(showInBrowserAction(Visualization.amountOfFilesInCommitChart))
-			add(showInBrowserAction(Visualization.amountOfCommitsTreemap))
-			add(showInBrowserAction(Visualization.filesInTheSameCommitGraph))
-			add(showInBrowserAction(Visualization.committersChangingSameFilesGraph))
-			add(showInBrowserAction(Visualization.commitTimePunchcard))
-			add(showInBrowserAction(Visualization.timeBetweenCommitsHistogram))
-			add(showInBrowserAction(Visualization.commitMessageWordCloud))
+			add(createShowInBrowserAction(Visualization.changeSizeChart))
+			add(createShowInBrowserAction(Visualization.amountOfCommittersChart))
+			add(createShowInBrowserAction(Visualization.amountOfFilesInCommitChart))
+			add(createShowInBrowserAction(Visualization.amountOfCommitsTreemap))
+			add(createShowInBrowserAction(Visualization.filesInTheSameCommitGraph))
+			add(createShowInBrowserAction(Visualization.committersChangingSameFilesGraph))
+			add(createShowInBrowserAction(Visualization.commitTimePunchcard))
+			add(createShowInBrowserAction(Visualization.timeBetweenCommitsHistogram))
+			add(createShowInBrowserAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
 			add(new AnAction("Show in File Manager") {
 				@Override void actionPerformed(AnActionEvent event) {
@@ -230,10 +243,6 @@ class UI {
 		Logger.getInstance("CodeHistoryMining").info(message)
 	}
 
-	static String projectName(File file) {
-		file.name.replace(".csv", "").replace("-file-events", "")
-	}
-
 	def showNoVcsRootMessage(Project project) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 	}
@@ -249,9 +258,15 @@ class UI {
 			onOkCallback.call(userInput)
 		}
 	}
+
+	def runInBackground(String taskDescription, Closure closure) {
+		doInBackground(taskDescription, closure)
+	}
 }
 
-def storage = new HistoryStorage("${PathManager.pluginsPath}/code-history-mining")
+def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
+
+def storage = new HistoryStorage(pathToHistoryFiles)
 def ui = new UI()
 def miner = new Miner(ui)
 ui.miner = miner
