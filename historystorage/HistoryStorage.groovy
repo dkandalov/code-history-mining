@@ -1,16 +1,17 @@
 package historystorage
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
-import vcsaccess.HistoryGrabberConfig
-import ui.UI
+import util.Log
 import util.Measure
+import vcsaccess.HistoryGrabberConfig
 
 class HistoryStorage {
 	private final String basePath
+	private final Log log
 
-	HistoryStorage(String basePath) {
+	HistoryStorage(String basePath, Log log) {
 		this.basePath = basePath
+		this.log = log
 	}
 
 	File[] filesWithCodeHistory() {
@@ -44,7 +45,7 @@ class HistoryStorage {
 
 	def readAllEvents(String fileName, Closure<Void> checkIfCancelled) {
 		Measure.measure("Storage.readAllEvents"){
-			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> UI.log_("Failed to parse line '${line}'") }
+			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> log.failedToRead(line) }
 		}
 	}
 

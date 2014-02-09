@@ -1,8 +1,6 @@
 package miner
-
 import analysis.Context
 import analysis.Visualization
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -12,23 +10,26 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
 import historystorage.EventStorage
-import vcsaccess.ChangeEventsReader
-import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
-import vcsaccess.VcsAccess
 import ui.UI
 import util.CancelledException
+import util.Log
 import util.Measure
+import vcsaccess.ChangeEventsReader
+import vcsaccess.HistoryGrabberConfig
+import vcsaccess.VcsAccess
 
 class Miner {
 	private final UI ui
 	private final HistoryStorage storage
 	private final VcsAccess vcsAccess
+	private final Log log
 
-	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess) {
+	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Log log) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
+		this.log = log
 	}
 
 	void createVisualization(File file, Visualization visualization) {
@@ -47,7 +48,7 @@ class Miner {
 
 				Measure.forEachDuration{ ui.log_(it) }
 			} catch (CancelledException ignored) {
-				log_("Cancelled building '${visualization.name}'")
+				log.cancelledBuilding(visualization.name)
 			}
 		}
 	}
@@ -81,10 +82,11 @@ class Miner {
 		}
 	}
 
-	private static doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
+	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
 		def updateIndicatorText = { changeList, callback ->
-			log_(changeList.name)
-			def date = DateFormatUtil.getDateFormat.format((Date) changeList.commitDate)
+			log.processingChangeList(changeList.name)
+
+			def date = DateFormatUtil.dateFormat.format((Date) changeList.commitDate)
 			indicator?.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
 
 			callback()
@@ -101,20 +103,20 @@ class Miner {
 		def prependToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.prependToEventsFile(commitChangeEvents) }
 
 		if (eventStorage.hasNoEvents()) {
-			log_("Loading project history from ${fromDate} to ${toDate}")
+			log.loadingProjectHistory(fromDate, toDate)
 			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
 
 		} else {
 			if (toDate > timeAfterMostRecentEventIn(eventStorage)) {
 				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(eventStorage), toDate]
-				log_("Loading project history from $historyStart to $historyEnd")
+				log.loadingProjectHistory(historyStart, historyEnd)
 				// read events from past into future because they are prepended to storage
 				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
 			}
 
 			if (fromDate < timeBeforeOldestEventIn(eventStorage)) {
 				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(eventStorage)]
-				log_("Loading project history from $historyStart to $historyEnd")
+				log.loadingProjectHistory(historyStart, historyEnd)
 				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
 			}
 		}
@@ -158,7 +160,4 @@ class Miner {
 			date
 		}
 	}
-
-	static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
-
 }

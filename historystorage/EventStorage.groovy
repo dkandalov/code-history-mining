@@ -26,7 +26,7 @@ class EventStorage {
 	}
 
 	@CompileStatic
-	List<FileChangeEvent> readAllEvents(Closure checkIfCancelled = {}, Closure whenFiledToParseLine = {line, e ->}) {
+	List<FileChangeEvent> readAllEvents(Closure checkIfCancelled = {}, Closure whenFailedToParseLine = {line, e ->}) {
 		def events = []
 		def reader = new InputStreamReader(new BufferedInputStream(new FileInputStream(filePath)))
 		try {
@@ -35,7 +35,7 @@ class EventStorage {
 				try {
 					events << fromCsv(line)
 				} catch (Exception e) {
-					whenFiledToParseLine(line, e)
+					whenFailedToParseLine(line, e)
 				}
 				checkIfCancelled()
 			}

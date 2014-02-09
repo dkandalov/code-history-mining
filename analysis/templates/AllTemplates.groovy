@@ -1,7 +1,5 @@
 package analysis.templates
-
 import com.intellij.openapi.util.io.FileUtil
-import ui.http.HttpUtil
 
 class AllTemplates {
 	static changeSizeChartTemplate = template("changes-size-chart.html")
@@ -22,6 +20,6 @@ class AllTemplates {
 	}
 
 	static String readFile(String fileName) {
-		FileUtil.loadTextAndClose(HttpUtil.class.getResourceAsStream("/analysis/templates/html/$fileName"))
+		FileUtil.loadTextAndClose(AllTemplates.class.getResourceAsStream("/analysis/templates/html/$fileName"))
 	}
 }
