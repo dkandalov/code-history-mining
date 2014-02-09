@@ -1,19 +1,25 @@
 package vcsaccess
-
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vcs.update.UpdatedFilesListener
+import com.intellij.util.messages.MessageBusConnection
 import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
 
+import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
+
 class VcsAccess {
 	private final Measure measure
 	private final Log log
+	private final Map<String, MessageBusConnection> connectionByProjectName = [:]
 
 	VcsAccess(Measure measure = null, @Nullable Log log = null) {
 		this.measure = measure
 		this.log = log
 	}
 
+	@SuppressWarnings("GrMethodMayBeStatic")
 	boolean noVCSRootsIn(Project project) {
 		ChangeEventsReader.noVCSRootsIn(project)
 	}
@@ -28,10 +34,23 @@ class VcsAccess {
 	}
 
 	def addVcsUpdateListenerFor(String projectName, Closure closure) {
-		// TODO implement
+		if (connectionByProjectName.containsKey(projectName)) return
+
+		Project project = ProjectManager.instance.openProjects.find{ it.name == projectName }
+		if (project == null) return
+
+		def connection = project.messageBus.connect(project)
+		connection.subscribe(UPDATED_FILES, new UpdatedFilesListener() {
+			@Override void consume(Set<String> files) {
+				closure.call(projectName)
+			}
+		})
+		connectionByProjectName.put(projectName, connection)
 	}
 
 	def removeVcsUpdateListenerFor(String projectName) {
-		// TODO implement
+		def connection = connectionByProjectName.get(projectName)
+		if (connection == null) return
+		connection.disconnect()
 	}
 }
