@@ -2,7 +2,7 @@ package events
 import groovy.transform.CompileStatic
 
 @CompileStatic
-//@Immutable
+//@Immutable conceptually immutable, couldn't make annotation work with Collection field
 class FileChangeEvent {
 	@Delegate final CommitInfo commitInfo
 	@Delegate final FileChangeInfo fileChangeInfo

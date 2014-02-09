@@ -11,10 +11,10 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
-import events.EventStorage
+import historystorage.EventStorage
 import historyreader.ChangeEventsReader
 import historyreader.HistoryGrabberConfig
-import historyreader.HistoryStorage
+import historystorage.HistoryStorage
 import historyreader.VcsAccess
 import ui.UI
 import util.CancelledException

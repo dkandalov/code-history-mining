@@ -1,8 +1,8 @@
-package historyreader
+package historystorage
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
-import events.EventStorage
+import historyreader.HistoryGrabberConfig
 import ui.UI
 import util.Measure
 

@@ -2,7 +2,7 @@ import analysis._private.Analysis
 import analysis._private.AnalysisTest
 import analysis._private.AnalysisUtilTest
 import analysis._private.CombiningVisualizationTest
-import events.EventStorageTest
+import historystorage.EventStorageTest
 import historyreader._private.ChangeEventsReaderGitTest
 import historyreader._private.CommitReaderGitTest
 import historyreader._private.TextCompareProcessorTest

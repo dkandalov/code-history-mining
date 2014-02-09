@@ -1,5 +1,5 @@
 package analysis._private
-import events.EventStorage
+import historystorage.EventStorage
 import http.Template
 
 import static http.HttpUtil.*

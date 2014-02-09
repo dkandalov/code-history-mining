@@ -1,4 +1,9 @@
-package events
+package historystorage
+
+import events.ChangeStats
+import events.CommitInfo
+import events.FileChangeEvent
+import events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.equalTo
