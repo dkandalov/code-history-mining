@@ -71,6 +71,12 @@ class Miner {
 		def grabberConfig = storage.loadGrabberConfigFor(project.name)
 		ui.showGrabbingDialog(grabberConfig, project) { HistoryGrabberConfig userInput ->
 			storage.saveGrabberConfigFor(project.name, userInput)
+
+			if (userInput.grabOnVcsUpdate)
+				vcsAccess.addVcsUpdateListenerFor(project.name, this.&grabHistoryOnVcsUpdate)
+			else
+				vcsAccess.removeVcsUpdateListenerFor(project.name)
+
 			grabHistoryIsInProgress = true
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				try {
@@ -89,6 +95,10 @@ class Miner {
 				}
 			}
 		}
+	}
+
+	def grabHistoryOnVcsUpdate(String projectName) {
+		// TODO
 	}
 
 	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {

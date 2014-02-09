@@ -9,21 +9,41 @@ import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 class MinerTest {
+	@Test def "on grab history should register VCS update listener"() {
+		// given
+		def aProject = stubProject([getName: returns("aProject")])
+		def listeningToProject = ""
+		def ui = stubUI([
+				showGrabbingDialog: { config, project, Closure onOkCallback ->
+					def grabOnVcsUpdate = true
+					onOkCallback(new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, grabOnVcsUpdate))
+				}
+		])
+		def vcsAccess = stubVcsAccess([
+				changeEventsReaderFor: returns(stubChangeEventsReader()),
+				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
+		])
+		def miner = new Miner(ui, stubStorage(), vcsAccess, new Measure())
+
+		// when / then
+		miner.grabHistoryOf(aProject)
+		assert listeningToProject == aProject.name
+	}
 
 	@Test void "should only grab history of one project at a time"() {
 		// given
 		def showedGrabberDialog = 0
 		def showedGrabbingInProgress = 0
-		def ui = [
+		def ui = stubUI([
 				runInBackground: doesNothing,
 				showGrabbingDialog: { config, project, Closure onOkCallback ->
 					showedGrabberDialog++
 					onOkCallback(someConfig)
 				},
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
-				showGrabbingFinishedMessage: doesNothing,
-		] as UI
-		def miner = new Miner(ui, dummyStorage(), vcsAccessWith(dummyChangeEventsReader()), new Measure())
+		])
+		def vcsAccess = stubVcsAccess([changeEventsReaderFor: returns(stubChangeEventsReader())])
+		def miner = new Miner(ui, stubStorage(), vcsAccess, new Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)
@@ -35,16 +55,31 @@ class MinerTest {
 		assert showedGrabbingInProgress == 1
 	}
 
-	private static VcsAccess vcsAccessWith(ChangeEventsReader changeEventsReader) {
-		[noVCSRootsIn: returns(false), changeEventsReaderFor: returns(changeEventsReader)] as VcsAccess
+	private static UI stubUI(Map map = [:]) {
+		def defaultMap = [runInBackground: doesNothing, showGrabbingDialog: doesNothing,
+				showGrabbingInProgressMessage: doesNothing, showGrabbingFinishedMessage: doesNothing]
+		defaultMap.putAll(map)
+		defaultMap as UI
 	}
 
-	private static HistoryStorage dummyStorage() {
+	private static VcsAccess stubVcsAccess(Map map = [:]) {
+		def defaultMap = [noVCSRootsIn: returns(false), changeEventsReaderFor: returns(null)]
+		defaultMap.putAll(map)
+		defaultMap as VcsAccess
+	}
+
+	private static HistoryStorage stubStorage() {
 		[loadGrabberConfigFor: returns(null), saveGrabberConfigFor: doesNothing] as HistoryStorage
 	}
 
-	private static ChangeEventsReader dummyChangeEventsReader() {
+	private static ChangeEventsReader stubChangeEventsReader() {
 		[readPresentToPast: doesNothing, readPastToPresent: doesNothing, getLastRequestHadErrors: returns(false)] as ChangeEventsReader
+	}
+
+	private static Project stubProject(Map map = [:]) {
+		def defaultMap = [getName: returns(null)]
+		defaultMap.putAll(map)
+		defaultMap as Project
 	}
 
 	private static <T> Closure<T> returns(T value) {
@@ -55,7 +90,7 @@ class MinerTest {
 		{ Object... args -> closure() }
 	}
 
-	private static final Project someProject = [getName: returns(null)] as Project
+	private static final Project someProject = stubProject()
 	private static final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
 	private static final Closure doesNothing = { Object... args -> }
 }

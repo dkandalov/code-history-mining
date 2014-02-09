@@ -26,4 +26,12 @@ class VcsAccess {
 				new CommitFilesMunger(project, grabChangeSizeInLines).&mungeCommit
 		)
 	}
+
+	def addVcsUpdateListenerFor(String projectName, Closure closure) {
+		// TODO implement
+	}
+
+	def removeVcsUpdateListenerFor(String projectName) {
+		// TODO implement
+	}
 }
