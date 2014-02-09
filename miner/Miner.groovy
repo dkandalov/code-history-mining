@@ -33,7 +33,7 @@ class Miner {
 		this.log = log
 	}
 
-	void createVisualization(File file, Visualization visualization) {
+	def createVisualization(File file, Visualization visualization) {
 		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
 			try {
 				measure.start()

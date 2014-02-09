@@ -40,7 +40,7 @@ class MinerTest {
 	}
 
 	private static HistoryStorage dummyStorage() {
-		[loadGrabberConfigFor: returns(someConfig), saveGrabberConfigFor: doesNothing] as HistoryStorage
+		[loadGrabberConfigFor: returns(null), saveGrabberConfigFor: doesNothing] as HistoryStorage
 	}
 
 	private static ChangeEventsReader dummyChangeEventsReader() {
@@ -55,7 +55,7 @@ class MinerTest {
 		{ Object... args -> closure() }
 	}
 
-	private static final Project someProject = [:] as Project
+	private static final Project someProject = [getName: returns(null)] as Project
 	private static final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
 	private static final Closure doesNothing = { Object... args -> }
 }
