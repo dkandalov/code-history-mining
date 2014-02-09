@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
+import util.Log
 import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import ui.http.HttpUtil
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Nullable
 class UI {
 	Miner miner
 	HistoryStorage storage
+	Log log
 
 	UI() {
 		def actionGroup = new ActionGroup("Code History Mining", true) {
@@ -50,7 +52,7 @@ class UI {
 	}
 
 	def showInBrowser(String html, String projectName, Visualization visualization) {
-		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
+		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html", log)
 
 		// need to check if browser configured correctly because it looks like IntelliJ won't do it
 		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()

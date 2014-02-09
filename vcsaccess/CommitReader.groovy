@@ -20,7 +20,7 @@ class CommitReader {
 	private final int sizeOfVCSRequestInDays
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, Log log = new Log(), int sizeOfVCSRequestInDays = 30) {
+	CommitReader(Project project, Log log = null, int sizeOfVCSRequestInDays = 30) {
 		this.project = project
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
 		this.log = log
@@ -51,7 +51,7 @@ class CommitReader {
 						} catch (Exception e) {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-							CommitReader.this.log.errorReadingCommits(e, dates.from, dates.to)
+							CommitReader.this.log?.errorReadingCommits(e, dates.from, dates.to)
 							lastRequestHadErrors = true
 						}
 						changes = changes.sort{ it.commitDate }
@@ -80,7 +80,7 @@ class CommitReader {
 			changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 
 		if (location == null) {
-			log.failedToLocate(vcsRoot, project)
+			log?.failedToLocate(vcsRoot, project)
 			lastRequestHadErrors = true
 			return []
 		}

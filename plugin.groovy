@@ -20,6 +20,7 @@ def ui = new UI()
 def miner = new Miner(ui, storage, vcsAccess, log)
 ui.miner = miner
 ui.storage = storage
+ui.log = log
 
 
 if (!isIdeStartup) show("Reloaded code-history-mining plugin")

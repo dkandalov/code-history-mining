@@ -1,17 +1,18 @@
 package ui.http
-import com.intellij.openapi.diagnostic.Logger
+
 import com.intellij.openapi.util.io.FileUtil
+import util.Log
 
 import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
-	static String loadIntoHttpServer(String html, String projectName, String fileName) {
+	static String loadIntoHttpServer(String html, String projectName, String fileName, Log log = null) {
 		def tempDir = FileUtil.createTempDirectory(projectName + "_", "")
 		new File("$tempDir.absolutePath/$fileName").write(html)
 
-		log_("Saved html file into: " + tempDir.absolutePath + "/" + fileName)
+		log.httpServerIsAboutToLoadHtmlFile(tempDir.absolutePath + "/" + fileName)
 
-		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log_(it.toString())})
+		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log.errorOnHttpRequest(it.toString())})
 		"http://localhost:${server.port}/${fileName}"
 	}
 
@@ -35,7 +36,5 @@ class HttpUtil {
 			server
 		}
 	}
-
-	private static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 }
 
