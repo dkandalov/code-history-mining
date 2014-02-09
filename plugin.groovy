@@ -28,7 +28,10 @@ import util.Measure
 
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
-import static liveplugin.PluginUtil.*
+import static liveplugin.PluginUtil.doInBackground
+import static liveplugin.PluginUtil.registerAction
+import static liveplugin.PluginUtil.show
+import static liveplugin.PluginUtil.showInConsole
 import static ui.Dialog.showDialog
 import static util.Measure.measure
 //noinspection GroovyConstantIfStatement
@@ -140,7 +143,7 @@ class HistoryStorage {
 	}
 
 	def delete(String fileName) {
-		FileUtil.delete("$basePath/$fileName")
+		FileUtil.delete(new File("$basePath/$fileName"))
 	}
 }
 
@@ -167,7 +170,15 @@ class UI {
 		}
 	}
 
-	void showInBrowser(String html, String projectName, Visualization visualization) {
+	def showGrabbingDialog(Project project, Closure onOkCallback) {
+		def grabberConfig = storage.loadGrabberConfigFor(project)
+		showDialog(grabberConfig, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
+			storage.saveGrabberConfigFor(project, userInput)
+			onOkCallback.call(userInput)
+		}
+	}
+
+	def showInBrowser(String html, String projectName, Visualization visualization) {
 		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html")
 
 		// need to check if browser configured correctly because it looks like IntelliJ won't do it
@@ -182,6 +193,22 @@ class UI {
 			// don't return and try to open url anyway in case the above check is wrong
 		}
 		BrowserUtil.launchBrowser(url)
+	}
+
+	def showNoVcsRootMessage(Project project) {
+		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+	}
+
+	def showGrabbingFinishedMessage(String message, String title, Project project) {
+		showInConsole(message, title, project)
+	}
+
+	def runInBackground(String taskDescription, Closure closure) {
+		doInBackground(taskDescription, closure)
+	}
+
+	def log_(String message) {
+		Logger.getInstance("CodeHistoryMining").info(message)
 	}
 
 	private grabHistory() {
@@ -263,31 +290,8 @@ class UI {
 			}
 		}
 	}
-
-	def log_(String message) {
-		Logger.getInstance("CodeHistoryMining").info(message)
-	}
-
-	def showNoVcsRootMessage(Project project) {
-		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
-	}
-
-	def showGrabbingFinishedMessage(String message, String title, Project project) {
-		showInConsole(message, title, project)
-	}
-
-	def showGrabbingDialog(Project project, Closure onOkCallback) {
-		def grabberConfig = storage.loadGrabberConfigFor(project)
-		showDialog(grabberConfig, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
-			storage.saveGrabberConfigFor(project, userInput)
-			onOkCallback.call(userInput)
-		}
-	}
-
-	def runInBackground(String taskDescription, Closure closure) {
-		doInBackground(taskDescription, closure)
-	}
 }
+
 
 def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 
