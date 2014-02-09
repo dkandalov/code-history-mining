@@ -24,7 +24,7 @@ class Miner {
 	private final Measure measure
 	private final Log log
 
-	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log) {
+	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -46,9 +46,9 @@ class Miner {
 
 				ui.showInBrowser(html, projectName, visualization)
 
-				measure.forEachDuration{ log.measuredDuration(it) }
+				measure.forEachDuration{ log?.measuredDuration(it) }
 			} catch (CancelledException ignored) {
-				log.cancelledBuilding(visualization.name)
+				log?.cancelledBuilding(visualization.name)
 			}
 		}
 	}
@@ -78,14 +78,14 @@ class Miner {
 
 					ui.showGrabbingFinishedMessage(message.text, message.title, project)
 				}
-				measure.forEachDuration{ log.measuredDuration(it) }
+				measure.forEachDuration{ log?.measuredDuration(it) }
 			}
 		}
 	}
 
 	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
 		def updateIndicatorText = { changeList, callback ->
-			log.processingChangeList(changeList.name)
+			log?.processingChangeList(changeList.name)
 
 			def date = DateFormatUtil.dateFormat.format((Date) changeList.commitDate)
 			indicator?.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
@@ -104,20 +104,20 @@ class Miner {
 		def prependToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.prependToEventsFile(commitChangeEvents) }
 
 		if (eventStorage.hasNoEvents()) {
-			log.loadingProjectHistory(fromDate, toDate)
+			log?.loadingProjectHistory(fromDate, toDate)
 			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
 
 		} else {
 			if (toDate > timeAfterMostRecentEventIn(eventStorage)) {
 				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(eventStorage), toDate]
-				log.loadingProjectHistory(historyStart, historyEnd)
+				log?.loadingProjectHistory(historyStart, historyEnd)
 				// read events from past into future because they are prepended to storage
 				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
 			}
 
 			if (fromDate < timeBeforeOldestEventIn(eventStorage)) {
 				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(eventStorage)]
-				log.loadingProjectHistory(historyStart, historyEnd)
+				log?.loadingProjectHistory(historyStart, historyEnd)
 				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
 			}
 		}
