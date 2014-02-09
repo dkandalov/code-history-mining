@@ -28,10 +28,7 @@ import util.Measure
 
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
-import static liveplugin.PluginUtil.doInBackground
-import static liveplugin.PluginUtil.registerAction
-import static liveplugin.PluginUtil.show
-import static liveplugin.PluginUtil.showInConsole
+import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
 //noinspection GroovyConstantIfStatement
@@ -40,19 +37,12 @@ import static util.Measure.measure
 if (false) return CommitMunging_Playground.playOnIt()
 
 class Miner {
-	UI ui
+	private final UI ui
+	private final HistoryStorage storage
 
-	Miner(UI ui) {
+	Miner(UI ui, HistoryStorage storage) {
 		this.ui = ui
-	}
-
-	def fileCountByFileExtension(Project project) {
-		def scope = GlobalSearchScope.projectScope(project)
-		FileTypeManager.instance.registeredFileTypes.inject([:]) { Map map, FileType fileType ->
-			int fileCount = FileBasedIndex.instance.getContainingFiles(FileTypeIndex.NAME, fileType, scope).size()
-			if (fileCount > 0) map.put(fileType.defaultExtension, fileCount)
-			map
-		}.sort{ -it.value }
+		this.storage = storage
 	}
 
 	def grabHistoryOf(Project project) {
@@ -84,13 +74,12 @@ class Miner {
 	void createVisualization(File file, Visualization visualization) {
 		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
 			try {
-				def projectName = projectName(file)
 				Measure.reset()
 
+				def projectName = storage.guessProjectNameFrom(file.name)
 				def checkIfCancelled = CancelledException.check(indicator)
-				def events = measure("Storage.readAllEvents"){
-					new EventStorage(file.absolutePath).readAllEvents(checkIfCancelled){ line, e -> ui.log_("Failed to parse line '${line}'") }
-				}
+
+				def events = storage.readAllEvents(file.name, checkIfCancelled)
 				def context = new Context(events, projectName, checkIfCancelled)
 				def html = visualization.generate(context)
 
@@ -103,12 +92,16 @@ class Miner {
 		}
 	}
 
-	static String projectName(File file) {
-		file.name.replace(".csv", "").replace("-file-events", "")
+	def fileCountByFileExtension(Project project) {
+		def scope = GlobalSearchScope.projectScope(project)
+		FileTypeManager.instance.registeredFileTypes.inject([:]) { Map map, FileType fileType ->
+			int fileCount = FileBasedIndex.instance.getContainingFiles(FileTypeIndex.NAME, fileType, scope).size()
+			if (fileCount > 0) map.put(fileType.defaultExtension, fileCount)
+			map
+		}.sort{ -it.value }
 	}
-
-
 }
+
 
 class HistoryStorage {
 	private final String basePath
@@ -145,7 +138,18 @@ class HistoryStorage {
 	def delete(String fileName) {
 		FileUtil.delete(new File("$basePath/$fileName"))
 	}
+
+	def readAllEvents(String fileName, Closure<Void> checkIfCancelled) {
+		measure("Storage.readAllEvents"){
+			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> UI.log_("Failed to parse line '${line}'") }
+		}
+	}
+
+	String guessProjectNameFrom(String fileName) {
+		fileName.replace(".csv", "").replace("-file-events", "")
+	}
 }
+
 
 class UI {
 	Miner miner
@@ -207,7 +211,7 @@ class UI {
 		doInBackground(taskDescription, closure)
 	}
 
-	def log_(String message) {
+	static def log_(String message) { // TODO
 		Logger.getInstance("CodeHistoryMining").info(message)
 	}
 
@@ -297,7 +301,7 @@ def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 
 def storage = new HistoryStorage(pathToHistoryFiles)
 def ui = new UI()
-def miner = new Miner(ui)
+def miner = new Miner(ui, storage)
 ui.miner = miner
 ui.storage = storage
 
