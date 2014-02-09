@@ -3,7 +3,7 @@ import util.Log
 import vcsaccess.*
 import historystorage.HistoryStorage
 import miner.Miner
-import ui.UI
+import miner.UI
 
 import static liveplugin.PluginUtil.*
 

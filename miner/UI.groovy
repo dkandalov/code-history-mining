@@ -1,4 +1,4 @@
-package ui
+package miner
 
 import analysis.Visualization
 import com.intellij.ide.BrowserUtil
@@ -11,12 +11,13 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
+import ui.Dialog
+import ui.FileAmountToolWindow
 import util.Log
 import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import ui.http.HttpUtil
 import liveplugin.PluginUtil
-import miner.Miner
 import org.jetbrains.annotations.Nullable
 
 class UI {
