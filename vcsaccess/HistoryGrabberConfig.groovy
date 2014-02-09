@@ -31,6 +31,7 @@ class HistoryGrabberConfig {
 	private static Map<String, HistoryGrabberConfig> loadStateByProject(String pathToFolder) {
 		try {
 			def parseDate = { new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(it) }
+			def parseBoolean = { it == null ? false : Boolean.parseBoolean(it.toString()) }
 			def toGrabberConfig = { map -> new HistoryGrabberConfig(
 					parseDate(map.from),
 					parseDate(map.to),
@@ -44,9 +45,5 @@ class HistoryGrabberConfig {
 		} catch (IOException ignored) {
 			[:]
 		}
-	}
-
-	private static parseBoolean(value) {
-		value == null ? false : Boolean.parseBoolean(value.toString())
 	}
 }

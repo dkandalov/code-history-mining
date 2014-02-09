@@ -11,12 +11,12 @@ class ChangeEventsReader {
 
 	private final CommitReader commitReader
 	private final def extractChangeEvents
-	private final List<VcsRoot> vcsRoots
+	private final Project project
 
 	ChangeEventsReader(Project project, CommitReader commitReader, Closure<Collection<FileChangeEvent>> extractChangeEvents) {
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
-		this.vcsRoots = vcsRootsIn(project)
+		this.project = project
 	}
 
 	def readPresentToPast(Date historyStart, Date historyEnd, Closure isCancelled = null,
@@ -31,7 +31,7 @@ class ChangeEventsReader {
 
 	private request(Date historyStart, Date historyEnd, Closure isCancelled = null, boolean readPresentToPast,
 	            Closure consumeWrapper, Closure consume) {
-		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast, vcsRoots)
+		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast, vcsRootsIn(project))
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (isCancelled?.call()) break

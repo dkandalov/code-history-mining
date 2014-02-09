@@ -25,7 +25,7 @@ class HistoryStorage {
 	HistoryGrabberConfig loadGrabberConfigFor(Project project) {
 		HistoryGrabberConfig.loadGrabberConfigFor(project, basePath) {
 			def outputFilePath = "${basePath}/${project.name + "-file-events.csv"}"
-			new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false)
+			new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false, false)
 		}
 	}
 
