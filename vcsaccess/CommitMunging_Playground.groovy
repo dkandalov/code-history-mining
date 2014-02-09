@@ -1,14 +1,15 @@
 package vcsaccess
 
-import vcsaccess._private.CommitReaderGitTest
 import liveplugin.PluginUtil
+import util.Log
+import vcsaccess._private.CommitReaderGitTest
 
 import static util.DateTimeUtil.dateTime
 
 class CommitMunging_Playground {
 	static playOnIt() {
 		def project = CommitReaderGitTest.findProject("junit")
-		def commitReader = new CommitReader(project, 5)
+		def commitReader = new CommitReader(project, new Log(), 5)
 		def commitFilesMunger = new CommitFilesMunger(project, true)
 		def eventsReader = new ChangeEventsReader(project, commitReader, commitFilesMunger.&mungeCommit)
 

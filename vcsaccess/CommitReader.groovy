@@ -1,27 +1,29 @@
 package vcsaccess
-import com.intellij.openapi.diagnostic.Logger
+
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import vcsaccess._private.GitPluginWorkaround
+import util.Log
 import util.PastToPresentIterator
 import util.PresentToPastIterator
+import vcsaccess._private.GitPluginWorkaround
 
 import static util.Measure.measure
 
 class CommitReader {
-	private static final Logger LOG = Logger.getInstance(CommitReader.class.name)
 	static Commit NO_MORE_COMMITS = null
 
 	private final Project project
+	private final Log log
 	private final int sizeOfVCSRequestInDays
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, int sizeOfVCSRequestInDays = 30) {
+	CommitReader(Project project, Log log = new Log(), int sizeOfVCSRequestInDays = 30) {
 		this.project = project
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
+		this.log = log
 	}
 
 	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true, List<VcsRoot> vcsRoots) {
@@ -49,9 +51,9 @@ class CommitReader {
 						} catch (Exception e) {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-              LOG.warn("Error while reading commits from ${dates.from} to ${dates.to}", e)
+							CommitReader.this.log.errorReadingCommits(e, dates.from, dates.to)
 							lastRequestHadErrors = true
-            }
+						}
 						changes = changes.sort{ it.commitDate }
 						if (!readPresentToPast) changes = changes.reverse()
 					}
@@ -78,7 +80,7 @@ class CommitReader {
 			changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 
 		if (location == null) {
-			LOG.warn("Failed to find location for ${vcsRoot} in ${project}")
+			log.failedToLocate(vcsRoot, project)
 			lastRequestHadErrors = true
 			return []
 		}

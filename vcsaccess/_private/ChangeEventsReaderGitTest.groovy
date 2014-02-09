@@ -5,6 +5,7 @@ import events.ChangeStats
 import events.CommitInfo
 import events.FileChangeEvent
 import events.FileChangeInfo
+import util.Log
 import vcsaccess.ChangeEventsReader
 import vcsaccess.CommitFilesMunger
 import vcsaccess.CommitReader
@@ -77,7 +78,7 @@ class ChangeEventsReaderGitTest {
 
 	private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
 		def eventsConsumer = new EventConsumer()
-		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, 1), commitMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, new Log(), 1), commitMunger.&mungeCommit)
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 		eventsConsumer.changeEvents
 	}

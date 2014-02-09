@@ -1,6 +1,8 @@
 package util
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.VcsRoot
 
 class Log {
 	private final logger = Logger.getInstance("CodeHistoryMining")
@@ -19,5 +21,13 @@ class Log {
 
 	def cancelledBuilding(String visualizationName) {
 		logger.info("Cancelled building '${visualizationName}'")
+	}
+
+	def errorReadingCommits(Exception e, Date fromDate, Date toDate) {
+		logger.warn("Error while reading commits from ${fromDate} to ${toDate}", e)
+	}
+
+	def failedToLocate(VcsRoot vcsRoot, Project project) {
+		logger.warn("Failed to find location for ${vcsRoot} in ${project}")
 	}
 }
