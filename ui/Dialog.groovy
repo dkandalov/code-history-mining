@@ -26,15 +26,20 @@ import static java.awt.GridBagConstraints.HORIZONTAL
 class Dialog {
 	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project, Closure onOkCallback) {
 		def fromDatePicker = new DatePicker(grabberConfig.from, dateFormat.delegate)
-		fromDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
 		def toDatePicker = new DatePicker(grabberConfig.to, dateFormat.delegate)
-		toDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
 		def filePathTextField = new TextFieldWithBrowseButton()
-		filePathTextField.text = grabberConfig.outputFilePath
 		def grabChangeSizeCheckBox = new JCheckBox()
-		grabChangeSizeCheckBox.selected = grabberConfig.grabChangeSizeInLines
+		def grabOnVcsUpdateCheckBox = new JCheckBox()
 
+		fromDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
+		toDatePicker.focusLostBehavior = JFormattedTextField.COMMIT
+		filePathTextField.text = grabberConfig.outputFilePath
+		filePathTextField.addActionListener(onChooseFileAction(project, filePathTextField))
+		grabChangeSizeCheckBox.selected = grabberConfig.grabChangeSizeInLines
 		grabChangeSizeCheckBox.toolTipText = "Requires loading files content. Can slow down history grabbing."
+		grabOnVcsUpdateCheckBox.selected = grabberConfig.grabOnVcsUpdate
+		grabOnVcsUpdateCheckBox.addActionListener({ onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox) } as ActionListener)
+		onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox)
 
 		JPanel rootPanel = new JPanel().with{
 			layout = new GridBagLayout()
@@ -47,15 +52,15 @@ class Dialog {
 			add(toDatePicker, bag.next())
 			add(new JLabel(), bag.next().fillCellHorizontally())
 			add(new JLabel("Save to:"), bag.nextLine().next())
-			def actionListener = new ActionListener() {
-				@Override void actionPerformed(ActionEvent e) {
-					def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
-					VirtualFile file = FileChooser.chooseFile(fileChooserDescriptor(csvFileType), project, VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text))
-					if (file != null) filePathTextField.text = file.path
-				}
-			}
-			filePathTextField.addActionListener(actionListener)
 			add(filePathTextField, bag.next().coverLine().weightx(1).fillCellHorizontally())
+
+			add(new JPanel().with {
+				layout = new GridBagLayout()
+				GridBag bag2 = new GridBag()
+				add(new JLabel("Grab history on VCS update:"), bag2.nextLine().next())
+				add(grabOnVcsUpdateCheckBox, bag2.next().coverLine().weightx(1).fillCellHorizontally())
+				it
+			}, bag.nextLine().coverLine())
 
 			add(new JPanel().with {
 				layout = new GridBagLayout()
@@ -79,7 +84,8 @@ class Dialog {
 					fromDatePicker.date,
 					toDatePicker.date,
 					filePathTextField.text,
-					grabChangeSizeCheckBox.selected
+					grabChangeSizeCheckBox.selected,
+					grabOnVcsUpdateCheckBox.selected
 			))
 			builder.dialogWrapper.close(0)
 		} as Runnable
@@ -87,6 +93,24 @@ class Dialog {
 		builder.dimensionServiceKey = "CodeHistoryMiningDialog"
 
 		ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
+	}
+
+	private static onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox) {
+		toDatePicker.enabled = !grabOnVcsUpdateCheckBox.selected
+	}
+
+	private static ActionListener onChooseFileAction(Project project, TextFieldWithBrowseButton filePathTextField) {
+		new ActionListener() {
+			@Override void actionPerformed(ActionEvent event) {
+				def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
+				VirtualFile file = FileChooser.chooseFile(
+						fileChooserDescriptor(csvFileType),
+						project,
+						VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text)
+				)
+				if (file != null) filePathTextField.text = file.path
+			}
+		}
 	}
 
 	private static FileChooserDescriptor fileChooserDescriptor(FileType csvFileType) {

@@ -14,6 +14,7 @@ class HistoryGrabberConfig {
 	Date to
 	String outputFilePath
 	boolean grabChangeSizeInLines
+	boolean grabOnVcsUpdate
 
 	static HistoryGrabberConfig loadGrabberConfigFor(Project project, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
@@ -34,7 +35,8 @@ class HistoryGrabberConfig {
 					parseDate(map.from),
 					parseDate(map.to),
 					map.outputFilePath,
-					Boolean.valueOf((String) map.grabChangeSizeInLines)
+					parseBoolean(map.grabChangeSizeInLines),
+					parseBoolean(map.grabOnVcsUpdate)
 			)}
 
 			def json = FileUtil.loadFile(new File(pathToFolder + "/dialog-state.json"))
@@ -42,5 +44,9 @@ class HistoryGrabberConfig {
 		} catch (IOException ignored) {
 			[:]
 		}
+	}
+
+	private static parseBoolean(value) {
+		value == null ? false : Boolean.parseBoolean(value.toString())
 	}
 }
