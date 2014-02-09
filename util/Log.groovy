@@ -38,4 +38,8 @@ class Log {
 	def errorOnHttpRequest(String message) {
 		logger.info(message)
 	}
+
+	def measuredDuration(def entry) {
+		logger.info(entry.key + ": " + entry.value)
+	}
 }

@@ -1,11 +1,9 @@
 package vcsaccess._private
-
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.ContentRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import events.CommitInfo
-import util.Measure
 
 class CommitMungingUtil {
 	static CommitInfo commitInfoOf(CommittedChangeList commit) {
@@ -22,11 +20,9 @@ class CommitMungingUtil {
 	}
 
 	static def contentOf(Change change) {
-		Measure.measure("VCS content time") {
-			def beforeText = withDefault("", change.beforeRevision?.content)
-			def afterText = withDefault("", change.afterRevision?.content)
-			[beforeText, afterText]
-		}
+		def beforeText = withDefault("", change.beforeRevision?.content)
+		def afterText = withDefault("", change.afterRevision?.content)
+		[beforeText, afterText]
 	}
 
 	private static String revisionNumberOf(CommittedChangeList commit) {

@@ -8,9 +8,11 @@ import vcsaccess.HistoryGrabberConfig
 class HistoryStorage {
 	private final String basePath
 	private final Log log
+	private final Measure measure
 
-	HistoryStorage(String basePath, Log log) {
+	HistoryStorage(String basePath, Measure measure, Log log = null) {
 		this.basePath = basePath
+		this.measure = measure
 		this.log = log
 	}
 
@@ -44,8 +46,8 @@ class HistoryStorage {
 	}
 
 	def readAllEvents(String fileName, Closure<Void> checkIfCancelled) {
-		Measure.measure("Storage.readAllEvents"){
-			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> log.failedToRead(line) }
+		measure.measure("Storage.readAllEvents"){
+			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
 		}
 	}
 

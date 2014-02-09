@@ -1,24 +1,22 @@
 package miner
-
 import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import ui.Dialog
-import ui.FileAmountToolWindow
-import util.Log
-import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
-import ui.http.HttpUtil
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
+import ui.Dialog
+import ui.FileAmountToolWindow
+import ui.http.HttpUtil
+import util.Log
+import vcsaccess.HistoryGrabberConfig
 
 class UI {
 	Miner miner
@@ -79,10 +77,6 @@ class UI {
 
 	def runInBackground(String taskDescription, Closure closure) {
 		PluginUtil.doInBackground(taskDescription, closure)
-	}
-
-	static def log_(String message) { // TODO
-		Logger.getInstance("CodeHistoryMining").info(message)
 	}
 
 	private grabHistory() {

@@ -22,19 +22,21 @@ class Miner {
 	private final UI ui
 	private final HistoryStorage storage
 	private final VcsAccess vcsAccess
+	private final Measure measure
 	private final Log log
 
-	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Log log) {
+	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
+		this.measure = measure
 		this.log = log
 	}
 
 	void createVisualization(File file, Visualization visualization) {
 		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
 			try {
-				Measure.reset()
+				measure.start()
 
 				def projectName = storage.guessProjectNameFrom(file.name)
 				def checkIfCancelled = CancelledException.check(indicator)
@@ -45,7 +47,7 @@ class Miner {
 
 				ui.showInBrowser(html, projectName, visualization)
 
-				Measure.forEachDuration{ ui.log_(it) }
+				measure.forEachDuration{ log.measuredDuration(it) }
 			} catch (CancelledException ignored) {
 				log.cancelledBuilding(visualization.name)
 			}
@@ -68,7 +70,8 @@ class Miner {
 
 		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
-				Measure.measure("Total time") {
+				measure.start()
+				measure.measure("Total time") {
 					def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
 					def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
 
@@ -76,7 +79,7 @@ class Miner {
 
 					ui.showGrabbingFinishedMessage(message.text, message.title, project)
 				}
-				Measure.forEachDuration{ ui.log_(it) }
+				measure.forEachDuration{ log.measuredDuration(it) }
 			}
 		}
 	}

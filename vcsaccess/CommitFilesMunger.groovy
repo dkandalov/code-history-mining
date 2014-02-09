@@ -10,23 +10,25 @@ import com.intellij.util.diff.FilesTooBigForDiffException
 import events.ChangeStats
 import events.FileChangeEvent
 import events.FileChangeInfo
+import util.Measure
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 import static vcsaccess.ChangeEventsReader.vcsRootsIn
 import static vcsaccess._private.CommitMungingUtil.*
-import static util.Measure.measure
 
 class CommitFilesMunger {
 	private final Project project
 	private final boolean countChangeSizeInLines
 	private final List<Closure> additionalAttributeMungers
+	private final Measure measure
 	private final String commonAncestorPath
 
-	CommitFilesMunger(Project project, boolean countChangeSizeInLines, List<Closure> additionalAttributeMungers = []) {
+	CommitFilesMunger(Project project, boolean countChangeSizeInLines, Measure measure = new Measure(), List<Closure> additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
 		this.project = project
+		this.measure = measure
 		this.additionalAttributeMungers = additionalAttributeMungers
 		this.commonAncestorPath = withDefault("", getCommonAncestor(vcsRootsIn(project).collect{it.path})?.canonicalPath)
 	}
@@ -48,7 +50,7 @@ class CommitFilesMunger {
 		}
 	}
 
-	private static FileChangeInfo fileChangeInfoOf(Change change, String commonAncestorPath, boolean readFileContent) {
+	private FileChangeInfo fileChangeInfoOf(Change change, String commonAncestorPath, boolean readFileContent) {
 		def nonEmptyRevision = nonEmptyRevisionOf(change)
 		if (nonEmptyRevision.file.fileType.binary) readFileContent = false
 
@@ -59,8 +61,8 @@ class CommitFilesMunger {
 
 		def fileNameBefore = withDefault("", change.beforeRevision?.file?.name)
 		def fileName = withDefault("", change.afterRevision?.file?.name)
-		def packageNameBefore = measure("VCS content time"){ packageNameOf(change.beforeRevision, commonAncestorPath) }
-		def packageName = measure("VCS content time"){ packageNameOf(change.afterRevision, commonAncestorPath) }
+		def packageNameBefore = measure.measure("VCS content time"){ packageNameOf(change.beforeRevision, commonAncestorPath) }
+		def packageName = measure.measure("VCS content time"){ packageNameOf(change.afterRevision, commonAncestorPath) }
 		if (packageNameBefore == null || packageName == null) return null
 
 		def optimizedFileNameBefore = (change.type == MODIFICATION ? "" : fileNameBefore)
@@ -77,8 +79,8 @@ class CommitFilesMunger {
 		)
 	}
 
-	private static readChangeStats(Change change) {
-		def (beforeText, afterText) = contentOf(change)
+	private readChangeStats(Change change) {
+		def (beforeText, afterText) = measure.measure("VCS content time"){ contentOf(change) }
 		int linesBefore = beforeText.empty ? 0 : beforeText.split("\n").length
 		int linesAfter = afterText.empty ? 0 : afterText.split("\n").length
 		int charsBefore = beforeText.empty ? 0 : beforeText.length()

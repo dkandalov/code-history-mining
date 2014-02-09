@@ -1,5 +1,4 @@
 package historystorage
-
 import com.intellij.openapi.util.io.FileUtil
 import events.ChangeStats
 import events.CommitInfo
@@ -8,7 +7,6 @@ import events.FileChangeInfo
 import groovy.transform.CompileStatic
 import historystorage.csv4180.CSVReader
 import historystorage.csv4180.CSVWriter
-import util.Measure
 
 import java.text.SimpleDateFormat
 
@@ -102,9 +100,7 @@ class EventStorage {
 
 	private FileChangeEvent fromCsv(String line) {
 		def fields = []
-		Measure.measure("csvReader.readFields") {
-			new CSVReader().readFields(line, fields)
-		}
+		new CSVReader().readFields(line, fields)
 		def (revisionDate, revision, author, fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType,
 				linesBefore, linesAfter, linesAdded, linesModified, linesRemoved,
 				charsBefore, charsAfter, charsAdded, charsModified, charsRemoved, commitMessage

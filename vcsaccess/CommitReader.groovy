@@ -1,28 +1,28 @@
 package vcsaccess
-
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import util.Log
+import util.Measure
 import util.PastToPresentIterator
 import util.PresentToPastIterator
 import vcsaccess._private.GitPluginWorkaround
-
-import static util.Measure.measure
 
 class CommitReader {
 	static Commit NO_MORE_COMMITS = null
 
 	private final Project project
+	private final Measure measure
 	private final Log log
 	private final int sizeOfVCSRequestInDays
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, Log log = null, int sizeOfVCSRequestInDays = 30) {
+	CommitReader(Project project, int sizeOfVCSRequestInDays = 30, Measure measure = new Measure(), Log log = null) {
 		this.project = project
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
+		this.measure = measure
 		this.log = log
 	}
 
@@ -43,7 +43,7 @@ class CommitReader {
 			@Override Commit next() {
 				if (!changes.empty) return changes.pop()
 
-				measure("VCS request time") {
+				measure.measure("VCS request time") {
 					while (changes.empty && dateIterator.hasNext()) {
 						def dates = dateIterator.next()
 						try {

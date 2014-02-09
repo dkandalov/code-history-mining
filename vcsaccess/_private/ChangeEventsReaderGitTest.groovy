@@ -1,15 +1,14 @@
 package vcsaccess._private
-
 import com.intellij.openapi.project.Project
 import events.ChangeStats
 import events.CommitInfo
 import events.FileChangeEvent
 import events.FileChangeInfo
-import util.Log
+import org.junit.Test
+import util.Measure
 import vcsaccess.ChangeEventsReader
 import vcsaccess.CommitFilesMunger
 import vcsaccess.CommitReader
-import org.junit.Test
 
 import static events.ChangeStats.*
 import static util.DateTimeUtil.dateTime
@@ -59,7 +58,7 @@ class ChangeEventsReaderGitTest {
 			String textBefore = context.change.beforeRevision?.content
 			textBefore == null ? 0 : textBefore.findAll("import org.junit").size()
 		}
-		def commitMunger = new CommitFilesMunger(jUnitProject, countChangeSizeInLines, [findAmountOfJUnitImports])
+		def commitMunger = new CommitFilesMunger(jUnitProject, countChangeSizeInLines, new Measure(), [findAmountOfJUnitImports])
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
@@ -78,7 +77,7 @@ class ChangeEventsReaderGitTest {
 
 	private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
 		def eventsConsumer = new EventConsumer()
-		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, new Log(), 1), commitMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, 1), commitMunger.&mungeCommit)
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 		eventsConsumer.changeEvents
 	}
