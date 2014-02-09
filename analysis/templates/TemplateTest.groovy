@@ -1,4 +1,4 @@
-package http
+package analysis.templates
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.equalTo

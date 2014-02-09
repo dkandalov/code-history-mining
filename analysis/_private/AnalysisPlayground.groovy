@@ -1,7 +1,7 @@
 package analysis._private
 import historystorage.EventStorage
-import http.AllTemplates
-import http.Template
+import analysis.templates.AllTemplates
+import analysis.templates.Template
 
 import static java.lang.System.getenv
 

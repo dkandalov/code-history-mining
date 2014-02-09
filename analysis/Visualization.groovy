@@ -3,7 +3,7 @@ package analysis
 import groovy.transform.Immutable
 
 import static analysis._private.Analysis.*
-import static http.AllTemplates.*
+import static analysis.templates.AllTemplates.*
 
 @Immutable
 class Visualization {

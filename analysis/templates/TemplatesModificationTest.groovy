@@ -1,7 +1,7 @@
-package http
+package analysis.templates
 import org.junit.Test
 
-import static http.AllTemplates.*
+import static AllTemplates.*
 
 class TemplatesModificationTest {
 	private ArrayList<Template> allTemplates = [

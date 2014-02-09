@@ -1,4 +1,4 @@
-package http
+package analysis.templates
 
 import static java.util.regex.Matcher.quoteReplacement
 

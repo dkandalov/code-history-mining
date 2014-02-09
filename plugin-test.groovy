@@ -7,8 +7,8 @@ import vcsaccess._private.ChangeEventsReaderGitTest
 import vcsaccess._private.CommitReaderGitTest
 import vcsaccess._private.TextCompareProcessorTest
 import vcsaccess.wilt.WiltTest
-import http.TemplateTest
-import http.TemplatesModificationTest
+import analysis.templates.TemplateTest
+import analysis.templates.TemplatesModificationTest
 import liveplugin.testrunner.IntegrationTestsRunner
 import util.CollectionUtilTest
 import util.TimeIteratorsTest
