@@ -1,5 +1,5 @@
 package historystorage
-import com.intellij.openapi.project.Project
+
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.Nullable
 import util.Log
@@ -23,15 +23,15 @@ class HistoryStorage {
 		})
 	}
 
-	HistoryGrabberConfig loadGrabberConfigFor(Project project) {
-		HistoryGrabberConfig.loadGrabberConfigFor(project, basePath) {
-			def outputFilePath = "${basePath}/${project.name + "-file-events.csv"}"
+	HistoryGrabberConfig loadGrabberConfigFor(String projectName) {
+		HistoryGrabberConfig.loadGrabberConfigFor(projectName, basePath) {
+			def outputFilePath = "${basePath}/${projectName + "-file-events.csv"}"
 			new HistoryGrabberConfig(new Date() - 300, new Date(), outputFilePath, false, false)
 		}
 	}
 
-	def saveGrabberConfigFor(Project project, HistoryGrabberConfig config) {
-		HistoryGrabberConfig.saveGrabberConfigOf(project, basePath, config)
+	def saveGrabberConfigFor(String projectName, HistoryGrabberConfig config) {
+		HistoryGrabberConfig.saveGrabberConfigOf(projectName, basePath, config)
 	}
 
 	boolean isValidName(String fileName) {

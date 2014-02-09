@@ -1,6 +1,5 @@
 package vcsaccess
 
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -16,15 +15,15 @@ class HistoryGrabberConfig {
 	boolean grabChangeSizeInLines
 	boolean grabOnVcsUpdate
 
-	static HistoryGrabberConfig loadGrabberConfigFor(Project project, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
+	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
-		def result = stateByProject.get(project.name)
+		def result = stateByProject.get(projectName)
 		result != null ? result : createDefault()
 	}
 
-	static saveGrabberConfigOf(Project project, String pathToFolder, HistoryGrabberConfig grabberConfig) {
+	static saveGrabberConfigOf(String projectName, String pathToFolder, HistoryGrabberConfig grabberConfig) {
 		def stateByProject = loadStateByProject(pathToFolder)
-		stateByProject.put(project.name, grabberConfig)
+		stateByProject.put(projectName, grabberConfig)
 		FileUtil.writeToFile(new File(pathToFolder + "/dialog-state.json"), JsonOutput.toJson(stateByProject))
 	}
 
