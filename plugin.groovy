@@ -129,6 +129,18 @@ class HistoryStorage {
 	def saveGrabberConfigFor(Project project, HistoryGrabberConfig config) {
 		HistoryGrabberConfig.saveGrabberConfigOf(project, basePath, config)
 	}
+
+	boolean isValidName(String fileName) {
+		fileName.length() > 0 && !new File("$basePath/$fileName").exists()
+	}
+
+	def rename(String fileName, String newFileName) {
+		FileUtil.rename(new File("$basePath/$fileName"), new File("$basePath/$newFileName"))
+	}
+
+	def delete(String fileName) {
+		FileUtil.delete("$basePath/$fileName")
+	}
 }
 
 class UI {
@@ -221,18 +233,16 @@ class UI {
 			add(new AnAction("Rename") {
 				@Override void actionPerformed(AnActionEvent event) {
 					def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, file.name, new InputValidator() {
-						@Override boolean checkInput(String newFileName) { newFileName.length() > 0 && !new File(file.parent + "/" + newFileName).exists() }
+						@Override boolean checkInput(String newFileName) { storage.isValidName(newFileName) }
 						@Override boolean canClose(String newFileName) { true }
 					})
-					if (newFileName != null) {
-						FileUtil.rename(file, new File(file.parent + "/" + newFileName))
-					}
+					if (newFileName != null) storage.rename(file.name, newFileName)
 				}
 			})
 			add(new AnAction("Delete") {
 				@Override void actionPerformed(AnActionEvent event) {
 					int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
-					if (userAnswer == Messages.OK) FileUtil.delete(file)
+					if (userAnswer == Messages.OK) storage.delete(file.name)
 				}
 			})
 			it
