@@ -1,4 +1,4 @@
-package util
+package miner
 
 class CancelledException extends Exception {
 	static check(indicator) {
