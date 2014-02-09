@@ -33,14 +33,20 @@ import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
 //noinspection GroovyConstantIfStatement
-//if (false) return showFileAmountByType(project)
-//noinspection GroovyConstantIfStatement
 if (false) return CommitMunging_Playground.playOnIt()
 
 class VcsAccess {
-
 	boolean noVCSRootsIn(Project project) {
 		ChangeEventsReader.noVCSRootsIn(project)
+	}
+
+	def changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
+		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
+		new ChangeEventsReader(
+				project,
+				new CommitReader(project, vcsRequestBatchSizeInDays),
+				new CommitFilesMunger(project, grabChangeSizeInLines).&mungeCommit
+		)
 	}
 }
 
@@ -93,13 +99,8 @@ class Miner {
 		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				measure("Total time") {
-					def eventStorage = new EventStorage(userInput.outputFilePath)
-					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
-					def eventsReader = new ChangeEventsReader(
-							project,
-							new CommitReader(project, vcsRequestBatchSizeInDays),
-							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
-					)
+					def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
+					def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
 
 					def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
 
@@ -110,7 +111,7 @@ class Miner {
 		}
 	}
 
-	private static doGrabHistory(ChangeEventsReader eventsReader, EventStorage storage, HistoryGrabberConfig config, indicator = null) {
+	private static doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
 		def updateIndicatorText = { changeList, callback ->
 			log_(changeList.name)
 			def date = dateFormat.format((Date) changeList.commitDate)
@@ -126,35 +127,35 @@ class Miner {
 		def toDate = config.to + 1 // "+1" add a day to make date in UI inclusive
 
 		def allEventWereStored = true
-		def appendToStorage = { commitChangeEvents -> allEventWereStored &= storage.appendToEventsFile(commitChangeEvents) }
-		def prependToStorage = { commitChangeEvents -> allEventWereStored &= storage.prependToEventsFile(commitChangeEvents) }
+		def appendToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.appendToEventsFile(commitChangeEvents) }
+		def prependToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.prependToEventsFile(commitChangeEvents) }
 
-		if (storage.hasNoEvents()) {
+		if (eventStorage.hasNoEvents()) {
 			log_("Loading project history from ${fromDate} to ${toDate}")
 			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
 
 		} else {
-			if (toDate > timeAfterMostRecentEventIn(storage)) {
-				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
+			if (toDate > timeAfterMostRecentEventIn(eventStorage)) {
+				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(eventStorage), toDate]
 				log_("Loading project history from $historyStart to $historyEnd")
 				// read events from past into future because they are prepended to storage
 				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
 			}
 
-			if (fromDate < timeBeforeOldestEventIn(storage)) {
-				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
+			if (fromDate < timeBeforeOldestEventIn(eventStorage)) {
+				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(eventStorage)]
 				log_("Loading project history from $historyStart to $historyEnd")
 				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
 			}
 		}
 
 		def messageText = ""
-		if (storage.hasNoEvents()) {
-			messageText += "Grabbed history to ${storage.filePath}\n"
+		if (eventStorage.hasNoEvents()) {
+			messageText += "Grabbed history to ${eventStorage.filePath}\n"
 			messageText += "However, it has nothing in it probably because there are no commits from $fromDate to $toDate\n"
 		} else {
-			messageText += "Grabbed history to ${storage.filePath}\n"
-			messageText += "It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'.\n"
+			messageText += "Grabbed history to ${eventStorage.filePath}\n"
+			messageText += "It should have history from '${eventStorage.oldestEventTime}' to '${eventStorage.mostRecentEventTime}'.\n"
 		}
 		if (eventsReader.lastRequestHadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
@@ -237,6 +238,10 @@ class HistoryStorage {
 
 	String guessProjectNameFrom(String fileName) {
 		fileName.replace(".csv", "").replace("-file-events", "")
+	}
+
+	def eventStorageFor(String filePath) {
+		new EventStorage(filePath)
 	}
 }
 
