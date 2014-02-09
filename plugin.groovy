@@ -27,6 +27,7 @@ import util.CancelledException
 import util.Measure
 
 import static com.intellij.openapi.ui.Messages.showWarningDialog
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
@@ -148,41 +149,21 @@ class UI {
 	HistoryStorage storage
 
 	UI() {
-		def grabHistory = registerAction("GrabProjectHistory", "", "", "Grab Project History") { AnActionEvent event ->
-			miner.grabHistoryOf(event.project)
-		}
-
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
-				def projectStats = createProjectStatsAction()
-				def openReadme = createReadmeAction()
-
-				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, projectStats, openReadme]
+				[grabHistory(), Separator.instance] + codeHistoryActions + [Separator.instance, projectStats(), openReadme()]
 			}
 		}
 		registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
-
 		registerAction("CodeHistoryMiningPopup", "alt shift H", "", "Show Code History Mining Popup") { AnActionEvent actionEvent ->
 			JBPopupFactory.instance.createActionGroupPopup(
-					"Code History Mining", actionGroup, actionEvent.dataContext, JBPopupFactory.ActionSelectionAid.SPEEDSEARCH, true
+					"Code History Mining",
+					actionGroup,
+					actionEvent.dataContext,
+					SPEEDSEARCH,
+					true
 			).showCenteredInCurrentWindow(actionEvent.project)
-		}
-	}
-
-	private AnAction createProjectStatsAction() {
-		new AnAction("Amount of Files in Project") {
-			@Override void actionPerformed(AnActionEvent event) {
-				FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
-			}
-		}
-	}
-
-	private static AnAction createReadmeAction() {
-		new AnAction("Read Me (page on GitHub)") {
-			@Override void actionPerformed(AnActionEvent event) {
-				BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use")
-			}
 		}
 	}
 
@@ -201,6 +182,28 @@ class UI {
 			// don't return and try to open url anyway in case the above check is wrong
 		}
 		BrowserUtil.launchBrowser(url)
+	}
+
+	private grabHistory() {
+		registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
+			miner.grabHistoryOf(event.project)
+		}
+	}
+
+	private projectStats() {
+		new AnAction("Amount of Files in Project") {
+			@Override void actionPerformed(AnActionEvent event) {
+				FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
+			}
+		}
+	}
+
+	private static openReadme() {
+		new AnAction("Read Me (page on GitHub)") {
+			@Override void actionPerformed(AnActionEvent event) {
+				BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use")
+			}
+		}
 	}
 
 	private AnAction createActionsOnHistoryFile(File file) {
@@ -225,27 +228,39 @@ class UI {
 			add(createShowInBrowserAction(Visualization.timeBetweenCommitsHistogram))
 			add(createShowInBrowserAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
-			add(new AnAction("Show in File Manager") {
-				@Override void actionPerformed(AnActionEvent event) {
-					ShowFilePathAction.openFile(file)
-				}
-			})
-			add(new AnAction("Rename") {
-				@Override void actionPerformed(AnActionEvent event) {
-					def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, file.name, new InputValidator() {
-						@Override boolean checkInput(String newFileName) { storage.isValidName(newFileName) }
-						@Override boolean canClose(String newFileName) { true }
-					})
-					if (newFileName != null) storage.rename(file.name, newFileName)
-				}
-			})
-			add(new AnAction("Delete") {
-				@Override void actionPerformed(AnActionEvent event) {
-					int userAnswer = Messages.showOkCancelDialog("Delete ${file.name}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
-					if (userAnswer == Messages.OK) storage.delete(file.name)
-				}
-			})
+			add(showInFileManager(file))
+			add(rename(file.name))
+			add(delete(file.name))
 			it
+		}
+	}
+
+	private static showInFileManager(File file) {
+		new AnAction("Show in File Manager") {
+			@Override void actionPerformed(AnActionEvent event) {
+				ShowFilePathAction.openFile(file)
+			}
+		}
+	}
+
+	private rename(String fileName) {
+		new AnAction("Rename") {
+			@Override void actionPerformed(AnActionEvent event) {
+				def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, fileName, new InputValidator() {
+					@Override boolean checkInput(String newFileName) { UI.this.storage.isValidName(newFileName) }
+					@Override boolean canClose(String newFileName) { true }
+				})
+				if (newFileName != null) UI.this.storage.rename(fileName, newFileName)
+			}
+		}
+	}
+
+	private delete(String fileName) {
+		new AnAction("Delete") {
+			@Override void actionPerformed(AnActionEvent event) {
+				int userAnswer = Messages.showOkCancelDialog("Delete ${fileName}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
+				if (userAnswer == Messages.OK) storage.delete(fileName)
+			}
 		}
 	}
 
