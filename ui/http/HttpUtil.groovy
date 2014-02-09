@@ -1,4 +1,4 @@
-package http
+package ui.http
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.io.FileUtil
 
@@ -13,10 +13,6 @@ class HttpUtil {
 
 		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log_(it.toString())})
 		"http://localhost:${server.port}/${fileName}"
-	}
-
-	static String readFile(String fileName) {
-		FileUtil.loadTextAndClose(HttpUtil.class.getResourceAsStream("/templates/$fileName"))
 	}
 
 	private static SimpleHttpServer restartHttpServer(String id, String webRootPath, Closure handler = {null}, Closure errorListener = {}) {

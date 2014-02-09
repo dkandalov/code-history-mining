@@ -1,5 +1,8 @@
 package http
 
+import com.intellij.openapi.util.io.FileUtil
+import ui.http.HttpUtil
+
 class AllTemplates {
 	static changeSizeChartTemplate = template("changes-size-chart.html")
 	static amountOfCommittersChartTemplate = template("amount-of-committers-chart.html")
@@ -15,6 +18,10 @@ class AllTemplates {
 	static commitLogAsGraphTemplate = template("latest-commits-as-graph.html")
 
 	private static Template template(String fileName) {
-		new Template(HttpUtil.readFile(fileName)).inlineImports(HttpUtil.&readFile)
+		new Template(readFile(fileName)).inlineImports(AllTemplates.&readFile)
+	}
+
+	static String readFile(String fileName) {
+		FileUtil.loadTextAndClose(HttpUtil.class.getResourceAsStream("/templates/$fileName"))
 	}
 }

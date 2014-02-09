@@ -13,7 +13,7 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
 import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
-import http.HttpUtil
+import ui.http.HttpUtil
 import liveplugin.PluginUtil
 import miner.Miner
 import org.jetbrains.annotations.Nullable

@@ -1,8 +1,8 @@
 package analysis._private
 import historystorage.EventStorage
+import http.AllTemplates
 import http.Template
 
-import static http.HttpUtil.*
 import static java.lang.System.getenv
 
 class AnalysisPlayground {
@@ -17,7 +17,7 @@ class AnalysisPlayground {
 	static void fillAndSaveTemplate(String template, String projectName, String json) {
 		def templateText = new File("templates/${template}").readLines().join("\n")
 		def text = new Template(templateText)
-				.inlineImports{ readFile(it) }
+				.inlineImports{ AllTemplates.readFile(it) }
 				.fillProjectName(projectName)
 				.fillData(json)
 				.text
