@@ -52,10 +52,12 @@ class HistoryStorage {
 		}
 	}
 
+	@SuppressWarnings("GrMethodMayBeStatic")
 	String guessProjectNameFrom(String fileName) {
 		fileName.replace(".csv", "").replace("-file-events", "")
 	}
 
+	@SuppressWarnings("GrMethodMayBeStatic")
 	EventStorage eventStorageFor(String filePath) {
 		new EventStorage(filePath)
 	}

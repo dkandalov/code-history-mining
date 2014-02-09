@@ -16,13 +16,11 @@ class MinerTest {
 		def showedGrabbingInProgress = 0
 		def ui = [
 				runInBackground: doesNothing,
-				showGrabbingDialog: { Project project, Closure onOkCallback ->
+				showGrabbingDialog: { config, project, Closure onOkCallback ->
 					showedGrabberDialog++
 					onOkCallback(someConfig)
 				},
-				showGrabbingInProgressMessage: does {
-					showedGrabbingInProgress++
-				},
+				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 				showGrabbingFinishedMessage: doesNothing,
 		] as UI
 		def miner = new Miner(ui, dummyStorage(), vcsAccessWith(dummyChangeEventsReader()), new Measure())
@@ -42,7 +40,7 @@ class MinerTest {
 	}
 
 	private static HistoryStorage dummyStorage() {
-		[:] as HistoryStorage
+		[loadGrabberConfigFor: returns(someConfig), saveGrabberConfigFor: doesNothing] as HistoryStorage
 	}
 
 	private static ChangeEventsReader dummyChangeEventsReader() {
@@ -57,7 +55,7 @@ class MinerTest {
 		{ Object... args -> closure() }
 	}
 
-	private final Project someProject = [:] as Project
-	private final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
+	private static final Project someProject = [:] as Project
+	private static final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
 	private static final Closure doesNothing = { Object... args -> }
 }

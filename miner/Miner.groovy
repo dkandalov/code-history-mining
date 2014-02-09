@@ -23,7 +23,7 @@ class Miner {
 	private final VcsAccess vcsAccess
 	private final Measure measure
 	private final Log log
-	private boolean grabHistoryIsInProgress
+	private volatile boolean grabHistoryIsInProgress
 
 	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log = null) {
 		this.ui = ui
@@ -68,7 +68,9 @@ class Miner {
 		if (grabHistoryIsInProgress) return ui.showGrabbingInProgressMessage(project)
 		if (vcsAccess.noVCSRootsIn(project)) return ui.showNoVcsRootsMessage(project)
 
-		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
+		def grabberConfig = storage.loadGrabberConfigFor(project)
+		ui.showGrabbingDialog(grabberConfig, project) { HistoryGrabberConfig userInput ->
+			storage.saveGrabberConfigFor(project, userInput)
 			grabHistoryIsInProgress = true
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				try {

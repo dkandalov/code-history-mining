@@ -18,6 +18,7 @@ import ui.http.HttpUtil
 import util.Log
 import vcsaccess.HistoryGrabberConfig
 
+@SuppressWarnings("GrMethodMayBeStatic")
 class UI {
 	Miner miner
 	HistoryStorage storage
@@ -42,10 +43,8 @@ class UI {
 		}
 	}
 
-	def showGrabbingDialog(Project project, Closure onOkCallback) {
-		def grabberConfig = storage.loadGrabberConfigFor(project)
+	def showGrabbingDialog(HistoryGrabberConfig grabberConfig, Project project, Closure onOkCallback) {
 		Dialog.showDialog(grabberConfig, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
-			storage.saveGrabberConfigFor(project, userInput)
 			onOkCallback.call(userInput)
 		}
 	}
