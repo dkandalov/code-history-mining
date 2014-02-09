@@ -18,7 +18,7 @@ def log = new Log()
 def measure = new Measure()
 
 def storage = new HistoryStorage(pathToHistoryFiles, measure, log)
-def vcsAccess = new VcsAccess(log)
+def vcsAccess = new VcsAccess(measure, log)
 def ui = new UI()
 def miner = new Miner(ui, storage, vcsAccess, measure, log)
 ui.miner = miner
