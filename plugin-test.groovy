@@ -3,6 +3,7 @@ import analysis._private.AnalysisTest
 import analysis._private.AnalysisUtilTest
 import analysis._private.CombiningVisualizationTest
 import historystorage.EventStorageTest
+import miner.MinerTest
 import vcsaccess._private.ChangeEventsReaderGitTest
 import vcsaccess._private.CommitReaderGitTest
 import vcsaccess._private.TextCompareProcessorTest
@@ -17,7 +18,7 @@ import util.TimeIteratorsTest
 
 def unitTests = [
 		AnalysisUtilTest, AnalysisTest, EventStorageTest, TimeIteratorsTest, CombiningVisualizationTest,
-		WiltTest, TemplateTest, TemplatesModificationTest, CollectionUtilTest
+		WiltTest, TemplateTest, TemplatesModificationTest, CollectionUtilTest, MinerTest
 ]
 def integrationTests = [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest]
 IntegrationTestsRunner.runIntegrationTests(unitTests + integrationTests, project, pluginPath)

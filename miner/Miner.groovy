@@ -23,6 +23,7 @@ class Miner {
 	private final VcsAccess vcsAccess
 	private final Measure measure
 	private final Log log
+	private boolean grabHistoryIsInProgress
 
 	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log = null) {
 		this.ui = ui
@@ -53,6 +54,7 @@ class Miner {
 		}
 	}
 
+	@SuppressWarnings("GrMethodMayBeStatic")
 	def fileCountByFileExtension(Project project) {
 		def scope = GlobalSearchScope.projectScope(project)
 		FileTypeManager.instance.registeredFileTypes.inject([:]) { Map map, FileType fileType ->
@@ -63,22 +65,26 @@ class Miner {
 	}
 
 	def grabHistoryOf(Project project) {
-		if (vcsAccess.noVCSRootsIn(project)) {
-			return ui.showNoVcsRootsMessage(project)
-		}
+		if (grabHistoryIsInProgress) return ui.showGrabbingInProgressMessage(project)
+		if (vcsAccess.noVCSRootsIn(project)) return ui.showNoVcsRootsMessage(project)
 
 		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
+			grabHistoryIsInProgress = true
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
-				measure.start()
-				measure.measure("Total time") {
-					def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
-					def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
+				try {
+					measure.start()
+					measure.measure("Total time") {
+						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
+						def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
 
-					def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
+						def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
 
-					ui.showGrabbingFinishedMessage(message.text, message.title, project)
+						ui.showGrabbingFinishedMessage(message.text, message.title, project)
+					}
+					measure.forEachDuration{ log?.measuredDuration(it) }
+				} finally {
+					grabHistoryIsInProgress = false
 				}
-				measure.forEachDuration{ log?.measuredDuration(it) }
 			}
 		}
 	}
