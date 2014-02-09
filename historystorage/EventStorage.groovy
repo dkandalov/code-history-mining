@@ -18,7 +18,7 @@ class EventStorage {
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
 
-	EventStorage(String filePath, TimeZone timeZone = TimeZone.default) {
+	EventStorage(String filePath = null, TimeZone timeZone = TimeZone.default) {
 		this.filePath = filePath
 		this.dateFormat.timeZone = timeZone
 	}

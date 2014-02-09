@@ -1,6 +1,7 @@
 package historystorage
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
+import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
 import vcsaccess.HistoryGrabberConfig
@@ -10,7 +11,7 @@ class HistoryStorage {
 	private final Log log
 	private final Measure measure
 
-	HistoryStorage(String basePath, Measure measure, Log log = null) {
+	HistoryStorage(String basePath = null, Measure measure = null, @Nullable Log log = null) {
 		this.basePath = basePath
 		this.measure = measure
 		this.log = log
@@ -55,7 +56,7 @@ class HistoryStorage {
 		fileName.replace(".csv", "").replace("-file-events", "")
 	}
 
-	def eventStorageFor(String filePath) {
+	EventStorage eventStorageFor(String filePath) {
 		new EventStorage(filePath)
 	}
 }

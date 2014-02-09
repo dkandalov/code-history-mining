@@ -23,7 +23,7 @@ class UI {
 	HistoryStorage storage
 	Log log
 
-	UI() {
+	def init() {
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
@@ -65,6 +65,10 @@ class UI {
 			// don't return and try to open url anyway in case the above check is wrong
 		}
 		BrowserUtil.launchBrowser(url)
+	}
+
+	def showGrabbingInProgressMessage(Project project) {
+		Messages.showInfoMessage(project, "Grabbing project history is already in progress. Please wait for it to finish or cancel it.", "Code History Mining")
 	}
 
 	def showNoVcsRootsMessage(Project project) {

@@ -13,7 +13,7 @@ class ChangeEventsReader {
 	private final def extractChangeEvents
 	private final Project project
 
-	ChangeEventsReader(Project project, CommitReader commitReader, Closure<Collection<FileChangeEvent>> extractChangeEvents) {
+	ChangeEventsReader(Project project = null, CommitReader commitReader = null, Closure<Collection<FileChangeEvent>> extractChangeEvents = null) {
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 		this.project = project

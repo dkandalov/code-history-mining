@@ -24,6 +24,7 @@ def miner = new Miner(ui, storage, vcsAccess, measure, log)
 ui.miner = miner
 ui.storage = storage
 ui.log = log
+ui.init()
 
 
 if (!isIdeStartup) show("Reloaded code-history-mining plugin")

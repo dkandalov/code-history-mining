@@ -1,6 +1,7 @@
 package vcsaccess
 
 import com.intellij.openapi.project.Project
+import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
 
@@ -8,7 +9,7 @@ class VcsAccess {
 	private final Measure measure
 	private final Log log
 
-	VcsAccess(Measure measure, Log log) {
+	VcsAccess(Measure measure = null, @Nullable Log log = null) {
 		this.measure = measure
 		this.log = log
 	}
