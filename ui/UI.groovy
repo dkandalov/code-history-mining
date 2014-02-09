@@ -11,7 +11,7 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import historyreader.HistoryGrabberConfig
+import vcsaccess.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import http.HttpUtil
 import liveplugin.PluginUtil

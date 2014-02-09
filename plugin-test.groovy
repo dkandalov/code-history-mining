@@ -3,10 +3,10 @@ import analysis._private.AnalysisTest
 import analysis._private.AnalysisUtilTest
 import analysis._private.CombiningVisualizationTest
 import historystorage.EventStorageTest
-import historyreader._private.ChangeEventsReaderGitTest
-import historyreader._private.CommitReaderGitTest
-import historyreader._private.TextCompareProcessorTest
-import historyreader.wilt.WiltTest
+import vcsaccess._private.ChangeEventsReaderGitTest
+import vcsaccess._private.CommitReaderGitTest
+import vcsaccess._private.TextCompareProcessorTest
+import vcsaccess.wilt.WiltTest
 import http.TemplateTest
 import http.TemplatesModificationTest
 import liveplugin.testrunner.IntegrationTestsRunner

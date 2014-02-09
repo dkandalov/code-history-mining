@@ -1,4 +1,4 @@
-package historyreader._private
+package vcsaccess._private
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum

@@ -1,4 +1,4 @@
-package historyreader.wilt
+package vcsaccess.wilt
 
 /**
  * Calculates Whitespace Integrated over Lines of Text (WILT).

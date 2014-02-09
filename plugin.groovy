@@ -1,5 +1,5 @@
 import com.intellij.openapi.application.PathManager
-import historyreader.*
+import vcsaccess.*
 import historystorage.HistoryStorage
 import miner.Miner
 import ui.UI

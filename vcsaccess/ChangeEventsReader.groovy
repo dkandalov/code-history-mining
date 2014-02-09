@@ -1,4 +1,4 @@
-package historyreader
+package vcsaccess
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot

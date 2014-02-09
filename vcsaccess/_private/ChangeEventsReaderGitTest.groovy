@@ -1,13 +1,13 @@
-package historyreader._private
+package vcsaccess._private
 
 import com.intellij.openapi.project.Project
 import events.ChangeStats
 import events.CommitInfo
 import events.FileChangeEvent
 import events.FileChangeInfo
-import historyreader.ChangeEventsReader
-import historyreader.CommitFilesMunger
-import historyreader.CommitReader
+import vcsaccess.ChangeEventsReader
+import vcsaccess.CommitFilesMunger
+import vcsaccess.CommitReader
 import org.junit.Test
 
 import static events.ChangeStats.*

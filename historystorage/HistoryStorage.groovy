@@ -2,7 +2,7 @@ package historystorage
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.io.FileUtil
-import historyreader.HistoryGrabberConfig
+import vcsaccess.HistoryGrabberConfig
 import ui.UI
 import util.Measure
 

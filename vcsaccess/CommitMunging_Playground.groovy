@@ -1,6 +1,6 @@
-package historyreader
+package vcsaccess
 
-import historyreader._private.CommitReaderGitTest
+import vcsaccess._private.CommitReaderGitTest
 import liveplugin.PluginUtil
 
 import static util.DateTimeUtil.dateTime

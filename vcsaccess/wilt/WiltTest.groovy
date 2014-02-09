@@ -1,7 +1,7 @@
-package historyreader.wilt
+package vcsaccess.wilt
 import org.junit.Test
 
-import static historyreader.wilt.Wilt.complexityByLineOf
+import static vcsaccess.wilt.Wilt.complexityByLineOf
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 

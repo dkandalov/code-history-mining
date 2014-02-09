@@ -1,4 +1,4 @@
-package historyreader._private
+package vcsaccess._private
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FilePathImpl

@@ -1,4 +1,4 @@
-package historyreader
+package vcsaccess
 import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
@@ -14,8 +14,8 @@ import events.FileChangeInfo
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
-import static historyreader.ChangeEventsReader.vcsRootsIn
-import static historyreader._private.CommitMungingUtil.*
+import static vcsaccess.ChangeEventsReader.vcsRootsIn
+import static vcsaccess._private.CommitMungingUtil.*
 import static util.Measure.measure
 
 class CommitFilesMunger {

@@ -13,7 +13,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
-import historyreader.HistoryGrabberConfig
+import vcsaccess.HistoryGrabberConfig
 
 import javax.swing.*
 import java.awt.*
