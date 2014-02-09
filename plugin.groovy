@@ -28,6 +28,7 @@ import util.Measure
 
 import static com.intellij.openapi.ui.Messages.showWarningDialog
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.SPEEDSEARCH
+import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static liveplugin.PluginUtil.*
 import static ui.Dialog.showDialog
 import static util.Measure.measure
@@ -36,39 +37,22 @@ import static util.Measure.measure
 //noinspection GroovyConstantIfStatement
 if (false) return CommitMunging_Playground.playOnIt()
 
+class VcsAccess {
+
+	boolean noVCSRootsIn(Project project) {
+		ChangeEventsReader.noVCSRootsIn(project)
+	}
+}
+
 class Miner {
 	private final UI ui
 	private final HistoryStorage storage
+	private final VcsAccess vcsAccess
 
-	Miner(UI ui, HistoryStorage storage) {
+	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess) {
 		this.ui = ui
 		this.storage = storage
-	}
-
-	def grabHistoryOf(Project project) {
-		if (ChangeEventsReader.noVCSRootsIn(project)) {
-			ui.showNoVcsRootMessage(project)
-			return
-		}
-
-		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
-			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
-				measure("Total time") {
-					def eventStorage = new EventStorage(userInput.outputFilePath)
-					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
-					def eventsReader = new ChangeEventsReader(
-							project,
-							new CommitReader(project, vcsRequestBatchSizeInDays),
-							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
-					)
-
-					def message = HistoryGrabber.doGrabHistory(eventsReader, eventStorage, userInput, indicator)
-
-					ui.showGrabbingFinishedMessage(message.text, message.title, project)
-				}
-				Measure.forEachDuration{ ui.log_(it) }
-			}
-		}
+		this.vcsAccess = vcsAccess
 	}
 
 	void createVisualization(File file, Visualization visualization) {
@@ -100,6 +84,112 @@ class Miner {
 			map
 		}.sort{ -it.value }
 	}
+
+	def grabHistoryOf(Project project) {
+		if (vcsAccess.noVCSRootsIn(project)) {
+			return ui.showNoVcsRootsMessage(project)
+		}
+
+		ui.showGrabbingDialog(project) { HistoryGrabberConfig userInput ->
+			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
+				measure("Total time") {
+					def eventStorage = new EventStorage(userInput.outputFilePath)
+					def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
+					def eventsReader = new ChangeEventsReader(
+							project,
+							new CommitReader(project, vcsRequestBatchSizeInDays),
+							new CommitFilesMunger(project, userInput.grabChangeSizeInLines).&mungeCommit
+					)
+
+					def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
+
+					ui.showGrabbingFinishedMessage(message.text, message.title, project)
+				}
+				Measure.forEachDuration{ ui.log_(it) }
+			}
+		}
+	}
+
+	private static doGrabHistory(ChangeEventsReader eventsReader, EventStorage storage, HistoryGrabberConfig config, indicator = null) {
+		def updateIndicatorText = { changeList, callback ->
+			log_(changeList.name)
+			def date = dateFormat.format((Date) changeList.commitDate)
+			indicator?.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
+
+			callback()
+
+			indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
+		}
+		def isCancelled = { indicator?.canceled }
+
+		def fromDate = config.from
+		def toDate = config.to + 1 // "+1" add a day to make date in UI inclusive
+
+		def allEventWereStored = true
+		def appendToStorage = { commitChangeEvents -> allEventWereStored &= storage.appendToEventsFile(commitChangeEvents) }
+		def prependToStorage = { commitChangeEvents -> allEventWereStored &= storage.prependToEventsFile(commitChangeEvents) }
+
+		if (storage.hasNoEvents()) {
+			log_("Loading project history from ${fromDate} to ${toDate}")
+			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
+
+		} else {
+			if (toDate > timeAfterMostRecentEventIn(storage)) {
+				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(storage), toDate]
+				log_("Loading project history from $historyStart to $historyEnd")
+				// read events from past into future because they are prepended to storage
+				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
+			}
+
+			if (fromDate < timeBeforeOldestEventIn(storage)) {
+				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(storage)]
+				log_("Loading project history from $historyStart to $historyEnd")
+				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
+			}
+		}
+
+		def messageText = ""
+		if (storage.hasNoEvents()) {
+			messageText += "Grabbed history to ${storage.filePath}\n"
+			messageText += "However, it has nothing in it probably because there are no commits from $fromDate to $toDate\n"
+		} else {
+			messageText += "Grabbed history to ${storage.filePath}\n"
+			messageText += "It should have history from '${storage.oldestEventTime}' to '${storage.mostRecentEventTime}'.\n"
+		}
+		if (eventsReader.lastRequestHadErrors) {
+			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
+		}
+		if (!allEventWereStored) {
+			messageText += "\nSome of events were not added to csv file because it already contained events within the time range\n"
+		}
+		[text: messageText, title: "Code History Mining"]
+	}
+
+	private static timeBeforeOldestEventIn(EventStorage storage) {
+		def date = storage.oldestEventTime
+		if (date == null) {
+			new Date()
+		} else {
+			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
+			// (it means that if processing stops between two commits that happened on the same second,
+			// we will miss one of them.. considered this to be insignificant)
+			date.time -= 1000
+			date
+		}
+	}
+
+	private static timeAfterMostRecentEventIn(EventStorage storage) {
+		def date = storage.mostRecentEventTime
+		if (date == null) {
+			new Date()
+		} else {
+			date.time += 1000  // plus one second (see comments in timeBeforeOldestEventIn())
+			date
+		}
+	}
+
+	static log_(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
+
 }
 
 
@@ -199,7 +289,7 @@ class UI {
 		BrowserUtil.launchBrowser(url)
 	}
 
-	def showNoVcsRootMessage(Project project) {
+	def showNoVcsRootsMessage(Project project) {
 		showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 	}
 
@@ -300,8 +390,9 @@ class UI {
 def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 
 def storage = new HistoryStorage(pathToHistoryFiles)
+def vcsAccess = new VcsAccess()
 def ui = new UI()
-def miner = new Miner(ui, storage)
+def miner = new Miner(ui, storage, vcsAccess)
 ui.miner = miner
 ui.storage = storage
 
