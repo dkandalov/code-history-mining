@@ -27,11 +27,11 @@ class CommitReader {
 		this.log = log
 	}
 
-	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean readPresentToPast = true, List<VcsRoot> vcsRoots) {
+	Iterator<Commit> readCommits(Date historyStart, Date historyEnd, boolean isReadingPresentToPast = true, List<VcsRoot> vcsRoots) {
 		assert historyStart.time < historyEnd.time
 		lastRequestHadErrors = false
 
-		Iterator dateIterator = (readPresentToPast ?
+		Iterator dateIterator = (isReadingPresentToPast ?
 			new PresentToPastIterator(historyStart, historyEnd, sizeOfVCSRequestInDays) :
 			new PastToPresentIterator(historyStart, historyEnd, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
@@ -56,7 +56,7 @@ class CommitReader {
 							lastRequestHadErrors = true
 						}
 						changes = changes.sort{ it.commitDate }
-						if (!readPresentToPast) changes = changes.reverse()
+						if (!isReadingPresentToPast) changes = changes.reverse()
 					}
 				}
 				changes.empty ? NO_MORE_COMMITS : changes.pop()
