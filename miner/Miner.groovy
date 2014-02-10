@@ -107,9 +107,10 @@ class Miner {
 		}
 	}
 
-	def grabHistoryOnVcsUpdate(Project project, Date now = new Date()) {
+	def grabHistoryOnVcsUpdate(Project project, Date today = new Date()) {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
-			def config = storage.loadGrabberConfigFor(project.name).withToDate(now)
+			def yesterday = today - 1
+			def config = storage.loadGrabberConfigFor(project.name).withToDate(yesterday)
 			def eventStorage = storage.eventStorageFor(config.outputFilePath)
 			def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
 			doGrabHistory(eventsReader, eventStorage, config, indicator)

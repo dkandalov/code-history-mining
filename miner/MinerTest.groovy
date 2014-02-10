@@ -27,15 +27,14 @@ class MinerTest {
 //		miner.grabHistoryOnVcsUpdate(aProject.name, dateTime("13:00 23/11/2012"))
 //	}
 
-	@Test def "on VCS update grabs history from now to latest event in file history"() {
+	@Test def "on VCS update grabs history from latest event in file history util today"() {
 		// given
 		Date from = null
 		Date to = null
-		def eventStorage = stub(EventStorage, [
-				getMostRecentEventTime: returns(date("20/11/2012"))
-		])
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageFor: returns(eventStorage),
+				eventStorageFor: returns(stub(EventStorage, [
+						getMostRecentEventTime: returns(date("20/11/2012"))
+				])),
 				loadGrabberConfigFor: returns(someConfig)
 		])
 		def changeEventReader = stub(ChangeEventsReader, [
@@ -51,7 +50,7 @@ class MinerTest {
 		// when / then
 		miner.grabHistoryOnVcsUpdate(someProject, date("23/11/2012"))
 		assert from == exactDateTime("00:00:01 20/11/2012") // TODO test this in integration tests
-		assert to == date("24/11/2012")
+		assert to == date("23/11/2012")
 	}
 
 	@Test def "on grab history should register VCS update listener"() {
