@@ -1,6 +1,5 @@
 package util
 
-import groovy.time.TimeCategory
 import org.junit.Test
 
 import static util.DateTimeUtil.date
@@ -9,7 +8,7 @@ import static util.DateTimeUtil.dateTime
 class TimeIteratorsTest {
 	@Test void "should iterate from present to past in intervals"() {
 		def fromDate = date("01/01/1970")
-		def toDate = use(TimeCategory){ fromDate + 10.days }
+		def toDate = date("11/01/1970")
 		def stepSizeInDays = 7
 
 		def iterator = new PresentToPastIterator(fromDate, toDate, stepSizeInDays)
@@ -23,7 +22,7 @@ class TimeIteratorsTest {
 
 	@Test void "should iterate from past to present in intervals"() {
 		def fromDate = date("01/01/1970")
-		def toDate = use(TimeCategory){ fromDate + 10.days }
+		def toDate = date("11/01/1970")
 		def stepSizeInDays = 7
 
 		def iterator = new PastToPresentIterator(fromDate, toDate, stepSizeInDays)
