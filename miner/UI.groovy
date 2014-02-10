@@ -67,8 +67,7 @@ class UI {
 		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html", log)
 
 		// need to check if browser configured correctly because it looks like IntelliJ won't do it
-		def browserConfiguredCorrectly = new File(GeneralSettings.instance.browserPath).exists()
-		if (!browserConfiguredCorrectly) {
+		if (browserConfiguredIncorrectly()) {
 			UIUtil.invokeLaterIfNeeded{
 				Messages.showWarningDialog(
 						"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
@@ -78,6 +77,11 @@ class UI {
 			// don't return and try to open url anyway in case the above check is wrong
 		}
 		BrowserUtil.launchBrowser(url)
+	}
+
+	private static boolean browserConfiguredIncorrectly() {
+		def settings = GeneralSettings.instance
+		!settings.useDefaultBrowser && !new File(settings.browserPath).exists()
 	}
 
 	def showGrabbingInProgressMessage(Project project) {
