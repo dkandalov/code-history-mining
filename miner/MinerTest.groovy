@@ -1,6 +1,8 @@
 package miner
 
+import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import historystorage.EventStorage
 import historystorage.HistoryStorage
 import org.junit.Test
 import util.Measure
@@ -8,7 +10,50 @@ import vcsaccess.ChangeEventsReader
 import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
+import static util.DateTimeUtil.date
+import static util.DateTimeUtil.exactDateTime
+
 class MinerTest {
+//	@Test def "on VCS update does nothing if already grabbed on this date"() {
+//		def aProject = stubProject([getName: returns("aProject")])
+//		def storage = stubHistoryStorage([
+//				lastGrabTime: returns(dateTime("09:00 23/11/2012"))
+//		])
+//		def vcsAccess = stubVcsAccess([
+//				changeEventsReaderFor: returns(stubChangeEventsReader()),
+//		])
+//		def miner = new Miner(stubUI(), storage, vcsAccess, new Measure())
+//
+//		miner.grabHistoryOnVcsUpdate(aProject.name, dateTime("13:00 23/11/2012"))
+//	}
+
+	@Test def "on VCS update grabs history from now to latest event in file history"() {
+		// given
+		Date from = null
+		Date to = null
+		def eventStorage = stubEventStorage([
+				getMostRecentEventTime: returns(date("20/11/2012"))
+		])
+		def historyStorage = stubHistoryStorage([
+				eventStorageFor: returns(eventStorage),
+				loadGrabberConfigFor: returns(someConfig)
+		])
+		def changeEventReader = stubChangeEventsReader([
+				readPastToPresent: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
+					from = historyStart
+					to = historyEnd
+				}
+		])
+		def vcsAccess = stubVcsAccess([changeEventsReaderFor: returns(changeEventReader)])
+		def ui = stubUI([runInBackground: {taskDescription, closure -> closure([:] as ProgressIndicator)}])
+		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
+
+		// when / then
+		miner.grabHistoryOnVcsUpdate(someProject, date("23/11/2012"))
+		assert from == exactDateTime("00:00:01 20/11/2012") // TODO test this in integration tests
+		assert to == date("24/11/2012")
+	}
+
 	@Test def "on grab history should register VCS update listener"() {
 		// given
 		def aProject = stubProject([getName: returns("aProject")])
@@ -23,7 +68,7 @@ class MinerTest {
 				changeEventsReaderFor: returns(stubChangeEventsReader()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
-		def miner = new Miner(ui, stubStorage(), vcsAccess, new Measure())
+		def miner = new Miner(ui, stubHistoryStorage(), vcsAccess, new Measure())
 
 		// when / then
 		miner.grabHistoryOf(aProject)
@@ -43,7 +88,7 @@ class MinerTest {
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
 		def vcsAccess = stubVcsAccess([changeEventsReaderFor: returns(stubChangeEventsReader())])
-		def miner = new Miner(ui, stubStorage(), vcsAccess, new Measure())
+		def miner = new Miner(ui, stubHistoryStorage(), vcsAccess, new Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)
@@ -63,17 +108,27 @@ class MinerTest {
 	}
 
 	private static VcsAccess stubVcsAccess(Map map = [:]) {
-		def defaultMap = [noVCSRootsIn: returns(false), changeEventsReaderFor: returns(null)]
+		def defaultMap = [noVCSRootsIn: returns(false), changeEventsReaderFor: returns(null), addVcsUpdateListenerFor: doesNothing]
 		defaultMap.putAll(map)
 		defaultMap as VcsAccess
 	}
 
-	private static HistoryStorage stubStorage() {
-		[loadGrabberConfigFor: returns(null), saveGrabberConfigFor: doesNothing] as HistoryStorage
+	private static HistoryStorage stubHistoryStorage(Map map = [:]) {
+		def defaultMap = [loadGrabberConfigFor: returns(null), saveGrabberConfigFor: doesNothing]
+		defaultMap.putAll(map)
+		defaultMap as HistoryStorage
 	}
 
-	private static ChangeEventsReader stubChangeEventsReader() {
-		[readPresentToPast: doesNothing, readPastToPresent: doesNothing, getLastRequestHadErrors: returns(false)] as ChangeEventsReader
+	private static EventStorage stubEventStorage(Map map = [:]) {
+		def defaultMap = [getOldestEventTime: returns(null), getMostRecentEventTime: returns(null), hasNoEvents: returns(false)]
+		defaultMap.putAll(map)
+		defaultMap as EventStorage
+	}
+
+	private static ChangeEventsReader stubChangeEventsReader(Map map = [:]) {
+		def defaultMap = [readPresentToPast: doesNothing, readPastToPresent: doesNothing, getLastRequestHadErrors: returns(false)]
+		defaultMap.putAll(map)
+		defaultMap as ChangeEventsReader
 	}
 
 	private static Project stubProject(Map map = [:]) {

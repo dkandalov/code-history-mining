@@ -15,6 +15,10 @@ class HistoryGrabberConfig {
 	boolean grabChangeSizeInLines
 	boolean grabOnVcsUpdate
 
+	HistoryGrabberConfig withToDate(Date newToDate) {
+		new HistoryGrabberConfig(from, newToDate, outputFilePath, grabChangeSizeInLines, grabOnVcsUpdate)
+	}
+
 	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
 		def result = stateByProject.get(projectName)

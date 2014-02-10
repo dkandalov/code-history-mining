@@ -42,7 +42,7 @@ class VcsAccess {
 		def connection = project.messageBus.connect(project)
 		connection.subscribe(UPDATED_FILES, new UpdatedFilesListener() {
 			@Override void consume(Set<String> files) {
-				closure.call(projectName)
+				closure.call(project)
 			}
 		})
 		connectionByProjectName.put(projectName, connection)

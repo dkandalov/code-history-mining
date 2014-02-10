@@ -64,6 +64,16 @@ class Miner {
 		}.sort{ -it.value }
 	}
 
+	def onProjectOpened(Project project) {
+		def grabberConfig = storage.loadGrabberConfigFor(project.name)
+		if (grabberConfig.grabOnVcsUpdate)
+			vcsAccess.addVcsUpdateListenerFor(project.name, this.&grabHistoryOnVcsUpdate)
+	}
+
+	def onProjectClosed(Project project) {
+		vcsAccess.removeVcsUpdateListenerFor(project.name)
+	}
+
 	def grabHistoryOf(Project project) {
 		if (grabHistoryIsInProgress) return ui.showGrabbingInProgressMessage(project)
 		if (vcsAccess.noVCSRootsIn(project)) return ui.showNoVcsRootsMessage(project)
@@ -97,8 +107,13 @@ class Miner {
 		}
 	}
 
-	def grabHistoryOnVcsUpdate(String projectName) {
-		// TODO
+	def grabHistoryOnVcsUpdate(Project project, Date now = new Date()) {
+		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
+			def config = storage.loadGrabberConfigFor(project.name).withToDate(now)
+			def eventStorage = storage.eventStorageFor(config.outputFilePath)
+			def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
+			doGrabHistory(eventsReader, eventStorage, config, indicator)
+		}
 	}
 
 	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
@@ -165,8 +180,7 @@ class Miner {
 			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
 			// (it means that if processing stops between two commits that happened on the same second,
 			// we will miss one of them.. considered this to be insignificant)
-			date.time -= 1000
-			date
+			new Date(date.time - 1000)
 		}
 	}
 
@@ -175,8 +189,7 @@ class Miner {
 		if (date == null) {
 			new Date()
 		} else {
-			date.time += 1000  // plus one second (see comments in timeBeforeOldestEventIn())
-			date
+			new Date(date.time + 1000) // plus one second (see comments in timeBeforeOldestEventIn())
 		}
 	}
 }
