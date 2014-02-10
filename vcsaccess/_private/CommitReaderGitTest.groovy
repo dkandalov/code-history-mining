@@ -13,7 +13,6 @@ import static vcsaccess.ChangeEventsReader.vcsRootsIn
 import static util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
-	private final Project jUnitProject = findJUnitProject()
 
 	@Test "should interpret renamed file as a single event"() {
 		def commit = readSingleCommit("43b0fe3", dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"))
@@ -48,8 +47,8 @@ class CommitReaderGitTest {
 		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast, vcsRootsIn(jUnitProject)).toList()
 
 		assert commits.size() == 3
-		assert commits[0].commitDate < commits[1].commitDate
-		assert commits[1].commitDate < commits[2].commitDate
+		assert commits[0].commitDate.before(commits[1].commitDate)
+		assert commits[1].commitDate.before(commits[2].commitDate)
 	}
 
 	@Test "should read commits from present to past"() {
@@ -60,8 +59,8 @@ class CommitReaderGitTest {
 		def commits = new CommitReader(jUnitProject).readCommits(from, to, readPresentToPast, vcsRootsIn(jUnitProject)).toList()
 
 		assert commits.size() == 3
-		assert commits[0].commitDate > commits[1].commitDate
-		assert commits[1].commitDate > commits[2].commitDate
+		assert commits[0].commitDate.after(commits[1].commitDate)
+		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
@@ -75,7 +74,7 @@ class CommitReaderGitTest {
 		commit
 	}
 
-	static Project findJUnitProject() {
+	static Project findOpenedJUnitProject() {
 		def jUnitProject = findProject("junit")
 
 		def sourceRoots = ProjectRootManager.getInstance(jUnitProject).contentSourceRoots.toList()
@@ -90,4 +89,6 @@ class CommitReaderGitTest {
 		assert project != null: "Couldn't find open '$projectName' project"
 		project
 	}
+
+	private final Project jUnitProject = findOpenedJUnitProject()
 }
