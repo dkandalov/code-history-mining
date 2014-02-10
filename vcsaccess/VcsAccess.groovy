@@ -53,4 +53,10 @@ class VcsAccess {
 		if (connection == null) return
 		connection.disconnect()
 	}
+
+	def dispose(oldVcsAccess) {
+		oldVcsAccess.connectionByProjectName.values().each {
+			it.disconnect()
+		}
+	}
 }

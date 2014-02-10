@@ -5,6 +5,8 @@ import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerAdapter
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -23,6 +25,7 @@ class UI {
 	Miner miner
 	HistoryStorage storage
 	Log log
+	private ProjectManagerAdapter listener
 
 	def init() {
 		def actionGroup = new ActionGroup("Code History Mining", true) {
@@ -41,6 +44,17 @@ class UI {
 					true
 			).showCenteredInCurrentWindow(actionEvent.project)
 		}
+
+		listener = new ProjectManagerAdapter() {
+			@Override void projectOpened(Project project) { miner.onProjectOpened(project) }
+			@Override void projectClosed(Project project) { miner.onProjectClosed(project) }
+		}
+		ProjectManager.instance.addProjectManagerListener(listener)
+		ProjectManager.instance.openProjects.each{ miner.onProjectOpened(it) }
+	}
+
+	def dispose(oldUI) {
+		ProjectManager.instance.removeProjectManagerListener(oldUI.listener)
 	}
 
 	def showGrabbingDialog(HistoryGrabberConfig grabberConfig, Project project, Closure onOkCallback) {

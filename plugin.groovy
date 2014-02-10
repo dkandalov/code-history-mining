@@ -1,5 +1,6 @@
 import com.intellij.openapi.application.PathManager
 import historystorage.HistoryStorage
+import liveplugin.PluginUtil
 import miner.Miner
 import miner.UI
 import util.Log
@@ -27,6 +28,14 @@ ui.log = log
 ui.init()
 
 
+// this is only useful for reloading this plugin in live-plugin
+PluginUtil.changeGlobalVar("CodeHistoryMiningState"){ oldState ->
+	if (oldState != null) {
+		ui.dispose(oldState.ui)
+		vcsAccess.dispose(oldState.vcsAccess)
+	}
+	[ui: ui, vcsAccess: vcsAccess]
+}
 if (!isIdeStartup) show("Reloaded code-history-mining plugin")
 
 
