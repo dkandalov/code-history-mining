@@ -7,12 +7,11 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
-import vcsaccess.CommitReader
 import org.junit.Test
+import vcsaccess.CommitReader
 
-import static util.DateTimeUtil.exactDateTime
+import static util.DateTimeUtil.*
 import static vcsaccess.ChangeEventsReader.vcsRootsIn
-import static util.DateTimeUtil.dateTime
 
 class CommitReaderGitTest {
 
@@ -43,8 +42,8 @@ class CommitReaderGitTest {
 
 	@Test "should order commits by ascending time when reading from past to present"() {
 		def isReadingPresentToPast = false
-		def from = dateTime("00:00 03/10/2007")
-		def to = dateTime("23:59 03/10/2007")
+		def from = date("03/10/2007")
+		def to = date("04/10/2007")
 
 		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
 
@@ -55,8 +54,8 @@ class CommitReaderGitTest {
 
 	@Test "should order commits by descending time when reading from present to past"() {
 		def isReadingPresentToPast = true
-		def from = dateTime("00:00 03/10/2007")
-		def to = dateTime("23:59 03/10/2007")
+		def from = date("03/10/2007")
+		def to = date("04/10/2007")
 
 		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
 
@@ -65,29 +64,34 @@ class CommitReaderGitTest {
 		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
-	@Test "end time is inclusive"() {
-		def isReadingPresentToPast = false
-		def commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21 03/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 1
-		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
-	}
-
-	@Test "start time is inclusive"() {
+/*
+	@Test "end time is exclusive when reading present to past"() {
 		def isReadingPresentToPast = true
-		def commits = readJUnitCommits(exactDateTime("18:11:21 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
+		def commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21.001 03/10/2007"), isReadingPresentToPast)
 		assert commits.size() == 1
 		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
+
+		commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21 03/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 0
 	}
 
-	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def commits = readJUnitCommits(from, to, true)
-		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
+	@Test "start time is exclusive when reading past to present"() {
+		def isReadingPresentToPast = false
+		def commits = readJUnitCommits(exactDateTime("18:11:20.999 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 1
+		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
 
-		def commit = commits.first()
-		(commit as VcsRevisionNumberAware).revisionNumber.asString().with {
-			assert it.startsWith(expectedGitHash) : "Expected hash $expectedGitHash but got $it"
-		}
-		commit
+		commits = readJUnitCommits(exactDateTime("18:11:21 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 0
+	}
+*/
+
+	private Commit readSingleCommit(String gitHash, Date from, Date to) {
+		def commits = readJUnitCommits(from, to, true)
+				.findAll{ (it as VcsRevisionNumberAware).revisionNumber.asString().startsWith(gitHash) }
+
+		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
+		commits.first()
 	}
 
 	private List<CommittedChangeList> readJUnitCommits(Date from, Date to, boolean isReadingPresentToPast) {
