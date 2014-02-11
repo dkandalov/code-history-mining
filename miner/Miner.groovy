@@ -17,6 +17,8 @@ import vcsaccess.ChangeEventsReader
 import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
+import static util.DateTimeUtil.floorToDay
+
 class Miner {
 	private final UI ui
 	private final HistoryStorage storage
@@ -107,10 +109,9 @@ class Miner {
 		}
 	}
 
-	def grabHistoryOnVcsUpdate(Project project, Date today = new Date()) {
+	def grabHistoryOnVcsUpdate(Project project, Date today = floorToDay(new Date())) {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
-			def yesterday = today - 1
-			def config = storage.loadGrabberConfigFor(project.name).withToDate(yesterday)
+			def config = storage.loadGrabberConfigFor(project.name).withToDate(today)
 			def eventStorage = storage.eventStorageFor(config.outputFilePath)
 			def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
 			doGrabHistory(eventsReader, eventStorage, config, indicator)

@@ -10,6 +10,7 @@ import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.date
+import static util.DateTimeUtil.dateTime
 import static util.GroovyStubber.*
 
 class MinerTest {
@@ -28,18 +29,18 @@ class MinerTest {
 
 	@Test def "on VCS update grabs history from latest event in file history util today"() {
 		// given
-		Date from = null
-		Date to = null
+		Date grabbedFrom = null
+		Date grabbedTo = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageFor: returns(stub(EventStorage, [
-						getMostRecentEventTime: returns(date("20/11/2012"))
+						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
 				])),
 				loadGrabberConfigFor: returns(someConfig)
 		])
 		def changeEventReader = stub(ChangeEventsReader, [
 				readPastToPresent: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
-					from = historyStart
-					to = historyEnd
+					grabbedFrom = historyStart
+					grabbedTo = historyEnd
 				}
 		])
 		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(changeEventReader)])
@@ -47,9 +48,10 @@ class MinerTest {
 		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
 
 		// when / then
-		miner.grabHistoryOnVcsUpdate(someProject, date("23/11/2012"))
-		assert from == date("20/11/2012")
-		assert to == date("23/11/2012")
+		def today = date("23/11/2012")
+		miner.grabHistoryOnVcsUpdate(someProject, today)
+		assert grabbedFrom == dateTime("13:40 20/11/2012")
+		assert grabbedTo == dateTime("00:00 23/11/2012")
 	}
 
 	@Test def "on grab history should register VCS update listener"() {
