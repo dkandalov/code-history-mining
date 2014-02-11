@@ -7,12 +7,16 @@ import events.FileChangeInfo
 import groovy.time.TimeCategory
 import org.jetbrains.annotations.Nullable
 import util.CollectionUtil
+import util.DateTimeUtil
 
 import java.text.SimpleDateFormat
 
 import static analysis._private.Analysis.Util.*
 import static java.util.concurrent.TimeUnit.*
 import static java.util.regex.Matcher.quoteReplacement
+import static util.DateTimeUtil.floorToDay
+import static util.DateTimeUtil.floorToMonth
+import static util.DateTimeUtil.floorToWeek
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -107,9 +111,9 @@ class Analysis {
 					}
 		}
 
-		def wiltByDay = wiltBy(Util.&floorToDay)
-		def wiltByWeek = wiltBy(Util.&floorToWeek)
-		def wiltByMonth = wiltBy(Util.&floorToMonth)
+		def wiltByDay = wiltBy(DateTimeUtil.&floorToDay)
+		def wiltByWeek = wiltBy(DateTimeUtil.&floorToWeek)
+		def wiltByMonth = wiltBy(DateTimeUtil.&floorToMonth)
 
 		"[" +
 			asCsvStringLiteral(wiltByDay, ["date", "changeSize"]) + ",\n" +
@@ -138,9 +142,9 @@ class Analysis {
 					}
 		}
 
-		def projectSizeByDay = projectSizeBy(Util.&floorToDay)
-		def projectSizeByWeek = projectSizeBy(Util.&floorToWeek)
-		def projectSizeByMonth = projectSizeBy(Util.&floorToMonth)
+		def projectSizeByDay = projectSizeBy(DateTimeUtil.&floorToDay)
+		def projectSizeByWeek = projectSizeBy(DateTimeUtil.&floorToWeek)
+		def projectSizeByMonth = projectSizeBy(DateTimeUtil.&floorToMonth)
 
 		"[" +
 			asCsvStringLiteral(projectSizeByDay, ["date", "changeSize"]) + ",\n" +
@@ -174,9 +178,9 @@ class Analysis {
 					.collect{ checkIfCancelled(); [it.key, averageChangeSize(it.value)] }
 					.sort{ it[0] }
 		}
-		def filesInCommitByDay = changeSizeBy(Util.&floorToDay)
-		def filesInCommitByWeek = changeSizeBy(Util.&floorToWeek)
-		def filesInCommitByMonth = changeSizeBy(Util.&floorToMonth)
+		def filesInCommitByDay = changeSizeBy(DateTimeUtil.&floorToDay)
+		def filesInCommitByWeek = changeSizeBy(DateTimeUtil.&floorToWeek)
+		def filesInCommitByMonth = changeSizeBy(DateTimeUtil.&floorToMonth)
 
 		"[" +
 				asCsvStringLiteral(filesInCommitByDay, ["date", "filesAmountInCommit"]) + ",\n" +
@@ -206,7 +210,7 @@ class Analysis {
 
 					[commitEvents.first().revisionDate, hasUnitTests]
 				}
-				.groupBy{floorToDay(it[0])}
+				.groupBy{floorToDay(date) }
 
 
 		def fromDay = floorToDay(events.last().revisionDate)
@@ -546,41 +550,6 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 		static String nonEmptyFileName(event) {
 			event.fileName != "" ? event.fileName : event.fileNameBefore
-		}
-
-		static Date floorToDay(Date date, TimeZone timeZone = TimeZone.default) {
-			Calendar.getInstance(timeZone).with{
-				time = date
-				set(MILLISECOND, 0)
-				set(SECOND, 0)
-				set(MINUTE, 0)
-				set(HOUR_OF_DAY, 0)
-				time
-			}
-		}
-
-		static Date floorToWeek(Date date, TimeZone timeZone = TimeZone.default) {
-			Calendar.getInstance(timeZone).with{
-				time = date
-				set(MILLISECOND, 0)
-				set(SECOND, 0)
-				set(MINUTE, 0)
-				set(HOUR_OF_DAY, 0)
-				set(DAY_OF_WEEK, MONDAY)
-				time
-			}
-		}
-
-		static Date floorToMonth(Date date, TimeZone timeZone = TimeZone.default) {
-			Calendar.getInstance(timeZone).with{
-				time = date
-				set(MILLISECOND, 0)
-				set(SECOND, 0)
-				set(MINUTE, 0)
-				set(HOUR_OF_DAY, 0)
-				set(DAY_OF_MONTH, 1)
-				time
-			}
 		}
 
 		static int dayOfWeekOf(Date date) {

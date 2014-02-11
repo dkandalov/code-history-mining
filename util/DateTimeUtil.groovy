@@ -31,4 +31,40 @@ class DateTimeUtil {
 		if (result == null) throw new ParseException("Failed to parse string as dateTime: ${s}", -1)
 		result
 	}
+
+	static Date floorToDay(Date date, TimeZone timeZone = TimeZone.default) {
+		Calendar.getInstance(timeZone).with{
+			time = date
+			set(MILLISECOND, 0)
+			set(SECOND, 0)
+			set(MINUTE, 0)
+			set(HOUR_OF_DAY, 0)
+			time
+		}
+	}
+
+	static Date floorToWeek(Date date, TimeZone timeZone = TimeZone.default) {
+		Calendar.getInstance(timeZone).with{
+			time = date
+			set(MILLISECOND, 0)
+			set(SECOND, 0)
+			set(MINUTE, 0)
+			set(HOUR_OF_DAY, 0)
+			set(DAY_OF_WEEK, MONDAY)
+			time
+		}
+	}
+
+	static Date floorToMonth(Date date, TimeZone timeZone = TimeZone.default) {
+		Calendar.getInstance(timeZone).with{
+			time = date
+			set(MILLISECOND, 0)
+			set(SECOND, 0)
+			set(MINUTE, 0)
+			set(HOUR_OF_DAY, 0)
+			set(DAY_OF_MONTH, 1)
+			time
+		}
+	}
+
 }
