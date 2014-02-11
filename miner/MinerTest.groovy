@@ -1,4 +1,5 @@
 package miner
+
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import historystorage.EventStorage
@@ -14,18 +15,31 @@ import static util.DateTimeUtil.dateTime
 import static util.GroovyStubber.*
 
 class MinerTest {
-//	@Test def "on VCS update does nothing if already grabbed on this date"() { // TODO
-//		def aProject = stubProject([getName: returns("aProject")])
-//		def storage = stubHistoryStorage([
-//				lastGrabTime: returns(dateTime("09:00 23/11/2012"))
-//		])
-//		def vcsAccess = stubVcsAccess([
-//				changeEventsReaderFor: returns(stubChangeEventsReader()),
-//		])
-//		def miner = new Miner(stubUI(), storage, vcsAccess, new Measure())
-//
-//		miner.grabHistoryOnVcsUpdate(aProject.name, dateTime("13:00 23/11/2012"))
-//	}
+
+	@Test def "on VCS update does nothing if already grabbed on this date"() {
+		// given
+		def grabbedVcs = false
+		def historyStorage = stub(HistoryStorage, [
+				lastGrabTime: returns(dateTime("09:00 23/11/2012")),
+				eventStorageFor: returns(stub(EventStorage, [
+						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
+				])),
+				loadGrabberConfigFor: returns(someConfig)
+		])
+		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
+				stub(ChangeEventsReader, [
+					readPastToPresent: { Object... args ->
+						grabbedVcs = true
+					}
+		]))])
+		def ui = stub(UI, [runInBackground: runOnTheSameThread])
+		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
+
+		// when / then
+		def today = date("23/11/2012")
+		miner.grabHistoryOnVcsUpdate(someProject, today)
+		assert !grabbedVcs
+	}
 
 	@Test def "on VCS update grabs history from latest event in file history util today"() {
 		// given
@@ -37,14 +51,14 @@ class MinerTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig)
 		])
-		def changeEventReader = stub(ChangeEventsReader, [
-				readPastToPresent: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
-					grabbedFrom = historyStart
-					grabbedTo = historyEnd
-				}
-		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(changeEventReader)])
-		def ui = stub(UI, [runInBackground: {taskDescription, closure -> closure([:] as ProgressIndicator)}])
+		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
+				stub(ChangeEventsReader, [
+					readPastToPresent: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
+						grabbedFrom = historyStart
+						grabbedTo = historyEnd
+					}
+		]))])
+		def ui = stub(UI, [runInBackground: runOnTheSameThread])
 		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
 
 		// when / then
@@ -56,7 +70,6 @@ class MinerTest {
 
 	@Test def "on grab history should register VCS update listener"() {
 		// given
-		def aProject = stub(Project, [getName: returns("aProject")])
 		def listeningToProject = ""
 		def ui = stub(UI, [
 				showGrabbingDialog: { config, project, Closure onOkCallback ->
@@ -71,8 +84,8 @@ class MinerTest {
 		def miner = new Miner(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then
-		miner.grabHistoryOf(aProject)
-		assert listeningToProject == aProject.name
+		miner.grabHistoryOf(someProject)
+		assert listeningToProject == someProject.name
 	}
 
 	@Test void "should only grab history of one project at a time"() {
@@ -80,7 +93,6 @@ class MinerTest {
 		def showedGrabberDialog = 0
 		def showedGrabbingInProgress = 0
 		def ui = stub(UI, [
-				runInBackground: doesNothing,
 				showGrabbingDialog: { config, project, Closure onOkCallback ->
 					showedGrabberDialog++
 					onOkCallback(someConfig)
@@ -100,7 +112,7 @@ class MinerTest {
 		assert showedGrabbingInProgress == 1
 	}
 
-
-	private static final Project someProject = stub(Project)
+	private static final runOnTheSameThread = { taskDescription, closure -> closure([:] as ProgressIndicator) }
+	private static final someProject = stub(Project, [getName: returns("someProject")])
 	private static final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
 }
