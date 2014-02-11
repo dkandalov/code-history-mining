@@ -33,7 +33,11 @@ class ChangeEventsReader {
 
 	private request(Date historyStart, Date historyEnd, Closure isCancelled = null, boolean readPresentToPast,
 	            Closure consumeWrapper, Closure consume) {
-		Iterator<Commit> commits = commitReader.readCommits(floorToDay(historyStart), floorToDay(historyEnd) + 1, readPresentToPast, vcsRootsIn(project))
+		def fromDate = floorToDay(historyStart)
+		def toDate = floorToDay(historyEnd) + 1 // +1 because commitReader end date is exclusive
+
+		Iterator<Commit> commits = commitReader.readCommits(fromDate, toDate, readPresentToPast, vcsRootsIn(project))
+
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (isCancelled?.call()) break

@@ -131,7 +131,7 @@ class Miner {
 		def isCancelled = { indicator?.canceled }
 
 		def fromDate = config.from
-		def toDate = config.to + 1 // "+1" add a day to make date in UI inclusive
+		def toDate = config.to
 
 		def allEventWereStored = true
 		def appendToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.appendToEventsFile(commitChangeEvents) }
