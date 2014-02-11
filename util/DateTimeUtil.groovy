@@ -1,5 +1,7 @@
 package util
 
+import java.text.DateFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 
 class DateTimeUtil {
@@ -13,16 +15,24 @@ class DateTimeUtil {
 	}
 
 	static Date dateTime(String s) {
-		new SimpleDateFormat("kk:mm dd/MM/yyyy").with{
-			timeZone = utc
-			parse(s)
-		}
+		exactDateTime(s)
 	}
 
 	static Date exactDateTime(String s) {
-		new SimpleDateFormat("kk:mm:ss dd/MM/yyyy").with{
-			timeZone = utc
-			parse(s)
+		def formats = [
+				new SimpleDateFormat("kk:mm dd/MM/yyyy"),
+				new SimpleDateFormat("kk:mm:ss dd/MM/yyyy"),
+				new SimpleDateFormat("kk:mm:ss.SSS dd/MM/yyyy")
+		]
+		def result = formats.findResult{ DateFormat format ->
+			try {
+				format.timeZone = utc
+				format.parse(s)
+			} catch (ParseException ignored) {
+				null
+			}
 		}
+		if (result == null) throw new ParseException("Failed to parse string as dateTime: ${s}", -1)
+		result
 	}
 }
