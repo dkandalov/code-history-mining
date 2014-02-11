@@ -1,5 +1,4 @@
 package historystorage
-
 import events.ChangeStats
 import events.CommitInfo
 import events.FileChangeEvent
@@ -8,7 +7,7 @@ import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static util.DateTimeUtil.exactDateTime
+import static util.DateTimeUtil.dateTime
 
 class EventStorageTest {
 
@@ -88,7 +87,7 @@ class EventStorageTest {
 	}
 
 	private static eventWithDate(FileChangeEvent event, String date) {
-		def commitInfo = new CommitInfo(event.commitInfo.revision, event.commitInfo.author, exactDateTime(date), event.commitInfo.commitMessage)
+		def commitInfo = new CommitInfo(event.commitInfo.revision, event.commitInfo.author, dateTime(date), event.commitInfo.commitMessage)
 		new FileChangeEvent(commitInfo, event.fileChangeInfo)
 	}
 
@@ -101,13 +100,13 @@ class EventStorageTest {
 	}
 
 	private final event1 = new FileChangeEvent(
-			new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", exactDateTime("19:37:57 01/04/2013"), "Added support for iterable datapoints"),
+			new CommitInfo("b421d0ebd66701187c10c2b0c7f519dc435531ae", "Tim Perry", dateTime("19:37:57 01/04/2013"), "Added support for iterable datapoints"),
 			new FileChangeInfo("", "AllMembersSupplier.java", "", "/src/main/java/org/junit/experimental/theories/internal", "MODIFICATION",
 					new ChangeStats(178, 204, 23, 3, 0), new ChangeStats(6758, 7807, 878, 304, 0)
 			)
 	)
 	private final event2 = new FileChangeEvent(
-			new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("15:42:16 03/10/2007"), "Rename TestMethod -> JUnit4MethodRunner"),
+			new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", dateTime("15:42:16 03/10/2007"), "Rename TestMethod -> JUnit4MethodRunner"),
 			new FileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION",
 					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0)
 			)
@@ -116,14 +115,14 @@ class EventStorageTest {
 	private final event2AsCsv = "2007-10-03 15:42:16 +0000,43b0fe352d5bced0c341640d0c630d23f2022a7e,dsaff <dsaff>,,Theories.java,,/src/org/junit/experimental/theories,MODIFICATION,37,37,0,4,0,950,978,0,215,0,Rename TestMethod -> JUnit4MethodRunner"
 
 	private final eventWithMultiLineComment = new FileChangeEvent(
-			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "This\nis\na multi-line\ncommit message"),
+			new CommitInfo("12345", "me", dateTime("15:42:16 03/10/2007"), "This\nis\na multi-line\ncommit message"),
 			new FileChangeInfo("", "Some.java", "", "/src/somewhere", "MODIFICATION",
 					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0)
 			)
 	)
 
 	private final eventWithAdditionalAttributes = new FileChangeEvent(
-			new CommitInfo("12345", "me", exactDateTime("15:42:16 03/10/2007"), "Commit message, with comma"),
+			new CommitInfo("12345", "me", dateTime("15:42:16 03/10/2007"), "Commit message, with comma"),
 			new FileChangeInfo("", "Some.java", "", "/src/somewhere", "MODIFICATION",
 					new ChangeStats(37, 37, 0, 4, 0), new ChangeStats(950, 978, 0, 215, 0)
 			),

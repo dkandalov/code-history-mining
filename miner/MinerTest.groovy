@@ -10,7 +10,7 @@ import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.date
-import static util.DateTimeUtil.exactDateTime
+import static util.DateTimeUtil.dateTime
 import static util.GroovyStubber.*
 
 class MinerTest {
@@ -49,7 +49,7 @@ class MinerTest {
 
 		// when / then
 		miner.grabHistoryOnVcsUpdate(someProject, date("23/11/2012"))
-		assert from == exactDateTime("00:00:01 20/11/2012") // TODO test this in integration tests
+		assert from == dateTime("00:00:01 20/11/2012") // TODO test this in integration tests
 		assert to == date("23/11/2012")
 	}
 

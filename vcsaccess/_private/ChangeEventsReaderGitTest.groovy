@@ -10,9 +10,8 @@ import vcsaccess.ChangeEventsReader
 import vcsaccess.CommitFilesMunger
 import vcsaccess.CommitReader
 
-import static events.ChangeStats.*
+import static events.ChangeStats.getNA
 import static util.DateTimeUtil.dateTime
-import static util.DateTimeUtil.exactDateTime
 
 class ChangeEventsReaderGitTest {
 
@@ -103,6 +102,6 @@ class ChangeEventsReaderGitTest {
 	private final Date fromDate = dateTime("14:40 03/10/2007")
 	private final Date toDate = dateTime("14:45 03/10/2007")
 	private final commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
-	private final commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", exactDateTime("14:42:16 03/10/2007"), commitComment)
+	private final commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", dateTime("14:42:16 03/10/2007"), commitComment)
 	private final Project jUnitProject = CommitReaderGitTest.findOpenedJUnitProject()
 }

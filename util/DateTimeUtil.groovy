@@ -15,10 +15,6 @@ class DateTimeUtil {
 	}
 
 	static Date dateTime(String s) {
-		exactDateTime(s)
-	}
-
-	static Date exactDateTime(String s) {
 		def formats = [
 				new SimpleDateFormat("kk:mm dd/MM/yyyy"),
 				new SimpleDateFormat("kk:mm:ss dd/MM/yyyy"),
