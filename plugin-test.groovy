@@ -23,4 +23,4 @@ def unitTests = [
 		WiltTest, TemplateTest, TemplatesModificationTest, CollectionUtilTest, MinerTest, GroovyStubber
 ]
 def integrationTests = [TextCompareProcessorTest, CommitReaderGitTest, ChangeEventsReaderGitTest]
-IntegrationTestsRunner.runIntegrationTests(unitTests /*+ integrationTests*/, project, pluginPath)
+IntegrationTestsRunner.runIntegrationTests(unitTests + integrationTests, project, pluginPath)

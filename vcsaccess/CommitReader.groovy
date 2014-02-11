@@ -68,7 +68,7 @@ class CommitReader {
 		}
 	}
 
-	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate = null, Date toDate = null) {
+	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
 		vcsRoots
 				.collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
 				.sort{ it.commitDate }

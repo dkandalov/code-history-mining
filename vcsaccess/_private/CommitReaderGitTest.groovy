@@ -4,11 +4,13 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.changes.Change
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import vcsaccess.CommitReader
 import org.junit.Test
 
+import static util.DateTimeUtil.exactDateTime
 import static vcsaccess.ChangeEventsReader.vcsRootsIn
 import static util.DateTimeUtil.dateTime
 
@@ -44,7 +46,7 @@ class CommitReaderGitTest {
 		def from = dateTime("00:00 03/10/2007")
 		def to = dateTime("23:59 03/10/2007")
 
-		def commits = new CommitReader(jUnitProject).readCommits(from, to, isReadingPresentToPast, vcsRootsIn(jUnitProject)).toList()
+		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
 
 		assert commits.size() == 3
 		assert commits[0].commitDate.before(commits[1].commitDate)
@@ -56,15 +58,29 @@ class CommitReaderGitTest {
 		def from = dateTime("00:00 03/10/2007")
 		def to = dateTime("23:59 03/10/2007")
 
-		def commits = new CommitReader(jUnitProject).readCommits(from, to, isReadingPresentToPast, vcsRootsIn(jUnitProject)).toList()
+		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
 
 		assert commits.size() == 3
 		assert commits[0].commitDate.after(commits[1].commitDate)
 		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
+	@Test "end time is inclusive"() {
+		def isReadingPresentToPast = false
+		def commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21 03/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 1
+		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
+	}
+
+	@Test "start time is inclusive"() {
+		def isReadingPresentToPast = true
+		def commits = readJUnitCommits(exactDateTime("18:11:21 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 1
+		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
+	}
+
 	private Commit readSingleCommit(String expectedGitHash, Date from, Date to) {
-		def commits = new CommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject)).toList().findAll{it != null}
+		def commits = readJUnitCommits(from, to, true)
 		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
 
 		def commit = commits.first()
@@ -72,6 +88,11 @@ class CommitReaderGitTest {
 			assert it.startsWith(expectedGitHash) : "Expected hash $expectedGitHash but got $it"
 		}
 		commit
+	}
+
+	private List<CommittedChangeList> readJUnitCommits(Date from, Date to, boolean isReadingPresentToPast) {
+		new CommitReader(jUnitProject).readCommits(from, to, isReadingPresentToPast, vcsRootsIn(jUnitProject))
+				.toList().findAll{it != CommitReader.NO_MORE_COMMITS}
 	}
 
 	static Project findOpenedJUnitProject() {
