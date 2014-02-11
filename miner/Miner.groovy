@@ -142,15 +142,15 @@ class Miner {
 			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
 
 		} else {
-			if (toDate > timeAfterMostRecentEventIn(eventStorage)) {
-				def (historyStart, historyEnd) = [timeAfterMostRecentEventIn(eventStorage), toDate]
+			if (toDate > eventStorage.mostRecentEventTime) {
+				def (historyStart, historyEnd) = [eventStorage.mostRecentEventTime, toDate]
 				log?.loadingProjectHistory(historyStart, historyEnd)
 				// read events from past into future because they are prepended to storage
 				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
 			}
 
-			if (fromDate < timeBeforeOldestEventIn(eventStorage)) {
-				def (historyStart, historyEnd) = [fromDate, timeBeforeOldestEventIn(eventStorage)]
+			if (fromDate < eventStorage.oldestEventTime) {
+				def (historyStart, historyEnd) = [fromDate, eventStorage.oldestEventTime]
 				log?.loadingProjectHistory(historyStart, historyEnd)
 				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
 			}
@@ -171,26 +171,5 @@ class Miner {
 			messageText += "\nSome of events were not added to csv file because it already contained events within the time range\n"
 		}
 		[text: messageText, title: "Code History Mining"]
-	}
-
-	private static timeBeforeOldestEventIn(EventStorage storage) {
-		def date = storage.oldestEventTime
-		if (date == null) {
-			new Date()
-		} else {
-			// minus one second because git "before" seems to be inclusive (even though ChangeBrowserSettings API is exclusive)
-			// (it means that if processing stops between two commits that happened on the same second,
-			// we will miss one of them.. considered this to be insignificant)
-			new Date(date.time - 1000)
-		}
-	}
-
-	private static timeAfterMostRecentEventIn(EventStorage storage) {
-		def date = storage.mostRecentEventTime
-		if (date == null) {
-			new Date()
-		} else {
-			new Date(date.time + 1000) // plus one second (see comments in timeBeforeOldestEventIn())
-		}
 	}
 }

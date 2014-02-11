@@ -10,11 +10,10 @@ import vcsaccess.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.date
-import static util.DateTimeUtil.dateTime
 import static util.GroovyStubber.*
 
 class MinerTest {
-//	@Test def "on VCS update does nothing if already grabbed on this date"() {
+//	@Test def "on VCS update does nothing if already grabbed on this date"() { // TODO
 //		def aProject = stubProject([getName: returns("aProject")])
 //		def storage = stubHistoryStorage([
 //				lastGrabTime: returns(dateTime("09:00 23/11/2012"))
@@ -49,7 +48,7 @@ class MinerTest {
 
 		// when / then
 		miner.grabHistoryOnVcsUpdate(someProject, date("23/11/2012"))
-		assert from == dateTime("00:00:01 20/11/2012") // TODO test this in integration tests
+		assert from == date("20/11/2012")
 		assert to == date("23/11/2012")
 	}
 

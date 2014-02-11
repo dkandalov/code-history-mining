@@ -35,6 +35,8 @@ class ChangeEventsReader {
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (isCancelled?.call()) break
+			if (readPresentToPast && commit.commitDate >= historyEnd) continue
+			if (!readPresentToPast && commit.commitDate <= historyStart) continue
 
 			consumeWrapper(commit) {
 				PluginUtil.catchingAll {
