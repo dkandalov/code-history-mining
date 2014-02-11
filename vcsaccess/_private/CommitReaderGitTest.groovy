@@ -64,27 +64,23 @@ class CommitReaderGitTest {
 		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
-/*
-	@Test "end time is exclusive when reading present to past"() {
+	@Test "[start; end) date interval when reading present to past"() {
 		def isReadingPresentToPast = true
-		def commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21.001 03/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 1
-		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
 
-		commits = readJUnitCommits(dateTime("18:10 03/10/2007"), exactDateTime("18:11:21 03/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 0
+		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 3
+		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 7
 	}
 
-	@Test "start time is exclusive when reading past to present"() {
+	@Test "[start; end) date interval when reading past to present"() {
 		def isReadingPresentToPast = false
-		def commits = readJUnitCommits(exactDateTime("18:11:20.999 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 1
-		assert commits[0].commitDate == exactDateTime("18:11:21 03/10/2007")
 
-		commits = readJUnitCommits(exactDateTime("18:11:21 03/10/2007"), dateTime("18:12 03/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 0
+		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 3
+		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"), isReadingPresentToPast)
+		assert commits.size() == 7
 	}
-*/
 
 	private Commit readSingleCommit(String gitHash, Date from, Date to) {
 		def commits = readJUnitCommits(from, to, true)
