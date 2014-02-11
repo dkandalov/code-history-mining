@@ -29,7 +29,8 @@ class CommitReader {
 
 	Iterator<Commit> readCommits(Date historyStartDate, Date historyEndDate, boolean isReadingPresentToPast = true, List<VcsRoot> vcsRoots) {
 		assert historyStartDate.time < historyEndDate.time
-		// checking only seconds because Date.time is in UTC (in local timezone dates should not have hours, minutes, seconds)
+		// in local timezone dates should not have hours, minutes, seconds
+		// (checking only seconds because Date.time field is in UTC and can have non-zero hours and probably minutes)
 		assert historyStartDate.time % (60 * 1000) == 0
 		assert historyEndDate.time % (60 * 1000) == 0
 

@@ -6,6 +6,8 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import events.FileChangeEvent
 import liveplugin.PluginUtil
 
+import static util.DateTimeUtil.floorToDay
+
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
@@ -31,12 +33,13 @@ class ChangeEventsReader {
 
 	private request(Date historyStart, Date historyEnd, Closure isCancelled = null, boolean readPresentToPast,
 	            Closure consumeWrapper, Closure consume) {
-		Iterator<Commit> commits = commitReader.readCommits(historyStart, historyEnd, readPresentToPast, vcsRootsIn(project))
+		Iterator<Commit> commits = commitReader.readCommits(floorToDay(historyStart), floorToDay(historyEnd) + 1, readPresentToPast, vcsRootsIn(project))
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (isCancelled?.call()) break
-			if (readPresentToPast && commit.commitDate >= historyEnd) continue
-			if (!readPresentToPast && commit.commitDate <= historyStart) continue
+			if (commit.commitDate < historyStart || commit.commitDate > historyEnd) continue
+			if (readPresentToPast && commit.commitDate == historyEnd) continue
+			if (!readPresentToPast && commit.commitDate == historyStart) continue
 
 			consumeWrapper(commit) {
 				PluginUtil.catchingAll {
