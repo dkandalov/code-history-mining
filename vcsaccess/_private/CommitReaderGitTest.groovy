@@ -64,7 +64,7 @@ class CommitReaderGitTest {
 		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
-	@Test "[start; end) date interval when reading present to past"() {
+	@Test "end date is exclusive when reading present to past"() {
 		def isReadingPresentToPast = true
 
 		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
@@ -73,7 +73,7 @@ class CommitReaderGitTest {
 		assert commits.size() == 7
 	}
 
-	@Test "[start; end) date interval when reading past to present"() {
+	@Test "end date is exclusive when reading past to present"() {
 		def isReadingPresentToPast = false
 
 		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
