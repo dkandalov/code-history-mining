@@ -30,7 +30,7 @@
 <script src="../d3.v3.min.js"></script>
 <script>
     var rawData = /*data_placeholder*/"\
-date,author,amount of commits\n\
+date,category,value\n\
 18/01/2013,Mee,18\n\
 19/01/2013,Mee,5\n\
 20/01/2013,Mee,3\n\
@@ -41,6 +41,15 @@ date,author,amount of commits\n\
 19/01/2013,GGG,11\n\
 20/01/2013,GGG,11\n\
 "/*data_placeholder*/;
+
+    var bus = d3.dispatch("myEvent");
+    bus.on("myEvent", function(i) {
+        console.log("Hey! my event " + i);
+    });
+    for (var i = 0; i < 10; i++) {
+        bus.myEvent(i);
+    }
+
     var dateFormat = d3.time.format("%d/%m/%Y");
     var valueFormat = function(n) {
         var s = d3.format(",")(n);
@@ -48,19 +57,19 @@ date,author,amount of commits\n\
     };
 
     var data = d3.csv.parse(rawData);
-    data = d3.nest().key(function (d) { return d["author"]; }).entries(data)
+    data = d3.nest().key(function (d) { return d["category"]; }).entries(data)
         .map(function (entry) { return entry.values.map(function (d) {
                 return {
                     x: dateFormat.parse(d.date),
-                    y: parseInt(d["amount of commits"]),
-                    author: d["author"],
+                    y: parseInt(d["value"]),
+                    category: d["category"],
                     y0: 0
                 };
             });
         });
 
-    var stackedData = d3.layout.stack()(data);
-    var yStackMax = d3.max(stackedData, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+    var dataStacked = d3.layout.stack()(data);
+    var yStackMax = d3.max(dataStacked, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
     var margin = {top: 40, right: 10, bottom: 20, left: 10},
         width = 960 - margin.left - margin.right,
@@ -85,7 +94,7 @@ date,author,amount of commits\n\
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var layer = svg.selectAll(".layer")
-            .data(stackedData)
+            .data(dataStacked)
             .enter().append("g")
             .attr("class", "layer")
             .style("fill", function(d, i) { return color(i); });
@@ -100,8 +109,8 @@ date,author,amount of commits\n\
             .append("title")
             .text(function (d) {
                 return "date: " + dateFormat(d.x) + "\n" +
-                       "amount of commits: " + valueFormat(d.y) + "\n" +
-                       "author: " + d["author"];
+                       "value: " + valueFormat(d.y) + "\n" +
+                       "category: " + d["category"];
             });
 
     svg.append("g")
