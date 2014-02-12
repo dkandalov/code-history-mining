@@ -3,6 +3,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
+import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
@@ -42,7 +43,9 @@ class VcsAccess {
 		def connection = project.messageBus.connect(project)
 		connection.subscribe(UPDATED_FILES, new UpdatedFilesListener() {
 			@Override void consume(Set<String> files) {
-				closure.call(project)
+				PluginUtil.invokeOnEDT{
+					closure.call(project)
+				}
 			}
 		})
 		connectionByProjectName.put(projectName, connection)
