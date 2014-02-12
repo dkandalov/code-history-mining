@@ -28,7 +28,7 @@ class HistoryGrabberConfig {
 	static saveGrabberConfigOf(String projectName, String pathToFolder, HistoryGrabberConfig grabberConfig) {
 		def stateByProject = loadStateByProject(pathToFolder)
 		stateByProject.put(projectName, grabberConfig)
-		FileUtil.writeToFile(new File(pathToFolder + "/dialog-state.json"), JsonOutput.toJson(stateByProject))
+		FileUtil.writeToFile(new File(pathToFolder + "/grabber-config.json"), JsonOutput.toJson(stateByProject))
 	}
 
 	private static Map<String, HistoryGrabberConfig> loadStateByProject(String pathToFolder) {
@@ -43,10 +43,20 @@ class HistoryGrabberConfig {
 					parseBoolean(map.grabOnVcsUpdate)
 			)}
 
-			def json = FileUtil.loadFile(new File(pathToFolder + "/dialog-state.json"))
+			def json = readConfigFile(pathToFolder)
 			new JsonSlurper().parseText(json).collectEntries{ [it.key, toGrabberConfig(it.value)] }
 		} catch (IOException ignored) {
 			[:]
+		}
+	}
+
+	private static String readConfigFile(String pathToFolder) {
+		def oldFile = new File(pathToFolder + "/dialog-state.json")
+		if (oldFile.exists()) {
+			FileUtil.loadFile(oldFile)
+			FileUtil.delete(oldFile)
+		} else {
+			FileUtil.loadFile(new File(pathToFolder + "/grabber-config.json"))
 		}
 	}
 }
