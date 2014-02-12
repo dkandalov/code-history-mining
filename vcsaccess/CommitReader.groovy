@@ -41,6 +41,7 @@ class CommitReader {
 			new PastToPresentIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
 
+        def commitReaderLog = log
 		new Iterator<Commit>() {
 			@Override boolean hasNext() {
 				!changes.empty || dateIterator.hasNext()
@@ -57,7 +58,7 @@ class CommitReader {
 						} catch (Exception e) {
 							// this is to catch errors in VCS plugin implementation 
 							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-							CommitReader.this.log?.errorReadingCommits(e, dates.from, dates.to)
+							commitReaderLog?.errorReadingCommits(e, dates.from, dates.to)
 							lastRequestHadErrors = true
 						}
 						changes = changes.sort{ it.commitDate }
