@@ -1,5 +1,4 @@
 package vcsaccess
-
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -10,8 +9,6 @@ import java.text.SimpleDateFormat
 
 @Immutable
 class HistoryGrabberConfig {
-	static final defaultConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "", false, false, new Date(0))
-
 	Date from
 	Date to
 	String outputFilePath
@@ -31,6 +28,9 @@ class HistoryGrabberConfig {
 		new HistoryGrabberConfig(from, to, newOutputFilePath, grabChangeSizeInLines, grabOnVcsUpdate, lastGrabTime)
 	}
 
+	static defaultConfig() {
+		new HistoryGrabberConfig(new Date() - 300, new Date(), "", false, false, new Date(1))
+	}
 
 	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
 		def stateByProject = loadStateByProject(pathToFolder)
@@ -42,6 +42,9 @@ class HistoryGrabberConfig {
 		def stateByProject = loadStateByProject(pathToFolder)
 		stateByProject.put(projectName, grabberConfig)
 		FileUtil.writeToFile(new File(pathToFolder + "/grabber-config.json"), JsonOutput.toJson(stateByProject))
+
+		def oldFile = new File(pathToFolder + "/dialog-state.json")
+		if (oldFile.exists()) FileUtil.delete(oldFile)
 	}
 
 	private static Map<String, HistoryGrabberConfig> loadStateByProject(String pathToFolder) {
@@ -58,7 +61,8 @@ class HistoryGrabberConfig {
 
 			def json = readConfigFile(pathToFolder)
 			new JsonSlurper().parseText(json).collectEntries{ [it.key, toGrabberConfig(it.value)] }
-		} catch (IOException ignored) {
+
+		} catch (Exception ignored) {
 			[:]
 		}
 	}
@@ -77,9 +81,7 @@ class HistoryGrabberConfig {
 	private static String readConfigFile(String pathToFolder) {
 		def oldFile = new File(pathToFolder + "/dialog-state.json")
 		if (oldFile.exists()) {
-			def content = FileUtil.loadFile(oldFile)
-			FileUtil.delete(oldFile)
-			content
+			FileUtil.loadFile(oldFile)
 		} else {
 			FileUtil.loadFile(new File(pathToFolder + "/grabber-config.json"))
 		}

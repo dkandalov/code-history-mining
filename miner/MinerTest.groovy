@@ -113,5 +113,5 @@ class MinerTest {
 
 	private static final runOnTheSameThread = { taskDescription, closure -> closure([:] as ProgressIndicator) }
 	private static final someProject = stub(Project, [getName: returns("someProject")])
-	private static final someConfig = HistoryGrabberConfig.defaultConfig
+	private static final someConfig = HistoryGrabberConfig.defaultConfig()
 }

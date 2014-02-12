@@ -25,7 +25,7 @@ class HistoryStorage {
 
 	HistoryGrabberConfig loadGrabberConfigFor(String projectName) {
 		HistoryGrabberConfig.loadGrabberConfigFor(projectName, basePath) {
-			HistoryGrabberConfig.defaultConfig.withOutputFilePath("${basePath}/${projectName + "-file-events.csv"}")
+			HistoryGrabberConfig.defaultConfig().withOutputFilePath("${basePath}/${projectName + "-file-events.csv"}")
 		}
 	}
 
