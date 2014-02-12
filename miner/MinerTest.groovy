@@ -20,11 +20,10 @@ class MinerTest {
 		// given
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
-				lastGrabTime: returns(dateTime("09:00 23/11/2012")),
 				eventStorageFor: returns(stub(EventStorage, [
 						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
 				])),
-				loadGrabberConfigFor: returns(someConfig)
+				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
 				stub(ChangeEventsReader, [
@@ -49,7 +48,7 @@ class MinerTest {
 				eventStorageFor: returns(stub(EventStorage, [
 						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
 				])),
-				loadGrabberConfigFor: returns(someConfig)
+				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
 				stub(ChangeEventsReader, [
@@ -74,7 +73,7 @@ class MinerTest {
 		def ui = stub(UI, [
 				showGrabbingDialog: { config, project, Closure onOkCallback ->
 					def grabOnVcsUpdate = true
-					onOkCallback(new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, grabOnVcsUpdate))
+					onOkCallback(new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, grabOnVcsUpdate, new Date(0)))
 				}
 		])
 		def vcsAccess = stub(VcsAccess, [
@@ -114,5 +113,5 @@ class MinerTest {
 
 	private static final runOnTheSameThread = { taskDescription, closure -> closure([:] as ProgressIndicator) }
 	private static final someProject = stub(Project, [getName: returns("someProject")])
-	private static final someConfig = new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, false)
+	private static final someConfig = HistoryGrabberConfig.defaultConfig
 }

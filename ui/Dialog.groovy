@@ -85,7 +85,8 @@ class Dialog {
 					toDatePicker.date,
 					filePathTextField.text,
 					grabChangeSizeCheckBox.selected,
-					grabOnVcsUpdateCheckBox.selected
+					grabOnVcsUpdateCheckBox.selected,
+					grabberConfig.lastGrabTime
 			))
 			builder.dialogWrapper.close(0)
 		} as Runnable
