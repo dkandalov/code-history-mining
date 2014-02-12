@@ -1,5 +1,4 @@
 package ui
-
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -22,6 +21,7 @@ import java.awt.event.ActionListener
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
+import static util.DateTimeUtil.floorToDay
 
 class Dialog {
 	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project, Closure onOkCallback) {
@@ -81,8 +81,8 @@ class Dialog {
 		builder.okActionEnabled = true
 		builder.okOperation = {
 			onOkCallback(new HistoryGrabberConfig(
-					fromDatePicker.date,
-					toDatePicker.date,
+					floorToDay(fromDatePicker.date),
+					floorToDay(toDatePicker.date),
 					filePathTextField.text,
 					grabChangeSizeCheckBox.selected,
 					grabOnVcsUpdateCheckBox.selected,
