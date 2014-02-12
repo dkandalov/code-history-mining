@@ -50,7 +50,8 @@ class FileAmountToolWindow {
 						editable = false
 						lineWrap = true
 						wrapStyleWord = true
-						background = panelBackground
+						background = UIUtil.labelBackground
+                        font = UIUtil.labelFont
 						UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, it)
 						it
 					}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
