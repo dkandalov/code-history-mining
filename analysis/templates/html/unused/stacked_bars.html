@@ -41,7 +41,7 @@ date,category,value\n\
 19/01/2013,GGG,11\n\
 20/01/2013,GGG,11\n\
 "/*data_placeholder*/;
-    var margin = {top: 40, right: 10, bottom: 20, left: 10};
+    var margin = {top: 40, right: 50, bottom: 20, left: 50};
     var uiConfig = {
         width: 960 - margin.left - margin.right,
         height: 500 - margin.top - margin.bottom,
@@ -59,8 +59,9 @@ date,category,value\n\
     var y = yScale(uiConfig);
     var bar = bars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
+    var yAxis = newYAxis(svg, "Change size", y);
 
-    data.onUpdate([x.update, y.update, bar.update, xAxis.update]);
+    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update]);
     data.sendUpdate();
 
 
@@ -98,6 +99,26 @@ date,category,value\n\
         return f;
     }
 
+
+    function newYAxis(element, label, y) {
+        var valueFormat = function(n) {
+            var s = d3.format(",")(n);
+            return s.length < 6 ? s : d3.format("s")(n);
+        };
+        var axis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
+        axis.update = function() {
+            element.append("g")
+                   .attr("class", "y axis")
+                   .call(axis)
+                   .append("text")
+                   .attr("transform", "rotate(-90)")
+                   .attr("y", 6)
+                   .attr("dy", ".71em")
+                   .style("text-anchor", "end")
+                   .text(label);
+        };
+        return axis;
+    }
 
     function newXAxis(element, uiConfig, x) {
         var axis = d3.svg.axis().scale(x).orient("bottom");
