@@ -41,74 +41,173 @@ date,category,value\n\
 19/01/2013,GGG,11\n\
 20/01/2013,GGG,11\n\
 "/*data_placeholder*/;
-
-    var dateFormat = d3.time.format("%d/%m/%Y");
-    var valueFormat = function(n) {
-        var s = d3.format(",")(n);
-        return s.length < 6 ? s : d3.format("s")(n);
+    var margin = {top: 40, right: 10, bottom: 20, left: 10};
+    var uiConfig = {
+        width: 960 - margin.left - margin.right,
+        height: 500 - margin.top - margin.bottom,
+        margin: margin
     };
 
-    var data = d3.csv.parse(rawData);
-    data = d3.nest().key(function (d) { return d["category"]; }).entries(data)
-        .map(function (entry) { return entry.values.map(function (d) {
-                return {
-                    x: dateFormat.parse(d.date),
-                    y: parseInt(d["value"]),
-                    category: d["category"],
-                    y0: 0
-                };
-            });
-        });
-
-    var dataStacked = d3.layout.stack()(data);
-    var yStackMax = d3.max(dataStacked, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
-
-    var margin = {top: 40, right: 10, bottom: 20, left: 10},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
-
-    var x = d3.time.scale().nice().rangeRound([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
-    var xAxis = d3.svg.axis().scale(x).orient("bottom");
-    var color = d3.scale.category20();
-
-    var fromDate = d3.min(data, function (d) { return d3.min(d, function (dd) { return dd.x; }); });
-    var toDate = d3.max(data, function (d) { return d3.max(d, function (dd) { return dd.x; }); });
-    toDate = d3.time.day.offset(toDate, 2);
-    x.domain(d3.extent(d3.time.days(fromDate, toDate)));
-    y.domain([0, yStackMax]);
-    var barWidth = Math.floor((width / d3.time.days(fromDate, toDate).length) - 0.5);
-
     var svg = d3.select("body").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom)
             .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var layer = svg.selectAll(".layer")
-            .data(dataStacked)
-            .enter().append("g")
-            .attr("class", "layer")
-            .style("fill", function(d, i) { return color(i); });
 
-    layer.selectAll("rect")
-            .data(function(d) { return d; })
-            .enter().append("rect")
-            .attr("x", function(d) { return x(d.x); })
-            .attr("y", function(d) { return y(d.y0 + d.y); })
-            .attr("width", barWidth)
-            .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
-            .append("title")
-            .text(function (d) {
-                return "date: " + dateFormat(d.x) + "\n" +
-                       "value: " + valueFormat(d.y) + "\n" +
-                       "category: " + d["category"];
+//    var bus = d3.dispatch("dataUpdate");
+//    bus.on("dataUpdate",
+//            function() { console.log("123"); },
+//            function() { console.log("456"); }
+//    );
+//    bus.dataUpdate("!");
+
+    var data = stackedData(rawData);
+    var x = xScale(uiConfig);
+    var y = yScale(uiConfig);
+    var xAxis = newXAxis(x);
+    var bar = bars(svg, uiConfig, x, y);
+
+    data.onUpdate([x.update, y.update, bar.update]);
+    data.sendUpdate();
+
+
+    function bars(element, uiConfig, xScale, yScale) {
+        var color = d3.scale.category20();
+        var dateFormat = d3.time.format("%d/%m/%Y");
+        var valueFormat = function(n) {
+            var s = d3.format(",")(n);
+            return s.length < 6 ? s : d3.format("s")(n);
+        };
+
+        var f = function() {};
+        f.update = function(update) {
+            console.log("bars");
+            var barWidth = 100; //Math.floor((uiConfig.width / xScale.range.length) - 0.5);
+            var layer = element.selectAll(".layer")
+                    .data(update.dataStacked)
+                    .enter().append("g")
+                    .attr("class", "layer")
+                    .style("fill", function(d, i) { return color(i); });
+
+            layer.selectAll("rect")
+                    .data(function(d) { return d; })
+                    .enter().append("rect")
+                    .attr("x", function(d) { return xScale(d.x); })
+                    .attr("y", function(d) { return yScale(d.y0 + d.y); })
+                    .attr("width", barWidth)
+                    .attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
+                    .append("title")
+                    .text(function (d) {
+                        return "date: " + dateFormat(d.x) + "\n" +
+                                "value: " + valueFormat(d.y) + "\n" +
+                                "category: " + d["category"];
+                    });
+        };
+        return f;
+    }
+
+
+    function newXAxis(x) {
+        return d3.svg.axis().scale(x).orient("bottom");
+    }
+
+
+    function xScale(uiConfig) {
+        var timeInterval = d3.time["day"];
+        var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
+        x.update = function(update) {
+            console.log("xScale");
+            x.valuesRange = timeInterval.range(update.minX, update.maxX);
+            x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
+        };
+        return x;
+    }
+
+    function yScale(uiConfig) {
+        var y = d3.scale.linear().range([uiConfig.height, 0]);
+        y.update = function(update) {
+            console.log("yScale");
+            console.log([update.minY, update.maxY]);
+            y.domain([update.minY, update.maxY]);
+        };
+        return y;
+    }
+
+
+    function stackedData(rawCsv) {
+        var dateFormat = d3.time.format("%d/%m/%Y");
+        var originalData = d3.csv.parse(rawCsv);
+        originalData = d3.nest().key(function(d) { return d["category"]; }).entries(originalData)
+                .map(function (entry) {
+                    return entry.values.map(function (d) {
+                        return {
+                            x: dateFormat.parse(d.date),
+                            y: parseInt(d["value"]),
+                            category: d["category"],
+                            y0: 0
+                        };
+                    });
+                });
+        var data;
+        var dataStacked;
+        var minX;
+        var maxX;
+        var minY = 0;
+        var maxY;
+        function updateWith(newData) {
+            data = newData;
+            dataStacked = d3.layout.stack()(data);
+            minX = d3.min(data, function(d) {
+                return d3.min(d, function(dd) {
+                    return dd.x;
+                });
             });
+            maxX = d3.max(data, function(d) {
+                return d3.max(d, function(dd) {
+                    return dd.x;
+                });
+            });
+            maxY = d3.max(dataStacked, function(layer) {
+                return d3.max(layer, function(d) {
+                    return d.y0 + d.y;
+                });
+            });
+        }
+        updateWith(originalData);
 
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+
+        var f = function() {};
+        var listeners = [];
+        f.onUpdate = function(newListeners) {
+            listeners = newListeners;
+        };
+        f.sendUpdate = function() {
+            console.log(listeners);
+            for (var i = 0; i < listeners.length; i++) {
+                listeners[i]({
+                    data: data,
+                    dataStacked: dataStacked,
+                    minX: minX,
+                    maxX: maxX,
+                    minY: minY,
+                    maxY: maxY
+                });
+            }
+        };
+        f.useCategories = function(categories) {
+            updateWith(
+                    originalData.map(function(it) {
+                        return (categories.indexOf(it[0]["category"]) != -1) ? it : null;
+                    }).filter(function(it) { return it != null; })
+            );
+            f.sendUpdate();
+        };
+
+        return f;
+    }
+
+
 
 </script>
 </body>
