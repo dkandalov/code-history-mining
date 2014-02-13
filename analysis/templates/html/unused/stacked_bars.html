@@ -54,21 +54,13 @@ date,category,value\n\
             .append("g")
             .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-
-//    var bus = d3.dispatch("dataUpdate");
-//    bus.on("dataUpdate",
-//            function() { console.log("123"); },
-//            function() { console.log("456"); }
-//    );
-//    bus.dataUpdate("!");
-
     var data = stackedData(rawData);
     var x = xScale(uiConfig);
     var y = yScale(uiConfig);
-    var xAxis = newXAxis(x);
     var bar = bars(svg, uiConfig, x, y);
+    var xAxis = newXAxis(svg, uiConfig, x);
 
-    data.onUpdate([x.update, y.update, bar.update]);
+    data.onUpdate([x.update, y.update, bar.update, xAxis.update]);
     data.sendUpdate();
 
 
@@ -82,8 +74,7 @@ date,category,value\n\
 
         var f = function() {};
         f.update = function(update) {
-            console.log("bars");
-            var barWidth = 100; //Math.floor((uiConfig.width / xScale.range.length) - 0.5);
+            var barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
             var layer = element.selectAll(".layer")
                     .data(update.dataStacked)
                     .enter().append("g")
@@ -108,8 +99,15 @@ date,category,value\n\
     }
 
 
-    function newXAxis(x) {
-        return d3.svg.axis().scale(x).orient("bottom");
+    function newXAxis(element, uiConfig, x) {
+        var axis = d3.svg.axis().scale(x).orient("bottom");
+        axis.update = function() {
+            element.append("g")
+                   .attr("class", "x axis")
+                   .attr("transform", "translate(0," + uiConfig.height + ")")
+                   .call(axis);
+        };
+        return axis;
     }
 
 
@@ -117,7 +115,6 @@ date,category,value\n\
         var timeInterval = d3.time["day"];
         var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
         x.update = function(update) {
-            console.log("xScale");
             x.valuesRange = timeInterval.range(update.minX, update.maxX);
             x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
         };
@@ -127,8 +124,6 @@ date,category,value\n\
     function yScale(uiConfig) {
         var y = d3.scale.linear().range([uiConfig.height, 0]);
         y.update = function(update) {
-            console.log("yScale");
-            console.log([update.minY, update.maxY]);
             y.domain([update.minY, update.maxY]);
         };
         return y;
@@ -183,7 +178,6 @@ date,category,value\n\
             listeners = newListeners;
         };
         f.sendUpdate = function() {
-            console.log(listeners);
             for (var i = 0; i < listeners.length; i++) {
                 listeners[i]({
                     data: data,
