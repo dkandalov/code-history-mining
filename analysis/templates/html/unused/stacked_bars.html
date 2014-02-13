@@ -42,14 +42,6 @@ date,category,value\n\
 20/01/2013,GGG,11\n\
 "/*data_placeholder*/;
 
-    var bus = d3.dispatch("myEvent");
-    bus.on("myEvent", function(i) {
-        console.log("Hey! my event " + i);
-    });
-    for (var i = 0; i < 10; i++) {
-        bus.myEvent(i);
-    }
-
     var dateFormat = d3.time.format("%d/%m/%Y");
     var valueFormat = function(n) {
         var s = d3.format(",")(n);
@@ -99,7 +91,7 @@ date,category,value\n\
             .attr("class", "layer")
             .style("fill", function(d, i) { return color(i); });
 
-    var rect = layer.selectAll("rect")
+    layer.selectAll("rect")
             .data(function(d) { return d; })
             .enter().append("rect")
             .attr("x", function(d) { return x(d.x); })
