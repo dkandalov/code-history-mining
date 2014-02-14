@@ -25,6 +25,12 @@
         right: 10px;
         top: 10px;
     }
+
+    .brush .extent {
+        stroke: #fff;
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+    }
 </style>
 <body>
 <script src="../d3.v3.min.js"></script>
@@ -54,9 +60,10 @@ date,category,value\n\
         margin: margin
     };
 
+    var brushHeight = 50; // TODO
     var svg = d3.select("body").append("svg")
             .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
-            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom)
+            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight)
             .append("g")
             .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
@@ -84,31 +91,31 @@ date,category,value\n\
         };
     }
 
-    function newBrush(element, uiConfig, x) {
+    function newBrush(root, uiConfig, x) {
         var height = 50;
         var brushXScale = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
         var brush = d3.svg.brush().x(brushXScale);
 
         brush.update = function() {
             brushXScale.domain(x.domain());
-            console.log(brushXScale.domain());
         };
         brush.on("brush", function() {
-            console.log(brushXScale.domain());
             var extent = brush.empty() ? brushXScale.domain() : brush.extent();
             x.setDomain(extent[0], extent[1]);
         });
-        element.append("g")
-               .attr("class", "x brush")
-               .call(brush)
-               .selectAll("rect")
-               .attr("y", -6)
-               .attr("height", height);
+        var g = root.append("g")
+                .attr("transform", "translate(0" + "," + (uiConfig.height + uiConfig.margin.top) + ")");
+        g.append("g")
+           .attr("class", "x brush")
+           .call(brush)
+           .selectAll("rect")
+           .attr("y", -10) // TODO
+           .attr("height", height);
 
         return brush;
     }
 
-    function bars(element, uiConfig, xScale, yScale) {
+    function bars(root, uiConfig, xScale, yScale) {
         var color = d3.scale.category20();
         var dateFormat = d3.time.format("%d/%m/%Y");
         var valueFormat = function(n) {
@@ -122,7 +129,7 @@ date,category,value\n\
         f.update = function(update) {
             data = update.data;
             barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
-            var layer = element.selectAll(".layer")
+            var layer = root.selectAll(".layer")
                     .data(update.dataStacked)
                     .enter().append("g")
                     .attr("class", "layer")
@@ -131,6 +138,7 @@ date,category,value\n\
             layer.selectAll("rect")
                     .data(function(d) { return d; })
                     .enter().append("rect")
+                    .attr("clip-path", "url(#barsClip)")
                     .attr("x", function(d) { return xScale(d.x); })
                     .attr("y", function(d) { return yScale(d.y0 + d.y); })
                     .attr("width", barWidth)
@@ -144,24 +152,27 @@ date,category,value\n\
         };
         f.onXScaleUpdate = function() {
             barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
-            var layer = element.selectAll(".layer").data(data);
+            var layer = root.selectAll(".layer").data(data);
             layer.selectAll("rect")
                .data(function(d) { return d; })
                .attr("x", function(d) { return xScale(d.x); })
                .attr("width", barWidth);
         };
+
+        root.append("defs").append("clipPath").attr("id", "barsClip")
+            .append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
         return f;
     }
 
 
-    function newYAxis(element, label, y) {
+    function newYAxis(root, label, y) {
         var valueFormat = function(n) {
             var s = d3.format(",")(n);
             return s.length < 6 ? s : d3.format("s")(n);
         };
         var axis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
         axis.update = function() {
-            element.append("g")
+            root.append("g")
                    .attr("class", "y axis")
                    .call(axis)
                    .append("text")
@@ -174,16 +185,16 @@ date,category,value\n\
         return axis;
     }
 
-    function newXAxis(element, uiConfig, x) {
+    function newXAxis(root, uiConfig, x) {
         var axis = d3.svg.axis().scale(x).orient("bottom");
         axis.update = function() {
-            element.append("g")
+            root.append("g")
                    .attr("class", "x axis")
                    .attr("transform", "translate(0," + uiConfig.height + ")")
                    .call(axis);
         };
         axis.onXScaleUpdate = function() {
-            element.select(".x.axis").call(xAxis);
+            root.select(".x.axis").call(xAxis);
         };
         return axis;
     }
