@@ -57,9 +57,9 @@ class UI {
 		ProjectManager.instance.removeProjectManagerListener(oldUI.listener)
 	}
 
-	def showGrabbingDialog(HistoryGrabberConfig grabberConfig, Project project, Closure onOkCallback) {
-		Dialog.showDialog(grabberConfig, "Grab History Of Current Project", project) { HistoryGrabberConfig userInput ->
-			onOkCallback.call(userInput)
+	def showGrabbingDialog(HistoryGrabberConfig grabberConfig, Project project, Closure onApplyCallback, Closure onGrabCallback) {
+		Dialog.showDialog(grabberConfig, "Grab History Of Current Project", project, onApplyCallback) { HistoryGrabberConfig userInput ->
+			onGrabCallback.call(userInput)
 		}
 	}
 

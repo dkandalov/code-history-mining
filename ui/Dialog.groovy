@@ -26,8 +26,10 @@ import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
 import static util.DateTimeUtil.floorToDay
 
+@SuppressWarnings("GrUnresolvedAccess")
 class Dialog {
-	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project, Closure onOkCallback) {
+	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project,
+	                  Closure onApplyCallback, Closure onGrabCallback) {
 		def fromDatePicker = new DatePicker(grabberConfig.from, dateFormat.delegate)
 		def toDatePicker = new DatePicker(grabberConfig.to, dateFormat.delegate)
 		def filePathTextField = new TextFieldWithBrowseButton()
@@ -92,7 +94,6 @@ class Dialog {
 
 		DialogBuilder builder = new DialogBuilder(project)
 		builder.title = dialogTitle
-		builder.okActionEnabled = true
 		builder.centerPanel = rootPanel
 		builder.dimensionServiceKey = "CodeHistoryMiningDialog"
 
@@ -103,18 +104,18 @@ class Dialog {
 		}
 		def applyAction = new AbstractAction("Apply") {
 			@Override void actionPerformed(ActionEvent e) {
-				// TODO
+				onApplyCallback(currentUIConfig())
+				grabberConfig = currentUIConfig()
+				update()
 			}
-
 			def update() {
 				setEnabled(currentUIConfig() != grabberConfig)
 			}
 		}
 		applyAction.enabled = false
-
 		def grabAction = new AbstractAction("Grab") {
 			@Override void actionPerformed(ActionEvent e) {
-				onOkCallback(currentUIConfig())
+				onGrabCallback(currentUIConfig())
 				builder.dialogWrapper.close(0)
 			}
 		}
@@ -150,8 +151,8 @@ class Dialog {
 
 	private static Collection<JComponent> childrenOf(JComponent component) {
 		(0..<component.componentCount).collectMany{ int i ->
-			JComponent child = component.getComponent(i) as JComponent
-			[child] + childrenOf(child)
+			Component child = component.getComponent(i)
+			(child instanceof JComponent) ? [child] + childrenOf(child) : []
 		}
 	}
 

@@ -80,9 +80,13 @@ class Miner {
 		if (grabHistoryIsInProgress) return ui.showGrabbingInProgressMessage(project)
 		if (vcsAccess.noVCSRootsIn(project)) return ui.showNoVcsRootsMessage(project)
 
-		def grabberConfig = storage.loadGrabberConfigFor(project.name)
-		ui.showGrabbingDialog(grabberConfig, project) { HistoryGrabberConfig userInput ->
+		def saveConfig = { HistoryGrabberConfig userInput ->
 			storage.saveGrabberConfigFor(project.name, userInput)
+		}
+
+		def grabberConfig = storage.loadGrabberConfigFor(project.name)
+		ui.showGrabbingDialog(grabberConfig, project, saveConfig) { HistoryGrabberConfig userInput ->
+			saveConfig(userInput)
 
 			if (userInput.grabOnVcsUpdate)
 				vcsAccess.addVcsUpdateListenerFor(project.name, this.&grabHistoryOnVcsUpdate)

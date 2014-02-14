@@ -71,7 +71,7 @@ class MinerTest {
 		// given
 		def listeningToProject = ""
 		def ui = stub(UI, [
-				showGrabbingDialog: { config, project, Closure onOkCallback ->
+				showGrabbingDialog: { config, project, onApplyConfig, Closure onOkCallback ->
 					def grabOnVcsUpdate = true
 					onOkCallback(new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, grabOnVcsUpdate, new Date(0)))
 				}
@@ -92,7 +92,7 @@ class MinerTest {
 		def showedGrabberDialog = 0
 		def showedGrabbingInProgress = 0
 		def ui = stub(UI, [
-				showGrabbingDialog: { config, project, Closure onOkCallback ->
+				showGrabbingDialog: { config, project, onApplyConfig, Closure onOkCallback ->
 					showedGrabberDialog++
 					onOkCallback(someConfig)
 				},
