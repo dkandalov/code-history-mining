@@ -34,12 +34,18 @@ date,category,value\n\
 18/01/2013,Mee,18\n\
 19/01/2013,Mee,5\n\
 20/01/2013,Mee,3\n\
+21/01/2013,Mee,3\n\
+22/01/2013,Mee,3\n\
 18/01/2013,Ooo,18\n\
 19/01/2013,Ooo,3\n\
+21/01/2013,Ooo,11\n\
+22/01/2013,Ooo,11\n\
 20/01/2013,Ooo,11\n\
 18/01/2013,GGG,11\n\
 19/01/2013,GGG,11\n\
 20/01/2013,GGG,11\n\
+21/01/2013,GGG,11\n\
+22/01/2013,GGG,11\n\
 "/*data_placeholder*/;
     var margin = {top: 40, right: 50, bottom: 20, left: 50};
     var uiConfig = {
@@ -60,10 +66,47 @@ date,category,value\n\
     var bar = bars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
+    var brush = newBrush(svg, uiConfig, x);
 
-    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update]);
+    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update, brush.update]);
+    x.onUpdate([bar.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
+    function observable(target) {
+        var listeners = [];
+        target.onUpdate = function(newListeners) {
+            listeners = newListeners;
+        };
+        return function(update) {
+            for (var i = 0; i < listeners.length; i++) {
+                listeners[i](update);
+            }
+        };
+    }
+
+    function newBrush(element, uiConfig, x) {
+        var height = 50;
+        var brushXScale = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
+        var brush = d3.svg.brush().x(brushXScale);
+
+        brush.update = function() {
+            brushXScale.domain(x.domain());
+            console.log(brushXScale.domain());
+        };
+        brush.on("brush", function() {
+            console.log(brushXScale.domain());
+            var extent = brush.empty() ? brushXScale.domain() : brush.extent();
+            x.setDomain(extent[0], extent[1]);
+        });
+        element.append("g")
+               .attr("class", "x brush")
+               .call(brush)
+               .selectAll("rect")
+               .attr("y", -6)
+               .attr("height", height);
+
+        return brush;
+    }
 
     function bars(element, uiConfig, xScale, yScale) {
         var color = d3.scale.category20();
@@ -72,10 +115,13 @@ date,category,value\n\
             var s = d3.format(",")(n);
             return s.length < 6 ? s : d3.format("s")(n);
         };
+        var barWidth;
+        var data;
 
         var f = function() {};
         f.update = function(update) {
-            var barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
+            data = update.data;
+            barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
             var layer = element.selectAll(".layer")
                     .data(update.dataStacked)
                     .enter().append("g")
@@ -95,6 +141,14 @@ date,category,value\n\
                                 "value: " + valueFormat(d.y) + "\n" +
                                 "category: " + d["category"];
                     });
+        };
+        f.onXScaleUpdate = function() {
+            barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
+            var layer = element.selectAll(".layer").data(data);
+            layer.selectAll("rect")
+               .data(function(d) { return d; })
+               .attr("x", function(d) { return xScale(d.x); })
+               .attr("width", barWidth);
         };
         return f;
     }
@@ -128,6 +182,9 @@ date,category,value\n\
                    .attr("transform", "translate(0," + uiConfig.height + ")")
                    .call(axis);
         };
+        axis.onXScaleUpdate = function() {
+            element.select(".x.axis").call(xAxis);
+        };
         return axis;
     }
 
@@ -138,6 +195,12 @@ date,category,value\n\
         x.update = function(update) {
             x.valuesRange = timeInterval.range(update.minX, update.maxX);
             x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
+        };
+        var notifyListeners = observable(x);
+        x.setDomain = function(min, max) {
+            x.valuesRange = timeInterval.range(min, max);
+            x.domain([min, timeInterval.offset(max, 1)]);
+            notifyListeners();
         };
         return x;
     }
@@ -194,21 +257,16 @@ date,category,value\n\
 
 
         var f = function() {};
-        var listeners = [];
-        f.onUpdate = function(newListeners) {
-            listeners = newListeners;
-        };
+        var notifyListeners = observable(f);
         f.sendUpdate = function() {
-            for (var i = 0; i < listeners.length; i++) {
-                listeners[i]({
-                    data: data,
-                    dataStacked: dataStacked,
-                    minX: minX,
-                    maxX: maxX,
-                    minY: minY,
-                    maxY: maxY
-                });
-            }
+            notifyListeners({
+                data: data,
+                dataStacked: dataStacked,
+                minX: minX,
+                maxX: maxX,
+                minY: minY,
+                maxY: maxY
+            });
         };
         f.useCategories = function(categories) {
             updateWith(
