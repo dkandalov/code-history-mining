@@ -8,13 +8,16 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
 import vcsaccess.HistoryGrabberConfig
 
 import javax.swing.*
+import javax.swing.event.DocumentEvent
 import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
@@ -76,24 +79,80 @@ class Dialog {
 			it
 		}
 
-		DialogBuilder builder = new DialogBuilder(project)
-		builder.title = dialogTitle
-		builder.okActionEnabled = true
-		builder.okOperation = {
-			onOkCallback(new HistoryGrabberConfig(
+		def currentUIConfig = {
+			new HistoryGrabberConfig(
 					floorToDay(fromDatePicker.date),
 					floorToDay(toDatePicker.date),
 					filePathTextField.text,
 					grabChangeSizeCheckBox.selected,
 					grabOnVcsUpdateCheckBox.selected,
 					grabberConfig.lastGrabTime
-			))
-			builder.dialogWrapper.close(0)
-		} as Runnable
+			)
+		}
+
+		DialogBuilder builder = new DialogBuilder(project)
+		builder.title = dialogTitle
+		builder.okActionEnabled = true
 		builder.centerPanel = rootPanel
 		builder.dimensionServiceKey = "CodeHistoryMiningDialog"
 
+		def cancelAction = new AbstractAction("Cancel") {
+			@Override void actionPerformed(ActionEvent e) {
+				builder.dialogWrapper.close(0)
+			}
+		}
+		def applyAction = new AbstractAction("Apply") {
+			@Override void actionPerformed(ActionEvent e) {
+				// TODO
+			}
+
+			def update() {
+				setEnabled(currentUIConfig() != grabberConfig)
+			}
+		}
+		applyAction.enabled = false
+
+		def grabAction = new AbstractAction("Grab") {
+			@Override void actionPerformed(ActionEvent e) {
+				onOkCallback(currentUIConfig())
+				builder.dialogWrapper.close(0)
+			}
+		}
+		builder.with {
+			if (SystemInfo.isMac) {
+				addAction(cancelAction)
+				addAction(applyAction)
+				addAction(grabAction)
+			} else {
+				addAction(grabAction)
+				addAction(applyAction)
+				addAction(cancelAction)
+			}
+		}
+
+		filePathTextField.textField.document.addDocumentListener(new DocumentAdapter() {
+			@Override protected void textChanged(DocumentEvent e) {
+				applyAction.update()
+			}
+		})
+		childrenOf(rootPanel).each{
+			if (it.respondsTo("addActionListener")) {
+				it.addActionListener(new AbstractAction() {
+					@Override void actionPerformed(ActionEvent e) {
+						applyAction.update()
+					}
+				})
+			}
+		}
+
 		ApplicationManager.application.invokeLater{ builder.showModal(true) } as Runnable
+	}
+
+	private static Collection<JComponent> childrenOf(JComponent component) {
+		(0..<component.componentCount).collectMany{ int i ->
+			JComponent child = component.getComponent(i) as JComponent
+			[child] + childrenOf(child)
+		}
 	}
 
 	private static onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox) {
