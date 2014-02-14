@@ -7,6 +7,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
+import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
@@ -102,6 +103,7 @@ class Dialog {
 				builder.dialogWrapper.close(0)
 			}
 		}
+		cancelAction.putValue(Action.MNEMONIC_KEY, 'C'.charAt(0) as int)
 		def applyAction = new AbstractAction("Apply") {
 			@Override void actionPerformed(ActionEvent e) {
 				onApplyCallback(currentUIConfig())
@@ -113,12 +115,14 @@ class Dialog {
 			}
 		}
 		applyAction.enabled = false
+		applyAction.putValue(Action.MNEMONIC_KEY, 'A'.charAt(0) as int)
 		def grabAction = new AbstractAction("Grab") {
 			@Override void actionPerformed(ActionEvent e) {
 				onGrabCallback(currentUIConfig())
 				builder.dialogWrapper.close(0)
 			}
 		}
+		grabAction.putValue(DialogWrapper.DEFAULT_ACTION, Boolean.TRUE)
 		builder.with {
 			if (SystemInfo.isMac) {
 				addAction(cancelAction)
