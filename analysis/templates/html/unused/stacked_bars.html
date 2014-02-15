@@ -127,14 +127,16 @@ date,category,value\n\
         function nonZero(length) {
             return (length > 0 ? length : 0.0000001);
         }
+        function barWidth() {
+            var barWidth = uiConfig.width / nonZero(xScale.amountOfValues);
+            barWidth = Math.floor(barWidth);
+            barWidth = barWidth < 1 ? 1 : barWidth;
+            return barWidth;
+        }
 
         var f = function() {};
         f.update = function(update) {
             data = update.data;
-
-            var barWidth = uiConfig.width / nonZero(xScale.valuesRange);
-            barWidth = Math.floor(barWidth);
-            barWidth = barWidth < 1 ? 1 : barWidth;
 
             var layer = root.selectAll(".layer")
                     .data(update.dataStacked)
@@ -148,7 +150,7 @@ date,category,value\n\
                     .attr("clip-path", "url(#barsClip)")
                     .attr("x", function(d) { return xScale(d.x); })
                     .attr("y", function(d) { return yScale(d.y0 + d.y); })
-                    .attr("width", barWidth)
+                    .attr("width", barWidth())
                     .attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
                     .append("title")
                     .text(function (d) {
@@ -158,15 +160,11 @@ date,category,value\n\
                     });
         };
         f.onXScaleUpdate = function() {
-            var barWidth = uiConfig.width / nonZero(xScale.valuesRange);
-            barWidth = Math.floor(barWidth);
-            barWidth = barWidth < 1 ? 1 : barWidth;
-
             var layer = root.selectAll(".layer").data(data);
             layer.selectAll("rect")
                .data(function(d) { return d; })
                .attr("x", function(d) { return xScale(d.x); })
-               .attr("width", barWidth);
+               .attr("width", barWidth());
         };
 
         root.append("defs").append("clipPath").attr("id", "barsClip")
@@ -213,21 +211,28 @@ date,category,value\n\
     function xScale(uiConfig) {
         function lengthOf(domain, timeInterval) {
             var count = 0;
-            for (var from = domain[0]; from < domain[1]; from = timeInterval.offset(from, 1)) {
+            var from = domain[0];
+            var to = domain[1];
+            while (from < to) {
                 count++;
+                from = timeInterval.offset(from, 1)
             }
-            return count;
+
+            var millisInOneInterval = timeInterval.offset(from, 1) - from;
+            var remainder = (to - from) / millisInOneInterval;
+
+            return count + remainder;
         }
 
         var timeInterval = d3.time["day"];
         var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
         x.update = function(update) {
             x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
-            x.valuesRange = lengthOf(x.domain(),timeInterval);
+            x.amountOfValues = lengthOf(x.domain(),timeInterval);
         };
         var notifyListeners = observable(x);
         x.setDomain = function(extent) {
-            x.valuesRange = lengthOf(extent, timeInterval);
+            x.amountOfValues = lengthOf(extent, timeInterval);
             x.domain(extent);
 
             notifyListeners();
