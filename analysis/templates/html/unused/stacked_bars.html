@@ -136,8 +136,8 @@ date,category,value\n\
             return barWidth;
         }
 
-        var f = function() {};
-        f.update = function(update) {
+        var it = {};
+        it.update = function(update) {
             data = update.data;
 
             var layer = root.selectAll(".layer")
@@ -161,7 +161,7 @@ date,category,value\n\
                                 "category: " + d["category"];
                     });
         };
-        f.onXScaleUpdate = function() {
+        it.onXScaleUpdate = function() {
             var layer = root.selectAll(".layer").data(data);
             layer.selectAll("rect")
                .data(function(d) { return d; })
@@ -171,7 +171,7 @@ date,category,value\n\
 
         root.append("defs").append("clipPath").attr("id", "barsClip")
             .append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
-        return f;
+        return it;
     }
 
 
@@ -293,9 +293,9 @@ date,category,value\n\
         updateWith(originalData);
 
 
-        var f = function() {};
-        var notifyListeners = observable(f);
-        f.sendUpdate = function() {
+        var it = {};
+        var notifyListeners = observable(it);
+        it.sendUpdate = function() {
             notifyListeners({
                 data: data,
                 dataStacked: dataStacked,
@@ -305,16 +305,16 @@ date,category,value\n\
                 maxY: maxY
             });
         };
-        f.useCategories = function(categories) {
+        it.useCategories = function(categories) {
             updateWith(
                     originalData.map(function(it) {
                         return (categories.indexOf(it[0]["category"]) != -1) ? it : null;
                     }).filter(function(it) { return it != null; })
             );
-            f.sendUpdate();
+            it.sendUpdate();
         };
 
-        return f;
+        return it;
     }
 
 
