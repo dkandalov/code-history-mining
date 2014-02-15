@@ -59,8 +59,8 @@ date,category,value\n\
         height: 500 - margin.top - margin.bottom,
         margin: margin
     };
+    var brushHeight = 50;
 
-    var brushHeight = 50; // TODO
     var svg = d3.select("body").append("svg")
             .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
             .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight)
@@ -73,9 +73,9 @@ date,category,value\n\
     var bar = bars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
-    var brush = newBrush(svg, uiConfig, x);
+    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
 
-    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update, brush.update]);
+    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bar.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
@@ -91,25 +91,27 @@ date,category,value\n\
         };
     }
 
-    function newBrush(root, uiConfig, x) {
-        var height = 50;
+    function newXBrush(root, uiConfig, xScale, height, y) {
+        height = height == null ? 50 : height;
+        var shift = -10; // no deep meaning just a tweak
+        y = y == null ? (uiConfig.height + uiConfig.margin.top + shift) : y;
+
         var brushXScale = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
         var brush = d3.svg.brush().x(brushXScale);
 
         brush.update = function() {
-            brushXScale.domain(x.domain());
+            brushXScale.domain(xScale.domain());
         };
         brush.on("brush", function() {
             var extent = brush.empty() ? brushXScale.domain() : brush.extent();
-            x.setDomain(extent);
+            xScale.setDomain(extent);
         });
         var g = root.append("g")
-                .attr("transform", "translate(0" + "," + (uiConfig.height + uiConfig.margin.top) + ")");
+                .attr("transform", "translate(0" + "," + y + ")");
         g.append("g")
            .attr("class", "x brush")
            .call(brush)
            .selectAll("rect")
-           .attr("y", -10) // TODO
            .attr("height", height);
 
         return brush;
@@ -129,7 +131,7 @@ date,category,value\n\
         }
         function barWidth() {
             var barWidth = uiConfig.width / nonZero(xScale.amountOfValues);
-            barWidth = Math.floor(barWidth);
+            barWidth = Math.floor(barWidth) - 2;
             barWidth = barWidth < 1 ? 1 : barWidth;
             return barWidth;
         }
