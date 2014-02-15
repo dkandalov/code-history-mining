@@ -71,13 +71,13 @@ date,category,value\n\
     var data = stackedData(rawData);
     var x = xScale(uiConfig);
     var y = yScale(uiConfig);
-    var bar = bars(svg, uiConfig, x, y);
+    var bars = newBars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
 
-    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update, xBrush.update]);
-    x.onUpdate([bar.onXScaleUpdate, xAxis.onXScaleUpdate]);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
+    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
 

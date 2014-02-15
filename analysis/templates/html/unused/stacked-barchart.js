@@ -36,7 +36,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 	return brush;
 }
 
-function bars(root, uiConfig, xScale, yScale) {
+function newBars(root, uiConfig, xScale, yScale) {
 	var color = d3.scale.category20();
 	var dateFormat = d3.time.format("%d/%m/%Y");
 	var valueFormat = function(n) {
@@ -44,6 +44,9 @@ function bars(root, uiConfig, xScale, yScale) {
 		return s.length < 6 ? s : d3.format("s")(n);
 	};
 	var data;
+
+	root.append("defs").append("clipPath").attr("id", "barsClip")
+		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
 
 	function nonZero(length) {
 		return (length > 0 ? length : 0.0000001);
@@ -90,8 +93,6 @@ function bars(root, uiConfig, xScale, yScale) {
 			.attr("width", barWidth());
 	};
 
-	root.append("defs").append("clipPath").attr("id", "barsClip")
-		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
 	return it;
 }
 

@@ -1,49 +1,23 @@
 describe("bars", function () {
-	it("", function() {
-		// TODO ?
-	});
+	it("on data update add svg rects to root element", function() {
+		var rootElement = d3.select("body").append("span").attr("id", "bars-test");
+		var uiConfig = { width: 1000, height: 500 };
+		var x = xScale(uiConfig);
+		var y = yScale(uiConfig)
+		var data = stackedData(rawData);
+		var bars = newBars(rootElement, uiConfig, x, y);
+		data.onUpdate([x.update, y.update, bars.update]);
 
-	function bars(element, uiConfig, xScale, yScale, bus) {
-		var color = d3.scale.category20();
-		var dateFormat = d3.time.format("%d/%m/%Y");
-		var valueFormat = function(n) {
-			var s = d3.format(",")(n);
-			return s.length < 6 ? s : d3.format("s")(n);
-		};
+		data.sendUpdate();
 
-		bus.on("dataUpdate", function(update) {
-			var barWidth = Math.floor((uiConfig.width / xScale.range.length) - 0.5);
-			var layer = element.selectAll(".layer")
-				.data(update.dataStacked)
-				.enter().append("g")
-				.attr("class", "layer")
-				.style("fill", function(d, i) { return color(i); });
-
-			layer.selectAll("rect")
-				.data(function(d) { return d; })
-				.enter().append("rect")
-				.attr("x", function(d) { return xScale(d.x); })
-				.attr("y", function(d) { return yScale(d.y0 + d.y); })
-				.attr("width", barWidth)
-				.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
-				.append("title")
-				.text(function (d) {
-					return "date: " + dateFormat(d.x) + "\n" +
-						"value: " + valueFormat(d.y) + "\n" +
-						"category: " + d["category"];
-				});
+		expect(rootElement.selectAll(".layer")[0].length).toEqual(3);
+		expect(rootElement.selectAll(".layer rect")[0].length).toEqual(9);
+		rootElement.selectAll(".layer rect")[0].map(function(it) {
+			expect(parseInt(it.attributes["width"].value)).toEqual(331);
+			expect(parseInt(it.attributes["height"].value)).toBeGreaterThan(0);
+			expect(parseInt(it.attributes["height"].value)).toBeLessThan(500);
 		});
-	}
-});
-
-describe("x axis", function () {
-	it("", function() {
-		// TODO ?
 	});
-
-	function xAxis(x) {
-		return d3.svg.axis().scale(x).orient("bottom");
-	}
 });
 
 describe("x scale", function () {
@@ -98,8 +72,9 @@ describe("bar chart data", function () {
 		expect(received[0][0]["y"]).toEqual(1);
 		expect(received[1][0]["y"]).toEqual(111);
 	});
+});
 
-	var rawData = "\
+var rawData = "\
 date,category,value\n\
 18/01/2013,Mee,1\n\
 19/01/2013,Mee,2\n\
@@ -111,4 +86,3 @@ date,category,value\n\
 19/01/2013,Ggg,222\n\
 20/01/2013,Ggg,333\n\
 ";
-});
