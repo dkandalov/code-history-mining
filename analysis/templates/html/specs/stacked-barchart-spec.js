@@ -72,12 +72,11 @@ describe("xy scales", function () {
 
 describe("bar chart data", function () {
 	it("after construction can broadcast update with stacked data", function() {
-		var bus = d3.dispatch("dataUpdate");
-		var data = stackedData(rawData, bus);
+		var data = stackedData(rawData);
 		var received = null;
-		bus.on("dataUpdate", function(update) {
+		data.onUpdate([function(update) {
 			received = update.data;
-		});
+		}]);
 
 		data.sendUpdate();
 
@@ -87,15 +86,15 @@ describe("bar chart data", function () {
 		expect(received[2][0]["category"]).toEqual("Ggg");
 	});
 
-	it("when asked to filter data by categories it will broadcast update", function() {
-		var bus = d3.dispatch("dataUpdate");
-		var data = stackedData(rawData, bus);
+	it("when asked to filter data by categories it will broadcast update with filtered data", function() {
+		var data = stackedData(rawData);
 		var received = null;
-		bus.on("dataUpdate", function(update) {
+		data.onUpdate([function(update) {
 			received = update.data;
-		});
+		}]);
 
 		data.useCategories(["Mee", "Ggg"]);
+
 		expect(received.length).toEqual(2);
 		expect(received[0][0]["category"]).toEqual("Mee");
 		expect(received[1][0]["category"]).toEqual("Ggg");
@@ -115,70 +114,4 @@ date,category,value\n\
 19/01/2013,Ggg,222\n\
 20/01/2013,Ggg,333\n\
 ";
-
-	function stackedData(rawCsv, bus) {
-		var dateFormat = d3.time.format("%d/%m/%Y");
-		var originalData = d3.csv.parse(rawCsv);
-		originalData = d3.nest().key(function(d) { return d["category"]; }).entries(originalData)
-			.map(function (entry) {
-				return entry.values.map(function (d) {
-					return {
-						x: dateFormat.parse(d.date),
-						y: parseInt(d["value"]),
-						category: d["category"],
-						y0: 0
-					};
-				});
-			});
-		var data;
-		var dataStacked;
-		var minX;
-		var maxX;
-		var minY = 0;
-		var maxY;
-		function updateWith(newData) {
-			data = newData;
-			dataStacked = d3.layout.stack()(data);
-			minX = d3.min(data, function(d) {
-				return d3.min(d, function(dd) {
-					return dd.x;
-				});
-			});
-			maxX = d3.max(data, function(d) {
-				return d3.max(d, function(dd) {
-					return dd.x;
-				});
-			});
-			maxY = d3.max(dataStacked, function(layer) {
-				return d3.max(layer, function(d) {
-					return d.y0 + d.y;
-				});
-			});
-		}
-		updateWith(originalData);
-
-
-		var f = function() {};
-		f.sendUpdate = function() {
-			bus.dataUpdate({
-				data: data,
-				dataStacked: dataStacked,
-				minX: minX,
-				maxX: maxX,
-				minY: minY,
-				maxY: maxY
-			});
-		};
-		f.useCategories = function(categories) {
-			updateWith(
-				originalData.map(function(it) {
-					return (categories.indexOf(it[0]["category"]) != -1) ? it : null;
-				}).filter(function(it) { return it != null; })
-			);
-			f.sendUpdate();
-		};
-
-		return f;
-	}
-
 });

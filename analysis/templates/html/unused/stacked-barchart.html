@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: auto;
+        position: relative;
+        width: 960px;
+        background: #f2f2f2;
+    }
+
+    text {
+        font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    form {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+
+    .brush .extent {
+        stroke: #fff;
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+    }
+</style>
+<body>
+<script src="../d3.v3.min.js"></script>
+<script src="stacked-barchart.js"></script>
+<script>
+    var rawData = /*data_placeholder*/"\
+date,category,value\n\
+18/01/2013,Mee,18\n\
+19/01/2013,Mee,5\n\
+20/01/2013,Mee,3\n\
+21/01/2013,Mee,3\n\
+22/01/2013,Mee,3\n\
+18/01/2013,Ooo,18\n\
+19/01/2013,Ooo,3\n\
+21/01/2013,Ooo,11\n\
+22/01/2013,Ooo,11\n\
+20/01/2013,Ooo,11\n\
+18/01/2013,GGG,11\n\
+19/01/2013,GGG,11\n\
+20/01/2013,GGG,11\n\
+21/01/2013,GGG,11\n\
+22/01/2013,GGG,11\n\
+"/*data_placeholder*/;
+    var margin = {top: 40, right: 50, bottom: 20, left: 50};
+    var uiConfig = {
+        width: 960 - margin.left - margin.right,
+        height: 500 - margin.top - margin.bottom,
+        margin: margin
+    };
+    var brushHeight = 50;
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight)
+            .append("g")
+            .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
+
+    var data = stackedData(rawData);
+    var x = xScale(uiConfig);
+    var y = yScale(uiConfig);
+    var bar = bars(svg, uiConfig, x, y);
+    var xAxis = newXAxis(svg, uiConfig, x);
+    var yAxis = newYAxis(svg, "Change size", y);
+    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+
+    data.onUpdate([x.update, y.update, bar.update, xAxis.update, yAxis.update, xBrush.update]);
+    x.onUpdate([bar.onXScaleUpdate, xAxis.onXScaleUpdate]);
+    data.sendUpdate();
+
+
+
+</script>
+</body>
