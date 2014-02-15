@@ -101,7 +101,7 @@ date,category,value\n\
         };
         brush.on("brush", function() {
             var extent = brush.empty() ? brushXScale.domain() : brush.extent();
-            x.setDomain(extent[0], extent[1]);
+            x.setDomain(extent);
         });
         var g = root.append("g")
                 .attr("transform", "translate(0" + "," + (uiConfig.height + uiConfig.margin.top) + ")");
@@ -122,13 +122,20 @@ date,category,value\n\
             var s = d3.format(",")(n);
             return s.length < 6 ? s : d3.format("s")(n);
         };
-        var barWidth;
         var data;
+
+        function nonZero(length) {
+            return (length > 0 ? length : 0.0000001);
+        }
 
         var f = function() {};
         f.update = function(update) {
             data = update.data;
-            barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
+
+            var barWidth = uiConfig.width / nonZero(xScale.valuesRange);
+            barWidth = Math.floor(barWidth);
+            barWidth = barWidth < 1 ? 1 : barWidth;
+
             var layer = root.selectAll(".layer")
                     .data(update.dataStacked)
                     .enter().append("g")
@@ -151,7 +158,10 @@ date,category,value\n\
                     });
         };
         f.onXScaleUpdate = function() {
-            barWidth = Math.floor((uiConfig.width / (xScale.valuesRange.length + 1)) - 0.5);
+            var barWidth = uiConfig.width / nonZero(xScale.valuesRange);
+            barWidth = Math.floor(barWidth);
+            barWidth = barWidth < 1 ? 1 : barWidth;
+
             var layer = root.selectAll(".layer").data(data);
             layer.selectAll("rect")
                .data(function(d) { return d; })
@@ -201,16 +211,25 @@ date,category,value\n\
 
 
     function xScale(uiConfig) {
+        function lengthOf(domain, timeInterval) {
+            var count = 0;
+            for (var from = domain[0]; from < domain[1]; from = timeInterval.offset(from, 1)) {
+                count++;
+            }
+            return count;
+        }
+
         var timeInterval = d3.time["day"];
         var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
         x.update = function(update) {
-            x.valuesRange = timeInterval.range(update.minX, update.maxX);
             x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
+            x.valuesRange = lengthOf(x.domain(),timeInterval);
         };
         var notifyListeners = observable(x);
-        x.setDomain = function(min, max) {
-            x.valuesRange = timeInterval.range(min, max);
-            x.domain([min, timeInterval.offset(max, 1)]);
+        x.setDomain = function(extent) {
+            x.valuesRange = lengthOf(extent, timeInterval);
+            x.domain(extent);
+
             notifyListeners();
         };
         return x;
