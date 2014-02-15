@@ -46,27 +46,24 @@ describe("x axis", function () {
 	}
 });
 
-describe("xy scales", function () {
-	it("", function() {
-		// TODO ?
+describe("x scale", function () {
+	it("sends update when its domain is changed", function() {
+		var x = xScale({ width: 100 });
+		var updatedX = null;
+		x.onUpdate([function(x) {
+			updatedX = x;
+		}]);
+		var data = {minX: date("20/04/2011"), maxX: date("30/04/2011")};
+		x.update(data);
+
+		x.setDomain([date("20/04/2011"), date("25/04/2011")]);
+
+		expect(updatedX.amountOfValues).toEqual(5);
+		expect(updatedX.domain()).toEqual([date("20/04/2011"), date("25/04/2011")]);
 	});
 
-	function xScale(uiConfig, bus) {
-		var timeInterval = d3.time["days"];
-		var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
-		bus.on("dataUpdate", function(update) {
-			x.range = timeInterval.range(update.minX, update.maxX);
-			x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
-		});
-		return x;
-	}
-
-	function yScale(uiConfig, bus) {
-		var y = d3.scale.linear().range([uiConfig.height, 0]);
-		bus.on("dataUpdate", function(update) {
-			y.domain([update.minY, update.maxY]);
-		});
-		return y;
+	function date(s) {
+		return d3.time.format("%d/%m/%Y").parse(s);
 	}
 });
 

@@ -80,7 +80,9 @@ function bars(root, uiConfig, xScale, yScale) {
 					"category: " + d["category"];
 			});
 	};
-	it.onXScaleUpdate = function() {
+	it.onXScaleUpdate = function(updatedXScale) {
+		xScale = updatedXScale;
+
 		var layer = root.selectAll(".layer").data(data);
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
@@ -114,8 +116,8 @@ function newYAxis(root, label, y) {
 	return axis;
 }
 
-function newXAxis(root, uiConfig, x) {
-	var axis = d3.svg.axis().scale(x).orient("bottom");
+function newXAxis(root, uiConfig, xScale) {
+	var axis = d3.svg.axis().scale(xScale).orient("bottom");
 	axis.update = function() {
 		root.append("g")
 			.attr("class", "x axis")
@@ -155,8 +157,7 @@ function xScale(uiConfig) {
 	x.setDomain = function(extent) {
 		x.amountOfValues = lengthOf(extent, timeInterval);
 		x.domain(extent);
-
-		notifyListeners();
+		notifyListeners(x);
 	};
 	return x;
 }
