@@ -173,21 +173,25 @@ function yScale(uiConfig) {
 
 
 function stackedData(rawCsv) {
-	var dateFormat = d3.time.format("%d/%m/%Y");
-	var originalData = d3.csv.parse(rawCsv);
-	originalData = d3.nest().key(function(d) { return d["category"]; }).entries(originalData)
-		.map(function (entry) {
-			return entry.values.map(function (d) {
-				return {
-					x: dateFormat.parse(d.date),
-					y: parseInt(d["value"]),
-					category: d["category"],
-					y0: 0
-				};
+	function groupByCategory(data) {
+		var dateFormat = d3.time.format("%d/%m/%Y");
+		return d3.nest().key(function(d){ return d["category"]; }).entries(data)
+			.map(function (entry) {
+				return entry.values.map(function (d) {
+					return {
+						x: dateFormat.parse(d.date),
+						y: parseInt(d["value"]),
+						category: d["category"],
+						y0: 0
+					};
+				});
 			});
-		});
+	}
+	var originalData = rawCsv.map(function(it) { return groupByCategory(d3.csv.parse(it)); });
+
 	var data;
 	var dataStacked;
+	var groupIndex = 0;
 	var minX;
 	var maxX;
 	var minY = 0;
@@ -212,7 +216,7 @@ function stackedData(rawCsv) {
 			});
 		});
 	}
-	updateWith(originalData);
+	updateWith(originalData[groupIndex]);
 
 
 	var it = {};
@@ -221,20 +225,18 @@ function stackedData(rawCsv) {
 		notifyListeners({
 			data: data,
 			dataStacked: dataStacked,
+			groupIndex: groupIndex,
 			minX: minX,
 			maxX: maxX,
 			minY: minY,
 			maxY: maxY
 		});
 	};
-	it.useCategories = function(categories) {
-		updateWith(
-			originalData.map(function(it) {
-				return (categories.indexOf(it[0]["category"]) != -1) ? it : null;
-			}).filter(function(it) { return it != null; })
-		);
+	it.setGroupIndex = function(value) {
+		groupIndex = value;
+		updateWith(originalData[groupIndex]);
 		it.sendUpdate();
-	};
+	}
 
 	return it;
 }

@@ -42,39 +42,44 @@ describe("x scale", function () {
 });
 
 describe("bar chart data", function () {
-	it("after construction can broadcast update with stacked data", function() {
+	it("after construction it can broadcast update with stacked data", function() {
 		var data = stackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
-			received = update.data;
+			received = update;
 		}]);
 
 		data.sendUpdate();
 
-		expect(received.length).toEqual(3);
-		expect(received[0][0]["category"]).toEqual("Mee");
-		expect(received[1][0]["category"]).toEqual("Ooo");
-		expect(received[2][0]["category"]).toEqual("Ggg");
+		expect(received.data.length).toEqual(3);
+		expect(received.data[0][0]["category"]).toEqual("Mee");
+		expect(received.data[1][0]["category"]).toEqual("Ooo");
+		expect(received.data[2][0]["category"]).toEqual("Ggg");
+		expect(received.data[0][0]["y"]).toEqual(1);
+		expect(received.data[1][0]["y"]).toEqual(11);
+		expect(received.data[2][0]["y"]).toEqual(111);
 	});
 
-	it("when asked to filter data by categories it will broadcast update with filtered data", function() {
+	it("sends update with new data when group index changes", function() {
 		var data = stackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
-			received = update.data;
+			received = update;
 		}]);
 
-		data.useCategories(["Mee", "Ggg"]);
+		data.sendUpdate();
+		expect(received.groupIndex).toEqual(0);
+		expect(received.data[0][0]["category"]).toEqual("Mee");
+		expect(received.data[0][0]["y"]).toEqual(1);
 
-		expect(received.length).toEqual(2);
-		expect(received[0][0]["category"]).toEqual("Mee");
-		expect(received[1][0]["category"]).toEqual("Ggg");
-		expect(received[0][0]["y"]).toEqual(1);
-		expect(received[1][0]["y"]).toEqual(111);
+		data.setGroupIndex(1);
+		expect(received.groupIndex).toEqual(1);
+		expect(received.data[0][0]["category"]).toEqual("Mee");
+		expect(received.data[0][0]["y"]).toEqual(10);
 	});
 });
 
-var rawData = "\
+var rawData = ["\
 date,category,value\n\
 18/01/2013,Mee,1\n\
 19/01/2013,Mee,2\n\
@@ -85,4 +90,15 @@ date,category,value\n\
 18/01/2013,Ggg,111\n\
 19/01/2013,Ggg,222\n\
 20/01/2013,Ggg,333\n\
-";
+",
+"date,category,value\n\
+18/01/2013,Mee,10\n\
+19/01/2013,Mee,20\n\
+20/01/2013,Mee,30\n\
+18/01/2013,Ooo,110\n\
+19/01/2013,Ooo,220\n\
+20/01/2013,Ooo,330\n\
+18/01/2013,Ggg,1110\n\
+19/01/2013,Ggg,2220\n\
+20/01/2013,Ggg,3330\n\
+"];
