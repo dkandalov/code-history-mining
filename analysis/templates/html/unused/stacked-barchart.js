@@ -98,8 +98,7 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 	it.update = function(update) {
 		data = update.data;
 
-		console.log(update);
-//		root.selectAll(".layer" + id).remove();
+		root.selectAll(".layer" + id).remove();
 
 		var layer = root.selectAll(".layer" + id)
 			.data(update.dataStacked)
