@@ -43,7 +43,7 @@ class VcsAccess {
 		def connection = project.messageBus.connect(project)
 		connection.subscribe(UPDATED_FILES, new UpdatedFilesListener() {
 			@Override void consume(Set<String> files) {
-				PluginUtil.invokeOnEDT{
+				PluginUtil.invokeLaterOnEDT{
 					closure.call(project)
 				}
 			}
