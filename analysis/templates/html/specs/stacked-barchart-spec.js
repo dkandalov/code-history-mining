@@ -13,7 +13,8 @@ describe("bars", function () {
 		expect(rootElement.selectAll(".layer")[0].length).toEqual(3);
 		expect(rootElement.selectAll(".layer rect")[0].length).toEqual(9);
 		rootElement.selectAll(".layer rect")[0].map(function(it) {
-			expect(parseInt(it.attributes["width"].value)).toEqual(331);
+			expect(parseInt(it.attributes["width"].value)).toBeGreaterThan(0);
+			expect(parseInt(it.attributes["width"].value)).toBeLessThan(500);
 			expect(parseInt(it.attributes["height"].value)).toBeGreaterThan(0);
 			expect(parseInt(it.attributes["height"].value)).toBeLessThan(500);
 		});

@@ -10,6 +10,25 @@ function observable(target) {
 	};
 }
 
+function newControlsPanel(root, uiConfig) {
+	return root.append("span").style({display: "block", width: uiConfig.width + "px"})
+			.append("span").style({float: "right"});
+}
+
+function groupIndexDropDown(root, stackedData, label, groupNames) {
+	root.append("label").html(label);
+	var dropDown = root.append("select");
+	for (var i = 0; i < groupNames.length; i++) {
+		dropDown.append("option").attr("value", i).html(groupNames[i]);
+	}
+
+	dropDown.on("change", function() {
+		stackedData.setGroupIndex(this.value)
+	});
+
+	return {};
+}
+
 function newXBrush(root, uiConfig, xScale, height, y) {
 	height = height == null ? 50 : height;
 	var shift = -10; // no deep meaning just a tweak
@@ -20,6 +39,8 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 
 	brush.update = function() {
 		brushXScale.domain(xScale.domain());
+		var extent = brush.empty() ? brushXScale.domain() : brush.extent();
+		xScale.setDomain(extent);
 	};
 	brush.on("brush", function() {
 		var extent = brush.empty() ? brushXScale.domain() : brush.extent();
@@ -61,6 +82,8 @@ function newBars(root, uiConfig, xScale, yScale) {
 	var it = {};
 	it.update = function(update) {
 		data = update.data;
+
+		root.selectAll(".layer").remove();
 
 		var layer = root.selectAll(".layer")
 			.data(update.dataStacked)
@@ -104,6 +127,7 @@ function newYAxis(root, label, y) {
 	};
 	var axis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
 	axis.update = function() {
+		root.selectAll(".y.axis").remove();
 		root.append("g")
 			.attr("class", "y axis")
 			.call(axis)
@@ -120,13 +144,14 @@ function newYAxis(root, label, y) {
 function newXAxis(root, uiConfig, xScale) {
 	var axis = d3.svg.axis().scale(xScale).orient("bottom");
 	axis.update = function() {
+		root.selectAll(".x.axis").remove();
 		root.append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0," + uiConfig.height + ")")
 			.call(axis);
 	};
 	axis.onXScaleUpdate = function() {
-		root.select(".x.axis").call(xAxis);
+		root.select(".x.axis").call(axis);
 	};
 	return axis;
 }

@@ -9,8 +9,9 @@
         background: #f2f2f2;
     }
 
-    text {
-        font: 10px sans-serif;
+    text, label {
+        font: 11px sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
 
     .axis path,
@@ -53,7 +54,42 @@ date,category,value\n\
 20/01/2013,GGG,11\n\
 21/01/2013,GGG,11\n\
 22/01/2013,GGG,11\n\
-"]/*data_placeholder*/;
+",
+"date,category,value\n\
+18/01/2013,Mee,180\n\
+19/01/2013,Mee,50\n\
+20/01/2013,Mee,30\n\
+21/01/2013,Mee,3\n\
+22/01/2013,Mee,50\n\
+18/01/2013,Ooo,180\n\
+19/01/2013,Ooo,30\n\
+20/01/2013,Ooo,110\n\
+21/01/2013,Ooo,110\n\
+22/01/2013,Ooo,110\n\
+18/01/2013,GGG,110\n\
+19/01/2013,GGG,110\n\
+20/01/2013,GGG,110\n\
+21/01/2013,GGG,110\n\
+22/01/2013,GGG,110\n\
+",
+"date,category,value\n\
+18/01/2013,Mee,8\n\
+19/01/2013,Mee,500\n\
+20/01/2013,Mee,300\n\
+21/01/2013,Mee,300\n\
+22/01/2013,Mee,300\n\
+18/01/2013,Ooo,1008\n\
+19/01/2013,Ooo,300\n\
+21/01/2013,Ooo,1100\n\
+22/01/2013,Ooo,1100\n\
+20/01/2013,Ooo,1100\n\
+18/01/2013,GGG,1100\n\
+19/01/2013,GGG,1100\n\
+20/01/2013,GGG,1100\n\
+21/01/2013,GGG,1100\n\
+22/01/2013,GGG,1100\n\
+"
+]/*data_placeholder*/;
     var margin = {top: 40, right: 50, bottom: 20, left: 50};
     var uiConfig = {
         width: 960 - margin.left - margin.right,
@@ -62,7 +98,8 @@ date,category,value\n\
     };
     var brushHeight = 50;
 
-    var svg = d3.select("body").append("svg")
+    var root = d3.select("body");
+    var svg = root.append("svg")
             .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
             .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight)
             .append("g")
@@ -76,11 +113,12 @@ date,category,value\n\
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
 
+    var controlsPanel = newControlsPanel(root, uiConfig);
+    groupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"])
+
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
-
-
 
 </script>
 </body>
