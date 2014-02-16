@@ -28,10 +28,14 @@ class UI {
 	private ProjectManagerAdapter listener
 
 	def init() {
+		def grabHistory = grabHistory()
+		def projectStats = projectStats()
+		def openReadme = openReadme()
+
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
-				[grabHistory(), Separator.instance] + codeHistoryActions + [Separator.instance, projectStats(), openReadme()]
+				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, projectStats, openReadme]
 			}
 		}
 		PluginUtil.registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
