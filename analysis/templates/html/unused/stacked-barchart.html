@@ -35,6 +35,7 @@
 </style>
 <body>
 <script src="../d3.v3.min.js"></script>
+<script src="../underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
 <script>
     var rawData = /*data_placeholder*/["\
@@ -97,17 +98,18 @@ date,category,value\n\
         margin: margin
     };
     var brushHeight = 50;
+    var xAxisHeight = 20;
 
     var root = d3.select("body");
     var svg = root.append("svg")
             .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
-            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight)
+            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight)
             .append("g")
             .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
     var data = stackedData(rawData);
-    var x = xScale(uiConfig);
-    var y = yScale(uiConfig);
+    var x = newXScale(uiConfig);
+    var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);

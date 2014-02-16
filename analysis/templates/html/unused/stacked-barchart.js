@@ -31,42 +31,57 @@ function groupIndexDropDown(root, stackedData, label, groupNames) {
 
 function newXBrush(root, uiConfig, xScale, height, y) {
 	height = height == null ? 50 : height;
-	var shift = -10; // no deep meaning just a tweak
-	y = y == null ? (uiConfig.height + uiConfig.margin.top + shift) : y;
+	y = y == null ? (uiConfig.height + uiConfig.margin.top) : y;
 
-	var brushXScale = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
+	var brushUiConfig = _.extend({}, uiConfig, {height: height});
+	var brushXScale = newXScale(uiConfig);
+	var brushYScale = newYScale(brushUiConfig);
 	var brush = d3.svg.brush().x(brushXScale);
 
-	brush.update = function() {
-		brushXScale.domain(xScale.domain());
+	var g = root.append("g").attr("transform", "translate(0" + "," + y + ")");
+
+	function updateUI(update) {
+		g.selectAll("g").remove();
+		g.selectAll("defs").remove();
+
+		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, "brushBars");
+		if (update != null) bars.update(update);
+
+		g.append("g")
+			.attr("class", "x brush")
+			.call(brush)
+			.selectAll("rect")
+			.attr("height", height);
+	}
+	function updateXScale() {
 		var extent = brush.empty() ? brushXScale.domain() : brush.extent();
 		xScale.setDomain(extent);
+	}
+
+	brush.update = function(update) {
+		brushXScale.update(update);
+		brushYScale.update(update);
+		updateXScale();
+		updateUI(update);
 	};
 	brush.on("brush", function() {
-		var extent = brush.empty() ? brushXScale.domain() : brush.extent();
-		xScale.setDomain(extent);
+		updateXScale();
 	});
-	var g = root.append("g")
-		.attr("transform", "translate(0" + "," + y + ")");
-	g.append("g")
-		.attr("class", "x brush")
-		.call(brush)
-		.selectAll("rect")
-		.attr("height", height);
 
 	return brush;
 }
 
-function newBars(root, uiConfig, xScale, yScale) {
+function newBars(root, uiConfig, xScale, yScale, id) {
 	var color = d3.scale.category20();
 	var dateFormat = d3.time.format("%d/%m/%Y");
 	var valueFormat = function(n) {
 		var s = d3.format(",")(n);
 		return s.length < 6 ? s : d3.format("s")(n);
 	};
+	id = (id == null ? "-bars" : "-" + id);
 	var data;
 
-	root.append("defs").append("clipPath").attr("id", "barsClip")
+	root.append("defs").append("clipPath").attr("id", "clip" + id)
 		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
 
 	function nonZero(length) {
@@ -83,18 +98,19 @@ function newBars(root, uiConfig, xScale, yScale) {
 	it.update = function(update) {
 		data = update.data;
 
-		root.selectAll(".layer").remove();
+		console.log(update);
+//		root.selectAll(".layer" + id).remove();
 
-		var layer = root.selectAll(".layer")
+		var layer = root.selectAll(".layer" + id)
 			.data(update.dataStacked)
 			.enter().append("g")
-			.attr("class", "layer")
+			.attr("class", "layer" + id)
 			.style("fill", function(d, i) { return color(i); });
 
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.enter().append("rect")
-			.attr("clip-path", "url(#barsClip)")
+			.attr("clip-path", "url(#clip" + id + ")")
 			.attr("x", function(d) { return xScale(d.x); })
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
@@ -109,7 +125,7 @@ function newBars(root, uiConfig, xScale, yScale) {
 	it.onXScaleUpdate = function(updatedXScale) {
 		xScale = updatedXScale;
 
-		var layer = root.selectAll(".layer").data(data);
+		var layer = root.selectAll(".layer" + id).data(data);
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.attr("x", function(d) { return xScale(d.x); })
@@ -157,7 +173,7 @@ function newXAxis(root, uiConfig, xScale) {
 }
 
 
-function xScale(uiConfig) {
+function newXScale(uiConfig) {
 	function lengthOf(domain, timeInterval) {
 		var count = 0;
 		var from = domain[0];
@@ -188,7 +204,7 @@ function xScale(uiConfig) {
 	return x;
 }
 
-function yScale(uiConfig) {
+function newYScale(uiConfig) {
 	var y = d3.scale.linear().range([uiConfig.height, 0]);
 	y.update = function(update) {
 		y.domain([update.minY, update.maxY]);
@@ -261,7 +277,7 @@ function stackedData(rawCsv) {
 		groupIndex = value;
 		updateWith(originalData[groupIndex]);
 		it.sendUpdate();
-	}
+	};
 
 	return it;
 }

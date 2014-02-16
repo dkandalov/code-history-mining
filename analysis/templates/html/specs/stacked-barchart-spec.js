@@ -1,18 +1,22 @@
 describe("bars", function () {
+	var rootElement, uiConfig, data, x, y;
+	beforeEach(function() {
+		rootElement = d3.select("body").append("span").attr("id", "bars-test");
+		uiConfig = { width: 1000, height: 500 };
+		x = newXScale(uiConfig);
+		y = newYScale(uiConfig);
+		data = stackedData(rawData);
+	});
+
 	it("on data update add svg rects to root element", function() {
-		var rootElement = d3.select("body").append("span").attr("id", "bars-test");
-		var uiConfig = { width: 1000, height: 500 };
-		var x = xScale(uiConfig);
-		var y = yScale(uiConfig)
-		var data = stackedData(rawData);
-		var bars = newBars(rootElement, uiConfig, x, y);
+		var bars = newBars(rootElement, uiConfig, x, y, "bars");
 		data.onUpdate([x.update, y.update, bars.update]);
 
 		data.sendUpdate();
 
-		expect(rootElement.selectAll(".layer")[0].length).toEqual(3);
-		expect(rootElement.selectAll(".layer rect")[0].length).toEqual(9);
-		rootElement.selectAll(".layer rect")[0].map(function(it) {
+		expect(rootElement.selectAll(".layer-bars")[0].length).toEqual(3);
+		expect(rootElement.selectAll(".layer-bars rect")[0].length).toEqual(9);
+		rootElement.selectAll(".layer-bars rect")[0].map(function(it) {
 			expect(parseInt(it.attributes["width"].value)).toBeGreaterThan(0);
 			expect(parseInt(it.attributes["width"].value)).toBeLessThan(500);
 			expect(parseInt(it.attributes["height"].value)).toBeGreaterThan(0);
@@ -23,7 +27,7 @@ describe("bars", function () {
 
 describe("x scale", function () {
 	it("sends update when its domain is changed", function() {
-		var x = xScale({ width: 100 });
+		var x = newXScale({ width: 100 });
 		var updatedX = null;
 		x.onUpdate([function(x) {
 			updatedX = x;
