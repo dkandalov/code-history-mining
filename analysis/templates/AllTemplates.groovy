@@ -5,6 +5,7 @@ class AllTemplates {
 	static changeSizeChartTemplate = template("changes-size-chart.html")
 	static amountOfCommittersChartTemplate = template("amount-of-committers-chart.html")
 	static amountOfFilesInCommitChartTemplate = template("amount-of-files-in-commit-chart.html")
+	static changeSizeByFileTypeChartTemplate = template("change-size-by-file-type-chart.html")
 	static filesInTheSameCommitGraphTemplate = template("files-in-same-commit-graph.html")
 	static committersChangingSameFilesGraphTemplate = template("committers-changing-same-files-graph.html")
 	static amountOfCommitsTreemapTemplate = template("treemap.html")

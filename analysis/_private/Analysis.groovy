@@ -88,6 +88,14 @@ class Analysis {
 			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
+	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		def fileExtension = { String s -> s.contains(".") ? s[0..<s.lastIndexOf(".")] : "" }
+		events
+				.groupBy({ fileExtension(nonEmptyFileName(it.fileName)) }, { floorToDay(it.revisionDate) })
+
+		""
+	}
+
 	static String createJson_WiltComplexity_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def wiltOf = { eventList ->
 			eventList.collect{ event ->

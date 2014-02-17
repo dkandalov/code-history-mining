@@ -9,6 +9,10 @@ import static util.DateTimeUtil.date
 
 class AnalysisTest {
 
+	@Test void "change size by file type chart"() {
+		// TODO
+	}
+
 	@Test void "graph with all files and all committers"() {
 		def changeEvents = [
 			commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
