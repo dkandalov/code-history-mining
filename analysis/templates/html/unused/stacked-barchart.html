@@ -116,6 +116,7 @@ date,category,value\n\
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
 
     var controlsPanel = newControlsPanel(root, uiConfig);
+    groupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
     groupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"])
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);

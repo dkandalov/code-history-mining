@@ -15,15 +15,27 @@ function newControlsPanel(root, uiConfig) {
 			.append("span").style({float: "right"});
 }
 
+function groupByDropDown(root, stackedData, label, groupingNames) {
+	return newDropDown(root, label, groupingNames, function(newValue) {
+		stackedData.groupBy(newValue);
+	});
+}
+
 function groupIndexDropDown(root, stackedData, label, groupNames) {
+	return newDropDown(root, label, groupNames, function(newValue) {
+		stackedData.setGroupIndex(newValue);
+	});
+}
+
+function newDropDown(root, label, optionLabels, onChange) {
 	root.append("label").html(label);
 	var dropDown = root.append("select");
-	for (var i = 0; i < groupNames.length; i++) {
-		dropDown.append("option").attr("value", i).html(groupNames[i]);
+	for (var i = 0; i < optionLabels.length; i++) {
+		dropDown.append("option").attr("value", i).html(optionLabels[i]);
 	}
 
 	dropDown.on("change", function() {
-		stackedData.setGroupIndex(this.value)
+		onChange(this.value)
 	});
 
 	return {};
@@ -221,21 +233,35 @@ function stackedData(rawCsv) {
 					return {
 						x: dateFormat.parse(d.date),
 						y: parseInt(d["value"]),
-						category: d["category"],
-						y0: 0
+						category: d["category"]
 					};
 				});
 			});
 	}
 	var originalData = rawCsv.map(function(it) { return groupByCategory(d3.csv.parse(it)); });
+	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
 
 	var data;
 	var dataStacked;
 	var groupIndex = 0;
+	var groupByIndex = 0;
 	var minX;
 	var maxX;
 	var minY = 0;
 	var maxY;
+
+	function groupBy(timeInterval, daysData) {
+		if (timeInterval == d3.time.day) return daysData;
+		return d3.values(d3.nest()
+				.key(function(d) { return timeInterval.floor(d.x); })
+				.rollup(function(days) {
+					var aggregateValue = d3.sum(days, function (d) { return d.y; });
+					var date = (days.length == 0 ? null : timeInterval.floor(days[0].x));
+					var category = (days.length == 0 ? null : days[0].category);
+					return { category: category, x: date, y: aggregateValue };
+				})
+				.map(daysData));
+	}
 
 	function updateWith(newData) {
 		data = newData;
@@ -256,7 +282,9 @@ function stackedData(rawCsv) {
 			});
 		});
 	}
-	updateWith(originalData[groupIndex]);
+	updateWith(originalData[groupIndex].map(function(it) {
+		return groupBy(timeIntervals[groupByIndex], it);
+	}));
 
 
 	var it = {};
@@ -266,6 +294,7 @@ function stackedData(rawCsv) {
 			data: data,
 			dataStacked: dataStacked,
 			groupIndex: groupIndex,
+			groupByIndex: groupByIndex,
 			minX: minX,
 			maxX: maxX,
 			minY: minY,
@@ -274,10 +303,20 @@ function stackedData(rawCsv) {
 	};
 	it.setGroupIndex = function(value) {
 		groupIndex = value;
-		updateWith(originalData[groupIndex]);
+		updateWith(originalData[groupIndex].map(function(it) {
+			return groupBy(timeIntervals[groupByIndex], it);
+		}));
+		it.sendUpdate();
+	};
+	it.groupBy = function(value) {
+		groupByIndex = value;
+		updateWith(originalData[groupIndex].map(function(it) {
+			return groupBy(timeIntervals[groupByIndex], it);
+		}));
 		it.sendUpdate();
 	};
 
 	return it;
 }
+
 
