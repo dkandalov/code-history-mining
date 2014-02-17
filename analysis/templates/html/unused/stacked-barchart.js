@@ -15,13 +15,13 @@ function newControlsPanel(root, uiConfig) {
 			.append("span").style({float: "right"});
 }
 
-function groupByDropDown(root, stackedData, label, groupingNames) {
+function newGroupByDropDown(root, stackedData, label, groupingNames) {
 	return newDropDown(root, label, groupingNames, function(newValue) {
 		stackedData.groupBy(newValue);
 	});
 }
 
-function groupIndexDropDown(root, stackedData, label, groupNames) {
+function newGroupIndexDropDown(root, stackedData, label, groupNames) {
 	return newDropDown(root, label, groupNames, function(newValue) {
 		stackedData.setGroupIndex(newValue);
 	});
@@ -225,7 +225,7 @@ function newYScale(uiConfig) {
 }
 
 
-function stackedData(rawCsv) {
+function newStackedData(rawCsv) {
 	function groupByCategory(data) {
 		var dateFormat = d3.time.format("%d/%m/%Y");
 		return d3.nest().key(function(d){ return d["category"]; }).entries(data)

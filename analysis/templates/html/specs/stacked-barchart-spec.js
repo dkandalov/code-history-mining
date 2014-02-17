@@ -5,7 +5,7 @@ describe("bars", function () {
 		uiConfig = { width: 1000, height: 500 };
 		x = newXScale(uiConfig);
 		y = newYScale(uiConfig);
-		data = stackedData(rawData);
+		data = newStackedData(rawData);
 	});
 
 	it("on data update add svg rects to root element", function() {
@@ -44,7 +44,7 @@ describe("x scale", function () {
 
 describe("bar chart data", function () {
 	it("after construction it can broadcast update with stacked data", function() {
-		var data = stackedData(rawData);
+		var data = newStackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -63,7 +63,7 @@ describe("bar chart data", function () {
 	});
 
 	it("sends update with new data when group index changes", function() {
-		var data = stackedData(rawData);
+		var data = newStackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -81,7 +81,7 @@ describe("bar chart data", function () {
 	});
 
 	it("sends update with regrouped data when asked to group by different time interval", function() {
-		var data = stackedData(rawData);
+		var data = newStackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
