@@ -44,6 +44,8 @@ class Dialog {
 		grabChangeSizeCheckBox.selected = grabberConfig.grabChangeSizeInLines
 		grabChangeSizeCheckBox.toolTipText = "Requires loading files content. Can slow down history grabbing."
 		grabOnVcsUpdateCheckBox.selected = grabberConfig.grabOnVcsUpdate
+		grabOnVcsUpdateCheckBox.toolTipText = "Grab history on update from VCS so that it contains events from specified date until today.\n" +
+				"This will happen at most once a day."
 		grabOnVcsUpdateCheckBox.addActionListener({ onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox) } as ActionListener)
 		onGrabOnVcsUpdate(toDatePicker, grabOnVcsUpdateCheckBox)
 
