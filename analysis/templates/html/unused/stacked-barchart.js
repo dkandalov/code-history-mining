@@ -200,9 +200,10 @@ function newXScale(uiConfig) {
 		return count + remainder;
 	}
 
-	var timeInterval = d3.time["day"];
+	var timeInterval = d3.time.day;
 	var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
 	x.update = function(update) {
+		timeInterval = update.groupByTimeInterval;
 		x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
 		x.amountOfValues = lengthOf(x.domain(),timeInterval);
 	};
@@ -256,8 +257,8 @@ function stackedData(rawCsv) {
 				.key(function(d) { return timeInterval.floor(d.x); })
 				.rollup(function(days) {
 					var aggregateValue = d3.sum(days, function (d) { return d.y; });
-					var date = (days.length == 0 ? null : timeInterval.floor(days[0].x));
-					var category = (days.length == 0 ? null : days[0].category);
+					var date = timeInterval.floor(days[0].x);
+					var category = days[0].category;
 					return { category: category, x: date, y: aggregateValue };
 				})
 				.map(daysData));
@@ -295,6 +296,7 @@ function stackedData(rawCsv) {
 			dataStacked: dataStacked,
 			groupIndex: groupIndex,
 			groupByIndex: groupByIndex,
+			groupByTimeInterval: timeIntervals[groupByIndex],
 			minX: minX,
 			maxX: maxX,
 			minY: minY,
