@@ -35,7 +35,9 @@ The plugin has two parts:
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
  - **From/To** - desired dates for project history. Commits are loaded from version control only if they are not already in csv file.
  - **Save to** - file to save history to.
- - **Grab change size in lines/characters** - grabs amount of lines and characters before/after commit and size of change.
+ - **Grab history on VCS update** - on update from VCS grab history so that it contains events from specified date until today.
+ This will happen at most once a day.
+ - **Grab change size in lines/characters** - grab amount of lines and characters before/after commit and size of change.
  Please note that this requires loading file content and can slow down grabbing history.
 
 #### Visualize
