@@ -10,7 +10,22 @@ import static util.DateTimeUtil.date
 class AnalysisTest {
 
 	@Test void "change size by file type chart"() {
-		// TODO
+		def changeEvents = [
+				commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+				commitBy(DavidSaff, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+				commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/Assignments.java")),
+				commitBy(KentBeck,  "02/04/2013", modified("/logo.gif"))
+		].flatten()
+
+		assert Analysis.changeSizeByFileTypeChart(changeEvents) == """
+			|["\\
+      |date,category,value\\n\\
+      |03/04/2013,java,2\\n\\
+      |02/04/2013,java,1\\n\\
+      |03/04/2013,gif,0\\n\\
+      |02/04/2013,gif,1\\n\\
+      |"]
+		""".stripMargin("|").trim()
 	}
 
 	@Test void "graph with all files and all committers"() {

@@ -89,11 +89,28 @@ class Analysis {
 	}
 
 	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
-		def fileExtension = { String s -> s.contains(".") ? s[0..<s.lastIndexOf(".")] : "" }
-		events
-				.groupBy({ fileExtension(nonEmptyFileName(it.fileName)) }, { floorToDay(it.revisionDate) })
+		def fileExtension = { String s ->
+			s.empty || s.endsWith(".") ? "" : s[s.lastIndexOf(".") + 1 ..< s.size()]
+		}
+		def eventsByTypeAndDate = events
+				.groupBy({ fileExtension(nonEmptyFileName(it)) }, { floorToDay(it.revisionDate) })
 
-		""
+		def allDates = eventsByTypeAndDate.collectMany{ it.value.keySet() }.unique()
+
+		def result = eventsByTypeAndDate
+				.entrySet().collectMany{ entry ->
+					def fileType = entry.key
+					def eventsByDate = entry.value
+					allDates.collect{ date ->
+						def changeSize = eventsByDate.containsKey(date) ? eventsByDate.get(date).size() : 0
+						[date, fileType, changeSize]
+					}
+				}
+
+		// TODO count in lines, characters; only include most changed file types (<= 4?)
+		"[" +
+				asCsvStringLiteral(result, ["date", "category", "value"]) +
+		"]"
 	}
 
 	static String createJson_WiltComplexity_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
