@@ -9,6 +9,28 @@ import static util.DateTimeUtil.date
 
 class AnalysisTest {
 
+	@Test void "change size by file type puts least changed file types into 'others' category"() {
+		def changeEvents = (
+				(0..100).collect{ commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")) } +
+				(0..100).collect{ commitBy(DavidSaff, "03/04/2013", modified("/pom.xml")) } +
+				(0..1).collect{ commitBy(KentBeck,  "02/04/2013", modified("/acknowledgements.txt")) } +
+				(0..1).collect{ commitBy(KentBeck,  "02/04/2013", modified("/logo.gif")) }
+		).flatten()
+
+		def maxAmountOfFileTypes = 2
+		assert Analysis.changeSizeByFileTypeChart(changeEvents, noCancel, maxAmountOfFileTypes) == """
+			|["\\
+			|date,category,value\\n\\
+      |03/04/2013,java,101\\n\\
+      |02/04/2013,java,0\\n\\
+      |03/04/2013,xml,101\\n\\
+      |02/04/2013,xml,0\\n\\
+      |03/04/2013,Other,0\\n\\
+      |02/04/2013,Other,4\\n\\
+			|"]
+		""".stripMargin("|").trim()
+	}
+
 	@Test void "change size by file type chart"() {
 		def changeEvents = [
 				commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
@@ -107,4 +129,5 @@ class AnalysisTest {
 	private int revision = 1
 	private final Closure<String> someRevision = { (revision++).toString() }
 	private final someCommitMessage = ""
+	private static final Closure noCancel = {}
 }

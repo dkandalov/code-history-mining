@@ -14,9 +14,7 @@ import java.text.SimpleDateFormat
 import static analysis._private.Analysis.Util.*
 import static java.util.concurrent.TimeUnit.*
 import static java.util.regex.Matcher.quoteReplacement
-import static util.DateTimeUtil.floorToDay
-import static util.DateTimeUtil.floorToMonth
-import static util.DateTimeUtil.floorToWeek
+import static util.DateTimeUtil.*
 
 class Analysis {
 	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
@@ -88,12 +86,30 @@ class Analysis {
 			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
-	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 3) {
 		def fileExtension = { String s ->
 			s.empty || s.endsWith(".") ? "" : s[s.lastIndexOf(".") + 1 ..< s.size()]
 		}
 		def eventsByTypeAndDate = events
 				.groupBy({ fileExtension(nonEmptyFileName(it)) }, { floorToDay(it.revisionDate) })
+
+		def totalChangeAmountByType = eventsByTypeAndDate
+			.entrySet().collect{ [it.key, it.value.values().sum{it.size}] }
+			.sort{ -it[1] }
+		def leastChangesFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it[0]}
+		def otherFileTypesByDate = eventsByTypeAndDate.entrySet().inject([:].withDefault{[]}) { acc, typeToEventsByDate ->
+			if (!leastChangesFileTypes.contains(typeToEventsByDate.key)) acc
+			else {
+				typeToEventsByDate.value.entrySet().each {
+					def date = it.key
+					def eventForDate = it.value
+					acc.put(date, acc.get(date) + eventForDate)
+				}
+				acc
+			}
+		}
+		eventsByTypeAndDate.keySet().removeAll(leastChangesFileTypes)
+		eventsByTypeAndDate.put("Other", otherFileTypesByDate)
 
 		def allDates = eventsByTypeAndDate.collectMany{ it.value.keySet() }.unique()
 
@@ -101,13 +117,14 @@ class Analysis {
 				.entrySet().collectMany{ entry ->
 					def fileType = entry.key
 					def eventsByDate = entry.value
+					// iterate over dates because js requires some value for all file types (if there was another file type change on a date)
 					allDates.collect{ date ->
 						def changeSize = eventsByDate.containsKey(date) ? eventsByDate.get(date).size() : 0
 						[date, fileType, changeSize]
 					}
 				}
 
-		// TODO count in lines, characters; only include most changed file types (<= 4?)
+		// TODO count in lines, characters
 		"[" +
 				asCsvStringLiteral(result, ["date", "category", "value"]) +
 		"]"
