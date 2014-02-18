@@ -14,11 +14,11 @@ describe("quick find", function () {
 	});
 });
 
-describe("change size chart", function () {
+describe("moving average", function () {
 	var date = function(s) { return d3.time.format("%d/%m/%Y").parse(s); };
 	var getChangeSize = function(it) { return it.changeSize; };
 
-	it("can calculate moving average for three day interval", function() {
+	it("for three day interval", function() {
 		var movingAverageOfThreeDays = function(data) { return movingAverage(data, d3.time.day, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeDays([
@@ -36,7 +36,7 @@ describe("change size chart", function () {
 		]);
 	});
 
-	it("can calculate moving average for three month interval", function() {
+	it("for three month interval", function() {
 		var movingAverageOfThreeWeeks = function(data) { return movingAverage(data, d3.time.month, getChangeSize, 3); };
 
 		expect(movingAverageOfThreeWeeks([
