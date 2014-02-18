@@ -101,8 +101,9 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 	}
 	function barWidth() {
 		var barWidth = uiConfig.width / nonZero(xScale.amountOfValues);
-		barWidth = Math.floor(barWidth) - 2;
-		barWidth = barWidth < 1 ? 1 : barWidth;
+		barWidth = Math.floor(barWidth);
+		if (barWidth > 20) barWidth = barWidth - 1;
+		if (barWidth < 1) barWidth = 1;
 		return barWidth;
 	}
 

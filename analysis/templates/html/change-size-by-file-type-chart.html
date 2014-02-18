@@ -117,7 +117,7 @@ date,category,value\n\
 
     var controlsPanel = newControlsPanel(root, uiConfig);
     newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
-    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"])
+    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"])
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
