@@ -90,15 +90,15 @@ class Analysis {
 		def fileExtension = { String s ->
 			s.empty || s.endsWith(".") ? "" : s[s.lastIndexOf(".") + 1 ..< s.size()]
 		}
-		def eventsByTypeAndDate = events
+		def eventsByTypeBYDate = events
 				.groupBy({ fileExtension(nonEmptyFileName(it)) }, { floorToDay(it.revisionDate) })
 
-		def totalChangeAmountByType = eventsByTypeAndDate
-			.entrySet().collect{ [it.key, it.value.values().sum{it.size}] }
+		def totalChangeAmountByType = eventsByTypeBYDate
+			.collect{ [it.key, it.value.values().sum{it.size}] }
 			.sort{ -it[1] }
-		def leastChangesFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it[0]}
-		def otherFileTypesByDate = eventsByTypeAndDate.entrySet().inject([:].withDefault{[]}) { acc, typeToEventsByDate ->
-			if (!leastChangesFileTypes.contains(typeToEventsByDate.key)) acc
+		def leastChangedFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it[0]}
+		def otherFileTypesByDate = eventsByTypeBYDate.inject([:].withDefault{[]}) { acc, typeToEventsByDate ->
+			if (!leastChangedFileTypes.contains(typeToEventsByDate.key)) acc
 			else {
 				typeToEventsByDate.value.entrySet().each {
 					def date = it.key
@@ -108,13 +108,14 @@ class Analysis {
 				acc
 			}
 		}
-		eventsByTypeAndDate.keySet().removeAll(leastChangesFileTypes)
-		eventsByTypeAndDate.put("Other", otherFileTypesByDate)
+		eventsByTypeBYDate.keySet().removeAll(leastChangedFileTypes)
+		if (otherFileTypesByDate.size() > 0)
+			eventsByTypeBYDate.put("Other", otherFileTypesByDate)
 
-		def allDates = eventsByTypeAndDate.collectMany{ it.value.keySet() }.unique()
+		def allDates = eventsByTypeBYDate.collectMany{ it.value.keySet() }.unique()
 
-		def result = eventsByTypeAndDate
-				.entrySet().collectMany{ entry ->
+		def result = eventsByTypeBYDate
+				.collectMany{ entry ->
 					def fileType = entry.key
 					def eventsByDate = entry.value
 					// iterate over dates because js requires some value for all file types (if there was another file type change on a date)
