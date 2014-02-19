@@ -37,4 +37,8 @@ class CollectionUtil {
 		if (!result.empty) result.remove(result.size() - 1)
 		result
 	}
+
+	static int getSize(Collection collection) {
+		collection.size()
+	}
 }

@@ -3,7 +3,7 @@ package util
 import org.junit.Test
 
 class CollectionUtilTest {
-	@Test def "collecting elements with index"() {
+	@Test void "collecting elements with index"() {
 		Collection.mixin(CollectionUtil)
 		assert ["a", "b", "c"].collectWithIndex{ value, i -> value + i} == ["a0", "b1", "c2"]
 	}
@@ -41,4 +41,9 @@ class CollectionUtilTest {
 		]
 	}
 
+	@Test void "has size getter instead of method"() {
+		Collection.mixin(CollectionUtil)
+		assert [].size == 0
+		assert [1, 2, 3].size == 3
+	}
 }
