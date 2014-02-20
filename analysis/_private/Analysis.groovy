@@ -94,43 +94,48 @@ class Analysis {
 		}
 		def eventsByTypeByDate = events
 				.groupBy({ fileExtension(nonEmptyFileName(it)) }, { floorToDay(it.revisionDate) })
-
-		def totalChangeAmountByType = eventsByTypeByDate
-			.rollup{ it.size }
-			.rollupEntries{ it*.value.sum() }
-			.sort{ -it.value }
-
-		def leastChangedFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it.key}
-		def otherFileTypesByDate = eventsByTypeByDate
-				.findAll{ leastChangedFileTypes.contains(it.key) }
-				.inject([:].withDefault{[]}) { map, typeToEventsByDate ->
-					typeToEventsByDate.value.entrySet().each {
-						def date = it.key
-						def eventsForDate = it.value
-						map.put(date, map.get(date) + eventsForDate)
-					}
-					map
-				}
-		eventsByTypeByDate.keySet().removeAll(leastChangedFileTypes)
-		if (otherFileTypesByDate.size() > 0)
-			eventsByTypeByDate.put("Other", otherFileTypesByDate)
-
 		def allDates = eventsByTypeByDate.collectMany{ it.value.keySet() }.unique()
 
-		def result = eventsByTypeByDate
-				.collectMany{ entry ->
-					def fileType = entry.key
-					def eventsByDate = entry.value
-					// iterate over dates because js requires some value for all file types (if there was another file type change on a date)
-					allDates.collect{ date ->
-						def changeSize = eventsByDate.containsKey(date) ? eventsByDate.get(date).size() : 0
-						[date, fileType, changeSize]
-					}
-				}
+		def changeAsFileAmount = { it.size }
+		def changeAsLines = { it.sum{ changeSizeInLines(it) } }
+		def changeAsChars = { it.sum{ changeSizeInChars(it) } }
 
-		// TODO count in lines, characters
+		def changeSizeByFileType = { changeAmountOf ->
+			def totalChangeAmountByType = eventsByTypeByDate
+					.rollup{ changeAmountOf(it) }
+					.rollupEntries{ it*.value.sum() }
+					.sort{ -it.value }
+
+			def leastChangedFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it.key}
+			def otherFileTypesByDate = eventsByTypeByDate
+					.findAll{ leastChangedFileTypes.contains(it.key) }
+					.inject([:].withDefault{[]}) { map, typeToEventsByDate ->
+				typeToEventsByDate.value.entrySet().each {
+					def date = it.key
+					def eventsForDate = it.value
+					map.put(date, map.get(date) + eventsForDate)
+				}
+				map
+			}
+			eventsByTypeByDate.keySet().removeAll(leastChangedFileTypes)
+			if (otherFileTypesByDate.size() > 0)
+				eventsByTypeByDate.put("Other", otherFileTypesByDate)
+
+			eventsByTypeByDate.collectMany{ entry ->
+				def fileType = entry.key
+				def eventsByDate = entry.value
+				// iterate over dates because js requires some value for all file types (if there was another file type change on a date)
+				allDates.collect{ date ->
+					def changeSize = eventsByDate.containsKey(date) ? changeAmountOf(eventsByDate.get(date)) : 0
+					[date, fileType, changeSize]
+				}
+			}
+		}
+
 		"[" +
-				asCsvStringLiteral(result, ["date", "category", "value"]) +
+				asCsvStringLiteral(changeSizeByFileType(changeAsFileAmount), ["date", "category", "value"]) + ",\n" +
+				asCsvStringLiteral(changeSizeByFileType(changeAsLines), ["date", "category", "value"]) + ",\n" +
+				asCsvStringLiteral(changeSizeByFileType(changeAsChars), ["date", "category", "value"]) +
 		"]"
 	}
 

@@ -18,7 +18,7 @@ class AnalysisTest {
 		).flatten()
 
 		def maxAmountOfFileTypes = 2
-		assert Analysis.changeSizeByFileTypeChart(changeEvents, noCancel, maxAmountOfFileTypes) == """
+		assert Analysis.changeSizeByFileTypeChart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
 			|["\\
 			|date,category,value\\n\\
       |03/04/2013,java,101\\n\\
@@ -27,8 +27,8 @@ class AnalysisTest {
       |02/04/2013,xml,0\\n\\
       |03/04/2013,Other,0\\n\\
       |02/04/2013,Other,4\\n\\
-			|"]
-		""".stripMargin("|").trim()
+			|",
+		""".stripMargin("|").trim())
 	}
 
 	@Test void "change size by file type chart"() {
@@ -39,15 +39,15 @@ class AnalysisTest {
 				commitBy(KentBeck,  "02/04/2013", modified("/logo.gif"))
 		].flatten()
 
-		assert Analysis.changeSizeByFileTypeChart(changeEvents) == """
+		assert Analysis.changeSizeByFileTypeChart(changeEvents).startsWith("""
 			|["\\
       |date,category,value\\n\\
       |03/04/2013,java,2\\n\\
       |02/04/2013,java,1\\n\\
       |03/04/2013,gif,0\\n\\
       |02/04/2013,gif,1\\n\\
-      |"]
-		""".stripMargin("|").trim()
+      |",
+		""".stripMargin("|").trim())
 	}
 
 	@Test void "graph with all files and all committers"() {
