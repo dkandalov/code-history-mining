@@ -98,7 +98,7 @@ date,category,value\n\
         margin: margin
     };
     var brushHeight = 50;
-    var xAxisHeight = 20;
+    var xAxisHeight = 30;
 
     var root = d3.select("body");
     var svg = root.append("svg")
@@ -117,6 +117,7 @@ date,category,value\n\
 
     var controlsPanel = newControlsPanel(root, uiConfig);
     newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
+    controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"])
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);

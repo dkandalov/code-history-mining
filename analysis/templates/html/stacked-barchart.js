@@ -11,8 +11,12 @@ function observable(target) {
 }
 
 function newControlsPanel(root, uiConfig) {
-	return root.append("span").style({display: "block", width: uiConfig.width + "px"})
-			.append("span").style({float: "right"});
+	var it = root.append("span").style({display: "block", width: uiConfig.width + "px"})
+				 .append("span").style({float: "right"});
+	it.addSpace = function() {
+		it.append("span").style({width: "20px", display: "inline-block"});
+	};
+	return it;
 }
 
 function newGroupByDropDown(root, stackedData, label, groupingNames) {
@@ -84,7 +88,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 }
 
 function newBars(root, uiConfig, xScale, yScale, id) {
-	var color = d3.scale.category20();
+	var color = d3.scale.category20c();
 	var dateFormat = d3.time.format("%d/%m/%Y");
 	var valueFormat = function(n) {
 		var s = d3.format(",")(n);
