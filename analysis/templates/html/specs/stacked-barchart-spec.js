@@ -7,6 +7,9 @@ describe("bars", function () {
 		y = newYScale(uiConfig);
 		data = newStackedData(rawData);
 	});
+	afterEach(function() {
+		rootElement.remove();
+	});
 
 	it("on data update add svg rects to root element", function() {
 		var bars = newBars(rootElement, uiConfig, x, y, "bars");
@@ -18,10 +21,25 @@ describe("bars", function () {
 		expect(rootElement.selectAll(".layer-bars rect")[0].length).toEqual(9);
 		rootElement.selectAll(".layer-bars rect")[0].map(function(it) {
 			expect(parseInt(it.attributes["width"].value)).toBeGreaterThan(0);
-			expect(parseInt(it.attributes["width"].value)).toBeLessThan(500);
+			expect(parseInt(it.attributes["width"].value)).toBeLessThan(uiConfig.height + 1);
 			expect(parseInt(it.attributes["height"].value)).toBeGreaterThan(0);
-			expect(parseInt(it.attributes["height"].value)).toBeLessThan(500);
+			expect(parseInt(it.attributes["height"].value)).toBeLessThan(uiConfig.height + 1);
 		});
+	});
+
+	it("on data update replaces svg rects with new ones according to new data", function() {
+		function allRectsHeight() {
+			var allRects = rootElement.selectAll(".layer-bars rect")[0];
+			return _.reduce(allRects, function(acc, it){ return acc + parseInt(it.attributes["height"].value); }, 0);
+		}
+		var bars = newBars(rootElement, uiConfig, x, y, "bars");
+		data.onUpdate([x.update, y.update, bars.update]);
+
+		data.sendUpdate();
+		expect(allRectsHeight()).toEqual(995);
+
+		data.setGroupIndex(1);
+		expect(allRectsHeight()).toEqual(997);
 	});
 });
 
@@ -77,7 +95,7 @@ describe("bar chart data", function () {
 		data.setGroupIndex(1);
 		expect(received.groupIndex).toEqual(1);
 		expect(received.data[0][0]["category"]).toEqual("Mee");
-		expect(received.data[0][0]["y"]).toEqual(10);
+		expect(received.data[0][0]["y"]).toEqual(11);
 	});
 
 	it("sends update with regrouped data when asked to group by different time interval", function() {
@@ -118,13 +136,13 @@ date,category,value\n\
 20/01/2013,Ggg,333\n\
 ",
 "date,category,value\n\
-18/01/2013,Mee,10\n\
-19/01/2013,Mee,20\n\
-20/01/2013,Mee,30\n\
-18/01/2013,Ooo,110\n\
-19/01/2013,Ooo,220\n\
-20/01/2013,Ooo,330\n\
-18/01/2013,Ggg,1110\n\
-19/01/2013,Ggg,2220\n\
-20/01/2013,Ggg,3330\n\
+18/01/2013,Mee,11\n\
+19/01/2013,Mee,22\n\
+20/01/2013,Mee,33\n\
+18/01/2013,Ooo,111\n\
+19/01/2013,Ooo,222\n\
+20/01/2013,Ooo,333\n\
+18/01/2013,Ggg,1111\n\
+19/01/2013,Ggg,2222\n\
+20/01/2013,Ggg,3333\n\
 "];
