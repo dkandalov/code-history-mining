@@ -1,6 +1,21 @@
 package util
 
 class CollectionUtil {
+
+	static <K, V> Map<K, V> rollup(Map map, Closure closure) {
+		if (map.isEmpty()) return map
+
+		map.collectEntries {
+			if (it.value instanceof Collection) [it.key, closure(it.value)]
+			else if (it.value instanceof Map) [it.key, rollup(it.value as Map, closure)]
+			else it
+		} as Map<K, V>
+	}
+
+	static <K, V> Map<K, V> rollupEntries(Map map, Closure closure) {
+		map.collectEntries{ [it.key, closure(it.value)] } as Map<K, V>
+	}
+
 	static <T> Collection<Collection<T>> collectWithHistory(Collection<T> collection, Closure shouldKeepElement, Closure callback) {
 		def result = []
 		def previousValues = new LinkedList()

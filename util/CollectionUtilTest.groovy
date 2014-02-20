@@ -3,6 +3,23 @@ package util
 import org.junit.Test
 
 class CollectionUtilTest {
+	@Test void "roll up map"() {
+		Map.mixin(CollectionUtil)
+
+		assert [:].rollup{it} == [:]
+		assert [a: 1, b: 2].rollup{ it.size } == [a: 1, b: 2]
+
+		assert [a: [1, 2], b: [3]].rollup{ it } == [a: [1, 2], b: [3]]
+		assert [a: [1, 2], b: [3]].rollup{ it.size } == [a: 2, b: 1]
+		assert [
+				a: [a1: [1, 2], a2: [3]],
+				b: [b1: [4], b2: [5, 6]]
+		].rollup{ it.size } == [
+				a: [a1: 2, a2: 1],
+				b: [b1: 1, b2: 2]
+		]
+	}
+
 	@Test void "collecting elements with index"() {
 		Collection.mixin(CollectionUtil)
 		assert ["a", "b", "c"].collectWithIndex{ value, i -> value + i} == ["a0", "b1", "c2"]
