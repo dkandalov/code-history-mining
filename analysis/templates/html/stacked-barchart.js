@@ -1,6 +1,7 @@
-function observable(target) {
+function observable(target, eventName) {
+	if (eventName == null) eventName = "onUpdate";
 	var listeners = [];
-	target.onUpdate = function(newListeners) {
+	target[eventName] = function(newListeners) {
 		listeners = newListeners;
 	};
 	return function(update) {
@@ -133,9 +134,9 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
 			.append("title")
 			.text(function (d) {
-				return "date: " + dateFormat(d.x) + "\n" +
-					"value: " + valueFormat(d.y) + "\n" +
-					"category: " + d["category"];
+				return "Date: " + dateFormat(d.x) + "\n" +
+					"Value: " + valueFormat(d.y) + "\n" +
+					"Category: " + d["category"];
 			});
 	};
 	it.onXScaleUpdate = function(updatedXScale) {
