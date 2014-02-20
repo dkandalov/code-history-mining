@@ -87,34 +87,37 @@ class Analysis {
 	}
 
 	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 3) {
+		Map.mixin(CollectionUtil)
+
 		def fileExtension = { String s ->
 			s.empty || s.endsWith(".") ? "" : s[s.lastIndexOf(".") + 1 ..< s.size()]
 		}
-		def eventsByTypeBYDate = events
+		def eventsByTypeByDate = events
 				.groupBy({ fileExtension(nonEmptyFileName(it)) }, { floorToDay(it.revisionDate) })
 
-		def totalChangeAmountByType = eventsByTypeBYDate
-			.collect{ [it.key, it.value.values().sum{it.size}] }
-			.sort{ -it[1] }
-		def leastChangedFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it[0]}
-		def otherFileTypesByDate = eventsByTypeBYDate.inject([:].withDefault{[]}) { acc, typeToEventsByDate ->
-			if (!leastChangedFileTypes.contains(typeToEventsByDate.key)) acc
-			else {
-				typeToEventsByDate.value.entrySet().each {
-					def date = it.key
-					def eventForDate = it.value
-					acc.put(date, acc.get(date) + eventForDate)
+		def totalChangeAmountByType = eventsByTypeByDate
+			.rollup{ it.size }
+			.rollupEntries{ it*.value.sum() }
+			.sort{ -it.value }
+
+		def leastChangedFileTypes = totalChangeAmountByType.drop(maxAmountOfFileTypes).collect{it.key}
+		def otherFileTypesByDate = eventsByTypeByDate
+				.findAll{ leastChangedFileTypes.contains(it.key) }
+				.inject([:].withDefault{[]}) { map, typeToEventsByDate ->
+					typeToEventsByDate.value.entrySet().each {
+						def date = it.key
+						def eventsForDate = it.value
+						map.put(date, map.get(date) + eventsForDate)
+					}
+					map
 				}
-				acc
-			}
-		}
-		eventsByTypeBYDate.keySet().removeAll(leastChangedFileTypes)
+		eventsByTypeByDate.keySet().removeAll(leastChangedFileTypes)
 		if (otherFileTypesByDate.size() > 0)
-			eventsByTypeBYDate.put("Other", otherFileTypesByDate)
+			eventsByTypeByDate.put("Other", otherFileTypesByDate)
 
-		def allDates = eventsByTypeBYDate.collectMany{ it.value.keySet() }.unique()
+		def allDates = eventsByTypeByDate.collectMany{ it.value.keySet() }.unique()
 
-		def result = eventsByTypeBYDate
+		def result = eventsByTypeByDate
 				.collectMany{ entry ->
 					def fileType = entry.key
 					def eventsByDate = entry.value
