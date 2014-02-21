@@ -1,5 +1,5 @@
 function observable(target, eventName) {
-	if (eventName == null) eventName = "onUpdate";
+	eventName = (eventName == null ? "onUpdate" : eventName);
 	var listeners = [];
 	target[eventName] = function(newListeners) {
 		listeners = newListeners;
@@ -113,8 +113,15 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 	}
 
 	var it = {};
+	var notifyCategoryListeners = observable(it);
 	it.update = function(update) {
 		data = update.data;
+
+		var categoryUpdate = []
+		update.dataStacked.forEach(function(it, i) {
+			categoryUpdate.push({ category: it[0]["category"], color: color(i) });
+		});
+		notifyCategoryListeners(categoryUpdate);
 
 		root.selectAll(".layer" + id).remove();
 

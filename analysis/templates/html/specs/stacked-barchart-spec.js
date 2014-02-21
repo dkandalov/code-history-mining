@@ -11,7 +11,7 @@ describe("bars", function () {
 		rootElement.remove();
 	});
 
-	it("on data update add svg rects to root element", function() {
+	it("on data update adds svg rects to root element", function() {
 		var bars = newBars(rootElement, uiConfig, x, y, "bars");
 		data.onUpdate([x.update, y.update, bars.update]);
 
@@ -41,6 +41,23 @@ describe("bars", function () {
 		data.setGroupIndex(1);
 		expect(allRectsHeight()).toEqual(997);
 	});
+
+	it("on data update sends categories and their colors to listeners", function() {
+		var bars = newBars(rootElement, uiConfig, x, y, "bars");
+		data.onUpdate([x.update, y.update, bars.update]);
+		var received = null;
+		bars.onUpdate([function(update) {
+			received = update;
+		}])
+
+		data.sendUpdate();
+
+		expect(received).toEqual([
+			{category: "Mee", color: '#3182bd'},
+			{category: "Ooo", color: '#6baed6'},
+			{category: "Ggg", color: '#9ecae1'}
+		]);
+	})
 });
 
 describe("x scale", function () {
