@@ -33,12 +33,12 @@
         shape-rendering: crispEdges;
     }
 
-    .legend-box {
-        fill: white;
+    .legend .box {
+        fill: #f9f9f9;
         stroke: black;
         opacity: 0.8;
     }
-    .legend-items {
+    .legend .items {
         font-size: 12px;
     }
 </style>
@@ -129,48 +129,48 @@ date,category,value\n\
     controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"])
 
-    var legend = newLegend(svg);
+    var legend = newLegend(svg, uiConfig);
     bars.onUpdate(legend.update);
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
-
-    function newLegend(root) {
-        var box = root.selectAll(".legend-box").data([true]);
-        var itemList = root.selectAll(".legend-items").data([true]);
-
-        box.enter().append("rect").attr("class", "legend-box");
-        itemList.enter().append("g").attr("class", "legend-items");
-
+    // based on https://gist.github.com/ZJONSSON/3918369
+    function newLegend(root, uiConfig) {
         var it = {};
         it.update = function(items) {
             items = _.clone(items).reverse();
 
-            itemList.selectAll().remove();
+            // always redraw legend so that it would be above graph
+            root.select(".legend").remove();
+            var legend = root.append("g").attr("class", "legend")
+                .attr("transform", "translate(" + (uiConfig.width - 50) + ",20)");
+
+            var box = legend.append("rect").attr("class", "box");
+            var itemList = legend.append("g").attr("class", "items");
 
             itemList.selectAll("text")
                     .data(items)
                     .call(function(d) { d.enter().append("text") })
-                    .attr("y",function(d, i) { return i + "em"; })
-                    .attr("x","1em")
+                    .attr("y", function(d, i) { return i + "em"; })
+                    .attr("x", "1em")
                     .text(function(d) { return d.category; });
 
             itemList.selectAll("circle")
                     .data(items)
                     .call(function(d) { d.enter().append("circle") })
-                    .attr("cy",function(d,i) { return i - 0.25 + "em"; })
-                    .attr("cx",0)
-                    .attr("r","0.4em")
+                    .attr("cy", function(d, i) { return i - 0.4 + "em"; })
+                    .attr("cx", 0)
+                    .attr("r", "0.4em")
                     .style("fill",function(d) { return d.color; });
 
             var legendPadding = 5;
-            var lbbox = itemList[0][0].getBBox();
-            box.attr("x", (lbbox.x - legendPadding))
-                .attr("y", (lbbox.y - legendPadding))
-                .attr("height", (lbbox.height + 2 * legendPadding))
-                .attr("width", (lbbox.width + 2 * legendPadding));
+            var itemListBox = itemList[0][0].getBBox();
+            box.attr("x", itemListBox.x - legendPadding)
+               .attr("y", itemListBox.y - legendPadding)
+               .attr("height", itemListBox.height + 2 * legendPadding)
+               .attr("width", itemListBox.width + 2 * legendPadding);
         };
         return it;
     }
