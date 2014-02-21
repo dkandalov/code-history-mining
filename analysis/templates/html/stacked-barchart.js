@@ -2,7 +2,8 @@ function observable(target, eventName) {
 	eventName = (eventName == null ? "onUpdate" : eventName);
 	var listeners = [];
 	target[eventName] = function(newListeners) {
-		listeners = newListeners;
+		if (_.isArray(newListeners)) listeners = newListeners;
+		else listeners = [newListeners];
 	};
 	return function(update) {
 		for (var i = 0; i < listeners.length; i++) {
@@ -117,12 +118,6 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 	it.update = function(update) {
 		data = update.data;
 
-		var categoryUpdate = []
-		update.dataStacked.forEach(function(it, i) {
-			categoryUpdate.push({ category: it[0]["category"], color: color(i) });
-		});
-		notifyCategoryListeners(categoryUpdate);
-
 		root.selectAll(".layer" + id).remove();
 
 		var layer = root.selectAll(".layer" + id)
@@ -145,6 +140,12 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 					"Value: " + valueFormat(d.y) + "\n" +
 					"Category: " + d["category"];
 			});
+
+		var categoryUpdate = []
+		update.dataStacked.forEach(function(it, i) {
+			categoryUpdate.push({ category: it[0]["category"], color: color(i) });
+		});
+		notifyCategoryListeners(categoryUpdate);
 	};
 	it.onXScaleUpdate = function(updatedXScale) {
 		xScale = updatedXScale;

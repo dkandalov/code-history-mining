@@ -32,6 +32,15 @@
         fill-opacity: .125;
         shape-rendering: crispEdges;
     }
+
+    .legend-box {
+        fill: white;
+        stroke: black;
+        opacity: 0.8;
+    }
+    .legend-items {
+        font-size: 12px;
+    }
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
@@ -74,7 +83,7 @@ date,category,value\n\
 22/01/2013,GGG,110\n\
 ",
 "date,category,value\n\
-18/01/2013,Mee,8\n\
+18/01/2013,Mee,0\n\
 19/01/2013,Mee,500\n\
 20/01/2013,Mee,300\n\
 21/01/2013,Mee,300\n\
@@ -120,9 +129,50 @@ date,category,value\n\
     controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"])
 
+    var legend = newLegend(svg);
+    bars.onUpdate(legend.update);
+
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
+
+    function newLegend(root) {
+        var box = root.selectAll(".legend-box").data([true]);
+        var itemList = root.selectAll(".legend-items").data([true]);
+
+        box.enter().append("rect").attr("class", "legend-box");
+        itemList.enter().append("g").attr("class", "legend-items");
+
+        var it = {};
+        it.update = function(items) {
+            items = _.clone(items).reverse();
+
+            itemList.selectAll().remove();
+
+            itemList.selectAll("text")
+                    .data(items)
+                    .call(function(d) { d.enter().append("text") })
+                    .attr("y",function(d, i) { return i + "em"; })
+                    .attr("x","1em")
+                    .text(function(d) { return d.category; });
+
+            itemList.selectAll("circle")
+                    .data(items)
+                    .call(function(d) { d.enter().append("circle") })
+                    .attr("cy",function(d,i) { return i - 0.25 + "em"; })
+                    .attr("cx",0)
+                    .attr("r","0.4em")
+                    .style("fill",function(d) { return d.color; });
+
+            var legendPadding = 5;
+            var lbbox = itemList[0][0].getBBox();
+            box.attr("x", (lbbox.x - legendPadding))
+                .attr("y", (lbbox.y - legendPadding))
+                .attr("height", (lbbox.height + 2 * legendPadding))
+                .attr("width", (lbbox.width + 2 * legendPadding));
+        };
+        return it;
+    }
 </script>
 </body>
