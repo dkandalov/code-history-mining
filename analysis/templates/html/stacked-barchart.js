@@ -12,6 +12,45 @@ function observable(target, eventName) {
 	};
 }
 
+// based on https://gist.github.com/ZJONSSON/3918369
+function newLegend(root, uiConfig) {
+	var it = {};
+	it.update = function(items) {
+		items = _.clone(items).reverse();
+
+		// always redraw legend so that it would be above graph
+		root.select(".legend").remove();
+		var legend = root.append("g").attr("class", "legend")
+			.attr("transform", "translate(" + (uiConfig.width - 50) + ",20)");
+
+		var box = legend.append("rect").attr("class", "box");
+		var itemList = legend.append("g").attr("class", "items");
+
+		itemList.selectAll("text")
+			.data(items)
+			.call(function(d) { d.enter().append("text") })
+			.attr("y", function(d, i) { return i + "em"; })
+			.attr("x", "1em")
+			.text(function(d) { return d.category; });
+
+		itemList.selectAll("circle")
+			.data(items)
+			.call(function(d) { d.enter().append("circle") })
+			.attr("cy", function(d, i) { return i - 0.4 + "em"; })
+			.attr("cx", 0)
+			.attr("r", "0.4em")
+			.style("fill",function(d) { return d.color; });
+
+		var legendPadding = 5;
+		var itemListBox = itemList[0][0].getBBox();
+		box.attr("x", itemListBox.x - legendPadding)
+			.attr("y", itemListBox.y - legendPadding)
+			.attr("height", itemListBox.height + 2 * legendPadding)
+			.attr("width", itemListBox.width + 2 * legendPadding);
+	};
+	return it;
+}
+
 function newControlsPanel(root, uiConfig) {
 	var it = root.append("span").style({display: "block", width: uiConfig.width + "px"})
 				 .append("span").style({float: "right"});
