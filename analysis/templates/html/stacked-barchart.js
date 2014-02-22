@@ -16,8 +16,6 @@ function observable(target, eventName) {
 function newLegend(root, uiConfig) {
 	var it = {};
 	it.update = function(items) {
-		items = _.clone(items).reverse();
-
 		// always redraw legend so that it would be above graph
 		root.select(".legend").remove();
 		var legend = root.append("g").attr("class", "legend")
@@ -129,7 +127,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 }
 
 function newBars(root, uiConfig, xScale, yScale, id) {
-	var color = d3.scale.category20c();
+	var color = d3.scale.category20();
 	var dateFormat = d3.time.format("%d/%m/%Y");
 	var valueFormat = function(n) {
 		var s = d3.format(",")(n);
