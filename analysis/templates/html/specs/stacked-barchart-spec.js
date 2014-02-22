@@ -53,9 +53,9 @@ describe("bars", function () {
 		data.sendUpdate();
 
 		expect(received).toEqual([
-			{category: "Mee", color: '#3182bd'},
-			{category: "Ooo", color: '#6baed6'},
-			{category: "Ggg", color: '#9ecae1'}
+			{category: "java", color: '#1f77b4'},
+			{category: "xml", color: '#aec7e8'},
+			{category: "txt", color: '#ff7f0e'}
 		]);
 	})
 });
@@ -88,12 +88,12 @@ describe("bar chart data", function () {
 		data.sendUpdate();
 
 		expect(received.data.length).toEqual(3);
-		expect(received.data[0][0]).toEqual({ category: "Mee", x: date("18/01/2013"), y: 1, y0: 0 });
-		expect(received.data[1][0]).toEqual({ category: "Ooo", x: date("18/01/2013"), y: 11, y0: 1 });
-		expect(received.data[2][0]).toEqual({ category: "Ggg", x: date("18/01/2013"), y: 111, y0: 1 + 11 });
-		expect(received.data[0][1]).toEqual({ category: "Mee", x: date("19/01/2013"), y: 2, y0: 0 });
-		expect(received.data[1][1]).toEqual({ category: "Ooo", x: date("19/01/2013"), y: 22, y0: 2 });
-		expect(received.data[2][1]).toEqual({ category: "Ggg", x: date("19/01/2013"), y: 222, y0: 2 + 22 });
+		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
+		expect(received.data[1][0]).toEqual({ category: "xml", x: date("18/01/2013"), y: 11, y0: 1 });
+		expect(received.data[2][0]).toEqual({ category: "txt", x: date("18/01/2013"), y: 111, y0: 1 + 11 });
+		expect(received.data[0][1]).toEqual({ category: "java", x: date("19/01/2013"), y: 2, y0: 0 });
+		expect(received.data[1][1]).toEqual({ category: "xml", x: date("19/01/2013"), y: 22, y0: 2 });
+		expect(received.data[2][1]).toEqual({ category: "txt", x: date("19/01/2013"), y: 222, y0: 2 + 22 });
 		expect(received.dataStacked.length).toEqual(3);
 	});
 
@@ -106,12 +106,12 @@ describe("bar chart data", function () {
 
 		data.sendUpdate();
 		expect(received.groupIndex).toEqual(0);
-		expect(received.data[0][0]["category"]).toEqual("Mee");
+		expect(received.data[0][0]["category"]).toEqual("java");
 		expect(received.data[0][0]["y"]).toEqual(1);
 
 		data.setGroupIndex(1);
 		expect(received.groupIndex).toEqual(1);
-		expect(received.data[0][0]["category"]).toEqual("Mee");
+		expect(received.data[0][0]["category"]).toEqual("java");
 		expect(received.data[0][0]["y"]).toEqual(11);
 	});
 
@@ -125,14 +125,14 @@ describe("bar chart data", function () {
 		data.sendUpdate();
 		expect(received.groupByIndex).toEqual(0);
 		expect(received.groupByTimeInterval).toEqual(d3.time.day);
-		expect(received.data[0][0]).toEqual({ category: "Mee", x: date("18/01/2013"), y: 1, y0: 0 });
+		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
 
 		data.groupBy(1);
 		expect(received.groupByIndex).toEqual(1);
 		expect(received.groupByTimeInterval).toEqual(d3.time.monday);
-		expect(received.data[0][0]).toEqual({ category: "Mee", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
-		expect(received.data[1][0]).toEqual({ category: "Ooo", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
-		expect(received.data[2][0]).toEqual({ category: "Ggg", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
+		expect(received.data[0][0]).toEqual({ category: "java", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
+		expect(received.data[1][0]).toEqual({ category: "xml", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
+		expect(received.data[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
 	});
 });
 
@@ -142,24 +142,24 @@ function date(s) {
 
 var rawData = ["\
 date,category,value\n\
-18/01/2013,Mee,1\n\
-19/01/2013,Mee,2\n\
-20/01/2013,Mee,3\n\
-18/01/2013,Ooo,11\n\
-19/01/2013,Ooo,22\n\
-20/01/2013,Ooo,33\n\
-18/01/2013,Ggg,111\n\
-19/01/2013,Ggg,222\n\
-20/01/2013,Ggg,333\n\
+18/01/2013,java,1\n\
+19/01/2013,java,2\n\
+20/01/2013,java,3\n\
+18/01/2013,xml,11\n\
+19/01/2013,xml,22\n\
+20/01/2013,xml,33\n\
+18/01/2013,txt,111\n\
+19/01/2013,txt,222\n\
+20/01/2013,txt,333\n\
 ",
 "date,category,value\n\
-18/01/2013,Mee,11\n\
-19/01/2013,Mee,22\n\
-20/01/2013,Mee,33\n\
-18/01/2013,Ooo,111\n\
-19/01/2013,Ooo,222\n\
-20/01/2013,Ooo,333\n\
-18/01/2013,Ggg,1111\n\
-19/01/2013,Ggg,2222\n\
-20/01/2013,Ggg,3333\n\
+18/01/2013,java,11\n\
+19/01/2013,java,22\n\
+20/01/2013,java,33\n\
+18/01/2013,xml,111\n\
+19/01/2013,xml,222\n\
+20/01/2013,xml,333\n\
+18/01/2013,txt,1111\n\
+19/01/2013,txt,2222\n\
+20/01/2013,txt,3333\n\
 "];
