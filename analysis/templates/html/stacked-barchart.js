@@ -137,7 +137,7 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 	var data;
 
 	root.append("defs").append("clipPath").attr("id", "clip" + id)
-		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height);
+		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
 
 	function nonZero(length) {
 		return (length > 0 ? length : 0.0000001);
@@ -161,7 +161,13 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.data(update.dataStacked)
 			.enter().append("g")
 			.attr("class", "layer" + id)
-//			.style("fill", function(d, i) { return color(i); })
+			.style("fill", function(d, i) { return color(i); });
+
+		// from http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-and-blend-colors
+		function shadeColor(color, percent) {
+			var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent, R = f >> 16, G = f >> 8 & 0x00FF, B = f & 0x0000FF;
+			return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
+		}
 
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
@@ -171,8 +177,8 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
-//			.on("mouseover", function(d, i) { this.style.fill = "#FFF"; }) // TODO
-//			.on("mouseout", function(d, i) { this.style.fill = "#000"; })
+			.on("mouseover", function(d, i) { this.style.fill = shadeColor(this.parentNode.style.fill, -0.15); })
+			.on("mouseout", function(d, i) { this.removeAttribute("style"); })
 			.append("title")
 			.text(function (d) {
 				return "Date: " + dateFormat(d.x) + "\n" +
