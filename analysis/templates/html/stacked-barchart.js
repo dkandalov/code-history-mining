@@ -161,7 +161,7 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.data(update.dataStacked)
 			.enter().append("g")
 			.attr("class", "layer" + id)
-			.style("fill", function(d, i) { return color(i); });
+//			.style("fill", function(d, i) { return color(i); })
 
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
@@ -171,6 +171,8 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
+//			.on("mouseover", function(d, i) { this.style.fill = "#FFF"; }) // TODO
+//			.on("mouseout", function(d, i) { this.style.fill = "#000"; })
 			.append("title")
 			.text(function (d) {
 				return "Date: " + dateFormat(d.x) + "\n" +
