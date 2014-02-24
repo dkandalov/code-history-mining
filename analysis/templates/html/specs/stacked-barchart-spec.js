@@ -12,7 +12,7 @@ describe("bars", function () {
 	});
 
 	it("on data update adds svg rects to root element", function() {
-		var bars = newBars(rootElement, uiConfig, x, y, "bars");
+		var bars = newBars(rootElement, uiConfig, x, y, {id: "bars"});
 		data.onUpdate([x.update, y.update, bars.update]);
 
 		data.sendUpdate();
@@ -32,7 +32,7 @@ describe("bars", function () {
 			var allRects = rootElement.selectAll(".layer-bars rect")[0];
 			return _.reduce(allRects, function(acc, it){ return acc + parseInt(it.attributes["height"].value); }, 0);
 		}
-		var bars = newBars(rootElement, uiConfig, x, y, "bars");
+		var bars = newBars(rootElement, uiConfig, x, y, {id: "bars"});
 		data.onUpdate([x.update, y.update, bars.update]);
 
 		data.sendUpdate();

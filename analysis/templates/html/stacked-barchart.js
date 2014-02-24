@@ -99,7 +99,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 		g.selectAll("g").remove();
 		g.selectAll("defs").remove();
 
-		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, "brushBars");
+		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, {id: "brushBars", shading: false, tooltip: false});
 		if (update != null) bars.update(update);
 
 		g.append("g")
@@ -126,14 +126,15 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 	return brush;
 }
 
-function newBars(root, uiConfig, xScale, yScale, id) {
+function newBars(root, uiConfig, xScale, yScale, settings) {
 	var color = d3.scale.category20();
 	var dateFormat = d3.time.format("%d/%m/%Y");
 	var valueFormat = function(n) {
 		var s = d3.format(",")(n);
 		return s.length < 6 ? s : d3.format("s")(n);
 	};
-	id = (id == null ? "-bars" : "-" + id);
+	if (settings == null) settings = {id: "bars", shading: true, tooltip: true};
+	var id = "-" + settings.id;
 	var data;
 
 	root.append("defs").append("clipPath").attr("id", "clip" + id)
@@ -169,7 +170,7 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 		}
 
-		layer.selectAll("rect")
+		var rect = layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.enter().append("rect")
 			.attr("clip-path", "url(#clip" + id + ")")
@@ -177,14 +178,19 @@ function newBars(root, uiConfig, xScale, yScale, id) {
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
-			.on("mouseover", function(d, i) { this.style.fill = shadeColor(this.parentNode.style.fill, -0.15); })
-			.on("mouseout", function(d, i) { this.removeAttribute("style"); })
-			.append("title")
-			.text(function (d) {
-				return "Date: " + dateFormat(d.x) + "\n" +
-					"Value: " + valueFormat(d.y) + "\n" +
-					"Category: " + d["category"];
-			});
+
+		if (settings.shading) {
+			rect.on("mouseover", function(d, i) { this.style.fill = shadeColor(this.parentNode.style.fill, -0.15); })
+				.on("mouseout", function(d, i) { this.removeAttribute("style"); })
+		}
+		if (settings.tooltip) {
+			rect.append("title")
+				.text(function (d) {
+					return "Date: " + dateFormat(d.x) + "\n" +
+						"Value: " + valueFormat(d.y) + "\n" +
+						"Category: " + d["category"];
+				});
+		}
 
 		var categoryUpdate = []
 		update.dataStacked.forEach(function(it, i) {
