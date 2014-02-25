@@ -41,6 +41,17 @@
     .legend .items {
         font-size: 12px;
     }
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        height: auto;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
+    }
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
@@ -120,6 +131,7 @@ date,category,value\n\
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
+    var tooltip = newTooltip(root, "tooltip");
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
@@ -131,10 +143,32 @@ date,category,value\n\
 
     var legend = newLegend(svg, uiConfig);
     bars.onUpdate(legend.update);
+    bars.onHover(tooltip.update);
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
+
+    function newTooltip(root, tooltipCss) {
+        var div = root.append("div")
+            .attr("class", tooltipCss)
+            .style("opacity", 0);
+
+        var it = {};
+        it.update = function(update) {
+            console.log("aaa");
+            if (update.left == null || update.top == null) {
+                div.style("opacity", 0);
+            } else {
+                div.style("opacity", .9)
+                   .style("position", "absolute")
+                   .style("left", update.left + "px")
+                   .style("top",  update.top + "px")
+                   .html("asdfasd");
+            }
+        };
+        return it;
+    }
 </script>
 </body>

@@ -153,6 +153,7 @@ function newBars(root, uiConfig, xScale, yScale, settings) {
 
 	var it = {};
 	var notifyCategoryListeners = observable(it);
+	var notifyHoverListeners = observable(it, "onHover");
 	it.update = function(update) {
 		data = update.data;
 
@@ -179,10 +180,14 @@ function newBars(root, uiConfig, xScale, yScale, settings) {
 			.attr("width", barWidth())
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
 
-		if (settings.shading) {
-			rect.on("mouseover", function(d, i) { this.style.fill = shadeColor(this.parentNode.style.fill, -0.15); })
-				.on("mouseout", function(d, i) { this.removeAttribute("style"); })
-		}
+		rect.on("mouseover", function(d) {
+				if (settings.shading) this.style.fill = shadeColor(this.parentNode.style.fill, -0.15);
+				notifyHoverListeners({left: xScale(d.x), top: yScale(d.y0 + d.y)});
+			}).on("mouseout", function() {
+				if (settings.shading) this.removeAttribute("style");
+				notifyHoverListeners({});
+			});
+
 		if (settings.tooltip) {
 			rect.append("title")
 				.text(function (d) {
