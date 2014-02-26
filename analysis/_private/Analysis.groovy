@@ -110,13 +110,13 @@ class Analysis {
 			def otherFileTypesByDate = eventsByTypeByDate
 					.findAll{ leastChangedFileTypes.contains(it.key) }
 					.inject([:].withDefault{[]}) { map, typeToEventsByDate ->
-				typeToEventsByDate.value.entrySet().each {
-					def date = it.key
-					def eventsForDate = it.value
-					map.put(date, map.get(date) + eventsForDate)
-				}
-				map
-			}
+						typeToEventsByDate.value.entrySet().each {
+							def date = it.key
+							def eventsForDate = it.value
+							map.put(date, map.get(date) + eventsForDate)
+						}
+						map
+					}
 			eventsByTypeByDate.keySet().removeAll(leastChangedFileTypes)
 			if (otherFileTypesByDate.size() > 0)
 				eventsByTypeByDate.put("Other", otherFileTypesByDate)
