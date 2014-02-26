@@ -54,7 +54,7 @@ function newShading() {
 	return it;
 }
 
-function newTooltip(root, uiConfig, settings) {
+function newTooltip(root, svgRoot, uiConfig, settings) {
 	if (settings == null) settings = {};
 	if (settings.css == null) settings.css = "";
 	if (settings.delay == null) settings.delay = 1500;
@@ -65,6 +65,11 @@ function newTooltip(root, uiConfig, settings) {
 		.style("position", "absolute")
 		.style("opacity", 0);
 
+	var dateFormat = d3.time.format("%d/%m/%Y");
+	var valueFormat = function(n) {
+		var s = d3.format(",")(n);
+		return s.length < 6 ? s : d3.format("s")(n);
+	};
 	var lastUpdate = null;
 
 	var it = {};
@@ -83,23 +88,21 @@ function newTooltip(root, uiConfig, settings) {
 			var width = parseInt(update.bar.getAttribute("width"));
 			var height = parseInt(update.bar.getAttribute("height"));
 
-			var dateFormat = d3.time.format("%d/%m/%Y");
-			var valueFormat = function(n) {
-				var s = d3.format(",")(n);
-				return s.length < 6 ? s : d3.format("s")(n);
-			};
-
-			var left = uiConfig.margin.left + x + width + 5;
-			if (left > uiConfig.margin.left + uiConfig.width) left = uiConfig.margin.left + uiConfig.width;
-			var top = uiConfig.margin.top + y + (height / 2);
+			var svgPos = svgRoot[0][0];
+			var left = svgPos.offsetLeft + uiConfig.margin.left + x + width + 5;
+			if (left > svgPos.offsetLeft + uiConfig.margin.left + uiConfig.width) {
+				left = svgPos.offsetLeft + uiConfig.margin.left + uiConfig.width;
+			}
+			var top = svgPos.offsetTop + uiConfig.margin.top + y + (height / 2);
 			div.html("Value: " + valueFormat(update.value) + "<br/>" +
 					"Date: " + dateFormat(update.date) + "<br/>" +
 					"Category: " + update.category)
 				.style("left", left + "px")
 				.style("top", top + "px");
 
+			// can determine actual height only after adding text
 			var actualHeight = div[0][0].offsetHeight;
-			top = uiConfig.margin.top + y + (height / 2 - actualHeight / 2);
+			top = svgPos.offsetTop + uiConfig.margin.top + y + (height / 2 - actualHeight / 2);
 			div.style("top",  top + "px");
 
 			div.transition().delay(settings.delay).style("opacity", 0.9);
