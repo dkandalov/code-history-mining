@@ -21,9 +21,10 @@ describe("'nothing to show' label", function () {
 });
 
 describe("tooltip", function () {
-	var rootElement, uiConfig;
+	var rootElement, svgRoot, uiConfig;
 	beforeEach(function() {
 		rootElement = d3.select("body").append("span").attr("id", "tooltip-test");
+		svgRoot = rootElement.append("svg");
 		uiConfig = { width: 1000, height: 500, margin: {left: 0, top: 0} };
 	});
 	afterEach(function() {
@@ -31,7 +32,7 @@ describe("tooltip", function () {
 	});
 
 	it("becomes visible on non-null update", function() {
-		var tooltip = newTooltip(rootElement, uiConfig, {delay: 0, delayBeforeHide: 0});
+		var tooltip = newTooltip(rootElement, svgRoot, uiConfig, {delay: 0, delayBeforeHide: 0});
 		expect(rootElement.select("div")[0][0].getAttribute("style")).toContain("opacity: 0");
 
 		var bar = document.createElement('rect');
