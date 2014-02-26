@@ -391,11 +391,11 @@ function autoGroup(data) {
 		if (ranOnce) return;
 		ranOnce = true;
 
-		var lessThanAMonth = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 1);
-		var lessThanThreeMonths = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 12);
-		if (lessThanAMonth) {
+		var shouldGroupByDay = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 1);
+		var shouldGroupByWeek = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 24);
+		if (shouldGroupByDay) {
 			// do nothing, keep grouped by day
-		} else if (lessThanThreeMonths) {
+		} else if (shouldGroupByWeek) {
 			data.groupBy(1);
 		} else {
 			data.groupBy(2);

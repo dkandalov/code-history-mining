@@ -101,6 +101,8 @@ class Analysis {
 		def changeAsChars = { it.sum{ changeSizeInChars(it) } }
 
 		def changeSizeByFileType = { changeAmountOf ->
+			checkIfCancelled()
+
 			def totalChangeAmountByType = eventsByTypeByDate
 					.rollup{ changeAmountOf(it) }
 					.rollupEntries{ it*.value.sum() }
