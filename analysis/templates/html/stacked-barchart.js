@@ -16,12 +16,21 @@ function observable(target, eventName) {
 function newTooltip(root, uiConfig, tooltipCss) {
 	var div = root.append("div")
 		.attr("class", tooltipCss)
+		.style("position", "absolute")
 		.style("opacity", 0);
+
+	var lastUpdate = null;
 
 	var it = {};
 	it.update = function(update) {
-		if (update.bar == null) {
-			div.style("opacity", 0);
+		lastUpdate = update;
+		if (update == null) {
+			// use timeout because when moving between two elements, onMouseOver event for next element
+			// can come before onMouseOut for old one, what results in tooltip disappearing
+			setTimeout(function() {
+				if (lastUpdate == null)
+					div.transition().delay(0).style("opacity", 0);
+			}, 100);
 		} else {
 			var x = parseInt(update.bar.getAttribute("x"));
 			var y = parseInt(update.bar.getAttribute("y"));
@@ -34,13 +43,20 @@ function newTooltip(root, uiConfig, tooltipCss) {
 				return s.length < 6 ? s : d3.format("s")(n);
 			};
 
-			div.style("opacity", .9)
-				.style("position", "absolute")
-				.style("left", uiConfig.margin.left + x + width + "px")
-				.style("top",  uiConfig.margin.top + y + height/2 + "px")
-				.html("Value: " + valueFormat(update.value) + "<br/>" +
+			var left = uiConfig.margin.left + x + width + 5;
+			if (left > uiConfig.margin.left + uiConfig.width) left = uiConfig.margin.left + uiConfig.width;
+			var top = uiConfig.margin.top + y + (height / 2);
+			div.html("Value: " + valueFormat(update.value) + "<br/>" +
 					"Date: " + dateFormat(update.date) + "<br/>" +
-					"Category: " + update.category);
+					"Category: " + update.category)
+				.style("left", left + "px")
+				.style("top", top + "px");
+
+			var actualHeight = div[0][0].offsetHeight;
+			top = uiConfig.margin.top + y + (height / 2 - actualHeight / 2);
+			div.style("top",  top + "px");
+
+			div.transition().delay(1500).style("opacity", 0.9);
 		}
 	};
 	return it;
@@ -218,7 +234,7 @@ function newBars(root, uiConfig, xScale, yScale, settings) {
 			if (settings.shading) {
 				this.removeAttribute("style");
 			}
-			notifyHoverListeners({bar: null});
+			notifyHoverListeners(null);
 		});
 
 		var categoryUpdate = [];
