@@ -131,19 +131,29 @@ function newControlsPanel(root, uiConfig) {
 	return it;
 }
 
-function newGroupByDropDown(root, stackedData, label, groupingNames) {
-	return newDropDown(root, label, groupingNames, function(newValue) {
-		stackedData.groupBy(newValue);
-	});
+function newGroupByDropDown(root, stackedData, label, groupByNames) {
+	return newDropDown(root, label, groupByNames,
+		function(update) {
+			return update.groupByIndex;
+		},
+		function(newValue) {
+			stackedData.groupBy(newValue);
+		}
+	);
 }
 
 function newGroupIndexDropDown(root, stackedData, label, groupNames) {
-	return newDropDown(root, label, groupNames, function(newValue) {
-		stackedData.setGroupIndex(newValue);
-	});
+	return newDropDown(root, label, groupNames,
+		function(update) {
+			return update.groupIndex;
+		},
+		function(newValue) {
+			stackedData.setGroupIndex(newValue);
+		}
+	);
 }
 
-function newDropDown(root, label, optionLabels, onChange) {
+function newDropDown(root, label, optionLabels, getSelectedIndex, onChange) {
 	root.append("label").html(label);
 	var dropDown = root.append("select");
 	for (var i = 0; i < optionLabels.length; i++) {
@@ -154,7 +164,11 @@ function newDropDown(root, label, optionLabels, onChange) {
 		onChange(this.value)
 	});
 
-	return {};
+	var it = {};
+	it.update = function(update) {
+		dropDown[0][0].selectedIndex = getSelectedIndex(update);
+	};
+	return it;
 }
 
 function newXBrush(root, uiConfig, xScale, height, y) {
@@ -344,6 +358,25 @@ function newYScale(uiConfig) {
 	return y;
 }
 
+function autoGroup(data) {
+	var ranOnce = false;
+	var it = {};
+	it.update = function(update) {
+		if (ranOnce) return;
+		ranOnce = true;
+
+		var lessThanAMonth = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 1);
+		var lessThanThreeMonths = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 12);
+		if (lessThanAMonth) {
+			// do nothing, keep grouped by day
+		} else if (lessThanThreeMonths) {
+			data.groupBy(1);
+		} else {
+			data.groupBy(2);
+		}
+	};
+	return it;
+}
 
 function newStackedData(rawCsv) {
 	function groupByCategory(data) {
@@ -440,5 +473,3 @@ function newStackedData(rawCsv) {
 
 	return it;
 }
-
-

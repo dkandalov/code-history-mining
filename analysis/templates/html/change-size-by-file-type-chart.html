@@ -132,21 +132,19 @@ date,category,value\n\
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
     var tooltip = newTooltip(root, uiConfig, {css: "tooltip"});
-    var shading = newShading();
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
 
     var controlsPanel = newControlsPanel(root, uiConfig);
-    newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
+    var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
     controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"])
 
-    var legend = newLegend(svg, uiConfig);
-    bars.onUpdate(legend.update);
-    bars.onHover([tooltip.update, shading.update]);
+    bars.onUpdate(newLegend(svg, uiConfig).update);
+    bars.onHover([tooltip.update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update, autoGroup(data).update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
