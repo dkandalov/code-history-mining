@@ -1,3 +1,25 @@
+describe("'nothing to show' label", function () {
+	var rootElement, svgRoot, uiConfig;
+	beforeEach(function() {
+		rootElement = d3.select("body").append("span").attr("id", "tooltip-test");
+		svgRoot = rootElement.append("svg");
+		uiConfig = { width: 1000, height: 500, margin: {left: 0, top: 0} };
+	});
+	afterEach(function() {
+		rootElement.remove();
+	});
+
+	it("becomes visible if there is no data", function() {
+		var label = newNothingToShowLabel(rootElement, svgRoot, uiConfig);
+
+		label.update({ maxY: 123 });
+		expect(rootElement.select("div")[0][0].getAttribute("style")).toContain("opacity: 0");
+
+		label.update({ maxY: 0 });
+		expect(rootElement.select("div")[0][0].getAttribute("style")).toContain("opacity: 0.9");
+	});
+});
+
 describe("tooltip", function () {
 	var rootElement, uiConfig;
 	beforeEach(function() {

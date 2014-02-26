@@ -54,6 +54,11 @@
     }
 </style>
 <body>
+<h2>asdfasdfsadf</h2>
+<h2>asdfasdfsadf</h2>
+<h2>asdfasdfsadf</h2>
+<h2>asdfasdfsadf</h2>
+<h2>asdfasdfsadf</h2>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
@@ -95,20 +100,20 @@ date,category,value\n\
 ",
 "date,category,value\n\
 18/01/2013,java,0\n\
-19/01/2013,java,500\n\
-20/01/2013,java,300\n\
-21/01/2013,java,300\n\
-22/01/2013,java,300\n\
-18/01/2013,xml,1008\n\
-19/01/2013,xml,300\n\
-21/01/2013,xml,1100\n\
-22/01/2013,xml,1100\n\
-20/01/2013,xml,1100\n\
-18/01/2013,txt,1100\n\
-19/01/2013,txt,1100\n\
-20/01/2013,txt,1100\n\
-21/01/2013,txt,1100\n\
-22/01/2013,txt,1100\n\
+19/01/2013,java,00\n\
+20/01/2013,java,00\n\
+21/01/2013,java,00\n\
+22/01/2013,java,00\n\
+18/01/2013,xml,0\n\
+19/01/2013,xml,00\n\
+21/01/2013,xml,00\n\
+22/01/2013,xml,00\n\
+20/01/2013,xml,00\n\
+18/01/2013,txt,00\n\
+19/01/2013,txt,00\n\
+20/01/2013,txt,00\n\
+21/01/2013,txt,00\n\
+22/01/2013,txt,00\n\
 "
 ]/*data_placeholder*/;
     var margin = {top: 40, right: 50, bottom: 20, left: 50};
@@ -121,11 +126,11 @@ date,category,value\n\
     var xAxisHeight = 30;
 
     var root = d3.select("body");
-    var svg = root.append("svg")
-            .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
-            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight)
-            .append("g")
-            .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
+    var svgRoot = root.append("svg")
+                .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+                .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight)
+    var svg = svgRoot.append("g")
+                .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
     var data = newStackedData(rawData);
     var x = newXScale(uiConfig);
@@ -144,7 +149,8 @@ date,category,value\n\
     bars.onUpdate(newLegend(svg, uiConfig).update);
     bars.onHover([tooltip.update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update, autoGroup(data).update]);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
+                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 

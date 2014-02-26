@@ -13,6 +13,29 @@ function observable(target, eventName) {
 }
 
 
+function newNothingToShowLabel(root, svgRoot, uiConfig) {
+	var label = root.append("div")
+		.html("Unfortunately, there is nothing to show.")
+		.style("position", "absolute")
+		.style("opacity", 0);
+	var it = {};
+	it.update = function(update) {
+		if (update.maxY > 0) {
+			label.style("opacity", 0);
+		} else {
+			var svgPos = svgRoot[0][0];
+			label.style("opacity", 0.9)
+				.style("top", function(){
+					return svgPos.offsetTop + uiConfig.margin.top + (uiConfig.height / 2) - (this.offsetHeight / 2) + "px";
+				})
+				.style("left", function(){
+					return svgPos.offsetLeft + uiConfig.margin.left + (uiConfig.width / 2) - (this.offsetWidth / 2) + "px";
+				});
+		}
+	};
+	return it;
+}
+
 function newShading() {
 	// from http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-and-blend-colors
 	function shadeColor(color, percent) {
