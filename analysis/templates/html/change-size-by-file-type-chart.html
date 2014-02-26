@@ -131,7 +131,7 @@ date,category,value\n\
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
-    var tooltip = newTooltip(root, "tooltip");
+    var tooltip = newTooltip(root, uiConfig, "tooltip");
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
@@ -149,26 +149,5 @@ date,category,value\n\
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
-
-    function newTooltip(root, tooltipCss) {
-        var div = root.append("div")
-            .attr("class", tooltipCss)
-            .style("opacity", 0);
-
-        var it = {};
-        it.update = function(update) {
-            console.log("aaa");
-            if (update.left == null || update.top == null) {
-                div.style("opacity", 0);
-            } else {
-                div.style("opacity", .9)
-                   .style("position", "absolute")
-                   .style("left", update.left + "px")
-                   .style("top",  update.top + "px")
-                   .html("asdfasd");
-            }
-        };
-        return it;
-    }
 </script>
 </body>

@@ -12,6 +12,40 @@ function observable(target, eventName) {
 	};
 }
 
+
+function newTooltip(root, uiConfig, tooltipCss) {
+	var div = root.append("div")
+		.attr("class", tooltipCss)
+		.style("opacity", 0);
+
+	var it = {};
+	it.update = function(update) {
+		if (update.bar == null) {
+			div.style("opacity", 0);
+		} else {
+			var x = parseInt(update.bar.getAttribute("x"));
+			var y = parseInt(update.bar.getAttribute("y"));
+			var width = parseInt(update.bar.getAttribute("width"));
+			var height = parseInt(update.bar.getAttribute("height"));
+
+			var dateFormat = d3.time.format("%d/%m/%Y");
+			var valueFormat = function(n) {
+				var s = d3.format(",")(n);
+				return s.length < 6 ? s : d3.format("s")(n);
+			};
+
+			div.style("opacity", .9)
+				.style("position", "absolute")
+				.style("left", uiConfig.margin.left + x + width + "px")
+				.style("top",  uiConfig.margin.top + y + height/2 + "px")
+				.html("Value: " + valueFormat(update.value) + "<br/>" +
+					"Date: " + dateFormat(update.date) + "<br/>" +
+					"Category: " + update.category);
+		}
+	};
+	return it;
+}
+
 // based on https://gist.github.com/ZJONSSON/3918369
 function newLegend(root, uiConfig) {
 	var it = {};
@@ -99,7 +133,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 		g.selectAll("g").remove();
 		g.selectAll("defs").remove();
 
-		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, {id: "brushBars", shading: false, tooltip: false});
+		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, {id: "brushBars", shading: false});
 		if (update != null) bars.update(update);
 
 		g.append("g")
@@ -128,12 +162,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 
 function newBars(root, uiConfig, xScale, yScale, settings) {
 	var color = d3.scale.category20();
-	var dateFormat = d3.time.format("%d/%m/%Y");
-	var valueFormat = function(n) {
-		var s = d3.format(",")(n);
-		return s.length < 6 ? s : d3.format("s")(n);
-	};
-	if (settings == null) settings = {id: "bars", shading: true, tooltip: true};
+	if (settings == null) settings = {id: "bars", shading: true};
 	var id = "-" + settings.id;
 	var data;
 
@@ -178,26 +207,21 @@ function newBars(root, uiConfig, xScale, yScale, settings) {
 			.attr("x", function(d) { return xScale(d.x); })
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
-			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); })
+			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); });
 
 		rect.on("mouseover", function(d) {
-				if (settings.shading) this.style.fill = shadeColor(this.parentNode.style.fill, -0.15);
-				notifyHoverListeners({left: xScale(d.x), top: yScale(d.y0 + d.y)});
-			}).on("mouseout", function() {
-				if (settings.shading) this.removeAttribute("style");
-				notifyHoverListeners({});
-			});
+			if (settings.shading) {
+				this.style.fill = shadeColor(this.parentNode.style.fill, -0.15);
+			}
+			notifyHoverListeners({bar: this, value: d.y, date: d.x, category: d["category"]});
+		}).on("mouseout", function() {
+			if (settings.shading) {
+				this.removeAttribute("style");
+			}
+			notifyHoverListeners({bar: null});
+		});
 
-		if (settings.tooltip) {
-			rect.append("title")
-				.text(function (d) {
-					return "Date: " + dateFormat(d.x) + "\n" +
-						"Value: " + valueFormat(d.y) + "\n" +
-						"Category: " + d["category"];
-				});
-		}
-
-		var categoryUpdate = []
+		var categoryUpdate = [];
 		update.dataStacked.forEach(function(it, i) {
 			categoryUpdate.push({ category: it[0]["category"], color: color(i) });
 		});
