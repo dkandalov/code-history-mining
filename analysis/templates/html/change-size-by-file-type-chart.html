@@ -132,6 +132,7 @@ date,category,value\n\
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
     var tooltip = newTooltip(root, uiConfig, {css: "tooltip"});
+    var shading = newShading();
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
@@ -143,7 +144,7 @@ date,category,value\n\
 
     var legend = newLegend(svg, uiConfig);
     bars.onUpdate(legend.update);
-    bars.onHover(tooltip.update);
+    bars.onHover([tooltip.update, shading.update]);
 
     data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
