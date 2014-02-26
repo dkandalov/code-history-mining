@@ -131,7 +131,7 @@ date,category,value\n\
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
-    var tooltip = newTooltip(root, uiConfig, "tooltip");
+    var tooltip = newTooltip(root, uiConfig, {css: "tooltip"});
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Change size", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);

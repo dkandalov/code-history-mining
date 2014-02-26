@@ -13,9 +13,14 @@ function observable(target, eventName) {
 }
 
 
-function newTooltip(root, uiConfig, tooltipCss) {
+function newTooltip(root, uiConfig, settings) {
+	if (settings == null) settings = {};
+	if (settings.css == null) settings.css = "";
+	if (settings.delay == null) settings.delay = 1500;
+	if (settings.delayBeforeHide == null) settings.delayBeforeHide = 100;
+
 	var div = root.append("div")
-		.attr("class", tooltipCss)
+		.attr("class", settings.css)
 		.style("position", "absolute")
 		.style("opacity", 0);
 
@@ -30,7 +35,7 @@ function newTooltip(root, uiConfig, tooltipCss) {
 			setTimeout(function() {
 				if (lastUpdate == null)
 					div.transition().delay(0).style("opacity", 0);
-			}, 100);
+			}, settings.delayBeforeHide);
 		} else {
 			var x = parseInt(update.bar.getAttribute("x"));
 			var y = parseInt(update.bar.getAttribute("y"));
@@ -56,7 +61,7 @@ function newTooltip(root, uiConfig, tooltipCss) {
 			top = uiConfig.margin.top + y + (height / 2 - actualHeight / 2);
 			div.style("top",  top + "px");
 
-			div.transition().delay(1500).style("opacity", 0.9);
+			div.transition().delay(settings.delay).style("opacity", 0.9);
 		}
 	};
 	return it;

@@ -1,3 +1,31 @@
+describe("tooltip", function () {
+	var rootElement, uiConfig;
+	beforeEach(function() {
+		rootElement = d3.select("body").append("span").attr("id", "tooltip-test");
+		uiConfig = { width: 1000, height: 500, margin: {left: 0, top: 0} };
+	});
+	afterEach(function() {
+		rootElement.remove();
+	});
+
+	it("becomes visible on non-null update", function() {
+		var tooltip = newTooltip(rootElement, uiConfig, {delay: 0, delayBeforeHide: 0});
+		expect(rootElement.select("div")[0][0].getAttribute("style")).toContain("opacity: 0");
+
+		var bar = document.createElement('rect');
+		tooltip.update({
+			bar: bar,
+			value: 123,
+			date: date("23/10/2011"),
+			category: "java"
+		});
+
+		setTimeout(function() {
+			expect(rootElement.select("div")[0][0].getAttribute("style")).toContain("opacity: 0.9");
+		}, 10);
+	});
+});
+
 describe("bars", function () {
 	var rootElement, uiConfig, data, x, y;
 	beforeEach(function() {
@@ -48,7 +76,7 @@ describe("bars", function () {
 		var received = null;
 		bars.onUpdate([function(update) {
 			received = update;
-		}])
+		}]);
 
 		data.sendUpdate();
 
@@ -57,7 +85,7 @@ describe("bars", function () {
 			{category: "xml", color: '#aec7e8'},
 			{category: "txt", color: '#ff7f0e'}
 		]);
-	})
+	});
 });
 
 describe("x scale", function () {
