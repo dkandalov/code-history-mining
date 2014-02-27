@@ -36,7 +36,7 @@ class Template {
 	Template width(int value) {
 		new Template(text
 				.replaceAll(/width =.*?,/, "width = ${value},")
-				.replaceAll(/width: .*?,/, "width: ${value},")
+				.replaceAll(/width:.*?margin.*?,/, "width: ${value},")
 		)
 	}
 
