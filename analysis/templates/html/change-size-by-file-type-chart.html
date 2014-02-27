@@ -2,14 +2,13 @@
 <meta charset="utf-8">
 <style>
     body {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
         margin: auto;
-        position: relative;
         width: 960px;
         background: #f2f2f2;
     }
 
-    text, label {
+    #chart text, #chart label {
         font: 11px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
@@ -19,12 +18,6 @@
         fill: none;
         stroke: #000;
         shape-rendering: crispEdges;
-    }
-
-    form {
-        position: absolute;
-        right: 10px;
-        top: 10px;
     }
 
     .brush .extent {
@@ -53,7 +46,9 @@
         pointer-events: none;
     }
 </style>
+<head><title>Change size by file type</title></head>
 <body>
+<span id="chart"></span>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
@@ -120,7 +115,10 @@ date,category,value\n\
     var brushHeight = 50;
     var xAxisHeight = 30;
 
-    var root = d3.select("body");
+    var root = d3.select("#chart");
+    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+    newHeader(root, uiConfig, "Change size by file type chart (" + projectName + ")");
+
     var svgRoot = root.append("svg")
                 .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
                 .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight)

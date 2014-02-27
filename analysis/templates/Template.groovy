@@ -29,11 +29,15 @@ class Template {
 		new Template(text
 				.replaceAll(/(?m)var headerSpan.*?;/, "")
 				.replaceAll(/(?m)headerSpan\..*?;/, "")
+				.replaceAll(/(?m)newHeader\..*?;/, "")
 		)
 	}
 
 	Template width(int value) {
-		new Template(text.replaceAll(/width =.*?,/, "width = ${value},"))
+		new Template(text
+				.replaceAll(/width =.*?,/, "width = ${value},")
+				.replaceAll(/width: .*?,/, "width: ${value},")
+		)
 	}
 
 	String lastTag(String tagName) {

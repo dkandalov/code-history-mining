@@ -6,7 +6,7 @@ import static AllTemplates.*
 class TemplatesModificationTest {
 	private ArrayList<Template> allTemplates = [
 			changeSizeChartTemplate, amountOfCommittersChartTemplate, amountOfFilesInCommitChartTemplate,
-			filesInTheSameCommitGraphTemplate, committersChangingSameFilesGraphTemplate,
+			changeSizeByFileTypeChartTemplate, filesInTheSameCommitGraphTemplate, committersChangingSameFilesGraphTemplate,
 			committersChangingSameFilesGraphTemplate, amountOfCommitsTreemapTemplate,
 			commitTimePunchcardTemplate, timeBetweenCommitsHistogramTemplate, commitMessageWordCloudTemplate
 	]
@@ -23,7 +23,8 @@ class TemplatesModificationTest {
 	}
 
 	private static assertWidthCanBeAdjustedIn(Template template) {
-		assert template.width(12345).text.contains("width = 12345,")
+		def newText = template.width(12345).text
+		assert newText.contains("width = 12345,") || newText.contains("width: 12345")
 	}
 
 	private static assertHeaderIsNoLongerPresentIn(Template template) {

@@ -66,6 +66,7 @@ class Visualization {
 				changeSizeChartTemplate.fillData(createJson_ChangeSize_Chart(context.events, context.checkIfCancelled)),
 				amountOfCommittersChartTemplate.fillData(createJson_AmountOfCommitters_Chart(context.events, context.checkIfCancelled)),
 				amountOfFilesInCommitChartTemplate.fillData(createJson_AverageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
+				changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileTypeChart(context.events, context.checkIfCancelled)),
 				filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommitGraph(context.events, context.checkIfCancelled)),
 				committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFilesGraph(context.events, context.checkIfCancelled)),
 				amountOfCommitsTreemapTemplate.fillData(TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
@@ -78,8 +79,7 @@ class Visualization {
 		templates.each{
 			template = template.addBefore(
 					"<!--style-insert-point-->",
-					it.lastTag("style")
-							.replaceAll(/margin:.*?;/, '')
+					it.lastTag("style").replaceAll(/margin:.*?;/, '').replaceAll(/width:.*?;/, '')
 			)
 			template = template.addBefore(
 					"<!--script-insert-point-->",

@@ -12,6 +12,10 @@ function observable(target, eventName) {
 	};
 }
 
+function newHeader(root, uiConfig, name) {
+	var headerSpan = root.append("span").style({display: "block", width: uiConfig.width + "px"});
+	headerSpan.append("h3").text(name).style({"text-align": "center"});
+}
 
 function newNothingToShowLabel(root, svgRoot, uiConfig) {
 	var label = root.append("div")
