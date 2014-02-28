@@ -1,7 +1,6 @@
 package vcsaccess._private
-
+import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
@@ -12,6 +11,7 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
+import git4idea.repo.GitRepositoryManager
 
 class GitPluginWorkaround {
 	/**
@@ -47,9 +47,9 @@ class GitPluginWorkaround {
 		result.findAll{isNotMergeCommit(it)}
 	}
 
-	static RepositoryLocation getGetLocation_with_intellij_git_api_workaround(VcsRoot vcsRoot) {
-		//noinspection GrDeprecatedAPIUsage
-		VirtualFile gitRoot = GitUtil.getGitRootOrNull(FilePathImpl.create(vcsRoot.path))
-		new GitRepositoryLocation(null, new File(gitRoot.getPath()))
+	static RepositoryLocation getGetLocation_with_intellij_git_api_workaround(VcsRoot vcsRoot, Project project) {
+		def repositoryManager = ServiceManager.getService(project, GitRepositoryManager.class)
+		VirtualFile gitRoot = repositoryManager.getRepositoryForFile(vcsRoot.path).gitDir
+		new GitRepositoryLocation(null, new File(gitRoot.path))
 	}
 }
