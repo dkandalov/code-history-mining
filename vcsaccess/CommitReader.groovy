@@ -82,9 +82,7 @@ class CommitReader {
 
 	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
-		def location = isGit(changesProvider) ?
-			GitPluginWorkaround.getGetLocation_with_intellij_git_api_workaround(vcsRoot, project) :
-			changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 
 		if (location == null) {
 			log?.failedToLocate(vcsRoot, project)
