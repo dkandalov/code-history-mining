@@ -86,7 +86,7 @@ class Analysis {
 			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
-	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 3) {
+	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 5) {
 		Map.mixin(CollectionUtil)
 
 		def fileExtension = { String s ->
@@ -120,8 +120,12 @@ class Analysis {
 						map
 					}
 			eventsByTypeByDate.keySet().removeAll(leastChangedFileTypes)
-			if (otherFileTypesByDate.size() > 0)
+			if (otherFileTypesByDate.size() > 0) {
 				eventsByTypeByDate.put("Other", otherFileTypesByDate)
+				totalChangeAmountByType.put("Other", -1)
+			}
+
+			eventsByTypeByDate = eventsByTypeByDate.sort{ -totalChangeAmountByType.get(it.key) }
 
 			eventsByTypeByDate.collectMany{ entry ->
 				def fileType = entry.key
