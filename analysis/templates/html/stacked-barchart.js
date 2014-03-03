@@ -130,7 +130,7 @@ function newLegend(root, uiConfig) {
 		itemList.selectAll("text")
 			.data(items)
 			.call(function(d) { d.enter().append("text") })
-			.attr("y", function(d, i) { return i + "em"; })
+			.attr("y", function(d, i) { return i * 1.04 + "em"; })
 			.attr("x", "1em")
 			.text(function(d) { return d.category; });
 
