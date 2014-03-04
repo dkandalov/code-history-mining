@@ -116,13 +116,13 @@ function newTooltip(root, svgRoot, uiConfig, settings) {
 }
 
 // based on https://gist.github.com/ZJONSSON/3918369
-function newLegend(root, uiConfig) {
+function newLegend(root, position) {
 	var it = {};
 	it.update = function(items) {
 		// always redraw legend so that it would be above graph
 		root.select(".legend").remove();
 		var legend = root.append("g").attr("class", "legend")
-			.attr("transform", "translate(" + (uiConfig.width - 50) + ",20)");
+			.attr("transform", "translate(" + position.x + "," + position.y + ")");
 
 		var box = legend.append("rect").attr("class", "box");
 		var itemList = legend.append("g").attr("class", "items");

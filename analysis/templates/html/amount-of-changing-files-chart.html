@@ -46,7 +46,7 @@
         pointer-events: none;
     }
 </style>
-<head><title>Change size by file type</title></head>
+<head><title>Amount of changing files chart</title></head>
 <body>
 <span id="chart"></span>
 <script src="d3.v3.min.js"></script>
@@ -55,55 +55,40 @@
 <script>
     var rawData = /*data_placeholder*/["\
 date,category,value\n\
-18/01/2013,java,18\n\
-19/01/2013,java,5\n\
-20/01/2013,java,3\n\
-21/01/2013,java,3\n\
-22/01/2013,java,3\n\
-18/01/2013,xml,18\n\
-19/01/2013,xml,3\n\
-21/01/2013,xml,11\n\
-22/01/2013,xml,11\n\
-20/01/2013,xml,11\n\
-18/01/2013,txt,11\n\
-19/01/2013,txt,11\n\
-20/01/2013,txt,11\n\
-21/01/2013,txt,11\n\
-22/01/2013,txt,11\n\
+18/01/2013,unchanged,18\n\
+19/01/2013,unchanged,5\n\
+20/01/2013,unchanged,3\n\
+21/01/2013,unchanged,3\n\
+22/01/2013,unchanged,3\n\
+18/01/2013,recently changed,18\n\
+19/01/2013,recently changed,3\n\
+21/01/2013,recently changed,11\n\
+22/01/2013,recently changed,11\n\
+20/01/2013,recently changed,11\n\
 ",
 "date,category,value\n\
-18/01/2013,java,180\n\
-19/01/2013,java,50\n\
-20/01/2013,java,30\n\
-21/01/2013,java,3\n\
-22/01/2013,java,50\n\
-18/01/2013,xml,180\n\
-19/01/2013,xml,30\n\
-20/01/2013,xml,110\n\
-21/01/2013,xml,110\n\
-22/01/2013,xml,110\n\
-18/01/2013,txt,110\n\
-19/01/2013,txt,110\n\
-20/01/2013,txt,110\n\
-21/01/2013,txt,110\n\
-22/01/2013,txt,110\n\
+18/01/2013,unchanged,180\n\
+19/01/2013,unchanged,50\n\
+20/01/2013,unchanged,30\n\
+21/01/2013,unchanged,3\n\
+22/01/2013,unchanged,50\n\
+18/01/2013,recently changed,180\n\
+19/01/2013,recently changed,30\n\
+20/01/2013,recently changed,110\n\
+21/01/2013,recently changed,110\n\
+22/01/2013,recently changed,110\n\
 ",
 "date,category,value\n\
-18/01/2013,java,0\n\
-19/01/2013,java,00\n\
-20/01/2013,java,00\n\
-21/01/2013,java,00\n\
-22/01/2013,java,00\n\
-18/01/2013,xml,0\n\
-19/01/2013,xml,00\n\
-21/01/2013,xml,00\n\
-22/01/2013,xml,00\n\
-20/01/2013,xml,00\n\
-18/01/2013,txt,00\n\
-19/01/2013,txt,00\n\
-20/01/2013,txt,00\n\
-21/01/2013,txt,00\n\
-22/01/2013,txt,00\n\
+18/01/2013,unchanged,0\n\
+19/01/2013,unchanged,00\n\
+20/01/2013,unchanged,00\n\
+21/01/2013,unchanged,00\n\
+22/01/2013,unchanged,00\n\
+18/01/2013,recently changed,0\n\
+19/01/2013,recently changed,00\n\
+21/01/2013,recently changed,00\n\
+22/01/2013,recently changed,00\n\
+20/01/2013,recently changed,00\n\
 "
 ]/*data_placeholder*/;
     var margin = {top: 40, right: 50, bottom: 20, left: 50};
@@ -117,7 +102,7 @@ date,category,value\n\
 
     var root = d3.select("#chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-    newHeader(root, uiConfig, "Change size by file type chart (" + projectName + ")");
+    newHeader(root, uiConfig, "Amount of changing files chart (" + projectName + ")");
 
     var svgRoot = root.append("svg")
                 .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
@@ -130,20 +115,18 @@ date,category,value\n\
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
     var xAxis = newXAxis(svg, uiConfig, x);
-    var yAxis = newYAxis(svg, "Change size", y);
+    var yAxis = newYAxis(svg, "Changed files", y);
     var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
-    var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
+    var legend = newLegend(svg, {x: uiConfig.width - 110, y: 20});
 
     var controlsPanel = newControlsPanel(root, uiConfig);
-    var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
-    controlsPanel.addSpace();
-    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"]);
+    newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["one week", "two weeks", "month"]);
 
     bars.onUpdate(legend.update);
     bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
-                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
+                   newNothingToShowLabel(root, svgRoot, uiConfig).update]);
     x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
     data.sendUpdate();
 
