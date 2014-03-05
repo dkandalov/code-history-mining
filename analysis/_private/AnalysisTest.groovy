@@ -18,7 +18,7 @@ class AnalysisTest {
 		).flatten()
 
 		def maxAmountOfFileTypes = 2
-		assert Analysis.changeSizeByFileTypeChart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
+		assert Analysis.changeSizeByFileType_Chart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
 			|["\\
 			|date,category,value\\n\\
       |03/04/2013,java,101\\n\\
@@ -39,7 +39,7 @@ class AnalysisTest {
 				commitBy(KentBeck,  "02/04/2013", modified("/logo.gif"))
 		].flatten()
 
-		assert Analysis.changeSizeByFileTypeChart(changeEvents).startsWith("""
+		assert Analysis.changeSizeByFileType_Chart(changeEvents).startsWith("""
 			|["\\
       |date,category,value\\n\\
       |03/04/2013,java,2\\n\\
@@ -57,7 +57,7 @@ class AnalysisTest {
 			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java"))
 		].flatten()
 
-		assert Analysis.commitLogAsGraph(changeEvents, {}, 100) == """
+		assert Analysis.commitLog_Graph(changeEvents, {}, 100) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/Theories.java", "group": 1},
@@ -80,7 +80,7 @@ class AnalysisTest {
 		].flatten()
 
 		def threshold = 2
-		assert Analysis.authorChangingSameFilesGraph(changeEvents, {}, threshold) == """
+		assert Analysis.authorChangingSameFiles_Graph(changeEvents, {}, threshold) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "Tim Perry", "group": 2},
       |{"name": "David Saff", "group": 2}],
@@ -103,7 +103,7 @@ class AnalysisTest {
 		].flatten()
 
 		def threshold = 2
-		assert Analysis.filesInTheSameCommitGraph(changeEvents, {}, threshold) == """
+		assert Analysis.filesInTheSameCommit_Graph(changeEvents, {}, threshold) == """
       |"nodes": [{"name": "/theories/Theories.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1}],
       |"links": [{"source": 0, "target": 1, "value": 2}]

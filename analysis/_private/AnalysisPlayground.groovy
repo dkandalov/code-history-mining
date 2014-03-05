@@ -11,7 +11,7 @@ class AnalysisPlayground {
 		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea12/code-history-mining/${projectName}-file-events-full.csv"
 		def events = new EventStorage(filePath).readAllEvents({}) { line, e -> println("Failed to parse line '${line}'") }
 
-		fillAndSaveTemplate("changes-size-chart.html", projectName, Analysis.createJson_ProjectSize_Chart(events))
+		fillAndSaveTemplate("changes-size-chart.html", projectName, Analysis.projectSize_Chart(events))
 	}
 
 	static void fillAndSaveTemplate(String template, String projectName, String json) {

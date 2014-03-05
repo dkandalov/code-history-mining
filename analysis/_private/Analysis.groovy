@@ -17,7 +17,7 @@ import static java.util.regex.Matcher.quoteReplacement
 import static util.DateTimeUtil.*
 
 class Analysis {
-	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String timeBetweenCommits_Histogram(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		Collection.mixin(CollectionUtil)
 
 		def times = events
@@ -31,7 +31,7 @@ class Analysis {
 		asCsvStringLiteral(times, ["metric"])
 	}
 
-	static String createJson_AmountOfCommitters_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String amountOfCommitters_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def amountOfCommittersByDay = events
 				.groupBy{ floorToDay(it.revisionDate) }
 				.collect{ checkIfCancelled(); [it.key, it.value.collect{it.author}.unique().size()] }
@@ -51,7 +51,7 @@ class Analysis {
 			asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
 	}
 
-	static String changeSizeByFileTypeChart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 5) {
+	static String changeSizeByFileType_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 5) {
 		Map.mixin(CollectionUtil)
 
 		def fileExtension = { String s ->
@@ -110,7 +110,7 @@ class Analysis {
 		"]"
 	}
 
-	static String createJson_WiltComplexity_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String wiltComplexity_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def wiltOf = { eventList ->
 			eventList.collect{ event ->
 				def wiltBefore = event.additionalAttributes[0]
@@ -143,7 +143,7 @@ class Analysis {
 			asCsvStringLiteral(wiltByMonth, ["date", "changeSize"]) + "]"
 	}
 
-	static String createJson_ProjectSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String projectSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def projectSizeChangeIn = { eventList ->
 			eventList
 					.collect{ event -> event.lines.after - event.lines.before }
@@ -174,7 +174,7 @@ class Analysis {
 			asCsvStringLiteral(projectSizeByMonth, ["date", "changeSize"]) + "]"
 	}
 
-	static String createJson_AverageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String averageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		// TODO add Util.collectDoing(checkIfCancelled)
 
 		def averageChangeSize = { eventsByRevision ->
@@ -198,7 +198,7 @@ class Analysis {
 				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
 	}
 
-	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String commitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def amountOfCommitsByMinute = events
 				.groupBy{it.revision}.entrySet()*.collect{it.value.first()}.flatten()
 				.groupBy{checkIfCancelled(); [dayOfWeekOf(it.revisionDate), hourOf(it.revisionDate), minuteOf(it.revisionDate)]}
@@ -271,7 +271,7 @@ class Analysis {
 		}
 	}
 
-	static String createJson_CommitComments_WordCloud(events, Closure checkIfCancelled = {}) {
+	static String commitComments_WordCloud(events, Closure checkIfCancelled = {}) {
 		def excludedWords = "also,as,at,but,by,for,from,in,into,of,off,on,onto,out,than,to,up,with,when," +
 				"which,that,this,them,they,we,an,the,is,be,are,was,do,it,so,not,no,and".split(",").toList().toSet()
 		def notExcluded = { String s -> s.length() > 1 && !excludedWords.contains(s) }
@@ -300,7 +300,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 """
 	}
 
-	static String commitLogAsGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int amountOfChanges = 500) {
+	static String commitLog_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int amountOfChanges = 500) {
 		use(TimeCategory) {
 			def latestCommitDate = events.first().revisionDate
 			events = events.findAll{ it.revisionDate >= latestCommitDate - 1.month }
@@ -327,7 +327,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		asJsGraphLiteral(relations, fileNames, authors)
 	}
 
-	static String authorChangingSameFilesGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
+	static String authorChangingSameFiles_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int threshold = 7) {
 		Collection.mixin(CollectionUtil)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
@@ -384,7 +384,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		asJsGraphLiteral(relations, fileNames, authors)
 	}
 
-	static String filesInTheSameCommitGraph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 8) {
+	static String filesInTheSameCommit_Graph(List<FileChangeEvent> events, Closure checkIfCancelled = {}, threshold = 8) {
 		Collection.mixin(CollectionUtil)
 
 		events = useLatestNameForMovedFiles(events, checkIfCancelled)
@@ -405,7 +405,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		asJsGraphLiteral(relations, nodes)
 	}
 
-	static String createJson_ChangeSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+	static String changeSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def eventsByDay = events.groupBy{ floorToDay(it.revisionDate) }
 
 		checkIfCancelled()
