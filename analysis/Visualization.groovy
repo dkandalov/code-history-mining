@@ -41,7 +41,7 @@ class Visualization {
 	})
 
 	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
-		def json = TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
+		def json = TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
 		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
 		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 	})
@@ -69,7 +69,7 @@ class Visualization {
 				changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileType_Chart(context.events, context.checkIfCancelled)),
 				filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
 				committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)),
-				amountOfCommitsTreemapTemplate.fillData(TreeMapView.createJson_AmountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
+				amountOfCommitsTreemapTemplate.fillData(TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
 				commitTimePunchcardTemplate.fillData(commitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
 				timeBetweenCommitsHistogramTemplate.fillData(timeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
 				commitMessageWordCloudTemplate.fillData(commitComments_WordCloud(context.events, context.checkIfCancelled))
