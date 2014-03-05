@@ -17,41 +17,6 @@ import static java.util.regex.Matcher.quoteReplacement
 import static util.DateTimeUtil.*
 
 class Analysis {
-	static String createJsonForCommitsStackBarsChart(Collection<FileChangeEvent> events) {
-		def fromDay = floorToDay(events.last().revisionDate)
-		def toDay = floorToDay(events.first().revisionDate)
-		def addMissingDays = { valuesByDate ->
-			use(TimeCategory) {
-				def day = fromDay.clone()
-				while (!day.after(toDay)) {
-					if (!valuesByDate.containsKey(day)) valuesByDate[day] = []
-					day += 1.day
-				}
-				valuesByDate
-			}
-		}
-
-		def changesByAuthorByDate = events
-			.groupBy({ it.author }, { floorToDay(it.revisionDate) })
-			.collectEntries {
-				it.value = addMissingDays(it.value).sort()
-				it
-			}
-		def amountOfCommitsByAuthor = changesByAuthorByDate.entrySet().collectEntries{
-			def author = it.key
-			def commits = it.value.values()
-			[author, commits.size()]
-		}
-		def numberOfTopCommitters = 5
-		def flattened = changesByAuthorByDate.entrySet().toList()
-				.sort{ -amountOfCommitsByAuthor[it.key] }
-				.take(numberOfTopCommitters)
-				.collectMany { entry ->
-					entry.value.collect { [it.key, entry.key, it.value.size()] }
-				}
-		asCsvStringLiteral(flattened, ["date", "author", "amount of commits"])
-	}
-
 	static String createJson_TimeBetweenCommits_Histogram(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		Collection.mixin(CollectionUtil)
 
@@ -209,18 +174,6 @@ class Analysis {
 			asCsvStringLiteral(projectSizeByMonth, ["date", "changeSize"]) + "]"
 	}
 
-	static void createJson_AverageAmountOfLinesChangedByDay_Chart(List<FileChangeEvent> events) {
-		def averageChangeSize = { eventList ->
-			if (eventList.empty) 0
-			else eventList.sum(0){changeSizeInLines(it)} / eventList.size()
-		}
-		def averageChangeSizeByDay = events
-				.groupBy{ floorToDay(it.revisionDate) }
-				.collectEntries{ [it.key, averageChangeSize(it.value)] }
-				.sort{ it.key }
-		println(averageChangeSizeByDay.entrySet().join("\n"))
-	}
-
 	static String createJson_AverageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		// TODO add Util.collectDoing(checkIfCancelled)
 
@@ -243,53 +196,6 @@ class Analysis {
 				asCsvStringLiteral(filesInCommitByDay, ["date", "filesAmountInCommit"]) + ",\n" +
 				asCsvStringLiteral(filesInCommitByWeek, ["date", "filesAmountInCommit"]) + ",\n" +
 				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
-	}
-
-	static String createJson_CommitsWithAndWithoutTests_Chart(List<FileChangeEvent> events) {
-		Collection.mixin(CollectionUtil)
-
-		def withoutExtension = { String s -> s.contains(".") ? s.substring(0, s.lastIndexOf(".")) : s }
-		def containUnitTests = { eventList -> eventList.any{ withoutExtension(nonEmptyFileName(it)).endsWith("Test") } }
-		def areRecentEnough = { eventList1, eventList2 ->
-			long timeDiff = eventList1.first().revisionDate.time - eventList2.first().revisionDate.time
-			HOURS.convert(timeDiff, MILLISECONDS) <= 1
-		}
-
-		// reverse events to go past-to-present and check past commit (looking for "test-first")
-		def isUnitTestByDays = events.reverse()
-				.groupBy{it.revision}
-				.entrySet().pairs().collect{ pair ->
-					def previousCommitEvents = pair[0].value
-					def commitEvents = pair[1].value
-
-					def hasUnitTests = containUnitTests(commitEvents) ||
-							(containUnitTests(previousCommitEvents) && areRecentEnough(previousCommitEvents, commitEvents))
-
-					[commitEvents.first().revisionDate, hasUnitTests]
-				}
-				.groupBy{floorToDay(date) }
-
-
-		def fromDay = floorToDay(events.last().revisionDate)
-		def toDay = floorToDay(events.first().revisionDate)
-		def addMissingDays = { valuesByDate ->
-			use(TimeCategory) {
-				def day = fromDay.clone()
-				while (!day.after(toDay)) {
-					if (!valuesByDate.containsKey(day)) valuesByDate[day] = []
-					day += 1.day
-				}
-				valuesByDate
-			}
-		}
-		def withTests = addMissingDays(isUnitTestByDays)
-			.entrySet().collect{ Map.Entry entry -> [entry.key, "withTests", entry.value.count{ it[1] }] }
-			.sort{ it[0] }
-		def withNoTests = addMissingDays(isUnitTestByDays)
-			.entrySet().collect{ Map.Entry entry -> [entry.key, "withNoTests", entry.value.count{ !it[1] }] }
-			.sort{ it[0] }
-
-		asCsvStringLiteral(withTests + withNoTests, ["date", "author", "amount of commits"])
 	}
 
 	static String createJson_CommitsByDayOfWeekAndTime_PunchCard(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
