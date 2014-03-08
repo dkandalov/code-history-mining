@@ -1,5 +1,76 @@
 package analysis._private
 
-class AnalysisUtilTest {
+import events.CommitInfo
+import events.FileChangeEvent
+import events.FileChangeInfo
+import org.junit.Test
 
+import static analysis._private.Analysis.Util.useLatestNameForMovedFiles
+import static events.ChangeStats.getNA
+
+class AnalysisUtilTest {
+	@Test void "changing renamed file name to its latest name"() {
+	  def events = [
+			  modified("/theories/Theories2.java"),
+			  moved("/theories/Theories.java", "/theories/Theories2.java"),
+			  modified("/theories/Theories.java"),
+			  created("/theories/Theories.java"),
+	  ]
+		def expectedEvents = [
+				modified("/theories/Theories2.java"),
+				moved("/theories/Theories.java", "/theories/Theories2.java"),
+				modified("/theories/Theories2.java"),
+				created("/theories/Theories2.java"),
+		]
+		assert useLatestNameForMovedFiles(events) == expectedEvents
+	}
+
+	@Test void "changing twice renamed file name to its latest name"() {
+	  def events = [
+			  modified("/theories/Theories3.java"),
+			  moved("/theories/Theories2.java", "/theories/Theories3.java"),
+			  moved("/theories/Theories.java", "/theories/Theories2.java"),
+			  modified("/theories/Theories.java"),
+			  created("/theories/Theories.java"),
+	  ]
+		def expectedEvents = [
+				modified("/theories/Theories3.java"),
+				moved("/theories/Theories2.java", "/theories/Theories3.java", "MOVED"),
+				moved("", "/theories/Theories3.java", "MOVED_UNDONE"),
+				modified("/theories/Theories3.java"),
+				created("/theories/Theories3.java"),
+		]
+		assert useLatestNameForMovedFiles(events) == expectedEvents
+	}
+
+	private FileChangeEvent created(String fullFileName) {
+		def (packageName, fileName) = splitByLast("/", fullFileName)
+		new FileChangeEvent(nextCommitInfo(), new FileChangeInfo("", fileName, "", packageName, "NEW", NA, NA))
+	}
+
+	private FileChangeEvent modified(String fullFileName) {
+		def (packageName, fileName) = splitByLast("/", fullFileName)
+		new FileChangeEvent(nextCommitInfo(), new FileChangeInfo("", fileName, "", packageName, "MODIFICATION", NA, NA))
+	}
+
+	private FileChangeEvent moved(String from, String to, String modificationType = "MOVED") {
+		def (fromPackage, fromFile) = splitByLast("/", from)
+		def (toPackage, toFile) = splitByLast("/", to)
+		new FileChangeEvent(nextCommitInfo(), new FileChangeInfo(fromFile, toFile, fromPackage, toPackage, modificationType, NA, NA))
+	}
+
+	private static splitByLast(String symbol, String s) {
+		if (s.empty) return ["", ""]
+		def i = s.lastIndexOf(symbol)
+		[s.substring(0, i), s.substring(i + 1)]
+	}
+
+	private CommitInfo nextCommitInfo() {
+		new CommitInfo(nextRevision(), someAuthor, someDate, someCommitMessage)
+	}
+
+	private Date someDate = new Date(0)
+	private final Closure<String> nextRevision = { "1" }
+	private final String someAuthor = ""
+	private final someCommitMessage = ""
 }

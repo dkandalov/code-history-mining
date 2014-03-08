@@ -111,7 +111,7 @@ class AnalysisTest {
 	}
 
 	private List<FileChangeEvent> commitBy(String author, String dateAsString, FileChangeInfo... fileChanges) {
-		def commitInfo = new CommitInfo(someRevision(), author, date(dateAsString), someCommitMessage)
+		def commitInfo = new CommitInfo(nextRevision(), author, date(dateAsString), someCommitMessage)
 		fileChanges.collect { new FileChangeEvent(commitInfo, it) }
 	}
 
@@ -127,7 +127,7 @@ class AnalysisTest {
 	private static final String KentBeck = "Kent Beck"
 
 	private int revision = 1
-	private final Closure<String> someRevision = { (revision++).toString() }
+	private final Closure<String> nextRevision = { (revision++).toString() }
 	private final someCommitMessage = ""
 	private static final Closure noCancel = {}
 }

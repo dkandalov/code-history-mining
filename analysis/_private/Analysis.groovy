@@ -480,7 +480,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 		static void assertEventsGoFromPresentToPast(List<FileChangeEvent> events) {
 			if (events.size() > 1)
-				assert events.first().revisionDate.time > events.last().revisionDate.time: "events go from present to past"
+				assert events.first().revisionDate.time >= events.last().revisionDate.time: "events go from present to past"
 		}
 
 		private static FileChangeEvent updated(FileChangeEvent fileChangeEvent, String newFileName, String newPackageName,
