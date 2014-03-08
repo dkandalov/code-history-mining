@@ -77,6 +77,13 @@ class Analysis {
 				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
 	}
 
+	static String amountOfChangingFiles_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		assertEventsGoFromPresentToPast(events)
+
+
+		""
+	}
+
 	static String changeSizeByFileType_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 5) {
 		Map.mixin(CollectionUtil)
 
@@ -439,8 +446,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		static List<FileChangeEvent> useLatestNameForMovedFiles(List<FileChangeEvent> events, @Nullable Closure checkIfCancelled = {}) {
 			log_("Started useLatestNameForMovedFiles()")
 
-			if (events.size() > 1)
-				assert events.first().revisionDate.time > events.last().revisionDate.time : "events go from present to past"
+			assertEventsGoFromPresentToPast(events)
 
 			for (int i = 0; i < events.size(); i++) {
 				checkIfCancelled()
@@ -470,6 +476,11 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 
 			log_("Finished useLatestNameForMovedFiles()")
 			events
+		}
+
+		static void assertEventsGoFromPresentToPast(List<FileChangeEvent> events) {
+			if (events.size() > 1)
+				assert events.first().revisionDate.time > events.last().revisionDate.time: "events go from present to past"
 		}
 
 		private static FileChangeEvent updated(FileChangeEvent fileChangeEvent, String newFileName, String newPackageName,
