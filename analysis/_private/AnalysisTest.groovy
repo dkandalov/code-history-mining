@@ -8,21 +8,63 @@ import static events.ChangeStats.NA
 import static util.DateTimeUtil.date
 
 class AnalysisTest {
-	private final commitEvents = new CommitEvents()
 	private static final Closure noCancel = {}
+	private final commitEvents = new CommitEvents()
 
-	@Test void "amount of changing files by day"() {
-		def changeEvents = [
+	@Test void "amount of changing files takes into account deleted files"() {
+		def changeEvents = commitEvents.with{[
+				commitBy(someone, "04/04/2013", deleted("/theories/internal/Assignments.java")),
+				commitBy(someone, "03/04/2013", created("/theories/internal/Assignments.java")),
+		].flatten()}
 
-		]
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+			|["\\
+	    |date,category,value\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,0\\n\\
+      |03/04/2013,unchanged,0\\n\\
+      |04/04/2013,unchanged,0\\n\\
+			|"]
+		""".stripMargin("|").trim()
 	}
-	
+
+	@Test void "amount of changing files when changing files on different days"() {
+		def changeEvents = commitEvents.with{[
+				commitBy(someone, "04/04/2013", modified("/theories/internal/Assignments.java")),
+				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+		].flatten()}
+
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+			|["\\
+	    |date,category,value\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,1\\n\\
+      |03/04/2013,unchanged,0\\n\\
+      |04/04/2013,unchanged,1\\n\\
+			|"]
+		""".stripMargin("|").trim()
+	}
+
+	@Test void "amount of changing files when modified single file"() {
+		def changeEvents = commitEvents.with{[
+				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+		].flatten()}
+
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+			|["\\
+			|date,category,value\\n\\
+      |03/04/2013,recently changed,1\\n\\
+      |03/04/2013,unchanged,0\\n\\
+			|"]
+		""".stripMargin("|").trim()
+	}
+
 	@Test void "change size by file type puts least changed file types into 'others' category"() {
 		def changeEvents = commitEvents.with{(
-				(0..100).collect{ commitBy(someone,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")) } +
+				(0..100).collect{ commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")) } +
 				(0..100).collect{ commitBy(someone, "03/04/2013", modified("/pom.xml")) } +
-				(0..1).collect{ commitBy(someone,  "02/04/2013", modified("/acknowledgements.txt")) } +
-				(0..1).collect{ commitBy(someone,  "02/04/2013", modified("/logo.gif")) }
+				(0..1).collect{ commitBy(someone, "02/04/2013", modified("/acknowledgements.txt")) } +
+				(0..1).collect{ commitBy(someone, "02/04/2013", modified("/logo.gif")) }
 		).flatten()}
 
 		def maxAmountOfFileTypes = 2
@@ -41,10 +83,10 @@ class AnalysisTest {
 
 	@Test void "change size by file type chart"() {
 		def changeEvents = commitEvents.with{[
-				commitBy(someone,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 				commitBy(someone, "02/04/2013", modified("/theories/internal/Assignments.java")),
-				commitBy(someone,  "02/04/2013", modified("/logo.gif"))
+				commitBy(someone, "02/04/2013", modified("/logo.gif"))
 		].flatten()}
 
 		assert Analysis.changeSizeByFileType_Chart(changeEvents).startsWith("""
@@ -125,10 +167,24 @@ class AnalysisTest {
 		}
 
 		static FileChangeInfo modified(String filePath) {
-			def i = filePath.lastIndexOf("/")
-			def path = filePath.substring(0, i)
-			def file = filePath.substring(i + 1)
+			def (path, file) = splitByLast("/", filePath)
 			new FileChangeInfo("", file, "", path, "MODIFICATION", NA, NA)
+		}
+
+		static FileChangeInfo created(String filePath) {
+			def (path, file) = splitByLast("/", filePath)
+			new FileChangeInfo("", file, "", path, "NEW", NA, NA)
+		}
+
+		static FileChangeInfo deleted(String filePath) {
+			def (path, file) = splitByLast("/", filePath)
+			new FileChangeInfo("", file, "", path, "DELETED", NA, NA)
+		}
+
+		private static splitByLast(String symbol, String s) {
+			if (s.empty) return ["", ""]
+			def i = s.lastIndexOf(symbol)
+			[s.substring(0, i), s.substring(i + 1)]
 		}
 
 		static final String someone = ""

@@ -78,10 +78,34 @@ class Analysis {
 	}
 
 	static String amountOfChangingFiles_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
+		Map.mixin(CollectionUtil)
 		assertEventsGoFromPresentToPast(events)
+		events = useLatestNameForMovedFiles(events, checkIfCancelled).reverse()
 
+		def changingFiles = { interval ->
+			def eventsByTimeInterval = events.groupBy{ interval(it.revisionDate) }
 
-		""
+			def allFiles = new HashSet()
+			eventsByTimeInterval.collectMany { entry ->
+				def date = entry.key
+				def eventsInInterval = entry.value
+
+				def recentFiles = new HashSet()
+				for (FileChangeEvent event : eventsInInterval) {
+					if (event.fileChangeType == "DELETED") allFiles.remove(event.packageName + "/" + event.fileName)
+					else allFiles.add(event.packageName + "/" + event.fileName)
+
+					if (event.fileChangeType == "DELETED") recentFiles.remove(event.packageName + "/" + event.fileName)
+					else recentFiles.add(event.packageName + "/" + event.fileName)
+				}
+
+				[[date, "unchanged", allFiles.size() - recentFiles.size()], [date, "recently changed", recentFiles.size()]]
+			}.sort{ it[1] }
+		}
+
+		"[" +
+				asCsvStringLiteral(changingFiles(DateTimeUtil.&floorToDay), ["date", "category", "value"]) +
+				"]"
 	}
 
 	static String changeSizeByFileType_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}, int maxAmountOfFileTypes = 5) {
