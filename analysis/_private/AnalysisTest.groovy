@@ -8,14 +8,22 @@ import static events.ChangeStats.NA
 import static util.DateTimeUtil.date
 
 class AnalysisTest {
+	private final commitEvents = new CommitEvents()
+	private static final Closure noCancel = {}
 
+	@Test void "amount of changing files by day"() {
+		def changeEvents = [
+
+		]
+	}
+	
 	@Test void "change size by file type puts least changed file types into 'others' category"() {
-		def changeEvents = (
-				(0..100).collect{ commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")) } +
-				(0..100).collect{ commitBy(DavidSaff, "03/04/2013", modified("/pom.xml")) } +
-				(0..1).collect{ commitBy(KentBeck,  "02/04/2013", modified("/acknowledgements.txt")) } +
-				(0..1).collect{ commitBy(KentBeck,  "02/04/2013", modified("/logo.gif")) }
-		).flatten()
+		def changeEvents = commitEvents.with{(
+				(0..100).collect{ commitBy(someone,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")) } +
+				(0..100).collect{ commitBy(someone, "03/04/2013", modified("/pom.xml")) } +
+				(0..1).collect{ commitBy(someone,  "02/04/2013", modified("/acknowledgements.txt")) } +
+				(0..1).collect{ commitBy(someone,  "02/04/2013", modified("/logo.gif")) }
+		).flatten()}
 
 		def maxAmountOfFileTypes = 2
 		assert Analysis.changeSizeByFileType_Chart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
@@ -32,12 +40,12 @@ class AnalysisTest {
 	}
 
 	@Test void "change size by file type chart"() {
-		def changeEvents = [
-				commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
-				commitBy(DavidSaff, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
-				commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/Assignments.java")),
-				commitBy(KentBeck,  "02/04/2013", modified("/logo.gif"))
-		].flatten()
+		def changeEvents = commitEvents.with{[
+				commitBy(someone,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
+				commitBy(someone, "02/04/2013", modified("/theories/internal/Assignments.java")),
+				commitBy(someone,  "02/04/2013", modified("/logo.gif"))
+		].flatten()}
 
 		assert Analysis.changeSizeByFileType_Chart(changeEvents).startsWith("""
 			|["\\
@@ -51,13 +59,13 @@ class AnalysisTest {
 	}
 
 	@Test void "graph with all files and all committers"() {
-		def changeEvents = [
+		def changeEvents = commitEvents.with{[
 			commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 			commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java"))
-		].flatten()
+		].flatten()}
 
-		assert Analysis.commitLog_Graph(changeEvents, {}, 100) == """
+		assert Analysis.commitLog_Graph(changeEvents, noCancel, 100) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/Theories.java", "group": 1},
@@ -71,16 +79,16 @@ class AnalysisTest {
 	}
 
 	@Test void "graph with authors changing same files within a week"() {
-		def changeEvents = [
+		def changeEvents = commitEvents.with{[
 			commitBy(TimPerry,  "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 			commitBy(DavidSaff, "02/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java")),
 			commitBy(TimPerry,  "01/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 			commitBy(DavidSaff, "01/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
-		].flatten()
+		].flatten()}
 
 		def threshold = 2
-		assert Analysis.authorChangingSameFiles_Graph(changeEvents, {}, threshold) == """
+		assert Analysis.authorChangingSameFiles_Graph(changeEvents, noCancel, threshold) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "Tim Perry", "group": 2},
       |{"name": "David Saff", "group": 2}],
@@ -90,7 +98,7 @@ class AnalysisTest {
 	}
 
 	@Test void "graph with files changed in the same commit"() {
-		def changeEvents = [
+		def changeEvents = commitEvents.with{[
 			commitBy(TimPerry,  "03/04/2013",
 				modified("/theories/internal/AllMembersSupplier.java"),
 				modified("/theories/Theories.java")
@@ -100,34 +108,37 @@ class AnalysisTest {
 				modified("/theories/Theories.java"),
 				modified("/textui/ResultPrinter.java")
 			)
-		].flatten()
+		].flatten()}
 
 		def threshold = 2
-		assert Analysis.filesInTheSameCommit_Graph(changeEvents, {}, threshold) == """
+		assert Analysis.filesInTheSameCommit_Graph(changeEvents, noCancel, threshold) == """
       |"nodes": [{"name": "/theories/Theories.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1}],
       |"links": [{"source": 0, "target": 1, "value": 2}]
 		""".stripMargin("|").trim()
 	}
 
-	private List<FileChangeEvent> commitBy(String author, String dateAsString, FileChangeInfo... fileChanges) {
-		def commitInfo = new CommitInfo(nextRevision(), author, date(dateAsString), someCommitMessage)
-		fileChanges.collect { new FileChangeEvent(commitInfo, it) }
+	static class CommitEvents {
+		List<FileChangeEvent> commitBy(String author, String dateAsString, FileChangeInfo... fileChanges) {
+			def commitInfo = new CommitInfo(nextRevision(), author, date(dateAsString), someCommitMessage)
+			fileChanges.collect { new FileChangeEvent(commitInfo, it) }
+		}
+
+		static FileChangeInfo modified(String filePath) {
+			def i = filePath.lastIndexOf("/")
+			def path = filePath.substring(0, i)
+			def file = filePath.substring(i + 1)
+			new FileChangeInfo("", file, "", path, "MODIFICATION", NA, NA)
+		}
+
+		static final String someone = ""
+		static final String TimPerry = "Tim Perry"
+		static final String DavidSaff = "David Saff"
+		static final String KentBeck = "Kent Beck"
+
+		private int revision = 1
+		private final Closure<String> nextRevision = { (revision++).toString() }
+
+		private final String someCommitMessage = ""
 	}
-
-	private static FileChangeInfo modified(String filePath) {
-		def i = filePath.lastIndexOf("/")
-		def path = filePath.substring(0, i)
-		def file = filePath.substring(i + 1)
-		new FileChangeInfo("", file, "", path, "MODIFICATION", NA, NA)
-	}
-
-	private static final String TimPerry = "Tim Perry"
-	private static final String DavidSaff = "David Saff"
-	private static final String KentBeck = "Kent Beck"
-
-	private int revision = 1
-	private final Closure<String> nextRevision = { (revision++).toString() }
-	private final someCommitMessage = ""
-	private static final Closure noCancel = {}
 }
