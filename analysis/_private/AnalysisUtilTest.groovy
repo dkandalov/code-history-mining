@@ -8,16 +8,16 @@ import static analysis._private.Analysis.Util.useLatestNameForMovedFiles
 import static events.ChangeStats.getNA
 
 class AnalysisUtilTest {
-	private final fileModification = new FileEvents()
+	private final fileEvents = new FileEvents()
 
 	@Test void "changing renamed file name to its latest name"() {
-	  def events = fileModification.with{[
+	  def events = fileEvents.with{[
 			  modified("/theories/Theories2.java"),
 			  moved("/theories/Theories.java", "/theories/Theories2.java"),
 			  modified("/theories/Theories.java"),
 			  created("/theories/Theories.java"),
 	  ]}
-		def expectedEvents = fileModification.with{[
+		def expectedEvents = fileEvents.with{[
 				modified("/theories/Theories2.java"),
 				moved("/theories/Theories.java", "/theories/Theories2.java"),
 				modified("/theories/Theories2.java"),
@@ -27,14 +27,14 @@ class AnalysisUtilTest {
 	}
 
 	@Test void "changing twice renamed file name to its latest name"() {
-	  def events = fileModification.with{[
+	  def events = fileEvents.with{[
 			  modified("/theories/Theories3.java"),
 			  moved("/theories/Theories2.java", "/theories/Theories3.java"),
 			  moved("/theories/Theories.java", "/theories/Theories2.java"),
 			  modified("/theories/Theories.java"),
 			  created("/theories/Theories.java"),
 	  ]}
-		def expectedEvents = fileModification.with{[
+		def expectedEvents = fileEvents.with{[
 				modified("/theories/Theories3.java"),
 				moved("/theories/Theories2.java", "/theories/Theories3.java", "MOVED"),
 				moved("", "/theories/Theories3.java", "MOVED_UNDONE"),
