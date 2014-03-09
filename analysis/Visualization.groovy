@@ -25,6 +25,11 @@ class Visualization {
 		amountOfFilesInCommitChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
+	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart", { Context context ->
+		def json = amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)
+		amountOfChangingFilesChartTemplate.fillData(json).fillProjectName(context.projectName).text
+	})
+
 	static changeSizeByFileTypeChart = new Visualization("Change Size By File Type Chart", { Context context ->
 		def json = changeSizeByFileType_Chart(context.events, context.checkIfCancelled)
 		changeSizeByFileTypeChartTemplate.fillData(json).fillProjectName(context.projectName).text

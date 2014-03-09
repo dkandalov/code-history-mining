@@ -141,6 +141,7 @@ class UI {
 			add(createShowInBrowserAction(Visualization.changeSizeChart))
 			add(createShowInBrowserAction(Visualization.amountOfCommittersChart))
 			add(createShowInBrowserAction(Visualization.amountOfFilesInCommitChart))
+			add(createShowInBrowserAction(Visualization.amountOfChangingFilesChart))
 			add(createShowInBrowserAction(Visualization.changeSizeByFileTypeChart))
 			add(createShowInBrowserAction(Visualization.amountOfCommitsTreemap))
 			add(createShowInBrowserAction(Visualization.filesInTheSameCommitGraph))

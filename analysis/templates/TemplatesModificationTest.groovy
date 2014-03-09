@@ -5,7 +5,7 @@ import static AllTemplates.*
 
 class TemplatesModificationTest {
 	private ArrayList<Template> allTemplates = [
-			changeSizeChartTemplate, amountOfCommittersChartTemplate, amountOfFilesInCommitChartTemplate,
+			changeSizeChartTemplate, amountOfCommittersChartTemplate, amountOfFilesInCommitChartTemplate, amountOfChangingFilesChartTemplate,
 			changeSizeByFileTypeChartTemplate, filesInTheSameCommitGraphTemplate, committersChangingSameFilesGraphTemplate,
 			committersChangingSameFilesGraphTemplate, amountOfCommitsTreemapTemplate,
 			commitTimePunchcardTemplate, timeBetweenCommitsHistogramTemplate, commitMessageWordCloudTemplate
