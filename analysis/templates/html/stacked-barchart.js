@@ -349,7 +349,7 @@ function newXAxis(root, uiConfig, xScale) {
 
 
 function newXScale(uiConfig) {
-	function lengthOf(domain, timeInterval) {
+	function amountOfValuesIn(domain, timeInterval) {
 		var count = 0;
 		var from = domain[0];
 		var to = domain[1];
@@ -367,13 +367,13 @@ function newXScale(uiConfig) {
 	var timeInterval = d3.time.day;
 	var x = d3.time.scale().nice().rangeRound([0, uiConfig.width]);
 	x.update = function(update) {
-		timeInterval = update.groupByTimeInterval;
+		timeInterval = update.dataTimeInterval;
 		x.domain([update.minX, timeInterval.offset(update.maxX, 1)]);
-		x.amountOfValues = lengthOf(x.domain(),timeInterval);
+		x.amountOfValues = amountOfValuesIn(x.domain(), timeInterval);
 	};
 	var notifyListeners = observable(x);
 	x.setDomain = function(extent) {
-		x.amountOfValues = lengthOf(extent, timeInterval);
+		x.amountOfValues = amountOfValuesIn(extent, timeInterval);
 		x.domain(extent);
 		notifyListeners(x);
 	};
@@ -479,7 +479,7 @@ function newStackedData(rawCsv) {
 			dataStacked: dataStacked,
 			groupIndex: groupIndex,
 			groupByIndex: groupByIndex,
-			groupByTimeInterval: timeIntervals[groupByIndex],
+			dataTimeInterval: timeIntervals[groupByIndex],
 			minX: minX,
 			maxX: maxX,
 			minY: minY,

@@ -118,7 +118,7 @@ describe("x scale", function () {
 		x.onUpdate([function(x) {
 			updatedX = x;
 		}]);
-		var data = {minX: date("20/04/2011"), maxX: date("30/04/2011"), groupByTimeInterval: d3.time.day};
+		var data = {minX: date("20/04/2011"), maxX: date("30/04/2011"), dataTimeInterval: d3.time.day};
 		x.update(data);
 
 		x.setDomain([date("20/04/2011"), date("25/04/2011")]);
@@ -175,12 +175,12 @@ describe("bar chart data", function () {
 
 		data.sendUpdate();
 		expect(received.groupByIndex).toEqual(0);
-		expect(received.groupByTimeInterval).toEqual(d3.time.day);
+		expect(received.dataTimeInterval).toEqual(d3.time.day);
 		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
 
 		data.groupBy(1);
 		expect(received.groupByIndex).toEqual(1);
-		expect(received.groupByTimeInterval).toEqual(d3.time.monday);
+		expect(received.dataTimeInterval).toEqual(d3.time.monday);
 		expect(received.data[0][0]).toEqual({ category: "java", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
 		expect(received.data[1][0]).toEqual({ category: "xml", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
 		expect(received.data[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
