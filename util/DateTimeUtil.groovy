@@ -48,7 +48,7 @@ class DateTimeUtil {
 	static final oneWeek = weeks(1)
 	static final oneMonth = months(1)
 
-	interface TimeInterval {
+	static interface TimeInterval {
 		Date floor(Date date, TimeZone timeZone)
 		Date next(Date date, TimeZone timeZone)
 	}

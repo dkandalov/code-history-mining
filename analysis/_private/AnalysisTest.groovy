@@ -11,6 +11,25 @@ class AnalysisTest {
 	private static final Closure noCancel = {}
 	private final commitEvents = new CommitEvents()
 
+	@Test void "amount of changing files adds data for days without changes"() {
+		def changeEvents = commitEvents.with{[
+				commitBy(someone, "05/04/2013", modified("/theories/internal/Theories.java")),
+				commitBy(someone, "03/04/2013", modified("/theories/internal/Assignments.java")),
+		].flatten()}
+
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+			|["\\
+	    |date,category,value\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,0\\n\\
+      |05/04/2013,recently changed,1\\n\\
+      |03/04/2013,unchanged,0\\n\\
+      |04/04/2013,unchanged,1\\n\\
+      |05/04/2013,unchanged,1\\n\\
+			|"]
+		""".stripMargin("|").trim()
+	}
+
 	@Test void "amount of changing files takes into account deleted files"() {
 		def changeEvents = commitEvents.with{[
 				commitBy(someone, "04/04/2013", deleted("/theories/internal/Assignments.java")),

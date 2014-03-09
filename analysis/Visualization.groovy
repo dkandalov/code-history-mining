@@ -1,6 +1,7 @@
 package analysis
 
 import groovy.transform.Immutable
+import util.DateTimeUtil
 
 import static analysis._private.Analysis.*
 import static analysis.templates.AllTemplates.*
@@ -26,7 +27,7 @@ class Visualization {
 	})
 
 	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart", { Context context ->
-		def json = amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)
+		def json = amountOfChangingFiles_Chart(context.events, [DateTimeUtil.oneMonth], context.checkIfCancelled)
 		amountOfChangingFilesChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
