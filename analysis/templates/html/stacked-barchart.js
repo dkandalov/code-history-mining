@@ -477,13 +477,13 @@ function newStackedData(rawCsv) {
 		notifyListeners({
 			data: data,
 			dataStacked: dataStacked,
-			groupIndex: groupIndex,
-			groupByIndex: groupByIndex,
-			dataTimeInterval: timeIntervals[groupByIndex],
 			minX: minX,
 			maxX: maxX,
 			minY: minY,
-			maxY: maxY
+			maxY: maxY,
+			groupIndex: groupIndex,
+			groupByIndex: groupByIndex,
+			dataTimeInterval: timeIntervals[groupByIndex]
 		});
 	};
 	it.setGroupIndex = function(value) {
@@ -501,5 +501,88 @@ function newStackedData(rawCsv) {
 		it.sendUpdate();
 	};
 
+	return it;
+}
+
+function newStackedData_(rawCsv) {
+	function groupByCategory(data) {
+		var dateFormat = d3.time.format("%d/%m/%Y");
+		return d3.nest().key(function(d){ return d["category"]; }).entries(data)
+			.map(function (entry) {
+				return entry.values.map(function (d) {
+					return {
+						x: dateFormat.parse(d.date),
+						y: parseInt(d["value"]),
+						category: d["category"]
+					};
+				});
+			});
+	}
+	function groupBy(timeInterval, daysData) {
+		if (timeInterval == d3.time.day) return daysData;
+		return d3.values(d3.nest()
+			.key(function(d) { return timeInterval.floor(d.x); })
+			.rollup(function(days) {
+				var aggregateValue = d3.sum(days, function (d) { return d.y; });
+				var date = timeInterval.floor(days[0].x);
+				var category = days[0].category;
+				return { category: category, x: date, y: aggregateValue };
+			})
+			.map(daysData));
+	}
+	var originalData = groupByCategory(d3.csv.parse(rawCsv));
+	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
+
+	var data;
+	var dataStacked;
+	var minX;
+	var maxX;
+	var minY = 0;
+	var maxY;
+	var groupByIndex = 0;
+
+	function updateWith(newData) {
+		data = newData;
+		dataStacked = d3.layout.stack()(data);
+		minX = d3.min(data, function(d) {
+			return d3.min(d, function(dd) {
+				return dd.x;
+			});
+		});
+		maxX = d3.max(data, function(d) {
+			return d3.max(d, function(dd) {
+				return dd.x;
+			});
+		});
+		maxY = d3.max(dataStacked, function(layer) {
+			return d3.max(layer, function(d) {
+				return d.y0 + d.y;
+			});
+		});
+	}
+	updateWith(originalData);
+
+
+	var it = {};
+	var notifyListeners = observable(it);
+	it.sendUpdate = function() {
+		notifyListeners({
+			data: data,
+			dataStacked: dataStacked,
+			minX: minX,
+			maxX: maxX,
+			minY: minY,
+			maxY: maxY,
+			groupByIndex: groupByIndex,
+			dataTimeInterval: timeIntervals[groupByIndex]
+		});
+	};
+	it.groupBy = function(value) {
+		groupByIndex = value;
+		updateWith(originalData.map(function(it) {
+			return groupBy(timeIntervals[groupByIndex], it);
+		}));
+		it.sendUpdate();
+	};
 	return it;
 }
