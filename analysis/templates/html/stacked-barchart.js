@@ -422,102 +422,6 @@ function newStackedData(rawCsv) {
 				});
 			});
 	}
-	var originalData = rawCsv.map(function(it) { return groupByCategory(d3.csv.parse(it)); });
-	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
-
-	var data;
-	var dataStacked;
-	var groupIndex = 0;
-	var groupByIndex = 0;
-	var minX;
-	var maxX;
-	var minY = 0;
-	var maxY;
-
-	function groupBy(timeInterval, daysData) {
-		if (timeInterval == d3.time.day) return daysData;
-		return d3.values(d3.nest()
-				.key(function(d) { return timeInterval.floor(d.x); })
-				.rollup(function(days) {
-					var aggregateValue = d3.sum(days, function (d) { return d.y; });
-					var date = timeInterval.floor(days[0].x);
-					var category = days[0].category;
-					return { category: category, x: date, y: aggregateValue };
-				})
-				.map(daysData));
-	}
-
-	function updateWith(newData) {
-		data = newData;
-		dataStacked = d3.layout.stack()(data);
-		minX = d3.min(data, function(d) {
-			return d3.min(d, function(dd) {
-				return dd.x;
-			});
-		});
-		maxX = d3.max(data, function(d) {
-			return d3.max(d, function(dd) {
-				return dd.x;
-			});
-		});
-		maxY = d3.max(dataStacked, function(layer) {
-			return d3.max(layer, function(d) {
-				return d.y0 + d.y;
-			});
-		});
-	}
-	updateWith(originalData[groupIndex].map(function(it) {
-		return groupBy(timeIntervals[groupByIndex], it);
-	}));
-
-
-	var it = {};
-	var notifyListeners = observable(it);
-	it.sendUpdate = function() {
-		notifyListeners({
-			data: data,
-			dataStacked: dataStacked,
-			minX: minX,
-			maxX: maxX,
-			minY: minY,
-			maxY: maxY,
-			groupIndex: groupIndex,
-			groupByIndex: groupByIndex,
-			dataTimeInterval: timeIntervals[groupByIndex]
-		});
-	};
-	it.setGroupIndex = function(value) {
-		groupIndex = value;
-		updateWith(originalData[groupIndex].map(function(it) {
-			return groupBy(timeIntervals[groupByIndex], it);
-		}));
-		it.sendUpdate();
-	};
-	it.groupBy = function(value) {
-		groupByIndex = value;
-		updateWith(originalData[groupIndex].map(function(it) {
-			return groupBy(timeIntervals[groupByIndex], it);
-		}));
-		it.sendUpdate();
-	};
-
-	return it;
-}
-
-function newStackedData_(rawCsv) {
-	function groupByCategory(data) {
-		var dateFormat = d3.time.format("%d/%m/%Y");
-		return d3.nest().key(function(d){ return d["category"]; }).entries(data)
-			.map(function (entry) {
-				return entry.values.map(function (d) {
-					return {
-						x: dateFormat.parse(d.date),
-						y: parseInt(d["value"]),
-						category: d["category"]
-					};
-				});
-			});
-	}
 	function groupBy(timeInterval, daysData) {
 		if (timeInterval == d3.time.day) return daysData;
 		return d3.values(d3.nest()
@@ -584,5 +488,33 @@ function newStackedData_(rawCsv) {
 		}));
 		it.sendUpdate();
 	};
+	return it;
+}
+
+function newMultipleStackedData(rawCsvArray) {
+	var groupIndex = 0;
+	var stackedData = rawCsvArray.map(function(it) { return newStackedData(it); });
+
+	var it = {};
+	var notifyListeners = observable(it);
+	it.sendUpdate = function() {
+		stackedData[groupIndex].sendUpdate();
+	};
+	it.setGroupIndex = function(value) {
+		groupIndex = value;
+		it.sendUpdate();
+	};
+	it.groupBy = function(value) {
+		for (var i = 0; i < stackedData.length; i++) {
+			if (i != groupIndex) stackedData[i].groupBy(value); // skip selected groupIndex to make it send update last
+		}
+		stackedData[groupIndex].groupBy(value);
+	};
+	stackedData.forEach(function(it) {
+		it.onUpdate(function(update) {
+			update.groupIndex = groupIndex;
+			notifyListeners(update);
+		});
+	});
 	return it;
 }

@@ -110,7 +110,7 @@ date,category,value\n\
     var svg = svgRoot.append("g")
                 .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var data = newStackedData(rawData);
+    var data = newMultipleStackedData(rawData);
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);

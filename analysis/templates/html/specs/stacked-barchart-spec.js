@@ -56,7 +56,7 @@ describe("bars", function () {
 		uiConfig = { width: 1000, height: 500 };
 		x = newXScale(uiConfig);
 		y = newYScale(uiConfig);
-		data = newStackedData(rawData);
+		data = newMultipleStackedData(rawData);
 	});
 	afterEach(function() {
 		rootElement.remove();
@@ -130,7 +130,7 @@ describe("x scale", function () {
 
 describe("bar chart data", function () {
 	it("after construction it can broadcast update with stacked data", function() {
-		var data = newStackedData(rawData);
+		var data = newStackedData(rawData[0]);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -148,8 +148,28 @@ describe("bar chart data", function () {
 		expect(received.dataStacked.length).toEqual(3);
 	});
 
+	it("sends update with regrouped data when asked to group by different time interval", function() {
+		var data = newStackedData(rawData[0]);
+		var received = null;
+		data.onUpdate([function(update) {
+			received = update;
+		}]);
+
+		data.sendUpdate();
+		expect(received.groupByIndex).toEqual(0);
+		expect(received.dataTimeInterval).toEqual(d3.time.day);
+		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
+
+		data.groupBy(1);
+		expect(received.groupByIndex).toEqual(1);
+		expect(received.dataTimeInterval).toEqual(d3.time.monday);
+		expect(received.data[0][0]).toEqual({ category: "java", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
+		expect(received.data[1][0]).toEqual({ category: "xml", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
+		expect(received.data[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
+	});
+
 	it("sends update with new data when group index changes", function() {
-		var data = newStackedData(rawData);
+		var data = newMultipleStackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -165,68 +185,6 @@ describe("bar chart data", function () {
 		expect(received.data[0][0]["category"]).toEqual("java");
 		expect(received.data[0][0]["y"]).toEqual(11);
 	});
-
-	it("sends update with regrouped data when asked to group by different time interval", function() {
-		var data = newStackedData(rawData);
-		var received = null;
-		data.onUpdate([function(update) {
-			received = update;
-		}]);
-
-		data.sendUpdate();
-		expect(received.groupByIndex).toEqual(0);
-		expect(received.dataTimeInterval).toEqual(d3.time.day);
-		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
-
-		data.groupBy(1);
-		expect(received.groupByIndex).toEqual(1);
-		expect(received.dataTimeInterval).toEqual(d3.time.monday);
-		expect(received.data[0][0]).toEqual({ category: "java", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
-		expect(received.data[1][0]).toEqual({ category: "xml", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
-		expect(received.data[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
-	});
-});
-
-describe("bar chart data NEW!", function () {
-	it("after construction it can broadcast update with stacked data", function() {
-		var data = newStackedData_(rawData[0]);
-		var received = null;
-		data.onUpdate([function(update) {
-			received = update;
-		}]);
-
-		data.sendUpdate();
-
-		expect(received.data.length).toEqual(3);
-		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
-		expect(received.data[1][0]).toEqual({ category: "xml", x: date("18/01/2013"), y: 11, y0: 1 });
-		expect(received.data[2][0]).toEqual({ category: "txt", x: date("18/01/2013"), y: 111, y0: 1 + 11 });
-		expect(received.data[0][1]).toEqual({ category: "java", x: date("19/01/2013"), y: 2, y0: 0 });
-		expect(received.data[1][1]).toEqual({ category: "xml", x: date("19/01/2013"), y: 22, y0: 2 });
-		expect(received.data[2][1]).toEqual({ category: "txt", x: date("19/01/2013"), y: 222, y0: 2 + 22 });
-		expect(received.dataStacked.length).toEqual(3);
-	});
-
-	it("sends update with regrouped data when asked to group by different time interval", function() {
-		var data = newStackedData_(rawData[0]);
-		var received = null;
-		data.onUpdate([function(update) {
-			received = update;
-		}]);
-
-		data.sendUpdate();
-		expect(received.groupByIndex).toEqual(0);
-		expect(received.dataTimeInterval).toEqual(d3.time.day);
-		expect(received.data[0][0]).toEqual({ category: "java", x: date("18/01/2013"), y: 1, y0: 0 });
-
-		data.groupBy(1);
-		expect(received.groupByIndex).toEqual(1);
-		expect(received.dataTimeInterval).toEqual(d3.time.monday);
-		expect(received.data[0][0]).toEqual({ category: "java", x: date("14/01/2013"), y: 1 + 2 + 3, y0: 0 });
-		expect(received.data[1][0]).toEqual({ category: "xml", x: date("14/01/2013"), y: 11 + 22 + 33, y0: 6 });
-		expect(received.data[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
-	});
-
 });
 
 function date(s) {
