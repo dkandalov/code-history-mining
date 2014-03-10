@@ -27,7 +27,7 @@ class Visualization {
 	})
 
 	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart", { Context context ->
-		def json = amountOfChangingFiles_Chart(context.events, [DateTimeUtil.oneMonth], context.checkIfCancelled)
+		def json = amountOfChangingFiles_Chart(context.events, [DateTimeUtil.oneWeek, DateTimeUtil.oneMonth], context.checkIfCancelled)
 		amountOfChangingFilesChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 

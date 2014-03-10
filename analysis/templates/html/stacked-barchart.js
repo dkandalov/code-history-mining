@@ -518,3 +518,26 @@ function newMultipleStackedData(rawCsvArray) {
 	});
 	return it;
 }
+
+function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
+	var groupIndex = 0;
+	var stackedData = rawCsvArray.map(function(it) { return newStackedData(it); });
+
+	var it = {};
+	var notifyListeners = observable(it);
+	it.sendUpdate = function() {
+		stackedData[groupIndex].sendUpdate();
+	};
+	it.setGroupIndex = function(value) {
+		groupIndex = value;
+		it.sendUpdate();
+	};
+	stackedData.forEach(function(it) {
+		it.onUpdate(function(update) {
+			update.groupIndex = groupIndex;
+			update.dataTimeInterval = timeIntervals[groupIndex];
+			notifyListeners(update);
+		});
+	});
+	return it;
+}

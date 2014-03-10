@@ -116,7 +116,7 @@ class Analysis {
 		"[" +
 				intervals.collect{ interval ->
 					asCsvStringLiteral(changingFiles(interval), ["date", "category", "value"])
-				}.join("") +
+				}.join(",\n") +
 		"]"
 	}
 

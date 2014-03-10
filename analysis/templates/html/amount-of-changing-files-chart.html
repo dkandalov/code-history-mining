@@ -55,40 +55,24 @@
 <script>
     var rawData = /*data_placeholder*/["\
 date,category,value\n\
-18/01/2013,unchanged,18\n\
-19/01/2013,unchanged,5\n\
-20/01/2013,unchanged,3\n\
-21/01/2013,unchanged,3\n\
-22/01/2013,unchanged,3\n\
-18/01/2013,recently changed,18\n\
-19/01/2013,recently changed,3\n\
-21/01/2013,recently changed,11\n\
-22/01/2013,recently changed,11\n\
-20/01/2013,recently changed,11\n\
+30/09/2013,unchanged,18\n\
+07/10/2013,unchanged,5\n\
+14/10/2013,unchanged,3\n\
+21/10/2013,unchanged,3\n\
+28/10/2013,unchanged,3\n\
+30/09/2013,recently changed,18\n\
+07/10/2013,recently changed,3\n\
+14/10/2013,recently changed,11\n\
+21/10/2013,recently changed,11\n\
+28/10/2013,recently changed,11\n\
 ",
 "date,category,value\n\
-18/01/2013,unchanged,180\n\
-19/01/2013,unchanged,50\n\
-20/01/2013,unchanged,30\n\
-21/01/2013,unchanged,3\n\
-22/01/2013,unchanged,50\n\
-18/01/2013,recently changed,180\n\
-19/01/2013,recently changed,30\n\
-20/01/2013,recently changed,110\n\
-21/01/2013,recently changed,110\n\
-22/01/2013,recently changed,110\n\
-",
-"date,category,value\n\
-18/01/2013,unchanged,0\n\
-19/01/2013,unchanged,00\n\
-20/01/2013,unchanged,00\n\
-21/01/2013,unchanged,00\n\
-22/01/2013,unchanged,00\n\
-18/01/2013,recently changed,0\n\
-19/01/2013,recently changed,00\n\
-21/01/2013,recently changed,00\n\
-22/01/2013,recently changed,00\n\
-20/01/2013,recently changed,00\n\
+01/10/2013,unchanged,180\n\
+01/11/2013,unchanged,50\n\
+01/12/2013,unchanged,30\n\
+01/10/2013,recently changed,180\n\
+01/11/2013,recently changed,30\n\
+01/12/2013,recently changed,110\n\
 "
 ]/*data_placeholder*/;
     var margin = {top: 40, right: 50, bottom: 20, left: 50};
@@ -110,7 +94,7 @@ date,category,value\n\
     var svg = svgRoot.append("g")
                 .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var data = newMultipleStackedData(rawData);
+    var data = newMultipleStackedDataWithTimeIntervals(rawData, [d3.time.monday, d3.time.month]);
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
     var bars = newBars(svg, uiConfig, x, y);
@@ -120,7 +104,7 @@ date,category,value\n\
     var legend = newLegend(svg, {x: uiConfig.width - 110, y: 20});
 
     var controlsPanel = newControlsPanel(root, uiConfig);
-    newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["one week", "two weeks", "month"]);
+    newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["week", "month"]);
 
     bars.onUpdate(legend.update);
     bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
