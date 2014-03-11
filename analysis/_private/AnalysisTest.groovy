@@ -20,12 +20,12 @@ class AnalysisTest {
 		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
 			|["\\
 	    |date,category,value\\n\\
-	    |03/04/2013,recently changed,1\\n\\
-      |04/04/2013,recently changed,0\\n\\
-      |05/04/2013,recently changed,1\\n\\
       |03/04/2013,unchanged,0\\n\\
       |04/04/2013,unchanged,1\\n\\
       |05/04/2013,unchanged,1\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,0\\n\\
+      |05/04/2013,recently changed,1\\n\\
 			|"]
 		""".stripMargin("|").trim()
 	}
@@ -39,10 +39,10 @@ class AnalysisTest {
 		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
 			|["\\
 	    |date,category,value\\n\\
-	    |03/04/2013,recently changed,1\\n\\
-      |04/04/2013,recently changed,0\\n\\
       |03/04/2013,unchanged,0\\n\\
       |04/04/2013,unchanged,0\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,0\\n\\
 			|"]
 		""".stripMargin("|").trim()
 	}
@@ -56,10 +56,10 @@ class AnalysisTest {
 		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
 			|["\\
 	    |date,category,value\\n\\
-	    |03/04/2013,recently changed,1\\n\\
-      |04/04/2013,recently changed,1\\n\\
       |03/04/2013,unchanged,0\\n\\
       |04/04/2013,unchanged,1\\n\\
+	    |03/04/2013,recently changed,1\\n\\
+      |04/04/2013,recently changed,1\\n\\
 			|"]
 		""".stripMargin("|").trim()
 	}
@@ -72,8 +72,8 @@ class AnalysisTest {
 		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
 			|["\\
 			|date,category,value\\n\\
-      |03/04/2013,recently changed,1\\n\\
       |03/04/2013,unchanged,0\\n\\
+      |03/04/2013,recently changed,1\\n\\
 			|"]
 		""".stripMargin("|").trim()
 	}

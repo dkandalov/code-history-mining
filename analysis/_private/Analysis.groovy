@@ -84,7 +84,8 @@ class Analysis {
 		def changingFiles = { TimeInterval interval ->
 			def eventsByTimeInterval = events.groupBy{ interval.floor(it.revisionDate) }
 
-			def result = []
+			def unchanged = []
+			def recentlyChanged = []
 			def allFiles = new HashSet()
 
 			def date = interval.floor(events.first().revisionDate)
@@ -105,12 +106,12 @@ class Analysis {
 					else recentFiles.add(event.packageName + "/" + event.fileName)
 				}
 
-				result << [date, "unchanged", allFiles.size() - recentFiles.size()]
-				result << [date, "recently changed", recentFiles.size()]
+				unchanged << [date, "unchanged", allFiles.size() - recentFiles.size()]
+				recentlyChanged << [date, "recently changed", recentFiles.size()]
 
 				date = interval.next(date)
 			}
-			result.sort{ it[1] }
+			unchanged + recentlyChanged
 		}
 
 		"[" +
