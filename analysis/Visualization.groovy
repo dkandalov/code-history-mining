@@ -84,7 +84,9 @@ class Visualization {
 		templates.each{
 			template = template.addBefore(
 					"<!--style-insert-point-->",
-					it.lastTag("style").replaceAll(/margin:.*?;/, '').replaceAll(/width:.*?;/, '')
+					it.lastTag("style")
+							.replaceAll(/margin:.*?;/, '')
+							.replaceAll(/\swidth:.*?;/, '')
 			)
 			template = template.addBefore(
 					"<!--script-insert-point-->",
