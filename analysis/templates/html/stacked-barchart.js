@@ -412,15 +412,18 @@ function autoGroup(data) {
 }
 
 function newStackedData(rawCsv) {
+	function getCategory(d) {
+		return d["category"];
+	}
 	function groupByCategory(data) {
 		var dateFormat = d3.time.format("%d/%m/%Y");
-		return d3.nest().key(function(d){ return d["category"]; }).entries(data)
+		return d3.nest().key(function(d){ return getCategory(d); }).entries(data)
 			.map(function (entry) {
 				return entry.values.map(function (d) {
 					return {
 						x: dateFormat.parse(d.date),
 						y: parseInt(d["value"]),
-						category: d["category"]
+						category: getCategory(d)
 					};
 				});
 			});
@@ -432,8 +435,7 @@ function newStackedData(rawCsv) {
 			.rollup(function(days) {
 				var aggregateValue = d3.sum(days, function (d) { return d.y; });
 				var date = timeInterval.floor(days[0].x);
-				var category = days[0].category;
-				return { category: category, x: date, y: aggregateValue };
+				return { category: getCategory(days[0]), x: date, y: aggregateValue };
 			})
 			.map(daysData));
 	}
