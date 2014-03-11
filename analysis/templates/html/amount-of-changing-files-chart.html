@@ -48,7 +48,7 @@
 </style>
 <head><title>Amount of changing files chart</title></head>
 <body>
-<span id="chart"></span>
+<span id="amount-of-changing-files-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
@@ -85,7 +85,7 @@ date,category,value\n\
     var xAxisHeight = 30;
     var color = d3.scale.category10();
 
-    var root = d3.select("#chart");
+    var root = d3.select("#amount-of-changing-files-chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
     newHeader(root, uiConfig, "Amount of changing files chart (" + projectName + ")");
 

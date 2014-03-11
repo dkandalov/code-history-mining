@@ -48,7 +48,7 @@
 </style>
 <head><title>Change size by file type</title></head>
 <body>
-<span id="chart"></span>
+<span id="change-size-by-file-type-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
@@ -115,7 +115,7 @@ date,category,value\n\
     var brushHeight = 50;
     var xAxisHeight = 30;
 
-    var root = d3.select("#chart");
+    var root = d3.select("#change-size-by-file-type-chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
     newHeader(root, uiConfig, "Change size by file type chart (" + projectName + ")");
 

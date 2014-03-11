@@ -6,6 +6,7 @@ import org.junit.Test
 
 import static events.ChangeStats.NA
 import static util.DateTimeUtil.date
+import static util.DateTimeUtil.oneDay
 
 class AnalysisTest {
 	private static final Closure noCancel = {}
@@ -17,7 +18,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", modified("/theories/internal/Assignments.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -36,7 +37,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", created("/theories/internal/Assignments.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -53,7 +54,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -69,7 +70,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents) == """
+		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 			|date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\

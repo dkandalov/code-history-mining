@@ -75,8 +75,8 @@ class Analysis {
 				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
 	}
 
-	static String amountOfChangingFiles_Chart(List<FileChangeEvent> events, List<TimeInterval> intervals = [oneDay],
-			                                      Closure checkIfCancelled = {}) {
+	static String amountOfChangingFiles_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {},
+	                                          List<TimeInterval> intervals = [DateTimeUtil.oneWeek, DateTimeUtil.oneMonth]) {
 		Map.mixin(CollectionUtil)
 		assertEventsGoFromPresentToPast(events)
 		events = useLatestNameForMovedFiles(events, checkIfCancelled).reverse()

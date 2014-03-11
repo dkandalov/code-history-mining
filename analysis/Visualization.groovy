@@ -1,7 +1,5 @@
 package analysis
-
 import groovy.transform.Immutable
-import util.DateTimeUtil
 
 import static analysis._private.Analysis.*
 import static analysis.templates.AllTemplates.*
@@ -27,7 +25,7 @@ class Visualization {
 	})
 
 	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart", { Context context ->
-		def json = amountOfChangingFiles_Chart(context.events, [DateTimeUtil.oneWeek, DateTimeUtil.oneMonth], context.checkIfCancelled)
+		def json = amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)
 		amountOfChangingFilesChartTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
@@ -72,6 +70,7 @@ class Visualization {
 				changeSizeChartTemplate.fillData(changeSize_Chart(context.events, context.checkIfCancelled)),
 				amountOfCommittersChartTemplate.fillData(amountOfCommitters_Chart(context.events, context.checkIfCancelled)),
 				amountOfFilesInCommitChartTemplate.fillData(averageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
+				amountOfChangingFilesChartTemplate.fillData(amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)),
 				changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileType_Chart(context.events, context.checkIfCancelled)),
 				filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
 				committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)),
