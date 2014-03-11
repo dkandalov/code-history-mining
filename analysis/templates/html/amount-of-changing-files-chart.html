@@ -84,7 +84,7 @@ date,category,value\n\
     };
     var brushHeight = 50;
     var xAxisHeight = 30;
-    var color = d3.scale.category10();
+    var color = d3.scale.category20().domain([1, 0]);
 
     var root = d3.select("#amount-of-changing-files-chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
