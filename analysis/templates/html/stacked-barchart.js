@@ -167,7 +167,7 @@ function newGroupByDropDown(root, stackedData, label, groupByNames) {
 			return update.groupByIndex;
 		},
 		function(newValue) {
-			stackedData.groupBy(newValue);
+			stackedData.groupBy(parseInt(newValue));
 		}
 	);
 }
@@ -389,21 +389,24 @@ function newYScale(uiConfig) {
 }
 
 function autoGroup(data) {
+	function bestTimeIntervalForGrouping(minTime, maxTime) {
+		if (new Date(maxTime - minTime) < d3.time.month.offset(new Date(0), 1)) {
+			return d3.time.day;
+		} else if (new Date(maxTime - minTime) < d3.time.month.offset(new Date(0), 24)) {
+			return d3.time.monday;
+		} else {
+			return d3.time.month;
+		}
+	}
+
 	var ranOnce = false;
 	var it = {};
 	it.update = function(update) {
 		if (ranOnce) return;
 		ranOnce = true;
 
-		var shouldGroupByDay = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 1);
-		var shouldGroupByWeek = new Date(update.maxX - update.minX) < d3.time.month.offset(new Date(0), 24);
-		if (shouldGroupByDay) {
-			// do nothing, keep grouped by day
-		} else if (shouldGroupByWeek) {
-			data.groupBy(1);
-		} else {
-			data.groupBy(2);
-		}
+		var timeInterval = bestTimeIntervalForGrouping(update.minX, update.maxX);
+		data.groupBy(timeInterval);
 	};
 	return it;
 }
@@ -482,6 +485,13 @@ function newStackedData(rawCsv) {
 		});
 	};
 	it.groupBy = function(value) {
+		if (!_.isNumber(value)) {
+			var i = timeIntervals.indexOf(value);
+			if (i == -1) return;
+			value = i;
+		}
+		if (value == groupByIndex) return;
+
 		groupByIndex = value;
 		updateWith(originalData.map(function(it) {
 			return groupBy(timeIntervals[groupByIndex], it);
@@ -531,6 +541,10 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 	it.setGroupIndex = function(value) {
 		groupIndex = value;
 		it.sendUpdate();
+	};
+	it.groupBy = function(value) {
+		var i = timeIntervals.indexOf(value);
+		if (i != -1) it.setGroupIndex(i);
 	};
 	stackedData.forEach(function(it) {
 		it.onUpdate(function(update) {
