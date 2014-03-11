@@ -201,7 +201,7 @@ function newDropDown(root, label, optionLabels, getSelectedIndex, onChange) {
 	return it;
 }
 
-function newXBrush(root, uiConfig, xScale, height, y) {
+function newXBrush(root, uiConfig, xScale, height, y, color) {
 	height = height == null ? 50 : height;
 	y = y == null ? (uiConfig.height + uiConfig.margin.top) : y;
 
@@ -216,7 +216,7 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 		g.selectAll("g").remove();
 		g.selectAll("defs").remove();
 
-		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, "brushBars");
+		var bars = newBars(g, brushUiConfig, brushXScale, brushYScale, "brushBars", color);
 		if (update != null) bars.update(update);
 
 		g.append("g")
@@ -243,9 +243,9 @@ function newXBrush(root, uiConfig, xScale, height, y) {
 	return brush;
 }
 
-function newBars(root, uiConfig, xScale, yScale, id) {
-	var color = d3.scale.category20();
+function newBars(root, uiConfig, xScale, yScale, id, color) {
 	id = (id == null ? "-bars" : "-" + id);
+	color = (color == null ? d3.scale.category20() : color);
 	var data;
 
 	root.append("defs").append("clipPath").attr("id", "clip" + id)

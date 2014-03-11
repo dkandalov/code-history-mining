@@ -83,6 +83,7 @@ date,category,value\n\
     };
     var brushHeight = 50;
     var xAxisHeight = 30;
+    var color = d3.scale.category10();
 
     var root = d3.select("#chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
@@ -97,10 +98,10 @@ date,category,value\n\
     var data = newMultipleStackedDataWithTimeIntervals(rawData, [d3.time.monday, d3.time.month]);
     var x = newXScale(uiConfig);
     var y = newYScale(uiConfig);
-    var bars = newBars(svg, uiConfig, x, y);
+    var bars = newBars(svg, uiConfig, x, y, "bars", color);
     var xAxis = newXAxis(svg, uiConfig, x);
     var yAxis = newYAxis(svg, "Changed files", y);
-    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+    var xBrush = newXBrush(svg, uiConfig, x, brushHeight, null, color);
     var legend = newLegend(svg, {x: 50, y: 20});
 
     var controlsPanel = newControlsPanel(root, uiConfig);
