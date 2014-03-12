@@ -240,14 +240,52 @@ date,value\n\
     var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
     controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"]);
+    controlsPanel.addSpace();
+    var totalSize = newTotalSizeLabel(controlsPanel, uiConfig);
 
     bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
-        movingAverage.update, autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
-    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverage.onXScaleUpdate]);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
+                   groupBy.update, movingAverage.update, totalSize.update,
+                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverage.onXScaleUpdate, totalSize.onXScaleUpdate]);
 
     data.sendUpdate();
 
+
+    function newTotalSizeLabel(root, uiConfig) {
+        var someShift = 30;
+        var leftFooter = root.append("span")
+                .style("position", "absolute")
+                .style("left", function(){ return someShift + uiConfig.margin.left + "px"; });
+        leftFooter.append("label").style("color", "#999").html("Total size: ");
+
+        var totalChangeSizeLabel = leftFooter
+                .append("span").style("color", "#999")
+                .append("label").html("");
+
+        function formatChangeSize(n) {
+            var s = d3.format(",")(n);
+            return s.length < 3 ? s : d3.format(".3s")(n);
+        }
+        function amountOfCommitsWithin(domain, data, getDate, getValue) {
+            var withinDomain = function(d) { return getDate(d) > domain[0] && getDate(d) < domain[1]; };
+            return d3.sum(data.filter(withinDomain), getValue);
+        }
+
+        var data;
+
+        var it = {};
+        it.update = function(update) {
+            data = update.data[0];
+        };
+        it.onXScaleUpdate = function(xScale) {
+            if (data == null) return;
+            var getValue = function(it) { return it.y; };
+            var getDate = function(it) { return it.x; };
+            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(xScale.domain(), data, getDate, getValue)));
+        };
+        return it;
+    }
 </script>
 </body>
