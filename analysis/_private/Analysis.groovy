@@ -26,9 +26,9 @@ class Analysis {
 		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
 		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{it[0]}
 
-		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "changeSize"])
-		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "changeSize"])
-		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "changeSize"])
+		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "value"])
+		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "value"])
+		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "value"])
 
 		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
 	}

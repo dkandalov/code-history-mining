@@ -2,46 +2,67 @@
 <meta charset="utf-8">
 <style>
     body {
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+        margin: auto;
+        width: 960px;
         background: #f2f2f2;
-        margin: 30px;
     }
-    #change-size-chart,
-    #change-size-chart text {
+
+    #change-size-chart text,
+    #change-size-chart label {
         font: 11px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
     }
-    #change-size-chart .axis path,
-    #change-size-chart .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-    #change-size-chart .bar {
-        fill: steelblue;
-    }
-    #change-size-chart .bar:hover {
-        fill: rgb(62, 104, 146);
-    }
-    #change-size-chart .line {
+
+    #change-size-chart .line-movingAvg {
         fill: none;
         stroke-width: 1.5px;
         stroke: #b2182b;
     }
-    #change-size-chart .brush .extent {
+
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+    }
+
+    .brush .extent {
         stroke: #fff;
         fill-opacity: .125;
         shape-rendering: crispEdges;
+    }
+
+    .legend .box {
+        fill: #f9f9f9;
+        stroke: black;
+        opacity: 0.8;
+    }
+    .legend .items {
+        font-size: 12px;
+    }
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        height: auto;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
     }
 </style>
 <head><title>Change size chart</title></head>
 <body>
 <span id="change-size-chart"></span>
 <script src="d3.v3.min.js"></script>
-<script src="code-history.js"></script>
+<script src="underscore-min.js"></script>
+<script src="stacked-barchart.js"></script>
 <script>
     var rawData = /*data_placeholder*/
 ["\
-date,changeSize\n\
+date,value\n\
 11/08/2012,14218\n\
 13/08/2012,12977\n\
 14/08/2012,19705\n\
@@ -89,7 +110,7 @@ date,changeSize\n\
 05/03/2013,284\
 ",
 "\
-date,changeSize\n\
+date,value\n\
 11/08/2012,1114218\n\
 13/08/2012,12977\n\
 14/08/2012,19705\n\
@@ -137,7 +158,7 @@ date,changeSize\n\
 05/03/2013,284\
 ",
 "\
-date,changeSize\n\
+date,value\n\
 11/08/2012,14218\n\
 13/08/2012,1112977\n\
 14/08/2012,19705\n\
@@ -185,293 +206,51 @@ date,changeSize\n\
 05/03/2013,284\
 "
 ]/*data_placeholder*/;
+    var margin = {top: 40, right: 50, bottom: 20, left: 50};
+    var uiConfig = {
+        width: 960 - margin.left - margin.right,
+        height: 500 - margin.top - margin.bottom,
+        margin: margin
+    };
+    var brushHeight = 50;
+    var xAxisHeight = 30;
+
+    var root = d3.select("#change-size-chart");
     var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+    newHeader(root, uiConfig, "Change size chart (" + projectName + ")");
 
-    createChart("change-size-chart", rawData, projectName);
+    var svgRoot = root.append("svg")
+            .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
+    var svg = svgRoot.append("g")
+            .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    function createChart(elementId, rawData, projectName) {
-        var margin = {top: 20, right: 20, bottom: 100, left: 40},
-            margin2 = {top: 430, right: 20, bottom: 15, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom,
-            height2 = 500 - margin2.top - margin2.bottom;
+    var data = newMultipleStackedData(rawData);
+    var x = newXScale(uiConfig);
+    var y = newYScale(uiConfig);
+    var bars = newBars(svg, uiConfig, x, y);
+    var xAxis = newXAxis(svg, uiConfig, x);
+    var yAxis = newYAxis(svg, "Change size", y);
+    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+    var movingAverage = newMovingAverageLine(svg, uiConfig);
 
-        var dateFormat = d3.time.format("%d/%m/%Y");
-        var valueFormat = function(n) {
-            var s = d3.format(",")(n);
-            return s.length < 6 ? s : d3.format("s")(n);
-        };
+    var controlsPanel = newControlsPanel(root, uiConfig);
+    newShowMovingAverageCheckBox(controlsPanel, movingAverage);
+    controlsPanel.addSpace();
+    var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
+    controlsPanel.addSpace();
+    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"]);
+    controlsPanel.addSpace();
+    var totalSize = newTotalAmountLabel(root, svgRoot, uiConfig, "Total size: ");
 
-        var x = d3.time.scale().nice().rangeRound([0, width]);
-        var x2 = d3.time.scale().nice().rangeRound([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
-        var y2 = d3.scale.linear().range([height2, 0]);
-        var xAxis = d3.svg.axis().scale(x).orient("bottom");
-        var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
-        var xAxisLabel = "Date";
-        var yAxisLabel = "Change size";
-        var showMovingAverage = false;
+    bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-        var brush = d3.svg.brush().x(x2).on("brush", onBrush);
+    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
+                   groupBy.update, movingAverage.update, totalSize.update,
+                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverage.onXScaleUpdate, totalSize.onXScaleUpdate]);
 
-        var rootElement = d3.select("#" + elementId);
-        removeChildrenOf(elementId);
-
-        var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Change size chart (" + projectName + ")").style({"text-align": "center"});
-
-        var svg = rootElement.append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
-        var svgPos = svg[0][0].getBoundingClientRect();
-        svg.append("defs").append("clipPath").attr("id", "chartClip")
-                .append("rect").attr("width", width).attr("height", height);
-        svg.append("defs").append("clipPath").attr("id", "brushClip")
-                .append("rect").attr("width", width).attr("height", height2);
-
-        var rawDataIndex = 0;
-        var daysData = parseRawData(rawData[rawDataIndex], dateFormat);
-
-        var defaultTimeInterval = "monday";
-        var timeInterval = d3.time[defaultTimeInterval];
-        var data = aggregate(daysData, timeInterval);
-        var movingAverageData = [];
-
-        var fromDate = data[0].date;
-        var toDate = data[data.length - 1].date;
-        x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-        y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
-        x2.domain(x.domain());
-        y2.domain(y.domain());
-        var barWidth = barWidthFor(timeInterval, fromDate, toDate);
-
-        var movingAverageLine = d3.svg.line()
-                .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.mean); });
-
-        var zoomedView = svg.append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        zoomedView.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-        zoomedView.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text(yAxisLabel);
-
-        var brushFooter = svg.append("g")
-                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-        var nothingToShowLabel = rootElement.append("div")
-                .html("Unfortunately, there is nothing to show.")
-                .style("position", "absolute")
-                .style("top", function(){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
-                .style("left", function(){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
-                .style("opacity", 0);
-
-
-        var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
-
-        footerSpan.append("label").html("Moving average: ");
-        var checkbox = footerSpan.append("input").attr("type", "checkbox").on("click", function() {
-            showMovingAverage = !showMovingAverage;
-            updateChart();
-        });
-        if (showMovingAverage) checkbox.attr("checked", "checked");
-
-        footerSpan.append("span").style({width: "20px", display: "inline-block"});
-
-        footerSpan.append("label").html("Group by: ");
-        var groupByDropDown = footerSpan.append("select");
-        function isSelected(interval) { return defaultTimeInterval == interval ? "selected" : ""; }
-        var day = groupByDropDown.append("option").attr("value", "day").html("day");
-        if (isSelected("day")) day.attr("selected", "selected");
-        var week = groupByDropDown.append("option").attr("value", "monday").html("week");
-        if (isSelected("monday")) week.attr("selected", "selected");
-        var month = groupByDropDown.append("option").attr("value", "month").html("month");
-        if (isSelected("month")) month.attr("selected", "selected");
-        groupByDropDown.on("change", function() {
-            timeInterval = d3.time[this.value];
-            updateChart();
-        });
-        footerSpan.append("span").style({width: "20px", display: "inline-block"});
-
-        footerSpan.append("label").html("Change size measured in: ");
-        var dropDown = footerSpan.append("select");
-        dropDown.append("option").attr("value", "0").html("commits");
-        dropDown.append("option").attr("value", "1").html("lines");
-        dropDown.append("option").attr("value", "2").html("characters");
-        dropDown.on("change", function() {
-            rawDataIndex = +this.value;
-            daysData = parseRawData(rawData[rawDataIndex], dateFormat);
-            updateChart();
-        });
-
-        var someShift = 30;
-        var leftFooter = rootElement.append("span")
-                .style("position", "absolute")
-                .style("left", function(){
-                    return someShift + margin.left + "px"; });
-        leftFooter.append("span").style("color", "#999").html("Total size: ");
-        var totalChangeSizeLabel = leftFooter
-                .append("span").style("color", "#999")
-                .append("label").html("");
-
-
-        updateChart();
-
-
-        function updateChart() {
-            data = aggregate(daysData, timeInterval);
-            movingAverageData = movingAverage(data, timeInterval, function(it) { return it.changeSize; });
-
-            x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function(d) { return d.changeSize; })]);
-            x2.domain(x.domain());
-            y2.domain(y.domain());
-
-            barWidth = barWidthFor(timeInterval, fromDate, toDate);
-
-            showDataOn(zoomedView);
-            showBrushOn(brushFooter);
-
-            zoomedView.select(".y.axis").call(yAxis);
-
-            nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
-
-            onBrush();
-        }
-
-        function showBrushOn(element) {
-            element.selectAll("g").remove();
-            element.append("g")
-                    .selectAll(".bar2")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("class", "bar")
-                    .attr("clip-path", "url(#brushClip)")
-                    .attr("x", function(d) { return x2(d.date); })
-                    .attr("width", barWidth)
-                    .attr("y", function(d) { return y2(d.changeSize); })
-                    .attr("height", function(d) { return height2 - y2(d.changeSize); })
-                    .append("title");
-            element.append("g")
-                    .attr("class", "x brush")
-                    .call(brush)
-                    .selectAll("rect")
-                    .attr("y", -6)
-                    .attr("height", height2 + 7);
-        }
-
-        function showDataOn(element) {
-            element.selectAll(".bar").remove();
-            element.selectAll(".bar")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("class", "bar")
-                    .attr("clip-path", "url(#chartClip)")
-                    .attr("x", function(d) { return x(d.date); })
-                    .attr("width", barWidth)
-                    .attr("y", function(d) { return y(d.changeSize); })
-                    .attr("height", function(d) { return height - y(d.changeSize); })
-                    .append("title")
-                    .text(function(d) {
-                        var dateAsString;
-                        if (timeInterval == d3.time.day) {
-                            dateAsString = dateFormat(d.date);
-                        } else {
-                            dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
-                        }
-                        return xAxisLabel + ": " + dateAsString + "\n" +
-                               yAxisLabel + ": " + valueFormat(d.changeSize);
-                    });
-        }
-
-        function onBrush() {
-            var domain = brush.empty() ? x2.domain() : brush.extent();
-            x.domain(domain);
-            barWidth = barWidthFor(timeInterval, domain[0], domain[1]);
-            zoomedView.selectAll(".bar")
-                    .data(data)
-                    .attr("x", function(d) { return x(d.date); })
-                    .attr("width", barWidth);
-
-            zoomedView.selectAll(".line").remove();
-            if (showMovingAverage) {
-                zoomedView.append("path")
-                        .datum(movingAverageData)
-                        .attr("class", "line")
-                        .attr("clip-path", "url(#chartClip)")
-                        .attr("d", movingAverageLine);
-            }
-
-            zoomedView.select(".x.axis").call(xAxis);
-
-            var formatChangeSize = (function(n) {
-                var s = d3.format(",")(n);
-                return s.length < 3 ? s : d3.format(".3s")(n);
-            });
-            totalChangeSizeLabel.html(formatChangeSize(amountOfCommitsWithin(domain, data)));
-        }
-
-        function barWidthFor(timeInterval, fromDate, toDate) {
-            var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
-            barWidth = Math.floor(barWidth);
-            return barWidth < 1 ? 1 : barWidth;
-        }
-
-        <!-- static methods -->
-
-        function parseRawData(rawData, dateFormat) {
-            return d3.csv.parse(rawData).map(function(d) { return {
-                date: dateFormat.parse(d.date),
-                changeSize: parseInt(d.changeSize)};
-            });
-        }
-
-        function amountOfCommitsWithin(domain, data) {
-            var withinDomain = function(d) { return d.date > domain[0] && d.date < domain[1]; };
-            var changeSize = function(d) { return d.changeSize; };
-            return d3.sum(data.filter(withinDomain), changeSize);
-        }
-
-        function aggregate(daysData, timeInterval) {
-            if (timeInterval == d3.time.day) return daysData;
-            return d3.values(d3.nest()
-                            .key(function(d) { return timeInterval.floor(d.date); })
-                            .rollup(function(days) {
-                                var totalChangeSize = d3.sum(days, function (d) { return d.changeSize; });
-                                var date = (days.length == 0 ? null : timeInterval.floor(days[0].date));
-                                return {date: date, changeSize: totalChangeSize };
-                            })
-                            .map(daysData)).filter(function (d) {
-                                return d.changeSize > 0;
-                            });
-        }
-
-        function nonZero(length) {
-            return (length > 0 ? length : 0.0000001);
-        }
-
-        function appendBlockElementTo(element, width) {
-            return element.append("span").style({display: "block", width: width + "px"});
-        }
-
-        function removeChildrenOf(elementId) {
-            var element = document.getElementById(elementId);
-            while (element.children.length > 0) {
-                var child = element.children.item(0);
-                child.parentNode.removeChild(child);
-            }
-        }
-    }
+    data.sendUpdate();
 
 </script>
 </body>
