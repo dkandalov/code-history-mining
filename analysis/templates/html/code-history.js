@@ -385,7 +385,7 @@ function movingAverage(data, timeInterval, getValue, period) {
 	var allDates = timeInterval.range(firstDate, lastDatePlusOne);
 	if (allDates.length < period) return [];
 
-	data = valuesForEachDate(data, allDates, getValue);
+	data = valuesForEachDate(data, allDates, function(d) { return d.date; }, getValue);
 
 	var mean = d3.mean(allDates.slice(0, period), function(date){ return data[date]; });
 	var result = [{date: allDates[period - 1], mean: mean}];
@@ -400,10 +400,10 @@ function movingAverage(data, timeInterval, getValue, period) {
 	return result;
 }
 
-function valuesForEachDate(data, datesRange, getValue) {
+function valuesForEachDate(data, datesRange, getDate, getValue) {
 	var result = {};
 	datesRange.forEach(function(date) { result[date] = 0; });
-	data.forEach(function(d) { result[d.date] = getValue(d); });
+	data.forEach(function(d) { result[getDate(d)] = getValue(d); });
 	return result;
 }
 

@@ -187,6 +187,86 @@ describe("bar chart data", function () {
 	});
 });
 
+describe("moving average line", function() {
+	var rootElement, uiConfig, data;
+	beforeEach(function() {
+		rootElement = d3.select("body").append("span").attr("id", "bars-test");
+		uiConfig = { width: 1000, height: 500 };
+		data = newMultipleStackedData(rawData);
+	});
+	afterEach(function() {
+		rootElement.remove();
+	});
+
+	it("on data update adds svg line to root element", function() {
+		var movingAverage = newMovingAverageLine(rootElement, uiConfig, "movingAverage");
+		movingAverage.setVisible(true);
+		data.onUpdate([movingAverage.update]);
+
+		data.sendUpdate();
+
+		expect(rootElement.selectAll(".line-movingAverage")[0].length).toEqual(1);
+	});
+
+	it("can become invisible", function() {
+		var movingAverage = newMovingAverageLine(rootElement, uiConfig, "movingAverage");
+		movingAverage.setVisible(true);
+		data.onUpdate([movingAverage.update]);
+
+		data.sendUpdate();
+
+		expect(rootElement.selectAll(".line-movingAverage")[0].length).toEqual(1);
+		movingAverage.setVisible(false);
+		expect(rootElement.selectAll(".line-movingAverage")[0].length).toEqual(0);
+	});
+});
+
+describe("moving average for timed values", function () {
+	var getDate = function(it) { return it.date; };
+	var getValue = function(it) { return it.value; };
+
+	it("for three day interval", function() {
+		var movingAverageOfThreeDays = function(data) {
+			return movingAverageForTimedValues(data, d3.time.day, getDate, getValue, 3);
+		};
+
+		expect(movingAverageOfThreeDays([
+			{date: date("01/01/2010"), value: 10},
+			{date: date("02/01/2010"), value: 10}
+		])).toEqual([]);
+
+		expect(movingAverageOfThreeDays([
+			{date: date("01/01/2010"), value: 11},
+			{date: date("03/01/2010"), value: 13},
+			{date: date("04/01/2010"), value: 5}
+		])).toEqual([
+				{date: date("03/01/2010"), mean: (11 + 13) / 3},
+				{date: date("04/01/2010"), mean: (13 + 5) / 3}
+			]);
+	});
+
+	it("for three month interval", function() {
+		var movingAverageOfThreeWeeks = function(data) {
+			return movingAverageForTimedValues(data, d3.time.month, getDate, getValue, 3);
+		};
+
+		expect(movingAverageOfThreeWeeks([
+			{date: date("01/01/2010"), value: 10},
+			{date: date("01/02/2010"), value: 10}
+		])).toEqual([]);
+
+		expect(movingAverageOfThreeWeeks([
+			{date: date("01/01/2010"), value: 10},
+			{date: date("01/02/2010"), value: 10},
+			{date: date("01/03/2010"), value: 10},
+			{date: date("01/04/2010"), value: 40}
+		])).toEqual([
+				{date: date("01/03/2010"), mean: 10},
+				{date: date("01/04/2010"), mean: 20}
+			]);
+	});
+});
+
 function date(s) {
 	return d3.time.format("%d/%m/%Y").parse(s);
 }

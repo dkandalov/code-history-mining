@@ -583,7 +583,7 @@ function newMovingAverageLine(root, uiConfig, postfixId) {
 
 	function redrawLine() {
 		root.selectAll(".line" + postfixId).remove();
-		if (isVisible) {
+		if (isVisible && movingAverageData != null) {
 			root.append("path")
 				.datum(movingAverageData)
 				.attr("class", "line" + postfixId)
@@ -596,13 +596,11 @@ function newMovingAverageLine(root, uiConfig, postfixId) {
 	it.update = function(update) {
 		var getValue = function(it) { return it.y; };
 		var getDate = function(it) { return it.x; };
-		movingAverageData = timedValuesMovingAverage(update.data[0], update.dataTimeInterval, getDate, getValue);
+		movingAverageData = movingAverageForTimedValues(update.data[0], update.dataTimeInterval, getDate, getValue);
 		redrawLine();
 	};
 	it.onXScaleUpdate = function() {
-		if (movingAverageData != null) {
-			redrawLine();
-		}
+		redrawLine();
 	};
 	it.setVisible = function(value) {
 		isVisible = value;
@@ -611,7 +609,7 @@ function newMovingAverageLine(root, uiConfig, postfixId) {
 	return it;
 }
 
-function timedValuesMovingAverage(data, timeInterval, getDate, getValue, period) {
+function movingAverageForTimedValues(data, timeInterval, getDate, getValue, period) {
 	if (data.length < 2) return [];
 
 	period = (period == null ? Math.round(data.length / 10) : period);
