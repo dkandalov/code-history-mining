@@ -17,6 +17,7 @@ function newHeader(root, uiConfig, name) {
 	headerSpan.append("h3").text(name).style({"text-align": "center"});
 }
 
+
 function newNothingToShowLabel(root, svgRoot, uiConfig) {
 	var label = root.append("div")
 		.html("Unfortunately, there is nothing to show.")
@@ -152,6 +153,7 @@ function newLegend(root, position) {
 	return it;
 }
 
+
 function newControlsPanel(root, uiConfig) {
 	var it = root.append("span").style({display: "block", width: uiConfig.width + "px"})
 				 .append("span").style({float: "right"});
@@ -200,6 +202,7 @@ function newDropDown(root, label, optionLabels, getSelectedIndex, onChange) {
 	};
 	return it;
 }
+
 
 function newXBrush(root, uiConfig, xScale, height, y, color) {
 	height = height == null ? 50 : height;
@@ -562,7 +565,6 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 }
 
 
-
 function newShowMovingAverageCheckBox(root, movingAverage) {
 	root.append("label").html("Moving average: ");
 	var checkbox = root.append("input").attr("type", "checkbox").on("click", function() {
@@ -640,4 +642,47 @@ function valuesForEachDate(data, datesRange, getDate, getValue) {
 	datesRange.forEach(function(date) { result[date] = 0; });
 	data.forEach(function(d) { result[getDate(d)] = getValue(d); });
 	return result;
+}
+
+
+function newTotalAmountLabel(root, svgRoot, uiConfig, label) {
+	var someShift = 30;
+	var leftFooter = root.append("span")
+		.style("position", "absolute")
+		.style("left", function(){ return svgRoot[0][0].offsetLeft + someShift + uiConfig.margin.left + "px"; });
+	leftFooter.append("label").style("color", "#999").html(label);
+
+	var totalAmountLabel = leftFooter
+		.append("span").style("color", "#999")
+		.append("label").html("");
+
+	var data;
+	var xScale;
+
+	function formatValue(n) {
+		var s = d3.format(",")(n);
+		return s.length < 3 ? s : d3.format(".3s")(n);
+	}
+	function totalValueAmountWithin(dateRange, data, getDate, getValue) {
+		var withinDomain = function(d) { return getDate(d) > dateRange[0] && getDate(d) < dateRange[1]; };
+		return d3.sum(data.filter(withinDomain), getValue);
+	}
+	function updateTotalAmount() {
+		if (data == null || xScale == null) return;
+		var getValue = function(it) { return it.y; };
+		var getDate = function(it) { return it.x; };
+		var amount = totalValueAmountWithin(xScale.domain(), data, getDate, getValue);
+		totalAmountLabel.html(formatValue(amount));
+	}
+
+	var it = {};
+	it.update = function(update) {
+		data = update.data[0];
+		updateTotalAmount();
+	};
+	it.onXScaleUpdate = function(updatedXScale) {
+		xScale = updatedXScale;
+		updateTotalAmount();
+	};
+	return it;
 }
