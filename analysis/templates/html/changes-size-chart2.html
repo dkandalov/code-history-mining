@@ -235,6 +235,8 @@ date,value\n\
     var movingAverage = newMovingAverageLine(svg, uiConfig);
 
     var controlsPanel = newControlsPanel(root, uiConfig);
+    newShowMovingAverageCheckBox(controlsPanel, movingAverage);
+    controlsPanel.addSpace();
     var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
     controlsPanel.addSpace();
     newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"]);
@@ -248,6 +250,13 @@ date,value\n\
     data.sendUpdate();
 
 
+    function newShowMovingAverageCheckBox(root, movingAverage) {
+        root.append("label").html("Moving average: ");
+        var checkbox = root.append("input").attr("type", "checkbox").on("click", function() {
+            movingAverage.setVisible(this.checked);
+        });
+    }
+
     function newMovingAverageLine(root, uiConfig, postfixId) {
         postfixId = (postfixId == null ? "-movingAvg" : "-" + postfixId);
         var line = d3.svg.line()
@@ -257,14 +266,17 @@ date,value\n\
             .append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
 
         var movingAverageData;
+        var isVisible = false;
 
         function redrawLine() {
             root.selectAll(".line" + postfixId).remove();
-            root.append("path")
-                .datum(movingAverageData)
-                .attr("class", "line" + postfixId)
-                .attr("clip-path", "url(#clip" + postfixId + ")")
-                .attr("d", line);
+            if (isVisible) {
+                root.append("path")
+                    .datum(movingAverageData)
+                    .attr("class", "line" + postfixId)
+                    .attr("clip-path", "url(#clip" + postfixId + ")")
+                    .attr("d", line);
+            }
         }
 
         var it = {};
@@ -276,6 +288,10 @@ date,value\n\
             if (movingAverageData != null) {
                 redrawLine();
             }
+        };
+        it.setVisible = function(value) {
+            isVisible = value;
+            redrawLine();
         };
         return it;
     }
