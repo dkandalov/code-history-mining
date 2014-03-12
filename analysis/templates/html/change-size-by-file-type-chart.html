@@ -107,46 +107,48 @@ date,category,value\n\
 22/01/2013,txt,00\n\
 "
 ]/*data_placeholder*/;
-    var margin = {top: 40, right: 50, bottom: 20, left: 50};
-    var uiConfig = {
-        width: 960 - margin.left - margin.right,
-        height: 500 - margin.top - margin.bottom,
-        margin: margin
-    };
-    var brushHeight = 50;
-    var xAxisHeight = 30;
+    function drawChart() {
+        var margin = {top: 40, right: 50, bottom: 20, left: 50};
+        var uiConfig = {
+            width: 960 - margin.left - margin.right,
+            height: 500 - margin.top - margin.bottom,
+            margin: margin
+        };
+        var brushHeight = 50;
+        var xAxisHeight = 30;
 
-    var root = d3.select("#change-size-by-file-type-chart");
-    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-    newHeader(root, uiConfig, "Change size by file type chart (" + projectName + ")");
+        var root = d3.select("#change-size-by-file-type-chart");
+        var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+        newHeader(root, uiConfig, "Change size by file type chart (" + projectName + ")");
 
-    var svgRoot = root.append("svg")
-                .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
-                .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
-    var svg = svgRoot.append("g")
-                .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
+        var svgRoot = root.append("svg")
+                    .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+                    .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
+        var svg = svgRoot.append("g")
+                    .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var data = newMultipleStackedData(rawData);
-    var x = newXScale(uiConfig);
-    var y = newYScale(uiConfig);
-    var bars = newBars(svg, uiConfig, x, y);
-    var xAxis = newXAxis(svg, uiConfig, x);
-    var yAxis = newYAxis(svg, "Change size", y);
-    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
-    var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
+        var data = newMultipleStackedData(rawData);
+        var x = newXScale(uiConfig);
+        var y = newYScale(uiConfig);
+        var bars = newBars(svg, uiConfig, x, y);
+        var xAxis = newXAxis(svg, uiConfig, x);
+        var yAxis = newYAxis(svg, "Change size", y);
+        var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+        var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
 
-    var controlsPanel = newControlsPanel(root, uiConfig);
-    var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
-    controlsPanel.addSpace();
-    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"]);
+        var controlsPanel = newControlsPanel(root, uiConfig);
+        var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
+        controlsPanel.addSpace();
+        newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"]);
 
-    bars.onUpdate(legend.update);
-    bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
+        bars.onUpdate(legend.update);
+        bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
-                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
-    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
-    data.sendUpdate();
-
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
+                       autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+        x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
+        data.sendUpdate();
+    }
+    drawChart();
 </script>
 </body>

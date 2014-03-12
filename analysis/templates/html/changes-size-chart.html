@@ -206,51 +206,53 @@ date,value\n\
 05/03/2013,284\
 "
 ]/*data_placeholder*/;
-    var margin = {top: 40, right: 50, bottom: 20, left: 50};
-    var uiConfig = {
-        width: 960 - margin.left - margin.right,
-        height: 500 - margin.top - margin.bottom,
-        margin: margin
-    };
-    var brushHeight = 50;
-    var xAxisHeight = 30;
+    function drawChart() {
+        var margin = {top: 40, right: 50, bottom: 20, left: 50};
+        var uiConfig = {
+            width: 960 - margin.left - margin.right,
+            height: 500 - margin.top - margin.bottom,
+            margin: margin
+        };
+        var brushHeight = 50;
+        var xAxisHeight = 30;
 
-    var root = d3.select("#change-size-chart");
-    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-    newHeader(root, uiConfig, "Change size chart (" + projectName + ")");
+        var root = d3.select("#change-size-chart");
+        var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+        newHeader(root, uiConfig, "Change size chart (" + projectName + ")");
 
-    var svgRoot = root.append("svg")
-            .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
-            .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
-    var svg = svgRoot.append("g")
-            .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
+        var svgRoot = root.append("svg")
+                .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+                .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
+        var svg = svgRoot.append("g")
+                .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var data = newMultipleStackedData(rawData);
-    var x = newXScale(uiConfig);
-    var y = newYScale(uiConfig);
-    var bars = newBars(svg, uiConfig, x, y);
-    var xAxis = newXAxis(svg, uiConfig, x);
-    var yAxis = newYAxis(svg, "Change size", y);
-    var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
-    var movingAverage = newMovingAverageLine(svg, uiConfig);
+        var data = newMultipleStackedData(rawData);
+        var x = newXScale(uiConfig);
+        var y = newYScale(uiConfig);
+        var bars = newBars(svg, uiConfig, x, y);
+        var xAxis = newXAxis(svg, uiConfig, x);
+        var yAxis = newYAxis(svg, "Change size", y);
+        var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+        var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
 
-    var controlsPanel = newControlsPanel(root, uiConfig);
-    newShowMovingAverageCheckBox(controlsPanel, movingAverage);
-    controlsPanel.addSpace();
-    var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
-    controlsPanel.addSpace();
-    newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"]);
-    controlsPanel.addSpace();
-    var totalSize = newTotalAmountLabel(root, svgRoot, uiConfig, "Total size: ");
+        var controlsPanel = newControlsPanel(root, uiConfig);
+        newShowMovingAverageCheckBox(controlsPanel, movingAverageLine);
+        controlsPanel.addSpace();
+        var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
+        controlsPanel.addSpace();
+        newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["commits", "lines", "characters"]);
+        controlsPanel.addSpace();
+        var totalSize = newTotalAmountLabel(root, svgRoot, uiConfig, "Total size: ");
 
-    bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
+        bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
-                   groupBy.update, movingAverage.update, totalSize.update,
-                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
-    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverage.onXScaleUpdate, totalSize.onXScaleUpdate]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
+            groupBy.update, movingAverageLine.update, totalSize.update,
+            autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+        x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate, totalSize.onXScaleUpdate]);
 
-    data.sendUpdate();
-
+        data.sendUpdate();
+    }
+    drawChart();
 </script>
 </body>

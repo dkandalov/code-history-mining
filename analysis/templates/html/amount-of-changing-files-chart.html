@@ -76,45 +76,47 @@ date,category,value\n\
 01/12/2013,recently changed,110\n\
 "
 ]/*data_placeholder*/;
-    var margin = {top: 40, right: 50, bottom: 20, left: 50};
-    var uiConfig = {
-        width: 960 - margin.left - margin.right,
-        height: 500 - margin.top - margin.bottom,
-        margin: margin
-    };
-    var brushHeight = 50;
-    var xAxisHeight = 30;
-    var color = d3.scale.category20().domain([1, 0]);
+    function drawChart() {
+        var margin = {top: 40, right: 50, bottom: 20, left: 50};
+        var uiConfig = {
+            width: 960 - margin.left - margin.right,
+            height: 500 - margin.top - margin.bottom,
+            margin: margin
+        };
+        var brushHeight = 50;
+        var xAxisHeight = 30;
+        var color = d3.scale.category20().domain([1, 0]);
 
-    var root = d3.select("#amount-of-changing-files-chart");
-    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-    newHeader(root, uiConfig, "Amount of changing files chart (" + projectName + ")");
+        var root = d3.select("#amount-of-changing-files-chart");
+        var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+        newHeader(root, uiConfig, "Amount of changing files chart (" + projectName + ")");
 
-    var svgRoot = root.append("svg")
+        var svgRoot = root.append("svg")
                 .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
                 .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
-    var svg = svgRoot.append("g")
+        var svg = svgRoot.append("g")
                 .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-    var data = newMultipleStackedDataWithTimeIntervals(rawData, [d3.time.monday, d3.time.month]);
-    var x = newXScale(uiConfig);
-    var y = newYScale(uiConfig);
-    var bars = newBars(svg, uiConfig, x, y, "bars", color);
-    var xAxis = newXAxis(svg, uiConfig, x);
-    var yAxis = newYAxis(svg, "Changed files", y);
-    var xBrush = newXBrush(svg, uiConfig, x, brushHeight, null, color);
-    var legend = newLegend(svg, {x: 50, y: 20});
+        var data = newMultipleStackedDataWithTimeIntervals(rawData, [d3.time.monday, d3.time.month]);
+        var x = newXScale(uiConfig);
+        var y = newYScale(uiConfig);
+        var bars = newBars(svg, uiConfig, x, y, "bars", color);
+        var xAxis = newXAxis(svg, uiConfig, x);
+        var yAxis = newYAxis(svg, "Changed files", y);
+        var xBrush = newXBrush(svg, uiConfig, x, brushHeight, null, color);
+        var legend = newLegend(svg, {x: 50, y: 20});
 
-    var controlsPanel = newControlsPanel(root, uiConfig);
-    var dropDown = newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["week", "month"]);
+        var controlsPanel = newControlsPanel(root, uiConfig);
+        var dropDown = newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["week", "month"]);
 
-    bars.onUpdate(legend.update);
-    bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
+        bars.onUpdate(legend.update);
+        bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
 
-    data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
-                   autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
-    x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
-    data.sendUpdate();
-
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
+            autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+        x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
+        data.sendUpdate();
+    }
+    drawChart();
 </script>
 </body>

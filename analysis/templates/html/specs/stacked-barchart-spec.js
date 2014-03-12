@@ -188,10 +188,12 @@ describe("bar chart data", function () {
 });
 
 describe("moving average line", function() {
-	var rootElement, uiConfig, data;
+	var rootElement, uiConfig, data, x, y;
 	beforeEach(function() {
 		rootElement = d3.select("body").append("span").attr("id", "bars-test");
 		uiConfig = { width: 1000, height: 500 };
+		x = newXScale(uiConfig);
+		y = newYScale(uiConfig);
 		data = newMultipleStackedData(rawData);
 	});
 	afterEach(function() {
@@ -199,7 +201,7 @@ describe("moving average line", function() {
 	});
 
 	it("on data update adds svg line to root element", function() {
-		var movingAverage = newMovingAverageLine(rootElement, uiConfig, "movingAverage");
+		var movingAverage = newMovingAverageLine(rootElement, uiConfig, x, y, "movingAverage");
 		movingAverage.setVisible(true);
 		data.onUpdate([movingAverage.update]);
 
@@ -209,7 +211,7 @@ describe("moving average line", function() {
 	});
 
 	it("can become invisible", function() {
-		var movingAverage = newMovingAverageLine(rootElement, uiConfig, "movingAverage");
+		var movingAverage = newMovingAverageLine(rootElement, uiConfig, x, y, "movingAverage");
 		movingAverage.setVisible(true);
 		data.onUpdate([movingAverage.update]);
 

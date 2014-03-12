@@ -566,18 +566,18 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 }
 
 
-function newShowMovingAverageCheckBox(root, movingAverage) {
+function newShowMovingAverageCheckBox(root, movingAverageLine) {
 	root.append("label").html("Moving average: ");
 	var checkbox = root.append("input").attr("type", "checkbox").on("click", function() {
-		movingAverage.setVisible(this.checked);
+		movingAverageLine.setVisible(this.checked);
 	});
 }
 
-function newMovingAverageLine(root, uiConfig, postfixId) {
+function newMovingAverageLine(root, uiConfig, xScale, yScale, postfixId) {
 	postfixId = (postfixId == null ? "-movingAvg" : "-" + postfixId);
 	var line = d3.svg.line()
-		.x(function(d) { return x(d.date); })
-		.y(function(d) { return y(d.mean); });
+		.x(function(d) { return xScale(d.date); })
+		.y(function(d) { return yScale(d.mean); });
 	root.append("defs").append("clipPath").attr("id", "clip" + postfixId)
 		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
 
