@@ -560,3 +560,86 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 	});
 	return it;
 }
+
+
+
+function newShowMovingAverageCheckBox(root, movingAverage) {
+	root.append("label").html("Moving average: ");
+	var checkbox = root.append("input").attr("type", "checkbox").on("click", function() {
+		movingAverage.setVisible(this.checked);
+	});
+}
+
+function newMovingAverageLine(root, uiConfig, postfixId) {
+	postfixId = (postfixId == null ? "-movingAvg" : "-" + postfixId);
+	var line = d3.svg.line()
+		.x(function(d) { return x(d.date); })
+		.y(function(d) { return y(d.mean); });
+	root.append("defs").append("clipPath").attr("id", "clip" + postfixId)
+		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
+
+	var movingAverageData;
+	var isVisible = false;
+
+	function redrawLine() {
+		root.selectAll(".line" + postfixId).remove();
+		if (isVisible) {
+			root.append("path")
+				.datum(movingAverageData)
+				.attr("class", "line" + postfixId)
+				.attr("clip-path", "url(#clip" + postfixId + ")")
+				.attr("d", line);
+		}
+	}
+
+	var it = {};
+	it.update = function(update) {
+		var getValue = function(it) { return it.y; };
+		var getDate = function(it) { return it.x; };
+		movingAverageData = timedValuesMovingAverage(update.data[0], update.dataTimeInterval, getDate, getValue);
+		redrawLine();
+	};
+	it.onXScaleUpdate = function() {
+		if (movingAverageData != null) {
+			redrawLine();
+		}
+	};
+	it.setVisible = function(value) {
+		isVisible = value;
+		redrawLine();
+	};
+	return it;
+}
+
+function timedValuesMovingAverage(data, timeInterval, getDate, getValue, period) {
+	if (data.length < 2) return [];
+
+	period = (period == null ? Math.round(data.length / 10) : period);
+	if (period < 2) return [];
+
+	var firstDate = getDate(data[0]);
+	var lastDatePlusOne = timeInterval.offset(getDate(data[data.length - 1]), 1);
+	var allDates = timeInterval.range(firstDate, lastDatePlusOne);
+	if (allDates.length < period) return [];
+
+	data = valuesForEachDate(data, allDates, getDate, getValue);
+
+	var mean = d3.mean(allDates.slice(0, period), function(date){ return data[date]; });
+	var result = [{date: allDates[period - 1], mean: mean}];
+
+	for (var i = period; i < allDates.length; i++) {
+		var date = allDates[i];
+		var dateToExclude = allDates[i - period];
+		mean += (data[date] - data[dateToExclude]) / period;
+		result.push({date: date, mean: mean});
+	}
+
+	return result;
+}
+
+function valuesForEachDate(data, datesRange, getDate, getValue) {
+	var result = {};
+	datesRange.forEach(function(date) { result[date] = 0; });
+	data.forEach(function(d) { result[getDate(d)] = getValue(d); });
+	return result;
+}
