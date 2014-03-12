@@ -527,6 +527,7 @@ function newMultipleStackedData(rawCsvArray) {
 			if (i != groupIndex) stackedData[i].groupBy(value); // skip selected groupIndex to make it send update last
 		}
 		stackedData[groupIndex].groupBy(value);
+		it.sendUpdate();
 	};
 	stackedData.forEach(function(it) {
 		it.onUpdate(function(update) {
