@@ -243,14 +243,17 @@ function newXBrush(root, uiConfig, xScale, height, y, color) {
 	return brush;
 }
 
-function newBars(root, uiConfig, xScale, yScale, id, color) {
-	id = (id == null ? "-bars" : "-" + id);
+function newBars(root, uiConfig, xScale, yScale, postfixId, color) {
+	postfixId = (postfixId == null ? "-bars" : "-" + postfixId);
 	color = (color == null ? d3.scale.category20() : color);
 	var data;
 
-	root.append("defs").append("clipPath").attr("id", "clip" + id)
+	root.append("defs").append("clipPath").attr("id", "clip" + postfixId)
 		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
 
+	function getCategory(d) {
+		return d["category"];
+	}
 	function nonZero(length) {
 		return (length > 0 ? length : 0.0000001);
 	}
@@ -268,39 +271,39 @@ function newBars(root, uiConfig, xScale, yScale, id, color) {
 	it.update = function(update) {
 		data = update.data;
 
-		root.selectAll(".layer" + id).remove();
+		root.selectAll(".layer" + postfixId).remove();
 
-		var layer = root.selectAll(".layer" + id)
+		var layer = root.selectAll(".layer" + postfixId)
 			.data(update.dataStacked)
 			.enter().append("g")
-			.attr("class", "layer" + id)
+			.attr("class", "layer" + postfixId)
 			.style("fill", function(d, i) { return color(i); });
 
 		var rect = layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.enter().append("rect")
-			.attr("clip-path", "url(#clip" + id + ")")
+			.attr("clip-path", "url(#clip" + postfixId + ")")
 			.attr("x", function(d) { return xScale(d.x); })
 			.attr("y", function(d) { return yScale(d.y0 + d.y); })
 			.attr("width", barWidth())
 			.attr("height", function(d) { return yScale(d.y0) - yScale(d.y0 + d.y); });
 
 		rect.on("mouseover", function(d) {
-			notifyHoverListeners({event: "mouseover", bar: this, value: d.y, date: d.x, category: d["category"]});
+			notifyHoverListeners({event: "mouseover", bar: this, value: d.y, date: d.x, category: getCategory(d)});
 		}).on("mouseout", function() {
 			notifyHoverListeners({event: "mouseout", bar: this});
 		});
 
 		var categoryUpdate = [];
 		update.dataStacked.forEach(function(it, i) {
-			categoryUpdate.push({ category: it[0]["category"], color: color(i) });
+			categoryUpdate.push({ category: getCategory(it[0]), color: color(i) });
 		});
 		notifyCategoryListeners(categoryUpdate);
 	};
 	it.onXScaleUpdate = function(updatedXScale) {
 		xScale = updatedXScale;
 
-		var layer = root.selectAll(".layer" + id).data(data);
+		var layer = root.selectAll(".layer" + postfixId).data(data);
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.attr("x", function(d) { return xScale(d.x); })
