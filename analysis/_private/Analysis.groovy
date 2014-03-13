@@ -48,9 +48,9 @@ class Analysis {
 				.sort{ it[0] }
 
 		"[" +
-				asCsvStringLiteral(amountOfCommittersByDay, ["date", "amountOfCommitters"]) + ",\n" +
-				asCsvStringLiteral(amountOfCommittersByWeek, ["date", "amountOfCommitters"]) + ",\n" +
-				asCsvStringLiteral(amountOfCommittersByMonth, ["date", "amountOfCommitters"]) + "]"
+				asCsvStringLiteral(amountOfCommittersByDay, ["date", "value"]) + ",\n" +
+				asCsvStringLiteral(amountOfCommittersByWeek, ["date", "value"]) + ",\n" +
+				asCsvStringLiteral(amountOfCommittersByMonth, ["date", "value"]) + "]"
 	}
 
 	static String averageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
