@@ -61,6 +61,7 @@ function newShading() {
 
 function newTooltip(root, svgRoot, uiConfig, settings) {
 	if (settings == null) settings = {};
+	if (settings.showCategory == null) settings.showCategory = true;
 	if (settings.css == null) settings.css = "";
 	if (settings.delay == null) settings.delay = 1500;
 	if (settings.delayBeforeHide == null) settings.delayBeforeHide = 100;
@@ -99,9 +100,10 @@ function newTooltip(root, svgRoot, uiConfig, settings) {
 				left = svgPos.offsetLeft + uiConfig.margin.left + uiConfig.width;
 			}
 			var top = svgPos.offsetTop + uiConfig.margin.top + y + (height / 2);
-			div.html("Value: " + valueFormat(update.value) + "<br/>" +
-					"Date: " + dateFormat(update.date) + "<br/>" +
-					"Category: " + update.category)
+
+			var text = ["Value: " + valueFormat(update.value), "Date: " + dateFormat(update.date)];
+			if (settings.showCategory) text.push("Category: " + update.category);
+			div.html(text.join("</br>"))
 				.style("left", left + "px")
 				.style("top", top + "px");
 

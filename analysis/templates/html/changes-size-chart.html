@@ -231,7 +231,8 @@ date,value\n\
         controlsPanel.addSpace();
         var totalSize = newTotalAmountLabel(root, svgRoot, uiConfig, "Total size: ");
 
-        bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
+        var tooltip = newTooltip(root, svgRoot, uiConfig, {css: "tooltip", showCategory: false});
+        bars.onHover([tooltip.update, newShading().update]);
 
         data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
             groupBy.update, movingAverageLine.update, totalSize.update,
