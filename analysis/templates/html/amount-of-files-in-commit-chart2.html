@@ -964,6 +964,8 @@ date,value\n\
         var controlsPanel = newControlsPanel(root, uiConfig);
         newShowMovingAverageCheckBox(controlsPanel, movingAverageLine);
         controlsPanel.addSpace();
+        percentileDropDown(controlsPanel, data);
+        controlsPanel.addSpace();
         var dropDown = newGroupIndexDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
 
         var tooltip = newTooltip(root, svgRoot, uiConfig, {css: "tooltip", showCategory: false});
@@ -977,5 +979,17 @@ date,value\n\
     }
     drawChart();
 
+    function percentileDropDown(root, data) {
+        var optionLabels = [];
+        for (var i2 = 100; i2 >= 95; i2 -= 0.5) {
+            optionLabels.push(i2);
+        }
+        newDropDown(root, "Percentile: ", optionLabels,
+                function() { return 0; },
+                function(newValue) {
+//                    data.setPercentile(+newValue / 100);
+                }
+        )
+    }
 </script>
 </body>
