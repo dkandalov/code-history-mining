@@ -419,7 +419,8 @@ function autoGroup(data) {
 	return it;
 }
 
-function newStackedData(rawCsv) {
+
+function stackedData(rawCsv) {
 	function getCategory(d) {
 		return d["category"];
 	}
@@ -436,60 +437,93 @@ function newStackedData(rawCsv) {
 				});
 			});
 	}
-	function groupBy(timeInterval, daysData) {
-		if (timeInterval == d3.time.day) return daysData;
-		return d3.values(d3.nest()
-			.key(function(d) { return timeInterval.floor(d.x); })
-			.rollup(function(days) {
-				var aggregateValue = d3.sum(days, function (d) { return d.y; });
-				var date = timeInterval.floor(days[0].x);
-				return { category: getCategory(days[0]), x: date, y: aggregateValue };
-			})
-			.map(daysData));
-	}
-	var originalData = groupByCategory(d3.csv.parse(rawCsv));
-	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
-
-	var dataStacked;
-	var minX;
-	var maxX;
-	var minY = 0;
-	var maxY;
-	var groupByIndex = 0;
-
-	function updateWith(newData) {
-		dataStacked = d3.layout.stack()(newData);
-		minX = d3.min(dataStacked, function(d) {
-			return d3.min(d, function(dd) {
-				return dd.x;
-			});
-		});
-		maxX = d3.max(dataStacked, function(d) {
-			return d3.max(d, function(dd) {
-				return dd.x;
-			});
-		});
-		maxY = d3.max(dataStacked, function(layer) {
-			return d3.max(layer, function(d) {
-				return d.y0 + d.y;
-			});
-		});
-	}
-	updateWith(originalData);
-
+	var dataStacked = d3.layout.stack()(groupByCategory(d3.csv.parse(rawCsv)));
 
 	var it = {};
 	var notifyListeners = observable(it);
 	it.sendUpdate = function() {
 		notifyListeners({
-			dataStacked: dataStacked,
+			dataStacked: dataStacked
+		});
+	};
+	return it;
+}
+
+function withMinMax(data) {
+	var dataUpdate;
+	var it = _.extend({}, data);
+	var notifyListeners = observable(it);
+	data.onUpdate(function(update) {
+		dataUpdate = update;
+	});
+	it.sendUpdate = function() {
+		data.sendUpdate();
+		var minX = d3.min(dataUpdate.dataStacked, function(d) {
+			return d3.min(d, function(dd) {
+				return dd.x;
+			});
+		});
+		var maxX = d3.max(dataUpdate.dataStacked, function(d) {
+			return d3.max(d, function(dd) {
+				return dd.x;
+			});
+		});
+		var minY = 0;
+		var maxY = d3.max(dataUpdate.dataStacked, function(layer) {
+			return d3.max(layer, function(d) {
+				return d.y0 + d.y;
+			});
+		});
+		notifyListeners(_.extend({}, dataUpdate, {
 			minX: minX,
 			maxX: maxX,
 			minY: minY,
-			maxY: maxY,
+			maxY: maxY
+		}));
+	};
+	return it;
+}
+
+function groupedByTime(data) {
+	function getCategory(d) {
+		return d["category"];
+	}
+	function groupBy(timeInterval, daysData) {
+		if (timeInterval == d3.time.day) return daysData;
+		return d3.values(d3.nest()
+			.key(function(d) { return timeInterval.floor(d.x); })
+			.rollup(function(days) {
+				var sumOfY = d3.sum(days, function (d) { return d.y; });
+				var sumOfY0 = d3.sum(days, function (d) { return d.y0; });
+				var date = timeInterval.floor(days[0].x);
+				return { category: getCategory(days[0]), x: date, y: sumOfY, y0: sumOfY0 };
+			})
+			.map(daysData));
+	}
+	function regroupStackedData() {
+		groupedData = dataUpdate.dataStacked.map(function(it) {
+			return groupBy(timeIntervals[groupByIndex], it);
+		});
+	}
+
+	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
+	var groupByIndex = 0;
+	var groupedData;
+	var dataUpdate;
+
+	var it = _.extend({}, data);
+	var notifyListeners = observable(it);
+	data.onUpdate(function(update) {
+		dataUpdate = update;
+	});
+	it.sendUpdate = function() {
+		data.sendUpdate();
+		regroupStackedData();
+		notifyListeners(_.extend({}, dataUpdate, {
+			dataStacked: groupedData,
 			groupByIndex: groupByIndex,
 			dataTimeInterval: timeIntervals[groupByIndex]
-		});
+		}));
 	};
 	it.groupBy = function(value) {
 		if (!_.isNumber(value)) {
@@ -500,12 +534,13 @@ function newStackedData(rawCsv) {
 		if (value == groupByIndex) return;
 
 		groupByIndex = value;
-		updateWith(originalData.map(function(it) {
-			return groupBy(timeIntervals[groupByIndex], it);
-		}));
 		it.sendUpdate();
 	};
 	return it;
+}
+
+function newStackedData(rawCsv) {
+	return withMinMax(groupedByTime(stackedData(rawCsv)));
 }
 
 function newMultipleStackedData(rawCsvArray) {

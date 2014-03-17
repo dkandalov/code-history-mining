@@ -130,7 +130,7 @@ describe("x scale", function () {
 
 describe("bar chart data", function () {
 	it("after construction it can broadcast update with stacked data", function() {
-		var data = newStackedData(rawData[0]);
+		var data = stackedData(rawData[0]);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -147,8 +147,23 @@ describe("bar chart data", function () {
 		expect(received.dataStacked[2][1]).toEqual({ category: "txt", x: date("19/01/2013"), y: 222, y0: 2 + 22 });
 	});
 
-	it("sends update with regrouped data when asked to group by different time interval", function() {
-		var data = newStackedData(rawData[0]);
+	it("sends min and max values", function() {
+		var data = withMinMax(stackedData(rawData[0]));
+		var received = null;
+		data.onUpdate([function(update) {
+			received = update;
+		}]);
+
+		data.sendUpdate();
+
+		expect(received.minX).toEqual(date("18/01/2013"));
+		expect(received.maxX).toEqual(date("20/01/2013"));
+		expect(received.minY).toEqual(0);
+		expect(received.maxY).toEqual(3 + 33 + 333);
+	});
+
+	it("when asked to group by different time interval, sends update with regrouped data", function() {
+		var data = groupedByTime(stackedData(rawData[0]));
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -167,7 +182,7 @@ describe("bar chart data", function () {
 		expect(received.dataStacked[2][0]).toEqual({ category: "txt", x: date("14/01/2013"), y: 111 + 222+ 333, y0: 72 });
 	});
 
-	it("sends update with new data when group index changes", function() {
+	it("when group index changes, sends update with new data", function() {
 		var data = newMultipleStackedData(rawData);
 		var received = null;
 		data.onUpdate([function(update) {
