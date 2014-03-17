@@ -251,7 +251,7 @@ function newXBrush(root, uiConfig, xScale, height, y, color) {
 function newBars(root, uiConfig, xScale, yScale, postfixId, color) {
 	postfixId = (postfixId == null ? "-bars" : "-" + postfixId);
 	color = (color == null ? d3.scale.category20() : color);
-	var data;
+	var dataStacked;
 
 	root.append("defs").append("clipPath").attr("id", "clip" + postfixId)
 		.append("rect").attr("width", uiConfig.width).attr("height", uiConfig.height).attr("x", 1);
@@ -274,7 +274,7 @@ function newBars(root, uiConfig, xScale, yScale, postfixId, color) {
 	var notifyCategoryListeners = observable(it);
 	var notifyHoverListeners = observable(it, "onHover");
 	it.update = function(update) {
-		data = update.data;
+		dataStacked = update.dataStacked;
 
 		root.selectAll(".layer" + postfixId).remove();
 
@@ -308,7 +308,7 @@ function newBars(root, uiConfig, xScale, yScale, postfixId, color) {
 	it.onXScaleUpdate = function(updatedXScale) {
 		xScale = updatedXScale;
 
-		var layer = root.selectAll(".layer" + postfixId).data(data);
+		var layer = root.selectAll(".layer" + postfixId).data(dataStacked);
 		layer.selectAll("rect")
 			.data(function(d) { return d; })
 			.attr("x", function(d) { return xScale(d.x); })
@@ -450,7 +450,6 @@ function newStackedData(rawCsv) {
 	var originalData = groupByCategory(d3.csv.parse(rawCsv));
 	var timeIntervals = [d3.time.day, d3.time.monday, d3.time.month];
 
-	var data;
 	var dataStacked;
 	var minX;
 	var maxX;
@@ -459,14 +458,13 @@ function newStackedData(rawCsv) {
 	var groupByIndex = 0;
 
 	function updateWith(newData) {
-		data = newData;
-		dataStacked = d3.layout.stack()(data);
-		minX = d3.min(data, function(d) {
+		dataStacked = d3.layout.stack()(newData);
+		minX = d3.min(dataStacked, function(d) {
 			return d3.min(d, function(dd) {
 				return dd.x;
 			});
 		});
-		maxX = d3.max(data, function(d) {
+		maxX = d3.max(dataStacked, function(d) {
 			return d3.max(d, function(dd) {
 				return dd.x;
 			});
@@ -484,7 +482,6 @@ function newStackedData(rawCsv) {
 	var notifyListeners = observable(it);
 	it.sendUpdate = function() {
 		notifyListeners({
-			data: data,
 			dataStacked: dataStacked,
 			minX: minX,
 			maxX: maxX,
@@ -601,7 +598,7 @@ function newMovingAverageLine(root, uiConfig, xScale, yScale, postfixId) {
 	it.update = function(update) {
 		var getValue = function(it) { return it.y; };
 		var getDate = function(it) { return it.x; };
-		movingAverageData = movingAverageForTimedValues(update.data[0], update.dataTimeInterval, getDate, getValue);
+		movingAverageData = movingAverageForTimedValues(update.dataStacked[0], update.dataTimeInterval, getDate, getValue);
 		redrawLine();
 	};
 	it.onXScaleUpdate = function() {
@@ -680,7 +677,7 @@ function newTotalAmountLabel(root, svgRoot, uiConfig, label) {
 
 	var it = {};
 	it.update = function(update) {
-		data = update.data[0];
+		data = update.dataStacked[0];
 		updateTotalAmount();
 	};
 	it.onXScaleUpdate = function(updatedXScale) {
