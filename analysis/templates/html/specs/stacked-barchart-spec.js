@@ -56,7 +56,7 @@ describe("bars", function () {
 		uiConfig = { width: 1000, height: 500 };
 		x = newXScale(uiConfig);
 		y = newYScale(uiConfig);
-		data = newMultipleStackedData(rawData);
+		data = newMultipleStackedData(rawCsvArray);
 	});
 	afterEach(function() {
 		rootElement.remove();
@@ -130,7 +130,7 @@ describe("x scale", function () {
 
 describe("bar chart data", function () {
 	it("after construction it can broadcast update with stacked data", function() {
-		var data = stackedData(rawData[0]);
+		var data = stackedData(rawCsvArray[0]);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -148,7 +148,7 @@ describe("bar chart data", function () {
 	});
 
 	it("sends min and max values", function() {
-		var data = withMinMax(stackedData(rawData[0]));
+		var data = withMinMax(stackedData(rawCsvArray[0]));
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -163,7 +163,7 @@ describe("bar chart data", function () {
 	});
 
 	it("when asked to group by different time interval, sends update with regrouped data", function() {
-		var data = groupedByTime(stackedData(rawData[0]));
+		var data = groupedByTime(stackedData(rawCsvArray[0]));
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -183,7 +183,7 @@ describe("bar chart data", function () {
 	});
 
 	it("when group index changes, sends update with new data", function() {
-		var data = newMultipleStackedData(rawData);
+		var data = newMultipleStackedData(rawCsvArray);
 		var received = null;
 		data.onUpdate([function(update) {
 			received = update;
@@ -208,7 +208,7 @@ describe("moving average line", function() {
 		uiConfig = { width: 1000, height: 500 };
 		x = newXScale(uiConfig);
 		y = newYScale(uiConfig);
-		data = newMultipleStackedData(rawData);
+		data = newMultipleStackedData(rawCsvArray);
 	});
 	afterEach(function() {
 		rootElement.remove();
@@ -291,7 +291,7 @@ describe("total amount label", function() {
 		svgRoot = rootElement.append("svg");
 		uiConfig = { width: 1000, height: 500, margin: {left: 123} };
 		x = newXScale(uiConfig);
-		data = newMultipleStackedData(rawData);
+		data = newMultipleStackedData(rawCsvArray);
 	});
 	afterEach(function() {
 		rootElement.remove();
@@ -316,7 +316,7 @@ function date(s) {
 	return d3.time.format("%d/%m/%Y").parse(s);
 }
 
-var rawData = ["\
+var rawCsvArray = ["\
 date,category,value\n\
 18/01/2013,java,1\n\
 19/01/2013,java,2\n\
