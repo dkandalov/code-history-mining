@@ -282,7 +282,7 @@ describe("total amount label", function() {
 		rootElement.remove();
 	});
 
-	it("on data update adds svg line to root element", function() {
+	it("on update adds label to root element", function() {
 		var totalAmountLabel = newTotalAmountLabel(rootElement, svgRoot, uiConfig, "Total amount: ");
 		x.onUpdate(totalAmountLabel.onXScaleUpdate);
 		data.onUpdate(totalAmountLabel.update);

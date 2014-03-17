@@ -381,7 +381,6 @@ function newXScale(uiConfig) {
 	};
 	var notifyListeners = observable(x);
 	x.setDomain = function(extent) {
-		console.log(extent);
 		x.amountOfValues = amountOfValuesIn(extent, timeInterval);
 		x.domain(extent);
 		notifyListeners(x);
