@@ -222,7 +222,7 @@ describe("moving average line", function() {
 	});
 });
 
-describe("moving average for timed values", function () {
+describe("calculating moving average for timed values", function () {
 	var getDate = function(it) { return it.date; };
 	var getValue = function(it) { return it.value; };
 
@@ -267,6 +267,35 @@ describe("moving average for timed values", function () {
 			]);
 	});
 });
+
+
+describe("total amount label", function() {
+	var rootElement, svgRoot, uiConfig, data, x;
+	beforeEach(function() {
+		rootElement = d3.select("body").append("span").attr("id", "total-amount-test");
+		svgRoot = rootElement.append("svg");
+		uiConfig = { width: 1000, height: 500, margin: {left: 123} };
+		x = newXScale(uiConfig);
+		data = newMultipleStackedData(rawData);
+	});
+	afterEach(function() {
+		rootElement.remove();
+	});
+
+	it("on data update adds svg line to root element", function() {
+		var totalAmountLabel = newTotalAmountLabel(rootElement, svgRoot, uiConfig, "Total amount: ");
+		x.onUpdate(totalAmountLabel.onXScaleUpdate);
+		data.onUpdate(totalAmountLabel.update);
+
+		x.setDomain([date("18/01/2013"), date("21/01/2013")]);
+		data.sendUpdate();
+
+		expect(rootElement.selectAll("label")[0].length).toEqual(2);
+		expect(rootElement.selectAll("label")[0][0].innerText).toEqual("Total amount: ");
+		expect(rootElement.selectAll("label")[0][1].innerText).toEqual("6");
+	});
+});
+
 
 function date(s) {
 	return d3.time.format("%d/%m/%Y").parse(s);

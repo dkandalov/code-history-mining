@@ -381,6 +381,7 @@ function newXScale(uiConfig) {
 	};
 	var notifyListeners = observable(x);
 	x.setDomain = function(extent) {
+		console.log(extent);
 		x.amountOfValues = amountOfValuesIn(extent, timeInterval);
 		x.domain(extent);
 		notifyListeners(x);
@@ -664,7 +665,7 @@ function newTotalAmountLabel(root, svgRoot, uiConfig, label) {
 		return s.length < 3 ? s : d3.format(".3s")(n);
 	}
 	function totalValueAmountWithin(dateRange, data, getDate, getValue) {
-		var withinDomain = function(d) { return getDate(d) > dateRange[0] && getDate(d) < dateRange[1]; };
+		var withinDomain = function(d) { return getDate(d) >= dateRange[0] && getDate(d) < dateRange[1]; };
 		return d3.sum(data.filter(withinDomain), getValue);
 	}
 	function updateTotalAmount() {
