@@ -97,9 +97,9 @@ describe("bars", function () {
 		var bars = newBars(rootElement, uiConfig, x, y, "bars");
 		data.onUpdate([x.update, y.update, bars.update]);
 		var received = null;
-		bars.onUpdate([function(update) {
+		bars.onUpdate(function(update) {
 			received = update;
-		}]);
+		});
 
 		data.sendUpdate();
 
@@ -115,9 +115,9 @@ describe("x scale", function () {
 	it("sends update when its domain is changed", function() {
 		var x = newXScale({ width: 100 });
 		var updatedX = null;
-		x.onUpdate([function(x) {
+		x.onUpdate(function(x) {
 			updatedX = x;
-		}]);
+		});
 		var data = {minX: date("20/04/2011"), maxX: date("30/04/2011"), dataTimeInterval: d3.time.day};
 		x.update(data);
 
@@ -239,7 +239,7 @@ describe("moving average line", function() {
 	it("on data update adds svg line to root element", function() {
 		var movingAverage = newMovingAverageLine(rootElement, uiConfig, x, y, "movingAverage");
 		movingAverage.setVisible(true);
-		data.onUpdate([movingAverage.update]);
+		data.onUpdate(movingAverage.update);
 
 		data.sendUpdate();
 
@@ -249,7 +249,7 @@ describe("moving average line", function() {
 	it("can become invisible", function() {
 		var movingAverage = newMovingAverageLine(rootElement, uiConfig, x, y, "movingAverage");
 		movingAverage.setVisible(true);
-		data.onUpdate([movingAverage.update]);
+		data.onUpdate(movingAverage.update);
 
 		data.sendUpdate();
 
