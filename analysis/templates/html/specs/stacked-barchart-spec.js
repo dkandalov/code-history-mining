@@ -129,7 +129,7 @@ describe("x scale", function () {
 });
 
 describe("bar chart data", function () {
-	it("after construction it can broadcast update with stacked data", function() {
+	it("sends update with stacked data", function() {
 		var data = stackedData(rawCsvArray[0]);
 		var received = null;
 		data.onUpdate(function(update) {
@@ -200,7 +200,7 @@ describe("bar chart data", function () {
 		expect(received.dataStacked[0][0]["y"]).toEqual(11);
 	});
 
-	it("can be filtered by percentile", function() {
+	it("when percentile is set, sends update with filtered data", function() {
 		var data = filteredByPercentile(stackedData(rawCsvArray[0]));
 		var received = null;
 		data.onUpdate(function(update) {
