@@ -70,13 +70,13 @@ class Analysis {
 		def filesInCommitByMonth = changeSizeBy(DateTimeUtil.&floorToMonth)
 
 		"[" +
-				asCsvStringLiteral(filesInCommitByDay, ["date", "filesAmountInCommit"]) + ",\n" +
-				asCsvStringLiteral(filesInCommitByWeek, ["date", "filesAmountInCommit"]) + ",\n" +
-				asCsvStringLiteral(filesInCommitByMonth, ["date", "filesAmountInCommit"]) + "]"
+				asCsvStringLiteral(filesInCommitByDay, ["date", "value"]) + ",\n" +
+				asCsvStringLiteral(filesInCommitByWeek, ["date", "value"]) + ",\n" +
+				asCsvStringLiteral(filesInCommitByMonth, ["date", "value"]) + "]"
 	}
 
 	static String amountOfChangingFiles_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {},
-	                                          List<TimeInterval> intervals = [DateTimeUtil.oneWeek, DateTimeUtil.oneMonth]) {
+	                                          List<TimeInterval> intervals = [oneWeek, oneMonth]) {
 		Map.mixin(CollectionUtil)
 		assertEventsGoFromPresentToPast(events)
 		events = useLatestNameForMovedFiles(events, checkIfCancelled).reverse()

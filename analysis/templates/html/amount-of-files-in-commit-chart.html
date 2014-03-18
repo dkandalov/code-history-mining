@@ -2,13 +2,20 @@
 <meta charset="utf-8">
 <style>
     body {
+        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+        margin: auto;
+        width: 960px;
         background: #f2f2f2;
-        margin: 30px;
     }
-    #amount-of-files-in-commit-chart,
-    #amount-of-files-in-commit-chart text {
+    #amount-of-files-in-commit-chart text,
+    #amount-of-files-in-commit-chart label {
         font: 11px sans-serif;
         font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    }
+    #amount-of-files-in-commit-chart .line-movingAvg {
+        fill: none;
+        stroke-width: 1.5px;
+        stroke: #b2182b;
     }
     #amount-of-files-in-commit-chart .axis path,
     #amount-of-files-in-commit-chart .axis line {
@@ -16,32 +23,33 @@
         stroke: #000;
         shape-rendering: crispEdges;
     }
-    #amount-of-files-in-commit-chart .bar {
-        fill: steelblue;
-    }
-    #amount-of-files-in-commit-chart .bar:hover {
-        fill: rgb(62, 104, 146);
-    }
-    #amount-of-files-in-commit-chart .line {
-        fill: none;
-        stroke-width: 1.5px;
-        stroke: #b2182b;
-    }
     #amount-of-files-in-commit-chart .brush .extent {
         stroke: #fff;
         fill-opacity: .125;
         shape-rendering: crispEdges;
+    }
+    .tooltip {
+        position: absolute;
+        text-align: center;
+        height: auto;
+        padding: 5px;
+        font: 12px sans-serif;
+        background: lightsteelblue;
+        border: 0;
+        border-radius: 8px;
+        pointer-events: none;
     }
 </style>
 <head><title>Average amount of files in commit</title></head>
 <body>
 <span id="amount-of-files-in-commit-chart"></span>
 <script src="d3.v3.min.js"></script>
-<script src="code-history.js"></script>
+<script src="underscore-min.js"></script>
+<script src="stacked-barchart.js"></script>
 <script>
     var rawData = /*data_placeholder*/
                     ["\
-date,filesAmountInCommit\n\
+date,value\n\
 09/01/2001,1\n\
 10/01/2001,1\n\
 17/01/2001,1\n\
@@ -504,7 +512,7 @@ date,filesAmountInCommit\n\
 26/09/2013,1\n\
 ",
 "\
-date,filesAmountInCommit\n\
+date,value\n\
 02/01/2000,1\n\
 09/01/2000,1\n\
 08/01/2001,1\n\
@@ -805,7 +813,7 @@ date,filesAmountInCommit\n\
 28/09/2013,1\n\
 ",
 "\
-date,filesAmountInCommit\n\
+date,value\n\
 01/01/2001,1\n\
 01/04/2001,1\n\
 01/05/2001,1\n\
@@ -924,271 +932,52 @@ date,filesAmountInCommit\n\
 01/09/2013,3\n\
 "]
 /*data_placeholder*/;
-    var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
-
-    createChart("amount-of-files-in-commit-chart", rawData, projectName);
-
-    function createChart(elementId, rawData, projectName) {
-        var margin = {top: 20, right: 20, bottom: 100, left: 40},
-            margin2 = {top: 430, right: 20, bottom: 15, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom,
-            height2 = 500 - margin2.top - margin2.bottom;
-
-        var dateFormat = d3.time.format("%d/%m/%Y");
-        var valueFormat = function(n) {
-            var s = d3.format(",")(n);
-            return s.length < 6 ? s : d3.format("s")(n);
+    function drawChart() {
+        var margin = {top: 40, right: 50, bottom: 20, left: 50};
+        var uiConfig = {
+            width: 960 - margin.left - margin.right,
+            height: 500 - margin.top - margin.bottom,
+            margin: margin
         };
+        var brushHeight = 50;
+        var xAxisHeight = 30;
 
-        var x = d3.time.scale().nice().rangeRound([0, width]);
-        var x2 = d3.time.scale().nice().rangeRound([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
-        var y2 = d3.scale.linear().range([height2, 0]);
-        var xAxis = d3.svg.axis().scale(x).orient("bottom");
-        var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(valueFormat);
-        var xAxisLabel = "Date";
-        var yAxisLabel = "Amount of files in commit";
-        var showMovingAverage = false;
+        var root = d3.select("#amount-of-files-in-commit-chart");
+        var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
+        newHeader(root, uiConfig, "Average amount of files in commit (" + projectName + ")");
 
-        var brush = d3.svg.brush().x(x2).on("brush", onBrush);
+        var svgRoot = root.append("svg")
+                .attr("width", uiConfig.width + uiConfig.margin.left + uiConfig.margin.right)
+                .attr("height", uiConfig.height + uiConfig.margin.top + uiConfig.margin.bottom + brushHeight + xAxisHeight);
+        var svg = svgRoot.append("g")
+                .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
-        var rootElement = d3.select("#" + elementId);
-        removeChildrenOf(elementId);
+        var data = newMultipleStackedDataWithTimeIntervals(rawData, [d3.time.day, d3.time.monday, d3.time.month]);
+        var x = newXScale(uiConfig);
+        var y = newYScale(uiConfig);
+        var bars = newBars(svg, uiConfig, x, y);
+        var xAxis = newXAxis(svg, uiConfig, x);
+        var yAxis = newYAxis(svg, "Amount of files in commit", y);
+        var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
+        var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
 
-        var headerSpan = appendBlockElementTo(rootElement, width);
-        headerSpan.append("h2").text("Average amount of files in commit (" + projectName + ")").style({"text-align": "center"});
+        var controlsPanel = newControlsPanel(root, uiConfig);
+        newShowMovingAverageCheckBox(controlsPanel, movingAverageLine);
+        controlsPanel.addSpace();
+        percentileDropDown(controlsPanel, data);
+        controlsPanel.addSpace();
+        var dropDown = newGroupIndexDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
 
-        var svg = rootElement.append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom);
-        var svgPos = svg[0][0].getBoundingClientRect();
-        svg.append("defs").append("clipPath").attr("id", "chartClip")
-                .append("rect").attr("width", width).attr("height", height);
-        svg.append("defs").append("clipPath").attr("id", "brushClip")
-                .append("rect").attr("width", width).attr("height", height2);
+        var tooltip = newTooltip(root, svgRoot, uiConfig, {css: "tooltip", showCategory: false});
+        bars.onHover([tooltip.update, newShading().update]);
 
-        var rawDataIndex = 0;
-        var timeInterval = timeIntervalFor(rawDataIndex);
-        var defaultPercentile = 1.0;
-        var percentile = defaultPercentile;
-        var data = parseRawData(rawData[rawDataIndex], dateFormat);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
+            movingAverageLine.update, autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
+        x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate]);
 
-        var movingAverageData = [];
-
-        var fromDate = data[0].date;
-        var toDate = data[data.length - 1].date;
-        x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-        y.domain([0, d3.max(data, function(d) { return d.filesAmountInCommit; })]);
-        x2.domain(x.domain());
-        y2.domain(y.domain());
-        var barWidth = barWidthFor(timeInterval, fromDate, toDate);
-
-        var movingAverageLine = d3.svg.line()
-                .x(function(d) { return x(d.date); })
-                .y(function(d) { return y(d.mean); });
-
-        var zoomedView = svg.append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        zoomedView.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-
-        zoomedView.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text(yAxisLabel);
-
-        var brushFooter = svg.append("g")
-                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-        var nothingToShowLabel = rootElement.append("div")
-                .html("Unfortunately, there is nothing to show.")
-                .style("position", "absolute")
-                .style("top", function(){ return svgPos.top + (svgPos.height / 2) - (this.offsetHeight / 2) + "px"; })
-                .style("left", function(){ return svgPos.left + (svgPos.width / 2) - (this.offsetWidth / 2) + "px"; })
-                .style("opacity", 0);
-
-
-        var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
-
-        footerSpan.append("label").html("Moving average: ");
-        footerSpan.append("input").attr("type", "checkbox").on("click", function() {
-            showMovingAverage = !showMovingAverage;
-            updateChart(percentile);
-        });
-        footerSpan.append("span").style({width: "20px", display: "inline-block"});
-
-        footerSpan.append("label").html("Percentile: ");
-        var percentileDropDown = footerSpan.append("select");
-        for (var i2 = 100; i2 >= 95; i2 -= 0.5) {
-            var option2 = percentileDropDown.append("option").attr("value", i2).html(i2);
-            if (defaultPercentile * 100 == i2) option2.attr("selected", "selected");
-        }
-
-        percentileDropDown.on("change", function() {
-            percentile = +this.value / 100;
-            updateChart(percentile);
-        });
-        footerSpan.append("span").style({width: "20px", display: "inline-block"});
-
-        footerSpan.append("label").html("Group by: ");
-        var timeIntervalDropDown = footerSpan.append("select");
-        for (var i = 0; i < 3; i++) {
-            var option = timeIntervalDropDown.append("option").attr("value", i).html(timeIntervalNameFor(i));
-            if (i == rawDataIndex) option.attr("selected", "selected");
-        }
-        timeIntervalDropDown.on("change", function() {
-            rawDataIndex = +this.value;
-            data = parseRawData(rawData[rawDataIndex], dateFormat);
-            timeInterval = timeIntervalFor(rawDataIndex);
-            updateChart(percentile);
-        });
-
-        updateChart(percentile);
-
-
-        function updateChart(percentile) {
-            data = filter(parseRawData(rawData[rawDataIndex], dateFormat), percentile, function(it) { return it.filesAmountInCommit; });
-            data.sort(function (a, b){ return a.date - b.date; });
-
-            movingAverageData = movingAverage(data, timeInterval, function(d) { return d.filesAmountInCommit; });
-
-            x.domain([fromDate, timeInterval.offset(toDate, 1)]);
-            y.domain([0, d3.max(data, function(d) { return d.filesAmountInCommit; })]);
-            x2.domain(x.domain());
-            y2.domain(y.domain());
-
-            barWidth = barWidthFor(timeInterval, fromDate, toDate);
-
-            showDataOn(zoomedView);
-            showBrushOn(brushFooter);
-
-            zoomedView.select(".y.axis").call(yAxis);
-
-            nothingToShowLabel.style("opacity", data.length > 0 ? 0 : 1);
-
-            onBrush();
-        }
-
-        function filter(data, percentile, valueOf) {
-            var sortedData = data.sort(function (a, b){ return valueOf(a) - valueOf(b); });
-            var n = sortedData[Math.round((data.length - 1) * percentile)];
-            return data.filter(function(d) { return valueOf(d) <= valueOf(n); });
-        }
-
-        function showBrushOn(element) {
-            element.selectAll("g").remove();
-            element.append("g")
-                    .selectAll(".bar2")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("class", "bar")
-                    .attr("clip-path", "url(#brushClip)")
-                    .attr("x", function(d) { return x2(d.date); })
-                    .attr("width", barWidth)
-                    .attr("y", function(d) { return y2(d.filesAmountInCommit); })
-                    .attr("height", function(d) { return height2 - y2(d.filesAmountInCommit); })
-                    .append("title");
-            element.append("g")
-                    .attr("class", "x brush")
-                    .call(brush)
-                    .selectAll("rect")
-                    .attr("y", -6)
-                    .attr("height", height2 + 7);
-        }
-
-        function showDataOn(element) {
-            element.selectAll(".bar").remove();
-            element.selectAll(".bar")
-                    .data(data)
-                    .enter().append("rect")
-                    .attr("class", "bar")
-                    .attr("clip-path", "url(#chartClip)")
-                    .attr("x", function(d) { return x(d.date); })
-                    .attr("width", barWidth)
-                    .attr("y", function(d) { return y(d.filesAmountInCommit); })
-                    .attr("height", function(d) { return height - y(d.filesAmountInCommit); })
-                    .append("title")
-                    .text(function(d) {
-                        var dateAsString;
-                        if (timeInterval == d3.time.day) {
-                            dateAsString = dateFormat(d.date);
-                        } else {
-                            dateAsString = dateFormat(d.date) + " to " + dateFormat(timeInterval.offset(d.date, 1));
-                        }
-                        return xAxisLabel + ": " + dateAsString + "\n" +
-                               yAxisLabel + ": " + valueFormat(d.filesAmountInCommit);
-                    });
-        }
-
-        function onBrush() {
-            var domain = brush.empty() ? x2.domain() : brush.extent();
-            x.domain(domain);
-            barWidth = barWidthFor(timeInterval, domain[0], domain[1]);
-            zoomedView.selectAll(".bar")
-                    .data(data)
-                    .attr("x", function(d) { return x(d.date); })
-                    .attr("width", barWidth);
-
-            zoomedView.selectAll(".line").remove();
-            if (showMovingAverage) {
-                zoomedView.append("path")
-                        .datum(movingAverageData)
-                        .attr("class", "line")
-                        .attr("clip-path", "url(#chartClip)")
-                        .attr("d", movingAverageLine);
-            }
-
-            zoomedView.select(".x.axis").call(xAxis);
-        }
-
-        function barWidthFor(timeInterval, fromDate, toDate) {
-            var barWidth = width / nonZero(timeInterval.range(fromDate, toDate).length);
-            barWidth = Math.floor(barWidth);
-            return barWidth < 1 ? 1 : barWidth;
-        }
-
-        <!-- static methods -->
-
-        function timeIntervalNameFor(rawDataIndex) {
-            return ["day", "week", "month"][rawDataIndex];
-        }
-        function timeIntervalFor(rawDataIndex) {
-            if (rawDataIndex == 0) return d3.time.day;
-            else if (rawDataIndex == 1) return d3.time.monday;
-            else return d3.time.month;
-        }
-
-        function parseRawData(rawData, dateFormat) {
-            return d3.csv.parse(rawData).map(function(d) { return {
-                date: dateFormat.parse(d.date),
-                filesAmountInCommit: parseFloat(d.filesAmountInCommit)};
-            });
-        }
-
-        function nonZero(length) {
-            return (length > 0 ? length : 0.0000001);
-        }
-
-        function appendBlockElementTo(element, width) {
-            return element.append("span").style({display: "block", width: width + "px"});
-        }
-
-        function removeChildrenOf(elementId) {
-            var element = document.getElementById(elementId);
-            while (element.children.length > 0) {
-                var child = element.children.item(0);
-                child.parentNode.removeChild(child);
-            }
-        }
+        data.sendUpdate();
     }
+    drawChart();
 
 </script>
 </body>
