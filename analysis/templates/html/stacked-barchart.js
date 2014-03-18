@@ -541,6 +541,7 @@ function groupedByTime(data) {
 
 function filteredByPercentile(data) {
 	function filter(dataStacked, percentile) {
+		if (percentile == 1.0) return dataStacked;
 		var amountOfCategories = dataStacked.length;
 		var amountOfDataPoints = d3.max(dataStacked, function(it) { return it.length; });
 
@@ -590,7 +591,7 @@ function filteredByPercentile(data) {
 }
 
 function newStackedData(rawCsv) {
-	return withMinMax(groupedByTime(stackedData(rawCsv)));
+	return withMinMax(filteredByPercentile(groupedByTime(stackedData(rawCsv))));
 }
 
 function newMultipleStackedData(rawCsvArray) {
@@ -638,6 +639,13 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 	it.groupBy = function(value) {
 		var i = timeIntervals.indexOf(value);
 		if (i != -1) it.setGroupIndex(i);
+	};
+	it.setPercentile = function(value) {
+		for (var i = 0; i < stackedData.length; i++) {
+			if (i != groupIndex) stackedData[i].setPercentile(value); // skip selected groupIndex to make it send update last
+		}
+		stackedData[groupIndex].setPercentile(value);
+		it.sendUpdate();
 	};
 	stackedData.forEach(function(it) {
 		it.onUpdate(function(update) {
@@ -770,4 +778,17 @@ function newTotalAmountLabel(root, svgRoot, uiConfig, label) {
 		updateTotalAmount();
 	};
 	return it;
+}
+
+function percentileDropDown(root, data) {
+	var optionLabels = [];
+	for (var i = 100; i >= 95; i -= 0.5) {
+		optionLabels.push(i);
+	}
+	newDropDown(root, "Percentile: ", optionLabels,
+		function() { return 0; },
+		function(newValue) {
+			data.setPercentile(+optionLabels[newValue] / 100);
+		}
+	);
 }

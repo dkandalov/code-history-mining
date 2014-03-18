@@ -979,17 +979,5 @@ date,value\n\
     }
     drawChart();
 
-    function percentileDropDown(root, data) {
-        var optionLabels = [];
-        for (var i2 = 100; i2 >= 95; i2 -= 0.5) {
-            optionLabels.push(i2);
-        }
-        newDropDown(root, "Percentile: ", optionLabels,
-                function() { return 0; },
-                function(newValue) {
-//                    data.setPercentile(+newValue / 100);
-                }
-        )
-    }
 </script>
 </body>
