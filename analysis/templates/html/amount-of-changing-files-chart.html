@@ -88,6 +88,7 @@ date,category,value\n\
         var color = d3.scale.category20().domain([1, 0]);
 
         var root = d3.select("#amount-of-changing-files-chart");
+        removeChildrenOf("amount-of-changing-files-chart");
         var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
         newHeader(root, uiConfig, "Amount of changing files chart (" + projectName + ")");
 

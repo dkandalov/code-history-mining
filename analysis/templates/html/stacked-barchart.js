@@ -792,3 +792,13 @@ function percentileDropDown(root, data) {
 		}
 	);
 }
+
+
+function removeChildrenOf(elementId) {
+	var element = document.getElementById(elementId);
+	while (element.children.length > 0) {
+		var child = element.children.item(0);
+		child.parentNode.removeChild(child);
+	}
+}
+

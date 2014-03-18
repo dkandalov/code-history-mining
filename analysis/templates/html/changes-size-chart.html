@@ -204,6 +204,7 @@ date,value\n\
         var xAxisHeight = 30;
 
         var root = d3.select("#change-size-chart");
+        removeChildrenOf("change-size-chart");
         var projectName = /*project_name_placeholder*/"some project"/*project_name_placeholder*/;
         newHeader(root, uiConfig, "Change size chart (" + projectName + ")");
 
