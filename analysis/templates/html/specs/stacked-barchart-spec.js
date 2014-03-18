@@ -132,9 +132,9 @@ describe("bar chart data", function () {
 	it("after construction it can broadcast update with stacked data", function() {
 		var data = stackedData(rawCsvArray[0]);
 		var received = null;
-		data.onUpdate([function(update) {
+		data.onUpdate(function(update) {
 			received = update;
-		}]);
+		});
 
 		data.sendUpdate();
 
@@ -150,9 +150,9 @@ describe("bar chart data", function () {
 	it("sends min and max values", function() {
 		var data = withMinMax(stackedData(rawCsvArray[0]));
 		var received = null;
-		data.onUpdate([function(update) {
+		data.onUpdate(function(update) {
 			received = update;
-		}]);
+		});
 
 		data.sendUpdate();
 
@@ -165,9 +165,9 @@ describe("bar chart data", function () {
 	it("when asked to group by different time interval, sends update with regrouped data", function() {
 		var data = groupedByTime(stackedData(rawCsvArray[0]));
 		var received = null;
-		data.onUpdate([function(update) {
+		data.onUpdate(function(update) {
 			received = update;
-		}]);
+		});
 
 		data.sendUpdate();
 		expect(received.groupByIndex).toEqual(0);
@@ -185,9 +185,9 @@ describe("bar chart data", function () {
 	it("when group index changes, sends update with new data", function() {
 		var data = newMultipleStackedData(rawCsvArray);
 		var received = null;
-		data.onUpdate([function(update) {
+		data.onUpdate(function(update) {
 			received = update;
-		}]);
+		});
 
 		data.sendUpdate();
 		expect(received.groupIndex).toEqual(0);
@@ -198,6 +198,28 @@ describe("bar chart data", function () {
 		expect(received.groupIndex).toEqual(1);
 		expect(received.dataStacked[0][0]["category"]).toEqual("java");
 		expect(received.dataStacked[0][0]["y"]).toEqual(11);
+	});
+
+	it("can be filtered by percentile", function() {
+		var data = filteredByPercentile(stackedData(rawCsvArray[0]));
+		var received = null;
+		data.onUpdate(function(update) {
+			received = update;
+		});
+
+		data.sendUpdate();
+		expect(received.percentile).toEqual(1.0);
+		expect(received.dataStacked.length).toEqual(3);
+		expect(received.dataStacked[0].length).toEqual(3);
+		expect(received.dataStacked[1].length).toEqual(3);
+		expect(received.dataStacked[2].length).toEqual(3);
+
+		data.setPercentile(0.5);
+		expect(received.percentile).toEqual(0.5);
+		expect(received.dataStacked.length).toEqual(3);
+		expect(received.dataStacked[0].length).toEqual(2);
+		expect(received.dataStacked[1].length).toEqual(2);
+		expect(received.dataStacked[2].length).toEqual(2);
 	});
 });
 

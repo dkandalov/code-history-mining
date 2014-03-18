@@ -539,6 +539,56 @@ function groupedByTime(data) {
 	return it;
 }
 
+function filteredByPercentile(data) {
+	function filter(dataStacked, percentile) {
+		var amountOfCategories = dataStacked.length;
+		var amountOfDataPoints = d3.max(dataStacked, function(it) { return it.length; });
+
+		var dataWithTotal = [];
+		for (var i = 0; i < amountOfDataPoints; i++) {
+			var total = 0;
+			for (var categoryIndex = 0; categoryIndex < amountOfCategories; categoryIndex++) {
+				total += dataStacked[categoryIndex][i].y;
+			}
+			dataWithTotal.push({ index: i, total: total });
+		}
+		var sortedData = dataWithTotal.sort(function (a, b){ return a.total - b.total; });
+		var n = sortedData[Math.round((sortedData.length - 1) * percentile)];
+
+		var indicesToExclude = _.unique(sortedData
+			.filter(function(it) { return it.total > n.total; })
+			.map(function(it) { return it.index; }));
+
+		return dataStacked.map(function(array) {
+			var result = [];
+			for (var i = 0; i < array.length; i++) {
+				if (!_.contains(indicesToExclude, i)) result.push(array[i]);
+			}
+			return result;
+		});
+	}
+
+	var percentile = 1.0;
+	var dataUpdate;
+	var it = _.extend({}, data);
+	var notifyListeners = observable(it);
+	data.onUpdate(function(update) {
+		dataUpdate = update;
+	});
+	it.sendUpdate = function() {
+		data.sendUpdate();
+		notifyListeners(_.extend({}, dataUpdate, {
+			percentile: percentile,
+			dataStacked: filter(dataUpdate.dataStacked, percentile)
+		}));
+	};
+	it.setPercentile = function(value) {
+		percentile = value;
+		it.sendUpdate();
+	};
+	return it;
+}
+
 function newStackedData(rawCsv) {
 	return withMinMax(groupedByTime(stackedData(rawCsv)));
 }
