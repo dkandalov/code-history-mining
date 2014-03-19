@@ -40,6 +40,22 @@ class Template {
 		)
 	}
 
+	List<String> allTags(String tagName) {
+		def openTag = "<$tagName>"
+		def closeTag = "</$tagName>"
+		def from = -1
+		def result = []
+
+		while (true) {
+			from = text.indexOf(openTag, from + 1)
+			if (from == -1) break
+			def to = text.indexOf(closeTag, from)
+			if (to == -1) break
+			result << text.substring(from, to + closeTag.length())
+		}
+		result
+	}
+
 	String lastTag(String tagName) {
 		def openTag = "<$tagName>"
 		def closeTag = "</$tagName>"

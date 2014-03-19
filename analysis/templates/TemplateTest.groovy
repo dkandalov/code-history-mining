@@ -97,6 +97,19 @@ class TemplateTest {
 		assert template.contentOfTag("title") == "A title"
 	}
 
+	@Test void "extracts specified tags"() {
+		def template = new Template("""
+			<meta charset="utf-8">
+			<style>css1 {}</style>
+			<style>css2 {}</style>
+		  <body></body>
+		""")
+		assertThat(template.allTags("style").join("\n"), equalTo("""
+			<style>css1 {}</style>
+			<style>css2 {}</style>
+		""".stripIndent().trim()))
+	}
+
 	@Test void "gets id from span tag"() {
 		def template = new Template("""
 			<body>
