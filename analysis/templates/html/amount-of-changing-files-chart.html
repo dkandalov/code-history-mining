@@ -98,12 +98,13 @@ date,category,value\n\
         var yAxis = newYAxis(svg, "Changed files", y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight, null, color);
         var legend = newLegend(svg, {x: 50, y: 20});
+        var tooltip = newTooltip(root, svgRoot, uiConfig, {css: "tooltip", showCategory: false});
 
         var controlsPanel = newControlsPanel(root, uiConfig);
         var dropDown = newGroupIndexDropDown(controlsPanel, data, "Recent change is: ", ["week", "month"]);
 
         bars.onUpdate(legend.update);
-        bars.onHover([newTooltip(root, svgRoot, uiConfig, {css: "tooltip"}).update, newShading().update]);
+        bars.onHover([tooltip.update, newShading().update]);
 
         data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
             autoGroup(data).update, newNothingToShowLabel(root, svgRoot, uiConfig).update]);
