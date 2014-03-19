@@ -43,10 +43,11 @@ class TemplateTest {
 
 	@Test void "inlines imported css files"() {
 		def template = new Template("""
+			<style>css0 {}</style>
 			<head>
 				<stuff/>
 				<link rel="stylesheet" type="text/css" media="screen" href="stylesheet1.css">
-				<link rel="stylesheet" type="text/css" media="screen" href="stylesheet2.css">
+				<link rel="stylesheet" type="text/css" href="stylesheet2.css">
 			</head>
 		""")
 
@@ -56,6 +57,7 @@ class TemplateTest {
 		}
 
 		assertThat(template.inlineImports(fileReader).text, equalTo("""
+			<style>css0 {}</style>
 			<head>
 				<stuff/><style>css1 {}</style><style>css2 {}</style></head>
 		"""))
