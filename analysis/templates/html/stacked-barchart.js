@@ -263,7 +263,7 @@ function newBars(root, uiConfig, xScale, yScale, postfixId, color) {
 		return (length > 0 ? length : 0.0000001);
 	}
 	function barWidth() {
-		var barWidth = uiConfig.width / nonZero(xScale.amountOfValues);
+		var barWidth = uiConfig.width / nonZero(xScale.amountOfValues) - 1;
 		barWidth = Math.floor(barWidth);
 		if (barWidth > 20) barWidth = barWidth - 1;
 		if (barWidth < 1) barWidth = 1;
