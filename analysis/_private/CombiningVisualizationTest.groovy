@@ -25,9 +25,6 @@ class CombiningVisualizationTest {
 		// chrome pushes child spans outside of <p>, this results in redundant ui elements when saved file opened again
 		assertThat(html, containsString("<span id=\"change-size-chart\"></span>"))
 		assertThat(html, containsString("<span id=\"amount-of-committers-chart\"></span>"))
-
-		assertThat(html, containsString("createChart(\"change-size-chart\", rawData, projectName);"))
-		assertThat(html, containsString("createChart(\"amount-of-committers-chart\", rawData, projectName);"))
 	}
 
 	private final singleEvent = new FileChangeEvent(
