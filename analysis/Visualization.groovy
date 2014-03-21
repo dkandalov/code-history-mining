@@ -1,4 +1,6 @@
 package analysis
+
+import analysis.templates.Template
 import groovy.transform.Immutable
 
 import static analysis._private.Analysis.*
@@ -65,45 +67,49 @@ class Visualization {
 		commitMessageWordCloudTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
 
-	static all = new Visualization("All Visualizations", { Context context ->
-		def templates = [
-				changeSizeChartTemplate.fillData(changeSize_Chart(context.events, context.checkIfCancelled)),
-				amountOfCommittersChartTemplate.fillData(amountOfCommitters_Chart(context.events, context.checkIfCancelled)),
-				amountOfFilesInCommitChartTemplate.fillData(averageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
-				amountOfChangingFilesChartTemplate.fillData(amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)),
-				changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileType_Chart(context.events, context.checkIfCancelled)),
-				filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
-				committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)),
-				amountOfCommitsTreemapTemplate.fillData(TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
-				commitTimePunchcardTemplate.fillData(commitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
-				timeBetweenCommitsHistogramTemplate.fillData(timeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
-				commitMessageWordCloudTemplate.fillData(commitComments_WordCloud(context.events, context.checkIfCancelled))
-		]
-
-		def template = allVisualizationsTemplate.fillProjectName(context.projectName.capitalize())
-		templates.each{
-			template = template.addBefore(
-					"<!--style-insert-point-->",
-					it.allTags("style").collect{
-							it.replaceAll(/margin:.*?;/, '').replaceAll(/\swidth:.*?;/, '')
-					}.join("\n")
-			)
-			template = template.addBefore(
-					"<!--script-insert-point-->",
-					it.removeJsAddedHeader().width(800).lastTag("script")
-			)
-			template = template.addBefore("<!--tag-insert-point-->", """
-				<h4>${it.contentOfTag('title')}</h4>
-        <span id="${it.mainTagId}"></span>
-        <br/><br/>
-			""")
-		}
-		template.removeJsAddedHeader().width(800).text
-	})
+	static all = createAllVisualizations(allVisualizationsTemplate)
 
 	static commitLogAsGraph = new Visualization("Latest Commits As Graph", { Context context ->
 		def json = commitLog_Graph(context.events, context.checkIfCancelled)
 		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
 	})
+
+	static Visualization createAllVisualizations(Template template) {
+		new Visualization("All Visualizations", { Context context ->
+			def templates = [
+					changeSizeChartTemplate.fillData(changeSize_Chart(context.events, context.checkIfCancelled)),
+					amountOfCommittersChartTemplate.fillData(amountOfCommitters_Chart(context.events, context.checkIfCancelled)),
+					amountOfFilesInCommitChartTemplate.fillData(averageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
+					amountOfChangingFilesChartTemplate.fillData(amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)),
+					changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileType_Chart(context.events, context.checkIfCancelled)),
+					filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
+					committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)),
+					amountOfCommitsTreemapTemplate.fillData(TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
+					commitTimePunchcardTemplate.fillData(commitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
+					timeBetweenCommitsHistogramTemplate.fillData(timeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
+					commitMessageWordCloudTemplate.fillData(commitComments_WordCloud(context.events, context.checkIfCancelled))
+			]
+
+			template = template.fillProjectName(context.projectName.capitalize())
+			templates.each{
+				template = template.addBefore(
+						"<!--style-insert-point-->",
+						it.allTags("style").collect{
+							it.replaceAll(/margin:.*?;/, '').replaceAll(/\swidth:.*?;/, '')
+						}.join("\n")
+				)
+				template = template.addBefore(
+						"<!--script-insert-point-->",
+						it.removeJsAddedHeader().width(800).lastTag("script")
+				)
+				template = template.addBefore("<!--tag-insert-point-->", """
+				<h4>${it.contentOfTag('title')}</h4>
+        <span id="${it.mainTagId}"></span>
+        <br/><br/>
+			""")
+			}
+			template.removeJsAddedHeader().width(800).text
+		})
+	}
 
 }

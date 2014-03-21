@@ -17,7 +17,7 @@ class AllTemplates {
 	static allVisualizationsTemplate = template("all-visualizations.html")
 	static commitLogAsGraphTemplate = template("latest-commits-as-graph.html")
 
-	private static Template template(String fileName) {
+	static Template template(String fileName) {
 		new Template(readFile(fileName)).inlineImports(AllTemplates.&readFile)
 	}
 
