@@ -82,7 +82,7 @@ class Analysis {
 		events = useLatestNameForMovedFiles(events, checkIfCancelled).reverse()
 
 		def changingFiles = { TimeInterval interval ->
-			def eventsByTimeInterval = events.groupBy{ interval.floor(it.revisionDate) }
+			def eventsByTimeInterval = events.groupBy{ interval.floor(it.revisionDate) }.withDefault{ [] }
 
 			def unchanged = []
 			def recentlyChanged = []
@@ -95,15 +95,14 @@ class Analysis {
 				checkIfCancelled()
 
 				def eventsForInterval = eventsByTimeInterval[date]
-				if (eventsForInterval == null) eventsForInterval = []
 
 				def recentFiles = new HashSet()
 				for (FileChangeEvent event : eventsForInterval) {
-					if (event.fileChangeType == "DELETED") allFiles.remove(event.packageName + "/" + event.fileName)
-					else allFiles.add(event.packageName + "/" + event.fileName)
+					if (event.fileChangeType == "DELETED") allFiles.remove(nonEmptyPackageName(event) + "/" + nonEmptyFileName(event))
+					else allFiles.add(nonEmptyPackageName(event) + "/" + nonEmptyFileName(event))
 
-					if (event.fileChangeType == "DELETED") recentFiles.remove(event.packageName + "/" + event.fileName)
-					else recentFiles.add(event.packageName + "/" + event.fileName)
+					if (event.fileChangeType == "DELETED") recentFiles.remove(nonEmptyPackageName(event) + "/" + nonEmptyFileName(event))
+					else recentFiles.add(nonEmptyPackageName(event) + "/" + nonEmptyFileName(event))
 				}
 
 				unchanged << [date, "unchanged", allFiles.size() - recentFiles.size()]

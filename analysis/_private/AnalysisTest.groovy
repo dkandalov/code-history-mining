@@ -198,7 +198,7 @@ class AnalysisTest {
 
 		static FileChangeInfo deleted(String filePath) {
 			def (path, file) = splitByLast("/", filePath)
-			new FileChangeInfo("", file, "", path, "DELETED", NA, NA)
+			new FileChangeInfo(file, "", "", path, "DELETED", NA, NA)
 		}
 
 		private static splitByLast(String symbol, String s) {
