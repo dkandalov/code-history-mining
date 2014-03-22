@@ -11,7 +11,7 @@ generate("Code-history-mining", [
 		"full_project_name": "code-history-mining",
 		"url_to_project_page": "https://github.com/dkandalov/code-history-mining",
 		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SUzZhbmVVS0R5WWc",
-		"code_history_dates": "",
+		"code_history_dates": ""
 ])
 
 
@@ -48,8 +48,15 @@ def generate(String projectName, Map comments) {
           Assuming that commit is a finished unit of work, the idea is to see how its size changes over time.
 			""".stripMargin())
 			.addBefore(span("amount-of-changing-files-chart"), """
+	        Shows amount of files changed/not-changed within last week/month.
+	        The idea is too see how big the change is relative to the size of codebase.
+	        This can also be interpreted in the context of <a href="http://en.wikipedia.org/wiki/Open/closed_principle">open-closed principle</a>
+	        as amount of "open" and "closed" classes.
 			""".stripMargin())
 			.addBefore(span("change-size-by-file-type-chart"), """
+	        Shows amount of changes for 5 most used file types.
+	        The idea is to see which languages / parts of project are used and how it evolved over time.
+	        For example, how much of "java" project is really java and how much is xml/properties.
 			""".stripMargin())
 			.addBefore(span("files-in-the-same-commit"), """
 					Shows files which were changed in the same commit several times.
@@ -66,9 +73,8 @@ def generate(String projectName, Map comments) {
 			.addBefore(span("commit-treemap"), """
           Shows a break-down of commits by package/folder.
           Size of rectangles corresponds to amount of commits.
-          The idea is to see which parts of the project have more attention
-          (e.g. ratio between commits to production code and tests).
-          <br/>
+          The idea is to see which parts of the project have more attention,
+          e.g. ratio between commits to production code and tests.
           (Renamed and moved package are tracked but only current package name is displayed.)
 			""".stripMargin())
 			.addBefore(span("commit-time-punchcard"), """
@@ -86,7 +92,7 @@ def generate(String projectName, Map comments) {
 			.addBefore(span("commit-word-cloud"), """
           Some prepositions and articles are excluded as well as some words specific for the project but not related to code.
           The idea is to see what happened with code by observing human language.
-          <br/>
+          <br/><br/>
 			""".stripMargin())
 
 	comments.each{
