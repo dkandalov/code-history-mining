@@ -40,6 +40,10 @@ class Template {
 		)
 	}
 
+	Template fillMustache(String name, String withText) {
+		new Template(fillMustachePlaceholder(name, withText, text))
+	}
+
 	List<String> allTags(String tagName) {
 		def openTag = "<$tagName>"
 		def closeTag = "</$tagName>"
