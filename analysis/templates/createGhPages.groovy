@@ -7,18 +7,32 @@ import static analysis.Visualization.createAllVisualizations
 import static analysis.templates.AllTemplates.template
 import static java.lang.System.getenv
 
-generate("Code-history-mining", [
-		"full_project_name": "code-history-mining",
-		"url_to_project_page": "https://github.com/dkandalov/code-history-mining",
-		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SUzZhbmVVS0R5WWc",
-		"code_history_dates": ""
+//generate("Code-history-mining", [
+//		"full_project_name": "code-history-mining",
+//		"url_to_project_page": "https://github.com/dkandalov/code-history-mining",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SUzZhbmVVS0R5WWc"
+//])
+generate("JUnit", [
+		"full_project_name": "JUnit",
+		"url_to_project_page": "https://github.com/junit-team/junit",
+		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ",
+		"code_history_dates": " from January 2001 to September 2013",
+		"committers_files_graph_comment": """
+				<br/>This particular graph is not very accurate because of different
+				VCS user names for the same person (e.g. "dsaff" and "David Saff").
+		""",
+		"wordcloud_comment": """
+		    <br/> This particular cloud might not be very representative because of commit messages
+        with meta-information (that\\'s why cloud has "threeriversinstitute" in it).
+        You can alt-click on words to exclude them.
+		"""
 ])
 
 
-def generate(String projectName, Map comments) {
+def generate(String projectName, String fileName = projectName.toLowerCase(), Map comments) {
 	def ghPagesPath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/live-plugins/code-history-mining-gh-pages"
 	def csvPath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/code-history-mining"
-	def filePath = "${csvPath}/${projectName}-file-events.csv"
+	def filePath = "${csvPath}/${fileName}-file-events.csv"
 	def events = new EventStorage(filePath).readAllEvents({}) { line, e -> println("Failed to parse line '${line}'") }
 
 	def template = template("all-visualizations-ghpages.html").fillProjectName(projectName)
@@ -69,6 +83,7 @@ def generate(String projectName, Map comments) {
 					Shows committers connections to files they have both changed within a week.
           That is if file was modified by two persons within a week, a link is added.
           The is idea is to discover how people "communicate" through changing same files.
+          {{committers_files_graph_comment}}
 			""".stripMargin())
 			.addBefore(span("commit-treemap"), """
           Shows a break-down of commits by package/folder.
@@ -94,6 +109,10 @@ def generate(String projectName, Map comments) {
           The idea is to see what happened with code by observing human language.
           <br/><br/>
 			""".stripMargin())
+
+	["code_history_dates", "committers_files_graph_comment", "wordcloud_comment"].each{
+		if (!comments.containsKey(it)) comments.put(it, "")
+	}
 
 	comments.each{
 		template = template.fillMustache(it.key, it.value)
