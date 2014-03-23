@@ -1,26 +1,39 @@
 package analysis._private
+import analysis.Context
 import historystorage.EventStorage
-import analysis.templates.AllTemplates
-import analysis.templates.Template
+import util.Measure
 
+import static analysis.Visualization.*
 import static java.lang.System.getenv
 
 class AnalysisPlayground {
 	static void main(String[] args) {
-		def projectName = "code-history-mining"
-		def filePath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/code-history-mining/${projectName}-file-events.csv"
-		def events = new EventStorage(filePath).readAllEvents({}) { line, e -> println("Failed to parse line '${line}'") }
+		def projectName = "scala"
+		def fileName = "scala"
+		def csvPath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/code-history-mining"
+		def filePath = "${csvPath}/${fileName}-file-events.csv"
 
-		fillAndSaveTemplate("amount-of-changing-files-chart.html", projectName, Analysis.amountOfChangingFiles_Chart(events))
-	}
+		def readEvents = { new EventStorage(filePath).readAllEvents({}){ line, e -> println("Failed to parse line '${line}'") } }
+		def readEventsTime = new Measure()
+		def events = readEventsTime.measure("Read all events", readEvents)
+		readEventsTime.forEachDuration{println(it)}
 
-	static void fillAndSaveTemplate(String template, String projectName, String json) {
-		def templateText = new File("analysis/templates/html//${template}").readLines().join("\n")
-		def text = new Template(templateText)
-				.inlineImports{ AllTemplates.readFile(it) }
-				.fillProjectName(projectName)
-				.fillData(json)
-				.text
-		new File("analysis/templates/${projectName}_${template}").write(text)
+		def context = new Context(events, projectName)
+		[changeSizeChart,
+		 amountOfFilesInCommitChart,
+		 amountOfChangingFilesChart,
+		 changeSizeByFileTypeChart,
+		 filesInTheSameCommitGraph,
+		 committersChangingSameFilesGraph,
+		 amountOfCommitsTreemap,
+		 commitTimePunchcard,
+		 timeBetweenCommitsHistogram,
+		 commitMessageWordCloud
+		].each{ visualization ->
+			visualization.generate(context)
+			visualization.measure.forEachDuration{
+				println(it)
+			}
+		}
 	}
 }
