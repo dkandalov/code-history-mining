@@ -23,14 +23,16 @@ class Analysis {
 		checkIfCancelled()
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
+		def amountOfChangedFilesByDate = eventsByDay.collect{ [it.key, it.value.size()] }.sort{it[0]}
 		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
 		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{it[0]}
 
 		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "value"])
-		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "value"])
+		def changeSizeInFiles = asCsvStringLiteral(amountOfChangedFilesByDate, ["date", "value"])
 		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "value"])
+		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "value"])
 
-		"[$changeSizeInCommits,$changeSizeInLines,$changeSizeInChars]"
+		"[$changeSizeInCommits,$changeSizeInFiles,$changeSizeInLines,$changeSizeInChars]"
 	}
 
 	static String amountOfCommitters_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
