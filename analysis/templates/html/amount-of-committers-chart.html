@@ -1,40 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-    body {
-        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
-        margin: auto;
-        width: 960px;
-        background: #f2f2f2;
-    }
-    #amount-of-committers-chart text,
-    #amount-of-committers-chart label {
-        font: 11px sans-serif;
-        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
-    }
-    #amount-of-committers-chart .line-movingAvg {
-        fill: none;
-        stroke-width: 1.5px;
-        stroke: #b2182b;
-    }
-    #amount-of-committers-chart .axis path,
-    #amount-of-committers-chart .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-    #amount-of-committers-chart .brush .extent {
-        stroke: #fff;
-        fill-opacity: .125;
-        shape-rendering: crispEdges;
-    }
-</style>
 <head>
     <title>Amount of committers</title>
     <link rel="stylesheet" type="text/css" href="stylesheets/stacked-barchart.css">
 </head>
-<body>
-<span id="amount-of-committers-chart"></span>
+<body class="bar-chart-body">
+<span id="amount-of-committers-chart" class="bar-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>

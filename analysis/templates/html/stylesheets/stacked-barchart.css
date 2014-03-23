@@ -1,3 +1,32 @@
+.bar-chart-body {
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    margin: auto;
+    width: 960px;
+    background: #f2f2f2;
+}
+
+.bar-chart text,
+.bar-chart label {
+    font: 11px sans-serif;
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+}
+.bar-chart .line-movingAvg {
+    fill: none;
+    stroke-width: 1.5px;
+    stroke: #b2182b;
+}
+.bar-chart .axis path,
+.bar-chart .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.bar-chart .brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
 /* based on http://nvd3.org/examples/multiBar.html */
 .tooltip {
     position: absolute;
@@ -26,4 +55,13 @@
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
+}
+
+.legend .box {
+    fill: #f9f9f9;
+    stroke: black;
+    opacity: 0.8;
+}
+.legend .items {
+    font-size: 12px;
 }

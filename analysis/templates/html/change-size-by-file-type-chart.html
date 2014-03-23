@@ -1,47 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-    body {
-        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
-        margin: auto;
-        width: 960px;
-        background: #f2f2f2;
-    }
-
-    #change-size-by-file-type-chart text,
-    #change-size-by-file-type-chart label {
-        font: 11px sans-serif;
-        font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-
-    .brush .extent {
-        stroke: #fff;
-        fill-opacity: .125;
-        shape-rendering: crispEdges;
-    }
-
-    .legend .box {
-        fill: #f9f9f9;
-        stroke: black;
-        opacity: 0.8;
-    }
-    .legend .items {
-        font-size: 12px;
-    }
-</style>
 <head>
     <title>Change size by file type</title>
     <link rel="stylesheet" type="text/css" href="stylesheets/stacked-barchart.css">
 </head>
-<body>
-<span id="change-size-by-file-type-chart"></span>
+<body class="bar-chart-body">
+<span id="change-size-by-file-type-chart" class="bar-chart"></span>
 <script src="d3.v3.min.js"></script>
 <script src="underscore-min.js"></script>
 <script src="stacked-barchart.js"></script>
