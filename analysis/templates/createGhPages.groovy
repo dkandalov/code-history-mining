@@ -12,20 +12,63 @@ import static java.lang.System.getenv
 //		"url_to_project_page": "https://github.com/dkandalov/code-history-mining",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SUzZhbmVVS0R5WWc"
 //])
-generate("JUnit", [
-		"full_project_name": "JUnit",
-		"url_to_project_page": "https://github.com/junit-team/junit",
-		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ",
-		"code_history_dates": " from January 2001 to September 2013",
-		"committers_files_graph_comment": """
-				<br/>This particular graph is not very accurate because of different
-				VCS user names for the same person (e.g. "dsaff" and "David Saff").
-		""",
-		"wordcloud_comment": """
-		    <br/> This particular cloud might not be very representative because of commit messages
-        with meta-information (that\\'s why cloud has "threeriversinstitute" in it).
-        You can alt-click on words to exclude them.
-		"""
+
+//generate("JUnit", [
+//		"full_project_name": "JUnit",
+//		"url_to_project_page": "https://github.com/junit-team/junit",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ",
+//		"code_history_dates": " from January 2001 to March 2014",
+//		"committers_files_graph_comment": """
+//				<br/>This particular graph is not very accurate because of different
+//				VCS user names for the same person (e.g. "dsaff" and "David Saff").
+//		""",
+//		"wordcloud_comment": """
+//		    <br/> This particular cloud might not be very representative because of commit messages
+//        with meta-information (that\\'s why cloud has "threeriversinstitute" in it).
+//        You can alt-click on words to exclude them.
+//		"""
+//])
+
+//generate("Scala", [
+//		"full_project_name": "Scala programming language",
+//		"url_to_project_page": "https://github.com/scala/scala‎",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk",
+//		"code_history_dates": " from 03/01/2005 to 19/12/2013"
+//])
+
+//generate("Clojure", [
+//		"full_project_name": "Clojure programming language",
+//		"url_to_project_page": "https://github.com/clojure/clojure",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SZ1RNUjloYldWeFE",
+//		"code_history_dates": " from March 2006 to March 2013"
+//])
+
+//generate("GHC", [
+//		"full_project_name": "Glasgow Haskell Compiler",
+//		"url_to_project_page": "https://github.com/ghc/ghc",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SaC1ncG84V29wQTQ",
+//		"code_history_dates": " from January 2006 to January 2014"
+//])
+
+//generate("node.js", "node", [
+//		"full_project_name": "node.js",
+//		"url_to_project_page": "https://github.com/joyent/node",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SS01PdWtPUk5tQ1E",
+//		"code_history_dates": " from February 2009 to January 2014"
+//])
+
+//generate("Ruby on Rails", "rails", [
+//		"full_project_name": "Ruby on Rails",
+//		"url_to_project_page": "https://github.com/rails/rails‎",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SWGRYYmlISmZtUU0",
+//		"code_history_dates": " from November 2004 to January 2014"
+//])
+
+generate("Ruby", "ruby-no-changelog", [
+		"full_project_name": "Ruby programming language",
+		"url_to_project_page": "https://github.com/ruby/ruby",
+		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SYnlobWU3eVhOaDg",
+		"code_history_dates": " from January 2006 to January 2014"
 ])
 
 
@@ -118,7 +161,7 @@ def generate(String projectName, String fileName = projectName.toLowerCase(), Ma
 		template = template.fillMustache(it.key, it.value)
 	}
 
-	new File("${ghPagesPath}/${projectName}.html").write(template.text)
+	new File("${ghPagesPath}/${fileName}.html").write(template.text)
 }
 
 String span(String id) {
