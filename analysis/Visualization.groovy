@@ -1,15 +1,21 @@
 package analysis
-
 import analysis.templates.Template
-import groovy.transform.Immutable
+import util.Measure
 
 import static analysis._private.Analysis.*
 import static analysis.templates.AllTemplates.*
 
-@Immutable
 class Visualization {
 	final String name
 	final Closure<String> generate
+	final Measure measure = new Measure()
+
+	Visualization(String name, Closure<String> generate) {
+		this.name = name
+		this.generate = { context ->
+			measure.measure(name, { generate(context) })
+		}
+	}
 
 	static changeSizeChart = new Visualization("Change Size Chart", { Context context ->
 		def json = changeSize_Chart(context.events, context.checkIfCancelled)

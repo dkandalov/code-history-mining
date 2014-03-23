@@ -1,19 +1,18 @@
 package util
 
 
-@SuppressWarnings("GrMethodMayBeStatic")
 class Measure {
-	private static Map<String, Long> durations = [:].withDefault{ 0 }
+	private final Map<String, Long> durations = [:].withDefault{ 0 }
 
-	def start() {
+	def synchronized start() {
 		reset()
 	}
 
-	static reset() {
+	def synchronized reset() {
 		durations.clear()
 	}
 
-	def <T> T measure(String id, Closure<T> closure) {
+	def synchronized <T> T measure(String id, Closure<T> closure) {
 		long start = System.currentTimeMillis()
 		T result = closure()
 		long time = System.currentTimeMillis() - start
@@ -21,7 +20,7 @@ class Measure {
 		result
 	}
 
-	def forEachDuration(Closure callback) {
+	def synchronized forEachDuration(Closure callback) {
 		durations.entrySet().each{ callback(it) }
 	}
 }
