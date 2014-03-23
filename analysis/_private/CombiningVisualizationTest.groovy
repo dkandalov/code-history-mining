@@ -8,8 +8,8 @@ import events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.not
+import static org.hamcrest.Matchers.containsString
 import static org.junit.Assert.assertThat
-import static org.junit.matchers.JUnitMatchers.containsString
 import static util.DateTimeUtil.dateTime
 
 class CombiningVisualizationTest {
@@ -23,8 +23,8 @@ class CombiningVisualizationTest {
 
 		// this must be <span> tag because if it's <p> when saving page
 		// chrome pushes child spans outside of <p>, this results in redundant ui elements when saved file opened again
-		assertThat(html, containsString("<span id=\"change-size-chart\"></span>"))
-		assertThat(html, containsString("<span id=\"amount-of-committers-chart\"></span>"))
+		assertThat(html, containsString("<span id=\"change-size-chart\" class=\"bar-chart\"></span>"))
+		assertThat(html, containsString("<span id=\"amount-of-committers-chart\" class=\"bar-chart\"></span>"))
 	}
 
 	private final singleEvent = new FileChangeEvent(
