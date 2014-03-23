@@ -23,13 +23,15 @@ class Analysis {
 		checkIfCancelled()
 
 		def commitsAmountByDate = eventsByDay.collect{ [it.key, it.value.groupBy{ it.revision }.size()] }.sort{it[0]}
-		def amountOfChangedFilesByDate = eventsByDay.collect{ [it.key, it.value.size()] }.sort{it[0]}
-		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
-		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{it[0]}
-
 		def changeSizeInCommits = asCsvStringLiteral(commitsAmountByDate, ["date", "value"])
+
+		def amountOfChangedFilesByDate = eventsByDay.collect{ [it.key, it.value.size()] }.sort{it[0]}
 		def changeSizeInFiles = asCsvStringLiteral(amountOfChangedFilesByDate, ["date", "value"])
+
+		def totalChangeInLinesSizeByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInLines(it) }] }.sort{it[0]}
 		def changeSizeInLines = asCsvStringLiteral(totalChangeInLinesSizeByDate, ["date", "value"])
+
+		def totalChangeSizeInCharsByDate = eventsByDay.collect{ [it.key, it.value.sum{ changeSizeInChars(it) }] }.sort{it[0]}
 		def changeSizeInChars = asCsvStringLiteral(totalChangeSizeInCharsByDate, ["date", "value"])
 
 		"[$changeSizeInCommits,$changeSizeInFiles,$changeSizeInLines,$changeSizeInChars]"
