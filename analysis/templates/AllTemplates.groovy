@@ -9,7 +9,7 @@ class AllTemplates {
 	static changeSizeByFileTypeChartTemplate = template("change-size-by-file-type-chart.html")
 	static filesInTheSameCommitGraphTemplate = template("files-in-same-commit-graph.html")
 	static committersChangingSameFilesGraphTemplate = template("committers-changing-same-files-graph.html")
-	static amountOfCommitsTreemapTemplate = template("treemap.html")
+	static amountOfCommitsTreemapTemplate = template("treemap.html") // TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
 	static commitTimePunchcardTemplate = template("commit-time-punchcard.html")
 	static timeBetweenCommitsHistogramTemplate = template("time-between-commits-histogram.html")
 	static commitMessageWordCloudTemplate = template("wordcloud.html")

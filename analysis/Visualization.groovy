@@ -1,4 +1,6 @@
 package analysis
+
+import analysis._private.Analysis
 import analysis.templates.Template
 import util.Measure
 
@@ -17,68 +19,51 @@ class Visualization {
 		}
 	}
 
-	static changeSizeChart = new Visualization("Change Size Chart", { Context context ->
-		def json = changeSize_Chart(context.events, context.checkIfCancelled)
-		changeSizeChartTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static changeSizeChart = new Visualization("Change Size Chart",
+			combine(changeSizeChartTemplate, Analysis.&changeSize_Chart))
 
-	static amountOfCommittersChart = new Visualization("Amount Of Committers Chart", { Context context ->
-		def json = amountOfCommitters_Chart(context.events, context.checkIfCancelled)
-		amountOfCommittersChartTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static amountOfCommittersChart = new Visualization("Amount Of Committers Chart",
+			combine(amountOfCommittersChartTemplate, Analysis.&amountOfCommitters_Chart))
 
-	static amountOfFilesInCommitChart = new Visualization("Amount Of Files In Commit Chart", { Context context ->
-		def json = averageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)
-		amountOfFilesInCommitChartTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static amountOfFilesInCommitChart = new Visualization("Amount Of Files In Commit Chart",
+			combine(amountOfFilesInCommitChartTemplate, Analysis.&averageAmountOfFilesInCommit_Chart))
 
-	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart", { Context context ->
-		def json = amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)
-		amountOfChangingFilesChartTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static amountOfChangingFilesChart = new Visualization("Amount Of Changing Files Chart",
+			combine(amountOfChangingFilesChartTemplate, Analysis.&amountOfChangingFiles_Chart))
 
-	static changeSizeByFileTypeChart = new Visualization("Change Size By File Type Chart", { Context context ->
-		def json = changeSizeByFileType_Chart(context.events, context.checkIfCancelled)
-		changeSizeByFileTypeChartTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static changeSizeByFileTypeChart = new Visualization("Change Size By File Type Chart",
+			combine(changeSizeByFileTypeChartTemplate, Analysis.&changeSizeByFileType_Chart))
 
-	static filesInTheSameCommitGraph = new Visualization("Files In The Same Commit Graph", { Context context ->
-		def json = filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)
-		filesInTheSameCommitGraphTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static filesInTheSameCommitGraph = new Visualization("Files In The Same Commit Graph",
+			combine(filesInTheSameCommitGraphTemplate, Analysis.&filesInTheSameCommit_Graph))
 
-	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph", { Context context ->
-		def json = authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)
-		committersChangingSameFilesGraphTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static committersChangingSameFilesGraph = new Visualization("Committers Changing Same Files Graph",
+			combine(committersChangingSameFilesGraphTemplate, Analysis.&authorChangingSameFiles_Graph))
 
-	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap", { Context context ->
-		def json = TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)
-		amountOfCommitsTreemapTemplate.fillData(json).fillProjectName(context.projectName).text
-		// TODO try sunburst layout? (http://bl.ocks.org/mbostock/4063423)
-	})
+	static amountOfCommitsTreemap = new Visualization("Amount Of Commits Treemap",
+			combine(amountOfCommitsTreemapTemplate, TreeMapView.&amountOfChangeInFolders_TreeMap))
 
-	static commitTimePunchcard = new Visualization("Commit Time Punchcard", { Context context ->
-		def json = commitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)
-		commitTimePunchcardTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static commitTimePunchcard = new Visualization("Commit Time Punchcard",
+			combine(commitTimePunchcardTemplate, Analysis.&commitsByDayOfWeekAndTime_PunchCard))
 
-	static timeBetweenCommitsHistogram = new Visualization("Time Between Commits Histogram", { Context context ->
-		def json = timeBetweenCommits_Histogram(context.events, context.checkIfCancelled)
-		timeBetweenCommitsHistogramTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static timeBetweenCommitsHistogram = new Visualization("Time Between Commits Histogram",
+			combine(timeBetweenCommitsHistogramTemplate, Analysis.&timeBetweenCommits_Histogram))
 
-	static commitMessageWordCloud = new Visualization("Commit Messages Word Cloud", { Context context ->
-		def json = commitComments_WordCloud(context.events, context.checkIfCancelled)
-		commitMessageWordCloudTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static commitMessageWordCloud = new Visualization("Commit Messages Word Cloud",
+			combine(commitMessageWordCloudTemplate, Analysis.&commitComments_WordCloud))
 
 	static all = createAllVisualizations(allVisualizationsTemplate)
 
-	static commitLogAsGraph = new Visualization("Latest Commits As Graph", { Context context ->
-		def json = commitLog_Graph(context.events, context.checkIfCancelled)
-		commitLogAsGraphTemplate.fillData(json).fillProjectName(context.projectName).text
-	})
+	static commitLogAsGraph = new Visualization("Latest Commits As Graph",
+			combine(commitLogAsGraphTemplate, Analysis.&commitLog_Graph))
+
+
+	private static Closure<String> combine(Template template, Closure<String> analysis) {
+		{ Context context ->
+			def json = analysis(context.events, context.checkIfCancelled)
+			template.fillData(json).fillProjectName(context.projectName).text
+		}
+	}
 
 	static Visualization createAllVisualizations(Template template) {
 		new Visualization("All Visualizations", { Context context ->
