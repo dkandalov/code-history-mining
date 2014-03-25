@@ -1347,7 +1347,7 @@ metric\n\
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var defaultPercentile = 0.8;
+        var defaultPercentile = /*percentile*/0.8/*percentile*/;
         updateHistogram(defaultPercentile);
 
         var footerSpan = appendBlockElementTo(rootElement, width).append("span").style({float: "right"});
