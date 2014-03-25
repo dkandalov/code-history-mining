@@ -6,9 +6,10 @@ and analyze project source code history. Take a look at examples:
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
  - [Clojure code history](http://dkandalov.github.io/code-history-mining/clojure.html)
- - [Ruby code history](http://dkandalov.github.io/code-history-mining/ruby.html)
+ - [Ruby code history](http://dkandalov.github.io/code-history-mining/cucumber.html)
+ - [Ruby code history](http://dkandalov.github.io/code-history-mining/ruby-no-changelog.html)
  - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/rails.html)
- - [Node.js code history](http://dkandalov.github.io/code-history-mining/nodejs.html)
+ - [Node.js code history](http://dkandalov.github.io/code-history-mining/node.html)
  - [GHC code history](http://dkandalov.github.io/code-history-mining/ghc.html)
 
 
