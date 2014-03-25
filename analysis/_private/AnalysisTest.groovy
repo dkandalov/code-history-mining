@@ -29,8 +29,9 @@ class AnalysisTest {
 		int amountOfCommitsThreshold = 2
 		assert activeAndInactiveCommitters_Chart(changeEvents, noCancel, windowSizeInDays, amountOfCommitsThreshold, [oneDay]) == """
 			|["\\
-	    |date,category,value\\n\\
-      |01/04/2013,active,1\\n\\
+			|date,category,value\\n\\
+			|01/04/2013,active,1\\n\\
+			|01/04/2013,inactive,0\\n\\
 			|"]
 		""".stripMargin("|").trim()
 	}
@@ -160,7 +161,7 @@ class AnalysisTest {
       |"links": [{"source": 3, "target": 0, "value": 1},
       |{"source": 4, "target": 0, "value": 1},
       |{"source": 5, "target": 2, "value": 1}]
-		""".stripMargin("|").trim()
+		""".stripMargin("|").trim().replace("/", "\\/")
 	}
 
 	@Test void "graph with authors changing same files within a week"() {
@@ -179,7 +180,7 @@ class AnalysisTest {
       |{"name": "David Saff", "group": 2}],
       |"links": [{"source": 1, "target": 0, "value": 2},
       |{"source": 2, "target": 0, "value": 2}]
-		""".stripMargin("|").trim()
+		""".stripMargin("|").trim().replace("/", "\\/")
 	}
 
 	@Test void "graph with files changed in the same commit"() {
@@ -197,8 +198,8 @@ class AnalysisTest {
 
 		def threshold = 2
 		assert filesInTheSameCommit_Graph(changeEvents, noCancel, threshold) == """
-      |"nodes": [{"name": "/theories/Theories.java", "group": 1},
-      |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1}],
+      |"nodes": [{"name": "\\/theories\\/Theories.java", "group": 1},
+      |{"name": "\\/theories\\/internal\\/AllMembersSupplier.java", "group": 1}],
       |"links": [{"source": 0, "target": 1, "value": 2}]
 		""".stripMargin("|").trim()
 	}

@@ -106,16 +106,23 @@ class Analysis {
 
 		def joinDates = []
 		def leaveDates = []
-		authors.each{ author ->
+		authors.each { author ->
 			def dates = joinAndLeaveDates(author, commitEvents.reverse())
 			joinDates.addAll(dates.joined)
 			leaveDates.addAll(dates.left)
 		}
 
 		def result = intervals.collect{ interval ->
-			def dates = (joinDates.groupBy{ interval.floor(it) }.collect{ [it.key, "active", it.value.size] } +
-									 leaveDates.groupBy{ interval.floor(it) }.collect{ [it.key, "inactive", it.value.size] })
-			asCsvStringLiteral(dates, ["date", "category", "value"])
+			def joinEvents = joinDates.groupBy{ interval.floor(it) }.collect{ [it.key, "active", it.value.size] }
+			def leaveEvents = leaveDates.groupBy{ interval.floor(it) }.collect{ [it.key, "inactive", it.value.size] }
+			def allDates = new HashSet(joinDates.collect{interval.floor(it)} + leaveDates.collect{interval.floor(it)})
+			println(allDates)
+			allDates.each{ date ->
+				if (!joinEvents.any{it[0] == date}) joinEvents.add([date, "active", 0])
+				if (!leaveEvents.any{it[0] == date}) leaveEvents.add([date, "inactive", 0])
+			}
+
+			asCsvStringLiteral(joinEvents.sort{it[0]} + leaveEvents.sort{it[0]}, ["date", "category", "value"])
 		}.join(",\n")
 
 		"[" + result + "]"
