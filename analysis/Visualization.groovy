@@ -65,41 +65,44 @@ class Visualization {
 		}
 	}
 
-	static Visualization createAllVisualizations(Template template) {
+	static Visualization createAllVisualizations(Template mainTemplate, Closure prepareTemplate = {it}) {
 		new Visualization("All Visualizations", { Context context ->
-			def templates = [
-					changeSizeChartTemplate.fillData(changeSize_Chart(context.events, context.checkIfCancelled)),
-					amountOfCommittersChartTemplate.fillData(amountOfCommitters_Chart(context.events, context.checkIfCancelled)),
-					amountOfFilesInCommitChartTemplate.fillData(averageAmountOfFilesInCommit_Chart(context.events, context.checkIfCancelled)),
-					amountOfChangingFilesChartTemplate.fillData(amountOfChangingFiles_Chart(context.events, context.checkIfCancelled)),
-					changeSizeByFileTypeChartTemplate.fillData(changeSizeByFileType_Chart(context.events, context.checkIfCancelled)),
-					filesInTheSameCommitGraphTemplate.fillData(filesInTheSameCommit_Graph(context.events, context.checkIfCancelled)),
-					committersChangingSameFilesGraphTemplate.fillData(authorChangingSameFiles_Graph(context.events, context.checkIfCancelled)),
-					amountOfCommitsTreemapTemplate.fillData(TreeMapView.amountOfChangeInFolders_TreeMap(context.events, context.checkIfCancelled)),
-					commitTimePunchcardTemplate.fillData(commitsByDayOfWeekAndTime_PunchCard(context.events, context.checkIfCancelled)),
-					timeBetweenCommitsHistogramTemplate.fillData(timeBetweenCommits_Histogram(context.events, context.checkIfCancelled)),
-					commitMessageWordCloudTemplate.fillData(commitComments_WordCloud(context.events, context.checkIfCancelled))
+			def templateAndAnalysis = [
+					[changeSizeChartTemplate, Analysis.&changeSize_Chart],
+					[amountOfCommittersChartTemplate, Analysis.&amountOfCommitters_Chart],
+					[amountOfFilesInCommitChartTemplate, Analysis.&averageAmountOfFilesInCommit_Chart],
+					[amountOfChangingFilesChartTemplate, Analysis.&amountOfChangingFiles_Chart],
+					[changeSizeByFileTypeChartTemplate, Analysis.&changeSizeByFileType_Chart],
+					[filesInTheSameCommitGraphTemplate, Analysis.&filesInTheSameCommit_Graph],
+					[committersChangingSameFilesGraphTemplate, Analysis.&authorChangingSameFiles_Graph],
+					[amountOfCommitsTreemapTemplate, TreeMapView.&amountOfChangeInFolders_TreeMap],
+					[commitTimePunchcardTemplate, Analysis.&commitsByDayOfWeekAndTime_PunchCard],
+					[timeBetweenCommitsHistogramTemplate, Analysis.&timeBetweenCommits_Histogram],
+					[commitMessageWordCloudTemplate, Analysis.&commitComments_WordCloud]
 			]
 
-			template = template.fillProjectName(context.projectName.capitalize())
-			templates.each{
-				template = template.addBefore(
+			mainTemplate = mainTemplate.fillProjectName(context.projectName.capitalize())
+			templateAndAnalysis.each{ Template template, Closure analysis ->
+				template = prepareTemplate(template)
+				template = template.fillData(analysis(context.events, context.checkIfCancelled))
+
+				mainTemplate = mainTemplate.addBefore(
 						"<!--style-insert-point-->",
-						it.allTags("style").collect{
+						template.allTags("style").collect{
 							it.replaceAll(/margin:.*?;/, '').replaceAll(/\swidth:.*?;/, '')
 						}.join("\n")
 				)
-				template = template.addBefore(
+				mainTemplate = mainTemplate.addBefore(
 						"<!--script-insert-point-->",
-						it.removeJsAddedHeader().width(800).lastTag("script")
+						template.removeJsAddedHeader().width(800).lastTag("script")
 				)
-				template = template.addBefore("<!--tag-insert-point-->", """
-				<h4>${it.contentOfTag('title')}</h4>
-        <span id="${it.mainTagId}"></span>
+				mainTemplate = mainTemplate.addBefore("<!--tag-insert-point-->", """
+				<h4>${template.contentOfTag('title')}</h4>
+        <span id="${template.mainTagId}"></span>
         <br/><br/>
 			""")
 			}
-			template.removeJsAddedHeader().width(800).text
+			mainTemplate.removeJsAddedHeader().width(800).text
 		})
 	}
 
