@@ -4,6 +4,12 @@ import events.FileChangeEvent
 import events.FileChangeInfo
 import org.junit.Test
 
+import static analysis._private.Analysis.activeAndInactiveCommitters_Chart
+import static analysis._private.Analysis.amountOfChangingFiles_Chart
+import static analysis._private.Analysis.authorChangingSameFiles_Graph
+import static analysis._private.Analysis.changeSizeByFileType_Chart
+import static analysis._private.Analysis.commitLog_Graph
+import static analysis._private.Analysis.filesInTheSameCommit_Graph
 import static events.ChangeStats.NA
 import static util.DateTimeUtil.date
 import static util.DateTimeUtil.oneDay
@@ -12,13 +18,30 @@ class AnalysisTest {
 	private static final Closure noCancel = {}
 	private final commitEvents = new CommitEvents()
 
+	@Test void "amount of active and inactive committers"() {
+		def changeEvents = commitEvents.with{[
+				commitBy(KentBeck, "06/04/2013", modified(someFile)),
+				commitBy(DavidSaff, "05/04/2013", modified(someFile)),
+				commitBy(DavidSaff, "01/04/2013", modified(someFile)),
+		].flatten()}
+
+		int windowSizeInDays = 10
+		int amountOfCommitsThreshold = 2
+		assert activeAndInactiveCommitters_Chart(changeEvents, noCancel, windowSizeInDays, amountOfCommitsThreshold, [oneDay]) == """
+			|["\\
+	    |date,category,value\\n\\
+      |01/04/2013,active,1\\n\\
+			|"]
+		""".stripMargin("|").trim()
+	}
+
 	@Test void "amount of changing files adds data for days without changes"() {
 		def changeEvents = commitEvents.with{[
 				commitBy(someone, "05/04/2013", modified("/theories/internal/Theories.java")),
 				commitBy(someone, "03/04/2013", modified("/theories/internal/Assignments.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
+		assert amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -37,7 +60,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", created("/theories/internal/Assignments.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
+		assert amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -54,7 +77,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
+		assert amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 	    |date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -70,7 +93,7 @@ class AnalysisTest {
 				commitBy(someone, "03/04/2013", modified("/theories/internal/AllMembersSupplier.java")),
 		].flatten()}
 
-		assert Analysis.amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
+		assert amountOfChangingFiles_Chart(changeEvents, noCancel, [oneDay]) == """
 			|["\\
 			|date,category,value\\n\\
       |03/04/2013,unchanged,0\\n\\
@@ -88,7 +111,7 @@ class AnalysisTest {
 		).flatten()}
 
 		def maxAmountOfFileTypes = 2
-		assert Analysis.changeSizeByFileType_Chart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
+		assert changeSizeByFileType_Chart(changeEvents, noCancel, maxAmountOfFileTypes).startsWith("""
 			|["\\
 			|date,category,value\\n\\
       |03/04/2013,java,101\\n\\
@@ -109,7 +132,7 @@ class AnalysisTest {
 				commitBy(someone, "02/04/2013", modified("/logo.gif"))
 		].flatten()}
 
-		assert Analysis.changeSizeByFileType_Chart(changeEvents).startsWith("""
+		assert changeSizeByFileType_Chart(changeEvents).startsWith("""
 			|["\\
       |date,category,value\\n\\
       |03/04/2013,java,2\\n\\
@@ -127,7 +150,7 @@ class AnalysisTest {
 			commitBy(KentBeck,  "02/04/2013", modified("/theories/Theories.java"))
 		].flatten()}
 
-		assert Analysis.commitLog_Graph(changeEvents, noCancel, 100) == """
+		assert commitLog_Graph(changeEvents, noCancel, 100) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "/theories/Theories.java", "group": 1},
@@ -150,7 +173,7 @@ class AnalysisTest {
 		].flatten()}
 
 		def threshold = 2
-		assert Analysis.authorChangingSameFiles_Graph(changeEvents, noCancel, threshold) == """
+		assert authorChangingSameFiles_Graph(changeEvents, noCancel, threshold) == """
       |"nodes": [{"name": "/theories/internal/AllMembersSupplier.java", "group": 1},
       |{"name": "Tim Perry", "group": 2},
       |{"name": "David Saff", "group": 2}],
@@ -173,7 +196,7 @@ class AnalysisTest {
 		].flatten()}
 
 		def threshold = 2
-		assert Analysis.filesInTheSameCommit_Graph(changeEvents, noCancel, threshold) == """
+		assert filesInTheSameCommit_Graph(changeEvents, noCancel, threshold) == """
       |"nodes": [{"name": "/theories/Theories.java", "group": 1},
       |{"name": "/theories/internal/AllMembersSupplier.java", "group": 1}],
       |"links": [{"source": 0, "target": 1, "value": 2}]
@@ -207,6 +230,7 @@ class AnalysisTest {
 			[s.substring(0, i), s.substring(i + 1)]
 		}
 
+		static final String someFile = "/theories/internal/Theories.java"
 		static final String someone = ""
 		static final String TimPerry = "Tim Perry"
 		static final String DavidSaff = "David Saff"

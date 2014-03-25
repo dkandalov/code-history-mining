@@ -57,6 +57,70 @@ class Analysis {
 				asCsvStringLiteral(amountOfCommittersByMonth, ["date", "value"]) + "]"
 	}
 
+	static String activeAndInactiveCommitters_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {},
+																									int windowSizeInDays = 60, int amountOfCommitsThreshold = 8,
+																									List<TimeInterval> intervals = [oneWeek, oneMonth]) {
+		Collection.mixin(CollectionUtil)
+
+		def commitEvents = events.groupBy{ it.revision }.entrySet().collect{
+			checkIfCancelled()
+			def fileEvent = it.value.first()
+			[author: fileEvent.author, revisionDate: fileEvent.revisionDate]
+		}
+
+		def authors = new HashSet()
+		commitEvents.each { authors.add(it.author) }
+		def cutoffDate = commitEvents.last().revisionDate.time - DAYS.toMillis(windowSizeInDays)
+
+		def keepOneMonthOfEvents = { event, currentEvent ->
+			long timeDiff = (currentEvent.revisionDate.time - event.revisionDate.time).abs()
+			DAYS.convert(timeDiff, MILLISECONDS) <= windowSizeInDays
+		}
+		def joinAndLeaveDates = { committer, allCommitEvents ->
+			def result = [joined: [], left: []]
+			def onProject = false
+			def lastOnProjectEvent = null
+			allCommitEvents.collectWithHistory(keepOneMonthOfEvents) { previousEvents, event ->
+				checkIfCancelled()
+				def committerEvents = previousEvents.findAll{it.author == committer}
+				if (!onProject && committerEvents.size() >= amountOfCommitsThreshold) {
+					def joinedDate = committerEvents.first().revisionDate
+					if (result.left.size() > 0 && joinedDate.time <= result.left.last().time) {
+						result.left.remove(result.left.size() - 1)
+					} else {
+						result.joined << joinedDate
+					}
+					onProject = true
+				} else if (onProject && committerEvents.size() < amountOfCommitsThreshold) {
+					result.left << lastOnProjectEvent.revisionDate
+					onProject = false
+				}
+
+				if (onProject) lastOnProjectEvent = committerEvents.last()
+			}
+			if (lastOnProjectEvent != null && lastOnProjectEvent.revisionDate.time < cutoffDate) {
+				result.left << lastOnProjectEvent.revisionDate
+			}
+			result
+		}
+
+		def joinDates = []
+		def leaveDates = []
+		authors.each{ author ->
+			def dates = joinAndLeaveDates(author, commitEvents.reverse())
+			joinDates.addAll(dates.joined)
+			leaveDates.addAll(dates.left)
+		}
+
+		def result = intervals.collect{ interval ->
+			def dates = (joinDates.groupBy{ interval.floor(it) }.collect{ [it.key, "active", it.value.size] } +
+									 leaveDates.groupBy{ interval.floor(it) }.collect{ [it.key, "inactive", it.value.size] })
+			asCsvStringLiteral(dates, ["date", "category", "value"])
+		}.join(",\n")
+
+		"[" + result + "]"
+	}
+
 	static String averageAmountOfFilesInCommit_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {
 		def averageChangeSize = { eventsByRevision ->
 			def amountOfCommits = eventsByRevision.size()
