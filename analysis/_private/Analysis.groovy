@@ -12,8 +12,8 @@ import util.DateTimeUtil
 import java.text.SimpleDateFormat
 
 import static analysis._private.Analysis.Util.*
+import static groovy.json.StringEscapeUtils.escapeJavaScript
 import static java.util.concurrent.TimeUnit.*
-import static java.util.regex.Matcher.quoteReplacement
 import static util.DateTimeUtil.*
 
 class Analysis {
@@ -404,7 +404,7 @@ class Analysis {
 			String toJSON() {
 				String childrenAsJSON = "\"children\": [\n" + children.collect { it.toJSON() }.join(',\n') + "]"
 				"{" +
-						"\"name\": \"${quoteReplacement(name)}\", " +
+						"\"name\": \"${escapeJavaScript(name)}\", " +
 						"\"size\": \"$commits\", " +
 						childrenAsJSON +
 						"}"
@@ -538,7 +538,7 @@ ${wordOccurrences.collect { '{"text": "' + it.key + '", "size": ' + it.value + '
 		Collection.mixin(CollectionUtil)
 
 		def nodesJSLiteral = nodeGroups.toList().collectWithIndex{ nodes, i ->
-			nodes.collect{ '{"name": "' + quoteReplacement(it) + '", "group": ' + (i + 1) + '}' }
+			nodes.collect{ '{"name": "' + escapeJavaScript(it) + '", "group": ' + (i + 1) + '}' }
 		}.flatten().join(",\n")
 
 		def relationsJSLiteral = relations.collect{'{"source": ' + it[0] + ', "target": ' + it[1] + ', "value": ' + it[2] + "}"}.join(",\n")
