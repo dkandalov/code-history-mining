@@ -217,6 +217,7 @@
         headerSpan.append("h2").text("Commit messages word cloud (" + projectName + ")").style("text-align", "center").style("margin", "30px");
 
         adjustSizeOfShortWords(data.words);
+        excludeWords([/*words-to-exclude*//*words-to-exclude*/]);
         normalizeWordSize(data.words);
         createWordCloud();
 
