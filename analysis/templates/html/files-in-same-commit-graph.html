@@ -142,7 +142,11 @@ var graphName = "Files changed in the same commit";
 var onNodeSelection = function(graphEditor, node) {
     return graphEditor.nodesInOneClusterWith(node)
 };
-createForcesGraphOn("files-in-the-same-commit", filesInTheSameCommitGraph, projectName, onNodeSelection);
+createForcesGraphOn("files-in-the-same-commit", filesInTheSameCommitGraph, projectName, onNodeSelection, {
+    gravity: /*gravity*/null/*gravity*/,
+    minCluster: /*minCluster*/null/*minCluster*/,
+    linkStrength: /*min-link-strength*/null/*min-link-strength*/
+});
 
 </script>
 </body>

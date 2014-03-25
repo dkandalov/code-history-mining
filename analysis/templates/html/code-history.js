@@ -1,4 +1,4 @@
-function createForcesGraphOn(elementId, graph, projectName, onNodeSelection) {
+function createForcesGraphOn(elementId, graph, projectName, onNodeSelection, defaults) {
 	function createQuickFindIndex(graph) {
 		var quickFind = new QuickFind(graph.nodes.length);
 		graph.links.forEach(function (link) {
@@ -72,10 +72,11 @@ function createForcesGraphOn(elementId, graph, projectName, onNodeSelection) {
 		Medium: -120,
 		High: -50
 	};
-	var gravity = gravityValues.Medium;
-	var minClusterSize = 2;
+	defaults = (defaults == null) ? {} : defaults;
+	var gravity = (defaults.gravity == null ? gravityValues.Medium : gravityValues[defaults.gravity]);
+	var minClusterSize = (defaults.minCluster == null ? 2 : defaults.minCluster);
 	var linkValuesExtent = d3.extent(graph.links, function (link) { return link.value; });
-	var minLinkStrength = linkValuesExtent[0];
+	var minLinkStrength = (defaults.linkStrength == null ? linkValuesExtent[0] : defaults.linkStrength);
 	var force = createForce(gravity);
 
 	var rootElement = d3.select("#" + elementId);

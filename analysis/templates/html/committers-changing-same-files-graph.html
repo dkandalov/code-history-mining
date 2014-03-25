@@ -123,7 +123,11 @@ var graphName = "Committers changing same files";
 var onNodeSelection = function(graphEditor, node) {
     return graphEditor.immediateConnectionsOf(node);
 };
-createForcesGraphOn("author-to-file-graph", authorToFileGraph, projectName, onNodeSelection);
+createForcesGraphOn("author-to-file-graph", authorToFileGraph, projectName, onNodeSelection, {
+    gravity: /*gravity*/null/*gravity*/,
+    minCluster: /*minCluster*/null/*minCluster*/,
+    linkStrength: /*min-link-strength*/null/*min-link-strength*/
+});
 
 </script>
 </body>
