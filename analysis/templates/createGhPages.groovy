@@ -1,9 +1,9 @@
 package analysis.templates
-
 import analysis.Context
 import historystorage.EventStorage
 
 import static analysis.Visualization.createAllVisualizations
+import static analysis.templates.AllTemplates.*
 import static analysis.templates.AllTemplates.template
 import static java.lang.System.getenv
 
@@ -13,7 +13,7 @@ import static java.lang.System.getenv
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SUzZhbmVVS0R5WWc"
 //])
 
-//generate("JUnit", [
+//generate("JUnit", "junit", [
 //		"full_project_name": "JUnit",
 //		"url_to_project_page": "https://github.com/junit-team/junit",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SbUZzV1RYTC1GcDQ",
@@ -27,27 +27,42 @@ import static java.lang.System.getenv
 //        with meta-information (that\\'s why cloud has "threeriversinstitute" in it).
 //        You can alt-click on words to exclude them.
 //		"""
+//], [
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"') }
 //])
 
-//generate("Scala", [
+//generate("Scala", "scala", [
 //		"full_project_name": "Scala programming language",
 //		"url_to_project_page": "https://github.com/scala/scala‎",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SNWpwUDZJbERoMEk",
 //		"code_history_dates": " from 03/01/2005 to 19/12/2013"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"High"').fill("min-link-strength", "17") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "4").fill("min-link-strength", "15") },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '"si"') }
 //])
 
-//generate("Clojure", [
+//generate("Clojure", "clojure", [
 //		"full_project_name": "Clojure programming language",
 //		"url_to_project_page": "https://github.com/clojure/clojure",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SZ1RNUjloYldWeFE",
 //		"code_history_dates": " from March 2006 to March 2013"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Low"').fill("min-link-strength", "1") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "8") },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '"com", "stu", "signed", "stuart", "thinkrelevance", "halloway"') }
 //])
 
-//generate("GHC", [
+//generate("GHC", "ghc", [
 //		"full_project_name": "Glasgow Haskell Compiler",
 //		"url_to_project_page": "https://github.com/ghc/ghc",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SaC1ncG84V29wQTQ",
 //		"code_history_dates": " from January 2006 to January 2014"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Medium"').fill("min-link-strength", "10") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "10") },
+//		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.6') },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '') }
 //])
 
 //generate("node.js", "node", [
@@ -55,6 +70,11 @@ import static java.lang.System.getenv
 //		"url_to_project_page": "https://github.com/joyent/node",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SS01PdWtPUk5tQ1E",
 //		"code_history_dates": " from February 2009 to January 2014"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"High"').fill("min-link-strength", "30") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "10") },
+//		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.6') },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '') }
 //])
 
 //generate("Ruby on Rails", "rails", [
@@ -62,17 +82,39 @@ import static java.lang.System.getenv
 //		"url_to_project_page": "https://github.com/rails/rails‎",
 //		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SWGRYYmlISmZtUU0",
 //		"code_history_dates": " from November 2004 to January 2014"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"High"').fill("min-link-strength", "20") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "4").fill("min-link-strength", "23") },
+//		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.6') },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '"svn", "http", "org", "commit", "rails", "trunk", "rubyonrails", "git", "ee", "ecf", "de", "fe", "id", "com"') }
 //])
 
-generate("Ruby", "ruby-no-changelog", [
-		"full_project_name": "Ruby programming language",
-		"url_to_project_page": "https://github.com/ruby/ruby",
-		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SYnlobWU3eVhOaDg",
-		"code_history_dates": " from January 2006 to January 2014"
+//generate("Ruby", "ruby-no-changelog", [
+//		"full_project_name": "Ruby programming language",
+//		"url_to_project_page": "https://github.com/ruby/ruby",
+//		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SYnlobWU3eVhOaDg",
+//		"code_history_dates": " from January 2006 to January 2014"
+//], [
+//		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Medium"').fill("min-link-strength", "19") },
+//		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "20") },
+//		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.6') },
+//		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '"svn", "ruby", "org", "trunk", "git", "dd", "ci", "fe", "id", "rb", "ssh", "lang"') }
+//])
+
+generate("Cucumber", "cucumber", [
+		"full_project_name": "Cucumber",
+		"url_to_project_page": "https://github.com/cucumber/cucumber",
+		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SaTJDYzEzUGhoUU0",
+		"code_history_dates": ""
+], [
+		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Medium"').fill("min-link-strength", "15") },
+		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "5") },
+		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.7') },
+		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '') }
 ])
 
 
-def generate(String projectName, String fileName = projectName.toLowerCase(), Map comments) {
+def generate(String projectName, String fileName = projectName.toLowerCase(), Map comments, Map templateTweaks = [:]) {
 	def ghPagesPath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/live-plugins/code-history-mining-gh-pages"
 	def csvPath = "${getenv("HOME")}/Library/Application Support/IntelliJIdea13/code-history-mining"
 	def filePath = "${csvPath}/${fileName}-file-events.csv"
@@ -80,9 +122,26 @@ def generate(String projectName, String fileName = projectName.toLowerCase(), Ma
 
 	def template = template("all-visualizations-ghpages.html").fillProjectName(projectName)
 
-	def visualization = createAllVisualizations(template)
+	def visualization = createAllVisualizations(template) {
+		def tweak = templateTweaks.get(it)
+		tweak == null ? it : tweak(it)
+	}
 	def html = visualization.generate(new Context(events, projectName))
-	template = new Template(html)
+	template = withDescriptions(html)
+
+	["code_history_dates", "committers_files_graph_comment", "wordcloud_comment"].each{
+		if (!comments.containsKey(it)) comments.put(it, "")
+	}
+	comments.each{
+		template = template.fillMustache(it.key, it.value)
+	}
+
+	new File("${ghPagesPath}/${fileName}.html").write(template.text)
+}
+
+
+Template withDescriptions(String html) {
+	new Template(html)
 			.fillMustache("overview-text", """
           This is visualization of <a href="{{url_to_project_page}}">{{full_project_name}}</a> project
           code history{{code_history_dates}}.
@@ -152,20 +211,10 @@ def generate(String projectName, String fileName = projectName.toLowerCase(), Ma
           The idea is to see what happened with code by observing human language.
           <br/><br/>
 			""".stripMargin())
-
-	["code_history_dates", "committers_files_graph_comment", "wordcloud_comment"].each{
-		if (!comments.containsKey(it)) comments.put(it, "")
-	}
-
-	comments.each{
-		template = template.fillMustache(it.key, it.value)
-	}
-
-	new File("${ghPagesPath}/${fileName}.html").write(template.text)
 }
 
 String span(String id) {
-	"<span id=\"$id\">"
+	"<span id=\"$id\""
 }
 
 

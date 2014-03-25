@@ -1,20 +1,23 @@
 package analysis.templates
 
+import groovy.transform.Immutable
+
 import static java.util.regex.Matcher.quoteReplacement
 
+@Immutable
 class Template {
 	final String text
-
-	Template(String text) {
-		this.text = text
-	}
 
 	Template fillProjectName(String projectName) {
 		new Template(fillProjectNamePlaceholder(text, projectName))
 	}
 
 	Template fillData(String jsValue) {
-		new Template(fillDataPlaceholder(jsValue, text))
+		fill("data_placeholder", jsValue)
+	}
+
+	Template fill(String placeholder, String value) {
+		new Template(fillJsPlaceholder(placeholder, value, text))
 	}
 
 	Template inlineImports(Closure<String> readFile) {
@@ -91,9 +94,6 @@ class Template {
 		fillMustachePlaceholder("project-name", withProjectName, text)
 	}
 
-	private static String fillDataPlaceholder(String withJsValue, String inText) {
-		fillJsPlaceholder("data_placeholder", withJsValue, inText)
-	}
 
 	private static String fillJsPlaceholder(String name, String withJsValue, String inText) {
 		inText.replaceAll(/(?s)\/\*${name}\*\/.*\/\*${name}\*\//, quoteReplacement(withJsValue))
