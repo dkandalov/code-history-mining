@@ -4,12 +4,7 @@ import events.FileChangeEvent
 import events.FileChangeInfo
 import org.junit.Test
 
-import static analysis._private.Analysis.activeAndInactiveCommitters_Chart
-import static analysis._private.Analysis.amountOfChangingFiles_Chart
-import static analysis._private.Analysis.authorChangingSameFiles_Graph
-import static analysis._private.Analysis.changeSizeByFileType_Chart
-import static analysis._private.Analysis.commitLog_Graph
-import static analysis._private.Analysis.filesInTheSameCommit_Graph
+import static analysis._private.Analysis.*
 import static events.ChangeStats.NA
 import static util.DateTimeUtil.date
 import static util.DateTimeUtil.oneDay
@@ -17,24 +12,6 @@ import static util.DateTimeUtil.oneDay
 class AnalysisTest {
 	private static final Closure noCancel = {}
 	private final commitEvents = new CommitEvents()
-
-	@Test void "amount of active and inactive committers"() {
-		def changeEvents = commitEvents.with{[
-				commitBy(KentBeck, "06/04/2013", modified(someFile)),
-				commitBy(DavidSaff, "05/04/2013", modified(someFile)),
-				commitBy(DavidSaff, "01/04/2013", modified(someFile)),
-		].flatten()}
-
-		int windowSizeInDays = 10
-		int amountOfCommitsThreshold = 2
-		assert activeAndInactiveCommitters_Chart(changeEvents, noCancel, windowSizeInDays, amountOfCommitsThreshold, [oneDay]) == """
-			|["\\
-			|date,category,value\\n\\
-			|01/04/2013,active,1\\n\\
-			|01/04/2013,inactive,0\\n\\
-			|"]
-		""".stripMargin("|").trim()
-	}
 
 	@Test void "amount of changing files adds data for days without changes"() {
 		def changeEvents = commitEvents.with{[
