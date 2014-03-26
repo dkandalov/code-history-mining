@@ -168,7 +168,7 @@ class Analysis {
 			eventsByTypeByDate.collectMany{ entry ->
 				def fileType = entry.key
 				def eventsByDate = entry.value
-				// iterate over dates because js requires some value for all file types (if there was another file type change on a date)
+				// iterate over dates because js input requires some value for all file types (if there was another file type change on a date)
 				allDates.collect{ date ->
 					def changeSize = eventsByDate.containsKey(date) ? changeAmountOf(eventsByDate.get(date)) : 0
 					[date, fileType, changeSize]

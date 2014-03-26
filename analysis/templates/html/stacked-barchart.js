@@ -431,7 +431,7 @@ function stackedData(rawCsv) {
 				return entry.values.map(function (d) {
 					return {
 						x: dateFormat.parse(d.date),
-						y: parseInt(d["value"]),
+						y: parseFloat(d["value"]),
 						category: getCategory(d)
 					};
 				});
