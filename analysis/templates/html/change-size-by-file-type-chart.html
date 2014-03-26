@@ -95,6 +95,8 @@ date,category,value\n\
         var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
 
         var controlsPanel = newControlsPanel(root, uiConfig);
+        percentileDropDown(controlsPanel, data);
+        controlsPanel.addSpace();
         var groupBy = newGroupByDropDown(controlsPanel, data, "Group by: ", ["day", "week", "month"]);
         controlsPanel.addSpace();
         newGroupIndexDropDown(controlsPanel, data, "Change size measured in: ", ["files", "lines", "characters"]);
