@@ -594,6 +594,16 @@ function newStackedData(rawCsv) {
 	return withMinMax(filteredByPercentile(groupedByTime(stackedData(rawCsv))));
 }
 
+function delegateByIndexTo(stackedData, method, fromData, getIndex) {
+	fromData[method] = function(value) {
+		for (var i = 0; i < stackedData.length; i++) {
+			if (i != getIndex()) stackedData[i][method](value); // skip selected index to make it send update last
+		}
+		stackedData[getIndex()][method](value);
+		fromData.sendUpdate();
+	};
+}
+
 function newMultipleStackedData(rawCsvArray) {
 	var groupIndex = 0;
 	var stackedData = rawCsvArray.map(function(it) { return newStackedData(it); });
@@ -607,13 +617,8 @@ function newMultipleStackedData(rawCsvArray) {
 		groupIndex = value;
 		it.sendUpdate();
 	};
-	it.groupBy = function(value) {
-		for (var i = 0; i < stackedData.length; i++) {
-			if (i != groupIndex) stackedData[i].groupBy(value); // skip selected groupIndex to make it send update last
-		}
-		stackedData[groupIndex].groupBy(value);
-		it.sendUpdate();
-	};
+	delegateByIndexTo(stackedData, "groupBy", it, function() { return groupIndex; });
+	delegateByIndexTo(stackedData, "setPercentile", it, function() { return groupIndex; });
 	stackedData.forEach(function(it) {
 		it.onUpdate(function(update) {
 			update.groupIndex = groupIndex;
@@ -640,13 +645,7 @@ function newMultipleStackedDataWithTimeIntervals(rawCsvArray, timeIntervals) {
 		var i = timeIntervals.indexOf(value);
 		if (i != -1) it.setGroupIndex(i);
 	};
-	it.setPercentile = function(value) {
-		for (var i = 0; i < stackedData.length; i++) {
-			if (i != groupIndex) stackedData[i].setPercentile(value); // skip selected groupIndex to make it send update last
-		}
-		stackedData[groupIndex].setPercentile(value);
-		it.sendUpdate();
-	};
+	delegateByIndexTo(stackedData, "setPercentile", it, function() { return groupIndex; });
 	stackedData.forEach(function(it) {
 		it.onUpdate(function(update) {
 			update.groupIndex = groupIndex;
