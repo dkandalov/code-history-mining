@@ -8,8 +8,8 @@ import events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.not
-import static org.hamcrest.Matchers.containsString
 import static org.junit.Assert.assertThat
+import static org.junit.matchers.JUnitMatchers.containsString
 import static util.DateTimeUtil.dateTime
 
 class CombiningVisualizationTest {
