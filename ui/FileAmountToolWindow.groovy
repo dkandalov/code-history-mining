@@ -43,7 +43,6 @@ class FileAmountToolWindow {
 				JBTable table = createTable(fileCountByFileExtension, totalAmountOfFiles)
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 
-				def panelBackground = it.background
 				add(new JPanel().with {
 					layout = new GridBagLayout()
 					add(new JTextArea("(Please note that amount of files is based on IDE index and only shows file types IDE knows about.)").with{
@@ -51,7 +50,7 @@ class FileAmountToolWindow {
 						lineWrap = true
 						wrapStyleWord = true
 						background = UIUtil.labelBackground
-                        font = UIUtil.labelFont
+            font = UIUtil.labelFont
 						UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, it)
 						it
 					}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
