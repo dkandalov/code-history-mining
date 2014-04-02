@@ -22,7 +22,7 @@ class CombiningVisualizationTest {
 		assertThat(html, not(containsString("<title>Amount of committers</title>")))
 
 		// this must be <span> tag because if it's <p> when saving page
-		// chrome pushes child spans outside of <p>, this results in redundant ui elements when saved file opened again
+		// chrome pushes child spans outside of <p>, this results in redundant miner.ui elements when saved file opened again
 		assertThat(html, containsString("<span id=\"change-size-chart\" class=\"bar-chart\"></span>"))
 		assertThat(html, containsString("<span id=\"amount-of-committers-chart\" class=\"bar-chart\"></span>"))
 	}

@@ -25,7 +25,7 @@ class VcsAccess {
 		ChangeEventsReader.noVCSRootsIn(project)
 	}
 
-	def changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
+	ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
 		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
 		new ChangeEventsReader(
 				project,

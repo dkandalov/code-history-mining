@@ -2,7 +2,7 @@ import com.intellij.openapi.application.PathManager
 import historystorage.HistoryStorage
 import liveplugin.PluginUtil
 import miner.Miner
-import miner.UI
+import miner.ui.UI
 import util.Log
 import util.Measure
 import vcsaccess.CommitMunging_Playground

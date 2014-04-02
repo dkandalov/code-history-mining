@@ -1,4 +1,4 @@
-package miner
+package miner.ui
 import analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -13,10 +13,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
 import historystorage.HistoryStorage
 import liveplugin.PluginUtil
+import miner.Miner
 import org.jetbrains.annotations.Nullable
-import ui.Dialog
-import ui.FileAmountToolWindow
-import ui.http.HttpUtil
+import miner.ui.http.HttpUtil
 import util.Log
 import vcsaccess.HistoryGrabberConfig
 

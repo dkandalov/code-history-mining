@@ -1,4 +1,4 @@
-package ui
+package miner.ui
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
 import com.intellij.openapi.actionSystem.*

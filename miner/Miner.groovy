@@ -11,6 +11,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
 import historystorage.EventStorage
 import historystorage.HistoryStorage
+import miner.ui.UI
 import util.Log
 import util.Measure
 import vcsaccess.ChangeEventsReader

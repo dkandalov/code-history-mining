@@ -4,6 +4,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import historystorage.EventStorage
 import historystorage.HistoryStorage
+import miner.ui.UI
 import org.junit.Test
 import util.Measure
 import vcsaccess.ChangeEventsReader

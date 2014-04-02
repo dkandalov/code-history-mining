@@ -1,4 +1,4 @@
-package ui.http
+package miner.ui.http
 
 import com.intellij.openapi.util.io.FileUtil
 import util.Log
