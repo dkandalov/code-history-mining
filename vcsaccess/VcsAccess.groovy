@@ -6,7 +6,7 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import util.Measure
+import common.langutil.Measure
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
 

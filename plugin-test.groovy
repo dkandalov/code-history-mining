@@ -7,9 +7,9 @@ import analysis.templates.TemplatesModificationTest
 import historystorage.EventStorageTest
 import liveplugin.testrunner.IntegrationTestsRunner
 import miner.MinerTest
-import util.CollectionUtilTest
-import util.GroovyStubber
-import util.TimeIteratorsTest
+import common.langutil.CollectionUtilTest
+import common.langutil.GroovyStubber
+import common.langutil.TimeIteratorsTest
 import vcsaccess.implementation.ChangeEventsReaderGitTest
 import vcsaccess.implementation.CommitReaderGitTest
 import vcsaccess.implementation.TextCompareProcessorTest

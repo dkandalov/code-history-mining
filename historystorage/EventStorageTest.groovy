@@ -1,13 +1,13 @@
 package historystorage
-import events.ChangeStats
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.ChangeStats
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static util.DateTimeUtil.dateTime
+import static common.langutil.DateTimeUtil.dateTime
 
 class EventStorageTest {
 

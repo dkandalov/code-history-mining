@@ -3,7 +3,7 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.ContentRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
-import events.CommitInfo
+import common.events.CommitInfo
 
 class CommitMungingUtil {
 	static CommitInfo commitInfoOf(CommittedChangeList commit) {

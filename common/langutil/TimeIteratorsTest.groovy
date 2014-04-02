@@ -1,9 +1,9 @@
-package util
+package common.langutil
 
 import org.junit.Test
 
-import static util.DateTimeUtil.date
-import static util.DateTimeUtil.dateTime
+import static DateTimeUtil.date
+import static DateTimeUtil.dateTime
 
 class TimeIteratorsTest {
 	@Test void "should iterate from present to past in intervals"() {

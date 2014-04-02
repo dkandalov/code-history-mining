@@ -2,7 +2,7 @@ package vcsaccess.implementation
 import liveplugin.PluginUtil
 import vcsaccess.ChangeEventsReader
 
-import static util.DateTimeUtil.dateTime
+import static common.langutil.DateTimeUtil.dateTime
 
 class CommitMunging_Playground {
 	static playOnIt() {

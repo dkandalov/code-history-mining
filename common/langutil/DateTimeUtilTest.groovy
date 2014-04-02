@@ -1,7 +1,7 @@
-package util
+package common.langutil
 import org.junit.Test
 
-import static util.DateTimeUtil.*
+import static DateTimeUtil.*
 
 class DateTimeUtilTest {
 	@Test void "time interval should move to next date"() {

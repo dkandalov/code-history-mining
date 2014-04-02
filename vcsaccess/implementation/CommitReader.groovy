@@ -5,9 +5,9 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
-import util.Measure
-import util.PastToPresentIterator
-import util.PresentToPastIterator
+import common.langutil.Measure
+import common.langutil.PastToPresentIterator
+import common.langutil.PresentToPastIterator
 import vcsaccess.VcsAccess
 
 class CommitReader {

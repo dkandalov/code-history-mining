@@ -2,7 +2,7 @@ package analysis
 
 import analysis._private.Analysis
 import analysis.templates.Template
-import util.Measure
+import common.langutil.Measure
 
 import static analysis._private.Analysis.*
 import static analysis.templates.AllTemplates.*

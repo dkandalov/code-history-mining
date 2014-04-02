@@ -9,7 +9,7 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static util.DateTimeUtil.*
+import static common.langutil.DateTimeUtil.*
 import static vcsaccess.ChangeEventsReader.vcsRootsIn
 
 class CommitReaderGitTest {

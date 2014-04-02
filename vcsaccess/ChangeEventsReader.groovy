@@ -3,11 +3,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import events.FileChangeEvent
+import common.events.FileChangeEvent
 import liveplugin.PluginUtil
 import vcsaccess.implementation.CommitReader
 
-import static util.DateTimeUtil.floorToDay
+import static common.langutil.DateTimeUtil.floorToDay
 
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }

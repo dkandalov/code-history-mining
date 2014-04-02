@@ -1,16 +1,16 @@
 package analysis._private
 import analysis.Context
 import analysis.Visualization
-import events.ChangeStats
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.ChangeStats
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import org.junit.Test
 
 import static org.hamcrest.CoreMatchers.not
 import static org.hamcrest.Matchers.containsString
 import static org.junit.Assert.assertThat
-import static util.DateTimeUtil.dateTime
+import static common.langutil.DateTimeUtil.dateTime
 
 class CombiningVisualizationTest {
 	@Test void "includes only one title but several tags and scripts"() {

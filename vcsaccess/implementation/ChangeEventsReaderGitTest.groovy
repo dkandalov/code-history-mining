@@ -1,15 +1,15 @@
 package vcsaccess.implementation
 import com.intellij.openapi.project.Project
-import events.ChangeStats
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.ChangeStats
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import org.junit.Test
-import util.Measure
+import common.langutil.Measure
 import vcsaccess.ChangeEventsReader
 
-import static events.ChangeStats.getNA
-import static util.DateTimeUtil.dateTime
+import static common.events.ChangeStats.getNA
+import static common.langutil.DateTimeUtil.dateTime
 
 class ChangeEventsReaderGitTest {
 

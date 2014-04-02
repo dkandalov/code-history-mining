@@ -1,7 +1,7 @@
 package analysis._private
 import analysis.Context
 import historystorage.EventStorage
-import util.Measure
+import common.langutil.Measure
 
 import static analysis.Visualization.*
 import static java.lang.System.getenv

@@ -1,4 +1,4 @@
-package util
+package common.langutil
 
 class PastToPresentIterator implements Iterator {
 	final Date fromDate

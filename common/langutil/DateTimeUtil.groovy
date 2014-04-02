@@ -1,4 +1,4 @@
-package util
+package common.langutil
 
 import java.text.DateFormat
 import java.text.ParseException

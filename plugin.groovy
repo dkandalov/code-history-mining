@@ -4,7 +4,7 @@ import liveplugin.PluginUtil
 import miner.Miner
 import miner.ui.UI
 import miner.Log
-import util.Measure
+import common.langutil.Measure
 import vcsaccess.implementation.CommitMunging_Playground
 import vcsaccess.VcsAccess
 

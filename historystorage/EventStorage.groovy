@@ -1,9 +1,9 @@
 package historystorage
 import com.intellij.openapi.util.io.FileUtil
-import events.ChangeStats
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.ChangeStats
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import groovy.transform.CompileStatic
 import historystorage.csv4180.CSVReader
 import historystorage.csv4180.CSVWriter

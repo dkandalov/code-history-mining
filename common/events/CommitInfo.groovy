@@ -1,4 +1,4 @@
-package events
+package common.events
 
 import groovy.transform.Immutable
 

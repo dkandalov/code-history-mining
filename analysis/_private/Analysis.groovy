@@ -1,20 +1,20 @@
 package analysis._private
 import com.intellij.openapi.diagnostic.Logger
-import events.ChangeStats
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.ChangeStats
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import groovy.time.TimeCategory
 import org.jetbrains.annotations.Nullable
-import util.CollectionUtil
-import util.DateTimeUtil
+import common.langutil.CollectionUtil
+import common.langutil.DateTimeUtil
 
 import java.text.SimpleDateFormat
 
 import static analysis._private.Analysis.Util.*
 import static groovy.json.StringEscapeUtils.escapeJavaScript
 import static java.util.concurrent.TimeUnit.*
-import static util.DateTimeUtil.*
+import static common.langutil.DateTimeUtil.*
 
 class Analysis {
 	static String changeSize_Chart(List<FileChangeEvent> events, Closure checkIfCancelled = {}) {

@@ -6,14 +6,14 @@ import historystorage.EventStorage
 import historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
-import util.Measure
+import common.langutil.Measure
 import vcsaccess.ChangeEventsReader
 import historystorage.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
-import static util.DateTimeUtil.date
-import static util.DateTimeUtil.dateTime
-import static util.GroovyStubber.*
+import static common.langutil.DateTimeUtil.date
+import static common.langutil.DateTimeUtil.dateTime
+import static common.langutil.GroovyStubber.*
 
 class MinerTest {
 

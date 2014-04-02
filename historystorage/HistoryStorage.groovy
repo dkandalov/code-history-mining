@@ -1,7 +1,7 @@
 package historystorage
 import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.Nullable
-import util.Measure
+import common.langutil.Measure
 
 class HistoryStorage {
 	private final String basePath

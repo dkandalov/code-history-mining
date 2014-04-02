@@ -1,6 +1,6 @@
 package analysis
 
-import events.FileChangeEvent
+import common.events.FileChangeEvent
 
 class Context {
 	final List<FileChangeEvent> events

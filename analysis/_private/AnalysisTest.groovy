@@ -1,13 +1,13 @@
 package analysis._private
-import events.CommitInfo
-import events.FileChangeEvent
-import events.FileChangeInfo
+import common.events.CommitInfo
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
 import org.junit.Test
 
 import static analysis._private.Analysis.*
-import static events.ChangeStats.NA
-import static util.DateTimeUtil.date
-import static util.DateTimeUtil.oneDay
+import static common.events.ChangeStats.NA
+import static common.langutil.DateTimeUtil.date
+import static common.langutil.DateTimeUtil.oneDay
 
 class AnalysisTest {
 	private static final Closure noCancel = {}

@@ -7,10 +7,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.util.diff.FilesTooBigForDiffException
-import events.ChangeStats
-import events.FileChangeEvent
-import events.FileChangeInfo
-import util.Measure
+import common.events.ChangeStats
+import common.events.FileChangeEvent
+import common.events.FileChangeInfo
+import common.langutil.Measure
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION

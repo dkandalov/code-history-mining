@@ -1,4 +1,4 @@
-package util
+package common.langutil
 import org.junit.Test
 
 @SuppressWarnings("GrMethodMayBeStatic")

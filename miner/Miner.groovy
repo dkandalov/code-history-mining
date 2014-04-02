@@ -13,11 +13,11 @@ import historystorage.EventStorage
 import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
-import util.Measure
+import common.langutil.Measure
 import vcsaccess.ChangeEventsReader
 import vcsaccess.VcsAccess
 
-import static util.DateTimeUtil.floorToDay
+import static common.langutil.DateTimeUtil.floorToDay
 
 class Miner {
 	private final UI ui
