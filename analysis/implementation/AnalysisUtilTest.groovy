@@ -1,10 +1,10 @@
-package analysis._private
+package analysis.implementation
 import common.events.CommitInfo
 import common.events.FileChangeEvent
 import common.events.FileChangeInfo
 import org.junit.Test
 
-import static analysis._private.Analysis.Util.useLatestNameForMovedFiles
+import static analysis.implementation.Analysis.Util.useLatestNameForMovedFiles
 import static common.events.ChangeStats.getNA
 
 class AnalysisUtilTest {

@@ -1,4 +1,4 @@
-package analysis._private
+package analysis.implementation
 import com.intellij.openapi.diagnostic.Logger
 import common.events.ChangeStats
 import common.events.CommitInfo
@@ -11,7 +11,7 @@ import common.langutil.DateTimeUtil
 
 import java.text.SimpleDateFormat
 
-import static analysis._private.Analysis.Util.*
+import static analysis.implementation.Analysis.Util.*
 import static groovy.json.StringEscapeUtils.escapeJavaScript
 import static java.util.concurrent.TimeUnit.*
 import static common.langutil.DateTimeUtil.*

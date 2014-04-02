@@ -1,4 +1,4 @@
-package analysis._private
+package analysis.implementation
 import analysis.Context
 import analysis.Visualization
 import common.events.ChangeStats

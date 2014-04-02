@@ -5,8 +5,8 @@ import common.events.CommitInfo
 import common.events.FileChangeEvent
 import common.events.FileChangeInfo
 import groovy.transform.CompileStatic
-import historystorage.csv4180.CSVReader
-import historystorage.csv4180.CSVWriter
+import historystorage.implementation.CSVReader
+import historystorage.implementation.CSVWriter
 
 import java.text.SimpleDateFormat
 

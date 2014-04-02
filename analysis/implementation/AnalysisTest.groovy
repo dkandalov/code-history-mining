@@ -1,10 +1,10 @@
-package analysis._private
+package analysis.implementation
 import common.events.CommitInfo
 import common.events.FileChangeEvent
 import common.events.FileChangeInfo
 import org.junit.Test
 
-import static analysis._private.Analysis.*
+import static analysis.implementation.Analysis.*
 import static common.events.ChangeStats.NA
 import static common.langutil.DateTimeUtil.date
 import static common.langutil.DateTimeUtil.oneDay

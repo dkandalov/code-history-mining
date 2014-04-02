@@ -1,7 +1,7 @@
-import analysis._private.Analysis
-import analysis._private.AnalysisTest
-import analysis._private.AnalysisUtilTest
-import analysis._private.CombiningVisualizationTest
+import analysis.implementation.Analysis
+import analysis.implementation.AnalysisTest
+import analysis.implementation.AnalysisUtilTest
+import analysis.implementation.CombiningVisualizationTest
 import analysis.templates.TemplateTest
 import analysis.templates.TemplatesModificationTest
 import historystorage.EventStorageTest

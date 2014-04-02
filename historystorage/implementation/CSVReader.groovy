@@ -1,4 +1,4 @@
-package historystorage.csv4180
+package historystorage.implementation
 import groovy.transform.CompileStatic
 /**
  * Originally copied from https://csv4180.svn.sourceforge.net/svnroot/csv4180/

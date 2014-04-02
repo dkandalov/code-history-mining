@@ -1,4 +1,4 @@
-package analysis._private
+package analysis.implementation
 import analysis.Context
 import historystorage.EventStorage
 import common.langutil.Measure

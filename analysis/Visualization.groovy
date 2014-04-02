@@ -1,10 +1,10 @@
 package analysis
 
-import analysis._private.Analysis
+import analysis.implementation.Analysis
 import analysis.templates.Template
 import common.langutil.Measure
 
-import static analysis._private.Analysis.*
+import static analysis.implementation.Analysis.*
 import static analysis.templates.AllTemplates.*
 
 class Visualization {
