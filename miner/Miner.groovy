@@ -10,12 +10,11 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
 import historystorage.EventStorage
+import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
-import util.Log
 import util.Measure
 import vcsaccess.ChangeEventsReader
-import historystorage.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.floorToDay
@@ -187,5 +186,16 @@ class Miner {
 			messageText += "\nSome of events were not added to csv file because it already contained events within the time range\n"
 		}
 		[text: messageText, title: "Code History Mining"]
+	}
+
+
+	interface Log {
+		def loadingProjectHistory(Date fromDate, Date toDate)
+
+		def processingChangeList(String changeListName)
+
+		def cancelledBuilding(String visualizationName)
+
+		def measuredDuration(def entry)
 	}
 }

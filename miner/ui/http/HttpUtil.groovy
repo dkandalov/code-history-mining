@@ -1,18 +1,17 @@
 package miner.ui.http
-
 import com.intellij.openapi.util.io.FileUtil
-import util.Log
+import miner.ui.UI
 
 import static liveplugin.PluginUtil.changeGlobalVar
 
 class HttpUtil {
-	static String loadIntoHttpServer(String html, String projectName, String fileName, Log log = null) {
+	static String loadIntoHttpServer(String html, String projectName, String fileName, UI.Log log = null) {
 		def tempDir = FileUtil.createTempDirectory(projectName + "_", "")
 		new File("$tempDir.absolutePath/$fileName").write(html)
 
-		log.httpServerIsAboutToLoadHtmlFile(tempDir.absolutePath + "/" + fileName)
+		log?.httpServerIsAboutToLoadHtmlFile(tempDir.absolutePath + "/" + fileName)
 
-		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log.errorOnHttpRequest(it.toString())})
+		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log?.errorOnHttpRequest(it.toString())})
 		"http://localhost:${server.port}/${fileName}"
 	}
 

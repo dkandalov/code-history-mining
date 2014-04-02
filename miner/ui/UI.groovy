@@ -11,13 +11,12 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
+import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import liveplugin.PluginUtil
 import miner.Miner
-import org.jetbrains.annotations.Nullable
 import miner.ui.http.HttpUtil
-import util.Log
-import historystorage.HistoryGrabberConfig
+import org.jetbrains.annotations.Nullable
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
@@ -183,5 +182,11 @@ class UI {
 				if (userAnswer == Messages.OK) storage.delete(fileName)
 			}
 		}
+	}
+
+
+	interface Log {
+		def httpServerIsAboutToLoadHtmlFile(String fileName)
+		def errorOnHttpRequest(String message)
 	}
 }

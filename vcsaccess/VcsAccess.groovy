@@ -1,11 +1,11 @@
 package vcsaccess
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import util.Log
 import util.Measure
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
@@ -63,5 +63,12 @@ class VcsAccess {
 		oldVcsAccess.connectionByProjectName.values().each {
 			it.disconnect()
 		}
+	}
+
+
+	interface Log {
+		def errorReadingCommits(Exception e, Date fromDate, Date toDate)
+
+		def failedToLocate(VcsRoot vcsRoot, Project project)
 	}
 }

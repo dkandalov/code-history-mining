@@ -3,7 +3,7 @@ import historystorage.HistoryStorage
 import liveplugin.PluginUtil
 import miner.Miner
 import miner.ui.UI
-import util.Log
+import miner.Log
 import util.Measure
 import vcsaccess.implementation.CommitMunging_Playground
 import vcsaccess.VcsAccess
