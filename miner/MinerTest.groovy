@@ -8,7 +8,7 @@ import miner.ui.UI
 import org.junit.Test
 import util.Measure
 import vcsaccess.ChangeEventsReader
-import vcsaccess.HistoryGrabberConfig
+import historystorage.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.date

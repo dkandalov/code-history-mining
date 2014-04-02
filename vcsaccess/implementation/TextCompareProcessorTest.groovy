@@ -1,4 +1,4 @@
-package vcsaccess._private
+package vcsaccess.implementation
 import com.intellij.openapi.diff.impl.fragments.LineFragment
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.diff.impl.util.TextDiffTypeEnum

@@ -4,7 +4,6 @@ import com.intellij.openapi.util.io.FileUtil
 import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
-import vcsaccess.HistoryGrabberConfig
 
 class HistoryStorage {
 	private final String basePath

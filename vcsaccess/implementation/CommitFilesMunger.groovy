@@ -1,4 +1,4 @@
-package vcsaccess
+package vcsaccess.implementation
 import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
@@ -16,7 +16,7 @@ import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 import static vcsaccess.ChangeEventsReader.vcsRootsIn
-import static vcsaccess._private.CommitMungingUtil.*
+import static vcsaccess.implementation.CommitMungingUtil.*
 
 class CommitFilesMunger {
 	private final Project project

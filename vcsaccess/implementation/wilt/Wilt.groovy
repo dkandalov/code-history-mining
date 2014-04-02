@@ -1,4 +1,4 @@
-package vcsaccess.wilt
+package vcsaccess.implementation.wilt
 
 /**
  * Calculates Whitespace Integrated over Lines of Text (WILT).

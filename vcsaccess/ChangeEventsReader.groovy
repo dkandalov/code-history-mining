@@ -5,6 +5,7 @@ import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import events.FileChangeEvent
 import liveplugin.PluginUtil
+import vcsaccess.implementation.CommitReader
 
 import static util.DateTimeUtil.floorToDay
 

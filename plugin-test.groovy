@@ -10,10 +10,10 @@ import miner.MinerTest
 import util.CollectionUtilTest
 import util.GroovyStubber
 import util.TimeIteratorsTest
-import vcsaccess._private.ChangeEventsReaderGitTest
-import vcsaccess._private.CommitReaderGitTest
-import vcsaccess._private.TextCompareProcessorTest
-import vcsaccess.wilt.WiltTest
+import vcsaccess.implementation.ChangeEventsReaderGitTest
+import vcsaccess.implementation.CommitReaderGitTest
+import vcsaccess.implementation.TextCompareProcessorTest
+import vcsaccess.implementation.wilt.WiltTest
 
 // some classes to keep imports, without it groovy compilation fails
 [Analysis.class]

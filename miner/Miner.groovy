@@ -15,7 +15,7 @@ import miner.ui.UI
 import util.Log
 import util.Measure
 import vcsaccess.ChangeEventsReader
-import vcsaccess.HistoryGrabberConfig
+import historystorage.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static util.DateTimeUtil.floorToDay

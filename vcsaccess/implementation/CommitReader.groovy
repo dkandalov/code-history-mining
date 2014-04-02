@@ -1,4 +1,4 @@
-package vcsaccess
+package vcsaccess.implementation
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
@@ -9,7 +9,7 @@ import util.Log
 import util.Measure
 import util.PastToPresentIterator
 import util.PresentToPastIterator
-import vcsaccess._private.GitPluginWorkaround
+import vcsaccess.implementation.GitPluginWorkaround
 
 class CommitReader {
 	static Commit NO_MORE_COMMITS = null
@@ -41,7 +41,7 @@ class CommitReader {
 			new PastToPresentIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
 
-        def commitReaderLog = log
+    def commitReaderLog = log
 		new Iterator<Commit>() {
 			@Override boolean hasNext() {
 				!changes.empty || dateIterator.hasNext()

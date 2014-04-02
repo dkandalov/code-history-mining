@@ -7,6 +7,8 @@ import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 import util.Log
 import util.Measure
+import vcsaccess.implementation.CommitFilesMunger
+import vcsaccess.implementation.CommitReader
 
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 

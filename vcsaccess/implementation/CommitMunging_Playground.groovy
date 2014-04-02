@@ -1,6 +1,6 @@
-package vcsaccess
+package vcsaccess.implementation
 import liveplugin.PluginUtil
-import vcsaccess._private.CommitReaderGitTest
+import vcsaccess.ChangeEventsReader
 
 import static util.DateTimeUtil.dateTime
 

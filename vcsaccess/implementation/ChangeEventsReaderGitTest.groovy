@@ -1,4 +1,4 @@
-package vcsaccess._private
+package vcsaccess.implementation
 import com.intellij.openapi.project.Project
 import events.ChangeStats
 import events.CommitInfo
@@ -7,8 +7,6 @@ import events.FileChangeInfo
 import org.junit.Test
 import util.Measure
 import vcsaccess.ChangeEventsReader
-import vcsaccess.CommitFilesMunger
-import vcsaccess.CommitReader
 
 import static events.ChangeStats.getNA
 import static util.DateTimeUtil.dateTime

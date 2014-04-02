@@ -1,4 +1,4 @@
-package vcsaccess._private
+package vcsaccess.implementation
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.RepositoryLocation

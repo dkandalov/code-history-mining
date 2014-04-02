@@ -1,7 +1,7 @@
-package vcsaccess.wilt
+package vcsaccess.implementation.wilt
 import org.junit.Test
 
-import static vcsaccess.wilt.Wilt.complexityByLineOf
+import static vcsaccess.implementation.wilt.Wilt.complexityByLineOf
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 

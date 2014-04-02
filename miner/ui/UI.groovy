@@ -17,7 +17,7 @@ import miner.Miner
 import org.jetbrains.annotations.Nullable
 import miner.ui.http.HttpUtil
 import util.Log
-import vcsaccess.HistoryGrabberConfig
+import historystorage.HistoryGrabberConfig
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {

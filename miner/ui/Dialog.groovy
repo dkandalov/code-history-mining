@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
-import vcsaccess.HistoryGrabberConfig
+import historystorage.HistoryGrabberConfig
 
 import javax.swing.*
 import javax.swing.event.DocumentEvent

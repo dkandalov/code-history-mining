@@ -1,4 +1,4 @@
-package vcsaccess._private
+package vcsaccess.implementation
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.ContentRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
