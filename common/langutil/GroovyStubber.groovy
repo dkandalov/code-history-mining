@@ -23,6 +23,9 @@ class GroovyStubber {
 		assert sampleStub.objectArrayMethod() == []
 	}
 
+	/**
+	 * @param aClass class to stub, must have default constructor
+	 */
 	static <T> T stub(Class<T> aClass, Map overrides = [:]) {
 		def actionByReturnType = [
 				(Void.TYPE): doesNothing,

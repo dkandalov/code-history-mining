@@ -12,14 +12,14 @@ import static common.langutil.DateTimeUtil.floorToDay
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
+	private final Project project
 	private final CommitReader commitReader
 	private final def extractChangeEvents
-	private final Project project
 
 	ChangeEventsReader(Project project = null, CommitReader commitReader = null, Closure<Collection<FileChangeEvent>> extractChangeEvents = null) {
+		this.project = project
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
-		this.project = project
 	}
 
 	def readPresentToPast(Date historyStart, Date historyEnd, Closure isCancelled = null,
