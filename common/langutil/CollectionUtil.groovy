@@ -7,7 +7,7 @@ class CollectionUtil {
 
 		map.collectEntries {
 			if (it.value instanceof Collection) [it.key, closure(it.value)]
-			else if (it.value instanceof Map) [it.key, rollup(it.value as Map, closure)]
+			else if (it.value instanceof Map) [it.key, CollectionUtil.rollup(it.value as Map, closure)] // groovy 2.2.1 fails without fully qualified reference to "rollup"
 			else it
 		} as Map<K, V>
 	}

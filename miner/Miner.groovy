@@ -24,10 +24,10 @@ class Miner {
 	private final HistoryStorage storage
 	private final VcsAccess vcsAccess
 	private final Measure measure
-	private final Log log
+	private final MinerLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, Log log = null) {
+	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, MinerLog log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -187,15 +187,14 @@ class Miner {
 		}
 		[text: messageText, title: "Code History Mining"]
 	}
+}
 
+interface MinerLog {
+	def loadingProjectHistory(Date fromDate, Date toDate)
 
-	interface Log {
-		def loadingProjectHistory(Date fromDate, Date toDate)
+	def processingChangeList(String changeListName)
 
-		def processingChangeList(String changeListName)
+	def cancelledBuilding(String visualizationName)
 
-		def cancelledBuilding(String visualizationName)
-
-		def measuredDuration(def entry)
-	}
+	def measuredDuration(def entry)
 }
