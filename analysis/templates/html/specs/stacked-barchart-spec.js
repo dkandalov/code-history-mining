@@ -333,6 +333,12 @@ describe("total amount label", function() {
 	});
 });
 
+describe("utilities", function() {
+	it("can shade color", function() {
+		expect(shadeColor("#111111", -0.15)).toEqual("#0e0e0e");
+		expect(shadeColor("rgb(31, 119, 180)", -0.15)).toEqual("#1a6599");
+	})
+});
 
 function date(s) {
 	return d3.time.format("%d/%m/%Y").parse(s);
