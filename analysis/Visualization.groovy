@@ -65,7 +65,7 @@ class Visualization {
 		}
 	}
 
-	static Visualization createAllVisualizations(Template mainTemplate, Closure prepareTemplate = {it}) {
+	static Visualization createAllVisualizations(Template originalMainTemplate, Closure prepareTemplate = {it}) {
 		new Visualization("All Visualizations", { Context context ->
 			def templateAndAnalysis = [
 					[changeSizeChartTemplate, Analysis.&changeSize_Chart],
@@ -81,6 +81,7 @@ class Visualization {
 					[commitMessageWordCloudTemplate, Analysis.&commitComments_WordCloud]
 			]
 
+			def mainTemplate = originalMainTemplate
 			mainTemplate = mainTemplate.fillProjectName(context.projectName.capitalize())
 			templateAndAnalysis.each{ Template template, Closure analysis ->
 				template = prepareTemplate(template)
@@ -97,10 +98,10 @@ class Visualization {
 						template.removeJsAddedHeader().width(800).lastTag("script")
 				)
 				mainTemplate = mainTemplate.addBefore("<!--tag-insert-point-->", """
-				<h4>${template.contentOfTag('title')}</h4>
-        <span id="${template.mainTagId}"></span>
-        <br/><br/>
-			""")
+					<h4>${template.contentOfTag('title')}</h4>
+	        <span id="${template.mainTagId}"></span>
+	        <br/><br/>
+				""")
 			}
 			mainTemplate.removeJsAddedHeader().width(800).text
 		})

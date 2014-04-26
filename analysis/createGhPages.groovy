@@ -1,14 +1,11 @@
 package analysis
-import analysis.Context
-import analysis.templates.AllTemplates
+
 import analysis.templates.Template
 import historystorage.EventStorage
 
 import static analysis.Visualization.createAllVisualizations
 import static analysis.templates.AllTemplates.*
-import static analysis.templates.AllTemplates.template
 import static java.lang.System.getenv
-
 //generate("Code-history-mining", [
 //		"full_project_name": "code-history-mining",
 //		"url_to_project_page": "https://github.com/dkandalov/code-history-mining",
@@ -109,10 +106,10 @@ generate("Cucumber", "cucumber", [
 		"google_drive_url": "https://drive.google.com/#folders/0B5PfR1lF8o5SaTJDYzEzUGhoUU0",
 		"code_history_dates": ""
 ], [
-		(AllTemplates.filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Medium"').fill("min-link-strength", "15") },
-		(AllTemplates.committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "5") },
-		(AllTemplates.timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.7') },
-		(AllTemplates.commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '') }
+		(filesInTheSameCommitGraphTemplate): { it.fill("gravity", '"Medium"').fill("min-link-strength", "15") },
+		(committersChangingSameFilesGraphTemplate): { it.fill("gravity", '"Low"').fill("min-cluster", "2").fill("min-link-strength", "5") },
+		(timeBetweenCommitsHistogramTemplate): { it.fill("percentile", '0.7') },
+		(commitMessageWordCloudTemplate): { it.fill("words-to-exclude", '') }
 ])
 
 
