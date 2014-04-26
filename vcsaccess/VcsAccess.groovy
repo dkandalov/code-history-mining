@@ -4,9 +4,9 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
+import common.langutil.Measure
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import common.langutil.Measure
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
 
@@ -14,10 +14,10 @@ import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 
 class VcsAccess {
 	private final Measure measure
-	private final Log log
+	private final VcsAccessLog log
 	private final Map<String, MessageBusConnection> connectionByProjectName = [:]
 
-	VcsAccess(Measure measure = null, @Nullable Log log = null) {
+	VcsAccess(Measure measure = new Measure(), @Nullable VcsAccessLog log = null) {
 		this.measure = measure
 		this.log = log
 	}
@@ -64,11 +64,10 @@ class VcsAccess {
 			it.disconnect()
 		}
 	}
+}
 
+interface VcsAccessLog {
+	def errorReadingCommits(Exception e, Date fromDate, Date toDate)
 
-	interface Log {
-		def errorReadingCommits(Exception e, Date fromDate, Date toDate)
-
-		def failedToLocate(VcsRoot vcsRoot, Project project)
-	}
+	def failedToLocate(VcsRoot vcsRoot, Project project)
 }

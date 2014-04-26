@@ -1,12 +1,13 @@
 package miner
+
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import historystorage.HistoryStorage
 import miner.ui.UI
-import vcsaccess.VcsAccess
+import vcsaccess.VcsAccessLog
 
-class Log implements VcsAccess.Log, Miner.Log, HistoryStorage.Log, UI.Log {
+class Log implements VcsAccessLog, Miner.Log, HistoryStorage.Log, UI.Log {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
 	@Override def loadingProjectHistory(Date fromDate, Date toDate) {

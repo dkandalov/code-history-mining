@@ -4,22 +4,22 @@ import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import org.jetbrains.annotations.Nullable
 import common.langutil.Measure
 import common.langutil.PastToPresentIterator
 import common.langutil.PresentToPastIterator
-import vcsaccess.VcsAccess
+import org.jetbrains.annotations.Nullable
+import vcsaccess.VcsAccessLog
 
 class CommitReader {
 	static Commit NO_MORE_COMMITS = null
 
 	private final Project project
 	private final Measure measure
-	private final VcsAccess.Log log
+	private final VcsAccessLog log
 	private final int sizeOfVCSRequestInDays
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, int sizeOfVCSRequestInDays = 30, Measure measure = new Measure(), @Nullable VcsAccess.Log log = null) {
+	CommitReader(Project project, int sizeOfVCSRequestInDays = 30, Measure measure = new Measure(), @Nullable VcsAccessLog log = null) {
 		this.project = project
 		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
 		this.measure = measure
