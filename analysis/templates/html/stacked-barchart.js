@@ -140,7 +140,7 @@ function newLegend(root, position) {
 		itemList.selectAll("circle")
 			.data(items)
 			.call(function(d) { d.enter().append("circle") })
-			.attr("cy", function(d, i) { return i - 0.4 + "em"; })
+			.attr("cy", function(d, i) { return i - 0.4 + "em"; })
 			.attr("cx", 0)
 			.attr("r", "0.4em")
 			.style("fill",function(d) { return d.color; });
