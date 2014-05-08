@@ -3,13 +3,15 @@ import liveplugin.PluginUtil
 import vcsaccess.ChangeEventsReader
 
 import static common.langutil.DateTimeUtil.dateTime
+import static vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static vcsaccess.VcsAccess.vcsRootsIn
 
 class CommitMunging_Playground {
 	static playOnIt() {
 		def project = CommitReaderGitTest.findProject("junit")
 		def commitReader = new CommitReader(project, 5)
-		def commitFilesMunger = new CommitFilesMunger(project, true)
-		def eventsReader = new ChangeEventsReader(project, commitReader, commitFilesMunger.&mungeCommit)
+		def commitFilesMunger = new CommitFilesMunger(commonVcsRootsAncestor(project), true)
+		def eventsReader = new ChangeEventsReader(vcsRootsIn(project), commitReader, commitFilesMunger.&mungeCommit)
 
 		PluginUtil.doInBackground("playground") {
 			// TODO run the request below and fix this

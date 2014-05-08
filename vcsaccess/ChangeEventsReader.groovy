@@ -1,6 +1,5 @@
 package vcsaccess
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vcs.ProjectLevelVcsManager
+
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import common.events.FileChangeEvent
@@ -12,12 +11,12 @@ import static common.langutil.DateTimeUtil.floorToDay
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
-	private final Project project
+	private final List<VcsRoot> vcsRoots
 	private final CommitReader commitReader
 	private final def extractChangeEvents
 
-	ChangeEventsReader(Project project = null, CommitReader commitReader = null, Closure<Collection<FileChangeEvent>> extractChangeEvents = null) {
-		this.project = project
+	ChangeEventsReader(List<VcsRoot> vcsRoots = [], CommitReader commitReader = null, Closure<Collection<FileChangeEvent>> extractChangeEvents = null) {
+		this.vcsRoots = vcsRoots
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 	}
@@ -37,7 +36,7 @@ class ChangeEventsReader {
 		def fromDate = floorToDay(historyStart)
 		def toDate = floorToDay(historyEnd) + 1 // +1 because commitReader end date is exclusive
 
-		Iterator<Commit> commits = commitReader.readCommits(fromDate, toDate, readPresentToPast, vcsRootsIn(project))
+		Iterator<Commit> commits = commitReader.readCommits(fromDate, toDate, readPresentToPast, vcsRoots)
 
 		for (commit in commits) {
 			if (commit == CommitReader.NO_MORE_COMMITS) break
@@ -56,13 +55,5 @@ class ChangeEventsReader {
 
 	boolean getLastRequestHadErrors() {
 		commitReader.lastRequestHadErrors
-	}
-
-	static List<VcsRoot> vcsRootsIn(Project project) {
-		ProjectLevelVcsManager.getInstance(project).allVcsRoots
-	}
-
-	static boolean noVCSRootsIn(Project project) {
-		vcsRootsIn(project).size() == 0
 	}
 }

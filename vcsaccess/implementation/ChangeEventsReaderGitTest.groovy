@@ -10,12 +10,14 @@ import vcsaccess.ChangeEventsReader
 
 import static common.events.ChangeStats.getNA
 import static common.langutil.DateTimeUtil.dateTime
+import static vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static vcsaccess.VcsAccess.vcsRootsIn
 
 class ChangeEventsReaderGitTest {
 
 	@Test "should read file events"() {
 		def countChangeSizeInLines = false
-		def commitMunger = new CommitFilesMunger(jUnitProject, countChangeSizeInLines)
+		def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
@@ -33,7 +35,7 @@ class ChangeEventsReaderGitTest {
 
 	@Test "should read file events with change size details"() {
 		def countChangeSizeInLines = true
-		def commitMunger = new CommitFilesMunger(jUnitProject, countChangeSizeInLines)
+		def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
@@ -55,7 +57,7 @@ class ChangeEventsReaderGitTest {
 			String textBefore = context.change.beforeRevision?.content
 			textBefore == null ? 0 : textBefore.findAll("import org.junit").size()
 		}
-		def commitMunger = new CommitFilesMunger(jUnitProject, countChangeSizeInLines, new Measure(), [findAmountOfJUnitImports])
+		def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines, new Measure(), [findAmountOfJUnitImports])
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
@@ -74,7 +76,7 @@ class ChangeEventsReaderGitTest {
 
 	private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
 		def eventsConsumer = new EventConsumer()
-		def eventsReader = new ChangeEventsReader(project, new CommitReader(project, 1), commitMunger.&mungeCommit)
+		def eventsReader = new ChangeEventsReader(vcsRootsIn(project), new CommitReader(project, 1), commitMunger.&mungeCommit)
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 		eventsConsumer.changeEvents
 	}

@@ -3,7 +3,6 @@ import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
 import com.intellij.openapi.progress.ProcessCanceledException
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.util.diff.FilesTooBigForDiffException
@@ -14,23 +13,19 @@ import common.langutil.Measure
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
-import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
-import static vcsaccess.ChangeEventsReader.vcsRootsIn
 import static vcsaccess.implementation.CommitMungingUtil.*
 
 class CommitFilesMunger {
-	private final Project project
 	private final boolean countChangeSizeInLines
 	private final List<Closure> additionalAttributeMungers
 	private final Measure measure
 	private final String commonAncestorPath
 
-	CommitFilesMunger(Project project, boolean countChangeSizeInLines, Measure measure = new Measure(), List<Closure> additionalAttributeMungers = []) {
+	CommitFilesMunger(String commonAncestorPath, boolean countChangeSizeInLines, Measure measure = new Measure(), List<Closure> additionalAttributeMungers = []) {
 		this.countChangeSizeInLines = countChangeSizeInLines
-		this.project = project
 		this.measure = measure
 		this.additionalAttributeMungers = additionalAttributeMungers
-		this.commonAncestorPath = withDefault("", getCommonAncestor(vcsRootsIn(project).collect{it.path})?.canonicalPath)
+		this.commonAncestorPath = commonAncestorPath
 	}
 
 	Collection<FileChangeEvent> mungeCommit(CommittedChangeList commit) {
@@ -40,7 +35,7 @@ class CommitFilesMunger {
 				def fileChangeInfo = fileChangeInfoOf(change, commonAncestorPath, countChangeSizeInLines)
 				if (fileChangeInfo == null) return null
 
-				def context = [commit: commit, change: change, project: project]
+				def context = [commit: commit, change: change]
 				def additionalAttributes = additionalAttributeMungers.collect{ it.call(context) }
 				new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
 

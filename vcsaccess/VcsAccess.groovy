@@ -1,6 +1,7 @@
 package vcsaccess
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
@@ -11,6 +12,8 @@ import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
 
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
+import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
+import static vcsaccess.implementation.CommitMungingUtil.withDefault
 
 class VcsAccess {
 	private final Measure measure
@@ -22,21 +25,16 @@ class VcsAccess {
 		this.log = log
 	}
 
-	@SuppressWarnings("GrMethodMayBeStatic")
-	boolean noVCSRootsIn(Project project) {
-		ChangeEventsReader.noVCSRootsIn(project)
-	}
-
-	ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
+    ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
 		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
-		new ChangeEventsReader(
-				project,
+        new ChangeEventsReader(
+				vcsRootsIn(project),
 				new CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
-				new CommitFilesMunger(project, grabChangeSizeInLines).&mungeCommit
+				new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit
 		)
 	}
 
-	def addVcsUpdateListenerFor(String projectName, Closure closure) {
+    def addVcsUpdateListenerFor(String projectName, Closure closure) {
 		if (connectionByProjectName.containsKey(projectName)) return
 
 		Project project = ProjectManager.instance.openProjects.find{ it.name == projectName }
@@ -59,11 +57,25 @@ class VcsAccess {
 		connection.disconnect()
 	}
 
-	def dispose(oldVcsAccess) {
+    @SuppressWarnings("GrMethodMayBeStatic")
+    def dispose(oldVcsAccess) {
 		oldVcsAccess.connectionByProjectName.values().each {
 			it.disconnect()
 		}
 	}
+
+    @SuppressWarnings("GrMethodMayBeStatic")
+    boolean noVCSRootsIn(Project project) {
+        vcsRootsIn(project).size() == 0
+    }
+
+    static List<VcsRoot> vcsRootsIn(Project project) {
+        ProjectLevelVcsManager.getInstance(project).allVcsRoots
+    }
+
+    static String commonVcsRootsAncestor(Project project) {
+        withDefault("", getCommonAncestor(vcsRootsIn(project).collect { it.path })?.canonicalPath)
+    }
 }
 
 interface VcsAccessLog {
