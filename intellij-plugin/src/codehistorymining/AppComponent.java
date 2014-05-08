@@ -10,6 +10,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import groovy.lang.Binding;
 import liveplugin.IdeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.Constructor;
@@ -67,7 +68,7 @@ public class AppComponent implements ApplicationComponent {
 		return binding;
 	}
 
-	private static Method findMethod(String methodName, Class<?> aClass) {
+	@Nullable private static Method findMethod(String methodName, Class<?> aClass) {
 		for (Method method : aClass.getDeclaredMethods()) {
 			if (method.getName().equals(methodName)) return method;
 		}
