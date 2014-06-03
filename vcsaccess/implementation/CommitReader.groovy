@@ -40,7 +40,7 @@ class CommitReader {
 			new PastToPresentIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
 
-    def commitReaderLog = log
+        def commitReaderLog = log
 		new Iterator<Commit>() {
 			@Override boolean hasNext() {
 				!changes.empty || dateIterator.hasNext()
@@ -75,8 +75,8 @@ class CommitReader {
 
 	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
 		vcsRoots
-				.collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
-				.sort{ it.commitDate }
+            .collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
+            .sort{ it.commitDate }
 	}
 
 	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {

@@ -1,9 +1,7 @@
 package vcsaccess
-
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import common.events.FileChangeEvent
-import liveplugin.PluginUtil
 import vcsaccess.implementation.CommitReader
 
 import static common.langutil.DateTimeUtil.floorToDay
@@ -14,9 +12,12 @@ class ChangeEventsReader {
 	private final List<VcsRoot> vcsRoots
 	private final CommitReader commitReader
 	private final def extractChangeEvents
+    private final VcsAccessLog log
 
-	ChangeEventsReader(List<VcsRoot> vcsRoots = [], CommitReader commitReader = null, Closure<Collection<FileChangeEvent>> extractChangeEvents = null) {
-		this.vcsRoots = vcsRoots
+    ChangeEventsReader(List<VcsRoot> vcsRoots = [], CommitReader commitReader = null,
+                       Closure<Collection<FileChangeEvent>> extractChangeEvents = null, VcsAccessLog log = null) {
+        this.log = log
+        this.vcsRoots = vcsRoots
 		this.commitReader = commitReader
 		this.extractChangeEvents = extractChangeEvents
 	}
@@ -46,9 +47,11 @@ class ChangeEventsReader {
 			if (!readPresentToPast && commit.commitDate == historyStart) continue
 
 			consumeWrapper(commit) {
-				PluginUtil.catchingAll {
+				try {
 					consume(extractChangeEvents(commit))
-				}
+				} catch (Exception e) {
+                    log?.onExtractChangeEventException(e)
+                }
 			}
 		}
 	}

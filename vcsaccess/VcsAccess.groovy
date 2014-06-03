@@ -82,4 +82,6 @@ interface VcsAccessLog {
 	def errorReadingCommits(Exception e, Date fromDate, Date toDate)
 
 	def failedToLocate(VcsRoot vcsRoot, Project project)
+
+    def onExtractChangeEventException(Exception e)
 }

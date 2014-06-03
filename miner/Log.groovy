@@ -23,7 +23,7 @@ class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 	}
 
 	@Override def measuredDuration(def entry) {
-		logger.info(entry.key + ": " + entry.value)
+		logger.info((String) entry.key + ": " + entry.value)
 	}
 
 	@Override errorReadingCommits(Exception e, Date fromDate, Date toDate) {
@@ -34,7 +34,11 @@ class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 		logger.warn("Failed to find location for ${vcsRoot} in ${project}")
 	}
 
-	@Override def failedToRead(def line) {
+    @Override def onExtractChangeEventException(Exception e) {
+        logger.warn(e)
+    }
+
+    @Override def failedToRead(def line) {
 		logger.warn("Failed to parse line '${line}'")
 	}
 
