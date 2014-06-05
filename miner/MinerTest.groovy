@@ -2,18 +2,18 @@ package miner
 
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import historystorage.EventStorage
-import historystorage.HistoryStorage
+import codemining.core.historystorage.EventStorage
+import codemining.core.historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
-import common.langutil.Measure
-import vcsaccess.ChangeEventsReader
-import historystorage.HistoryGrabberConfig
-import vcsaccess.VcsAccess
+import codemining.core.common.langutil.Measure
+import codemining.core.vcsaccess.ChangeEventsReader
+import codemining.core.historystorage.HistoryGrabberConfig
+import codemining.core.vcsaccess.VcsAccess
 
-import static common.langutil.DateTimeUtil.date
-import static common.langutil.DateTimeUtil.dateTime
-import static common.langutil.GroovyStubber.*
+import static codemining.core.common.langutil.DateTimeUtil.date
+import static codemining.core.common.langutil.DateTimeUtil.dateTime
+import static miner.GroovyStubber.*
 
 class MinerTest {
 

@@ -1,17 +1,20 @@
 package vcsaccess.implementation
-import com.intellij.openapi.project.Project
-import common.events.ChangeStats
-import common.events.CommitInfo
-import common.events.FileChangeEvent
-import common.events.FileChangeInfo
-import org.junit.Test
-import common.langutil.Measure
-import vcsaccess.ChangeEventsReader
 
-import static common.events.ChangeStats.getNA
-import static common.langutil.DateTimeUtil.dateTime
-import static vcsaccess.VcsAccess.commonVcsRootsAncestor
-import static vcsaccess.VcsAccess.vcsRootsIn
+import codemining.core.common.events.ChangeStats
+import codemining.core.common.events.CommitInfo
+import codemining.core.common.events.FileChangeEvent
+import codemining.core.common.events.FileChangeInfo
+import codemining.core.common.langutil.Measure
+import codemining.core.vcsaccess.ChangeEventsReader
+import codemining.core.vcsaccess.implementation.CommitFilesMunger
+import codemining.core.vcsaccess.implementation.CommitReader
+import com.intellij.openapi.project.Project
+import org.junit.Test
+
+import static codemining.core.common.events.ChangeStats.NA
+import static codemining.core.common.langutil.DateTimeUtil.dateTime
+import static codemining.core.vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
 
 class ChangeEventsReaderGitTest {
 

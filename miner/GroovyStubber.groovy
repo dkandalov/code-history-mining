@@ -1,4 +1,4 @@
-package common.langutil
+package miner
 import org.junit.Test
 
 @SuppressWarnings("GrMethodMayBeStatic")

@@ -1,4 +1,6 @@
 package vcsaccess.implementation
+
+import codemining.core.vcsaccess.implementation.CommitReader
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -9,8 +11,9 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static common.langutil.DateTimeUtil.*
-import static vcsaccess.VcsAccess.vcsRootsIn
+import static codemining.core.common.langutil.DateTimeUtil.date
+import static codemining.core.common.langutil.DateTimeUtil.dateTime
+import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
 
 class CommitReaderGitTest {
 

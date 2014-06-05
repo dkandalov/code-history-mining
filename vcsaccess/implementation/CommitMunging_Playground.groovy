@@ -1,10 +1,13 @@
 package vcsaccess.implementation
-import liveplugin.PluginUtil
-import vcsaccess.ChangeEventsReader
 
-import static common.langutil.DateTimeUtil.dateTime
-import static vcsaccess.VcsAccess.commonVcsRootsAncestor
-import static vcsaccess.VcsAccess.vcsRootsIn
+import codemining.core.vcsaccess.implementation.CommitFilesMunger
+import codemining.core.vcsaccess.implementation.CommitReader
+import liveplugin.PluginUtil
+import codemining.core.vcsaccess.ChangeEventsReader
+
+import static codemining.core.common.langutil.DateTimeUtil.dateTime
+import static codemining.core.vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
 
 class CommitMunging_Playground {
 	static playOnIt() {

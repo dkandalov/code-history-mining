@@ -1,5 +1,5 @@
 package miner.ui
-import analysis.Visualization
+import codemining.core.analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -11,8 +11,8 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import historystorage.HistoryGrabberConfig
-import historystorage.HistoryStorage
+import codemining.core.historystorage.HistoryGrabberConfig
+import codemining.core.historystorage.HistoryStorage
 import liveplugin.PluginUtil
 import miner.Miner
 import miner.ui.http.HttpUtil

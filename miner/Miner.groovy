@@ -1,6 +1,6 @@
 package miner
-import analysis.Context
-import analysis.Visualization
+import codemining.core.analysis.Context
+import codemining.core.analysis.Visualization
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -9,15 +9,15 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
-import historystorage.EventStorage
-import historystorage.HistoryGrabberConfig
-import historystorage.HistoryStorage
+import codemining.core.historystorage.EventStorage
+import codemining.core.historystorage.HistoryGrabberConfig
+import codemining.core.historystorage.HistoryStorage
 import miner.ui.UI
-import common.langutil.Measure
-import vcsaccess.ChangeEventsReader
-import vcsaccess.VcsAccess
+import codemining.core.common.langutil.Measure
+import codemining.core.vcsaccess.ChangeEventsReader
+import codemining.core.vcsaccess.VcsAccess
 
-import static common.langutil.DateTimeUtil.floorToDay
+import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 class Miner {
 	private final UI ui

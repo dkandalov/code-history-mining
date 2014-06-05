@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
-import historystorage.HistoryGrabberConfig
+import codemining.core.historystorage.HistoryGrabberConfig
 
 import javax.swing.*
 import javax.swing.event.DocumentEvent
@@ -25,7 +25,7 @@ import java.awt.event.ActionListener
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
-import static common.langutil.DateTimeUtil.floorToDay
+import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 @SuppressWarnings("GrUnresolvedAccess")
 class Dialog {
