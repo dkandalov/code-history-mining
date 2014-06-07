@@ -8,4 +8,5 @@ import vcsaccess.implementation.CommitReaderGitTest
 
 def unitTests = [GroovyStubber, MinerTest]
 def integrationTests = [CommitReaderGitTest, ChangeEventsReaderGitTest]
-IntegrationTestsRunner.runIntegrationTests(unitTests + integrationTests, project, pluginPath)
+def tests = (unitTests + integrationTests).toList()
+IntegrationTestsRunner.runIntegrationTests(tests, project, pluginPath)
