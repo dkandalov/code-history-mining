@@ -1,5 +1,4 @@
 package vcsaccess.implementation
-
 import codemining.core.common.events.ChangeStats
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
@@ -15,16 +14,18 @@ import static codemining.core.common.events.ChangeStats.NA
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
 import static codemining.core.vcsaccess.VcsAccess.commonVcsRootsAncestor
 import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
 
 class ChangeEventsReaderGitTest {
 
-	@Test "should read file events"() {
+	@Test void "should read file events"() {
 		def countChangeSizeInLines = false
 		def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
-		assert asString(changeEvents) == asString([
+        assertThat(asString(changeEvents), equalTo(asString([
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
 				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
@@ -33,16 +34,16 @@ class ChangeEventsReaderGitTest {
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA))
-		])
+		])))
 	}
 
-	@Test "should read file events with change size details"() {
+	@Test void "should read file events with change size details"() {
 		def countChangeSizeInLines = true
 		def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
-		assert asString(changeEvents) == asString([
+		assertThat(asString(changeEvents), equalTo(asString([
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
 				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", changeStats(129, 123, 2, 8, 15), changeStats(3822, 3824, 165, 413, 414))),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", changeStats(128, 132, 0, 3, 0), changeStats(3682, 3807, 0, 140, 0))),
@@ -51,10 +52,10 @@ class ChangeEventsReaderGitTest {
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", changeStats(19, 19, 0, 2, 0), changeStats(514, 530, 0, 96, 0))),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", changeStats(55, 55, 0, 2, 0), changeStats(1698, 1710, 0, 118, 0))),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", changeStats(34, 34, 0, 2, 0), changeStats(814, 838, 0, 109, 0)))
-		])
+		])))
 	}
 
-	@Test "should read file events with additional custom attributes"() {
+	@Test void "should read file events with additional custom attributes"() {
 		def countChangeSizeInLines = false
 		def findAmountOfJUnitImports = { context ->
 			String textBefore = context.change.beforeRevision?.content
@@ -64,7 +65,7 @@ class ChangeEventsReaderGitTest {
 
 		def changeEvents = readChangeEvents(fromDate, toDate, jUnitProject, commitMunger)
 
-		assert asString(changeEvents) == asString([
+        assertThat(asString(changeEvents), equalTo(asString([
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA), [4]),
 				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA), [9]),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA), [8]),
@@ -73,7 +74,7 @@ class ChangeEventsReaderGitTest {
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [3]),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [5]),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA), [5])
-		])
+		])))
 	}
 
 

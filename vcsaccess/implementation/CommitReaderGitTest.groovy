@@ -17,7 +17,7 @@ import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
 
 class CommitReaderGitTest {
 
-	@Test "should interpret renamed file as a single event"() {
+	@Test void "renamed file is interpreted as a single event"() {
 		def commit = readSingleCommit("43b0fe3", dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
 
@@ -26,23 +26,25 @@ class CommitReaderGitTest {
 		assert change.afterRevision.file.name == "TheoryMethodRunner.java"
 	}
 
-	@Test "should interpret moved file as a single event"() {
+	@Test void "moved file is interpreted as a single event"() {
 		def commit = readSingleCommit("a19e98f", dateTime("07:50 28/07/2011"), dateTime("08:00 28/07/2011"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
 
 		assert change.type == Change.Type.MOVED
 		assert change.beforeRevision.file.name == "RuleFieldValidator.java"
 		assert change.afterRevision.file.name == "RuleFieldValidator.java"
+		assert change.beforeRevision.file.path.endsWith("src/main/java/org/junit/rules/RuleFieldValidator.java")
+		assert change.afterRevision.file.path.endsWith("src/main/java/org/junit/internal/runners/rules/RuleFieldValidator.java")
 	}
 
-	@Test "should ignore merge commits and include merge changes as separate change lists"() {
+	@Test void "should ignore merge commits and include merge changes as separate change lists"() {
 		def commits = readSingleCommit("dc730e3", dateTime("09:00 09/05/2013"), dateTime("16:02 09/05/2013"))
 
 		def changes = commits.changes
 		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
-	@Test "should order commits by ascending time when reading from past to present"() {
+	@Test void "should order commits by ascending time when reading from past to present"() {
 		def isReadingPresentToPast = false
 		def from = date("03/10/2007")
 		def to = date("04/10/2007")
@@ -54,7 +56,7 @@ class CommitReaderGitTest {
 		assert commits[1].commitDate.before(commits[2].commitDate)
 	}
 
-	@Test "should order commits by descending time when reading from present to past"() {
+	@Test void "should order commits by descending time when reading from present to past"() {
 		def isReadingPresentToPast = true
 		def from = date("03/10/2007")
 		def to = date("04/10/2007")
@@ -66,7 +68,7 @@ class CommitReaderGitTest {
 		assert commits[1].commitDate.after(commits[2].commitDate)
 	}
 
-	@Test "end date is exclusive when reading present to past"() {
+	@Test void "end date is exclusive when reading present to past"() {
 		def isReadingPresentToPast = true
 
 		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
@@ -75,7 +77,7 @@ class CommitReaderGitTest {
 		assert commits.size() == 7
 	}
 
-	@Test "end date is exclusive when reading past to present"() {
+	@Test void "end date is exclusive when reading past to present"() {
 		def isReadingPresentToPast = false
 
 		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
