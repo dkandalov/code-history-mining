@@ -8,6 +8,7 @@ import codemining.core.vcsaccess.ChangeEventsReader
 import codemining.core.vcsaccess.implementation.CommitFilesMunger
 import codemining.core.vcsaccess.implementation.CommitReader
 import com.intellij.openapi.project.Project
+import org.junit.Ignore
 import org.junit.Test
 
 import static codemining.core.common.events.ChangeStats.NA
@@ -77,8 +78,34 @@ class ChangeEventsReaderGitTest {
 		])))
 	}
 
+    @Ignore
+    @Test void "should ignore change size details for binary files"() {
+        def countChangeSizeInLines = true
+        def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
 
-	private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
+        def changeEvents = readChangeEvents(dateTime("10:00 13/07/2012"), dateTime("15:05 17/07/2012"), jUnitProject, commitMunger)
+
+        assertThat(asString(changeEvents), equalTo(asString([
+                fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
+                fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
+        ])))
+    }
+
+    @Ignore
+    @Test void "reading merged commits"() {
+        def countChangeSizeInLines = true
+        def commitMunger = new CommitFilesMunger(commonVcsRootsAncestor(jUnitProject), countChangeSizeInLines)
+
+        def changeEvents = readChangeEvents(dateTime("23:59 24/04/2014"), dateTime("00:00 28/04/2014"), jUnitProject, commitMunger)
+
+        assertThat(asString(changeEvents), equalTo(asString([
+                fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
+                fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", changeStats(37, 37, 0, 4, 0), changeStats(950, 978, 0, 215, 0))),
+        ])))
+    }
+
+
+    private static List readChangeEvents(fromDate, toDate, project, commitMunger) {
 		def eventsConsumer = new EventConsumer()
 		def eventsReader = new ChangeEventsReader(vcsRootsIn(project), new CommitReader(project, 1), commitMunger.&mungeCommit)
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
