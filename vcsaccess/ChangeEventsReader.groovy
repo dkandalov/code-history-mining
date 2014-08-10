@@ -2,6 +2,7 @@ package vcsaccess
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import codemining.core.common.events.FileChangeEvent
+import vcsaccess.implementation.CommitReader
 
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
@@ -9,11 +10,11 @@ class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
 	private final List<VcsRoot> vcsRoots
-	private final vcsaccess.implementation.CommitReader commitReader
+	private final CommitReader commitReader
 	private final def extractChangeEvents
     private final VcsAccessLog log
 
-    ChangeEventsReader(List<VcsRoot> vcsRoots = [], vcsaccess.implementation.CommitReader commitReader = null,
+    ChangeEventsReader(List<VcsRoot> vcsRoots = [], CommitReader commitReader = null,
                        Closure<Collection<FileChangeEvent>> extractChangeEvents = null, VcsAccessLog log = null) {
         this.log = log
         this.vcsRoots = vcsRoots
@@ -39,7 +40,7 @@ class ChangeEventsReader {
 		Iterator<Commit> commits = commitReader.readCommits(fromDate, toDate, readPresentToPast, vcsRoots)
 
 		for (commit in commits) {
-			if (commit == vcsaccess.implementation.CommitReader.NO_MORE_COMMITS) break
+			if (commit == CommitReader.NO_MORE_COMMITS) break
 			if (isCancelled?.call()) break
 			if (commit.commitDate < historyStart || commit.commitDate > historyEnd) continue
 			if (readPresentToPast && commit.commitDate == historyEnd) continue

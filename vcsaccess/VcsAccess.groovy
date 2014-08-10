@@ -10,6 +10,8 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
+import vcsaccess.implementation.CommitFilesMunger
+import vcsaccess.implementation.CommitReader
 
 import static vcsaccess.implementation.CommitMungingUtil.withDefault
 import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
@@ -30,8 +32,8 @@ class VcsAccess {
 		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
         new ChangeEventsReader(
 				vcsRootsIn(project),
-				new vcsaccess.implementation.CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
-				new vcsaccess.implementation.CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit
+				new CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
+				new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit
 		)
 	}
 
