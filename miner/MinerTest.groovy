@@ -7,9 +7,9 @@ import codemining.core.historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
 import codemining.core.common.langutil.Measure
-import codemining.core.vcsaccess.ChangeEventsReader
+import vcsaccess.ChangeEventsReader
 import codemining.core.historystorage.HistoryGrabberConfig
-import codemining.core.vcsaccess.VcsAccess
+import vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime

@@ -6,7 +6,7 @@ import miner.ui.UI
 import miner.Log
 import codemining.core.common.langutil.Measure
 import vcsaccess.implementation.CommitMunging_Playground
-import codemining.core.vcsaccess.VcsAccess
+import vcsaccess.VcsAccess
 
 import static liveplugin.PluginUtil.show
 

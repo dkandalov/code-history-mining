@@ -14,8 +14,8 @@ import codemining.core.historystorage.HistoryGrabberConfig
 import codemining.core.historystorage.HistoryStorage
 import miner.ui.UI
 import codemining.core.common.langutil.Measure
-import codemining.core.vcsaccess.ChangeEventsReader
-import codemining.core.vcsaccess.VcsAccess
+import vcsaccess.ChangeEventsReader
+import vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 

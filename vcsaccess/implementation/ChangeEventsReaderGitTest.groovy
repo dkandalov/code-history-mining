@@ -4,17 +4,17 @@ import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
 import codemining.core.common.langutil.Measure
-import codemining.core.vcsaccess.ChangeEventsReader
-import codemining.core.vcsaccess.implementation.CommitFilesMunger
-import codemining.core.vcsaccess.implementation.CommitReader
+import vcsaccess.ChangeEventsReader
+import vcsaccess.implementation.CommitFilesMunger
+import vcsaccess.implementation.CommitReader
 import com.intellij.openapi.project.Project
 import org.junit.Ignore
 import org.junit.Test
 
 import static codemining.core.common.events.ChangeStats.NA
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
-import static codemining.core.vcsaccess.VcsAccess.commonVcsRootsAncestor
-import static codemining.core.vcsaccess.VcsAccess.vcsRootsIn
+import static vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static vcsaccess.VcsAccess.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 

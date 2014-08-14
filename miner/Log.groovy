@@ -5,7 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import codemining.core.historystorage.HistoryStorage
 import miner.ui.UI
-import codemining.core.vcsaccess.VcsAccessLog
+import vcsaccess.VcsAccessLog
 
 class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
