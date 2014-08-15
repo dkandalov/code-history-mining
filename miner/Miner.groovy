@@ -1,6 +1,7 @@
 package miner
 import codemining.core.analysis.Context
 import codemining.core.analysis.Visualization
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
@@ -44,7 +45,8 @@ class Miner {
 				def checkIfCancelled = CancelledException.check(indicator)
 
 				def events = storage.readAllEvents(file.name, checkIfCancelled)
-				def context = new Context(events, projectName, checkIfCancelled)
+                def log = { String message -> Logger.getInstance("CodeHistoryMining").info(message) }
+				def context = new Context(events, projectName, checkIfCancelled, log)
 				def html = visualization.generate(context)
 
 				ui.showInBrowser(html, projectName, visualization)
