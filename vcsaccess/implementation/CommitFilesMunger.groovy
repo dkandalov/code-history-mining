@@ -1,4 +1,9 @@
 package vcsaccess.implementation
+
+import codemining.core.common.events.ChangeStats
+import codemining.core.common.events.FileChangeEvent
+import codemining.core.common.events.FileChangeInfo
+import codemining.core.common.langutil.Measure
 import com.intellij.openapi.diff.impl.ComparisonPolicy
 import com.intellij.openapi.diff.impl.highlighting.FragmentSide
 import com.intellij.openapi.diff.impl.processing.TextCompareProcessor
@@ -6,14 +11,10 @@ import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.util.diff.FilesTooBigForDiffException
-import codemining.core.common.events.ChangeStats
-import codemining.core.common.events.FileChangeEvent
-import codemining.core.common.events.FileChangeInfo
-import codemining.core.common.langutil.Measure
 
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
-import static CommitMungingUtil.*
+import static vcsaccess.implementation.CommitMungingUtil.*
 
 class CommitFilesMunger {
 	private final boolean countChangeSizeInLines
@@ -83,8 +84,10 @@ class CommitFilesMunger {
 
 		def fragmentsByType = [:]
 		try {
-			fragmentsByType = new TextCompareProcessor(ComparisonPolicy.IGNORE_SPACE)
-					.process(beforeText, afterText).groupBy{ it.type }
+            // remove "\r" because it causes TextCompareProcessor to fail
+            fragmentsByType = new TextCompareProcessor(ComparisonPolicy.IGNORE_SPACE)
+					.process(beforeText.replaceAll("\r", ""), afterText.replaceAll("\r", ""))
+                    .groupBy{ it.type }
 		} catch (FilesTooBigForDiffException ignored) {
 			return [ChangeStats.TOO_BIG_TO_DIFF, ChangeStats.TOO_BIG_TO_DIFF]
 		}
