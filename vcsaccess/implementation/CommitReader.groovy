@@ -1,12 +1,14 @@
 package vcsaccess.implementation
+
+import codemining.core.common.langutil.DateRange
+import codemining.core.common.langutil.Measure
+import codemining.core.common.langutil.PastToPresentIterator
+import codemining.core.common.langutil.PresentToPastIterator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
-import codemining.core.common.langutil.Measure
-import codemining.core.common.langutil.PastToPresentIterator
-import codemining.core.common.langutil.PresentToPastIterator
 import org.jetbrains.annotations.Nullable
 import vcsaccess.VcsAccessLog
 
@@ -35,7 +37,7 @@ class CommitReader {
 
 		lastRequestHadErrors = false
 
-		Iterator dateIterator = (isReadingPresentToPast ?
+		Iterator<DateRange> dateIterator = (isReadingPresentToPast ?
 			new PresentToPastIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays) :
 			new PastToPresentIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays))
 		List<Commit> changes = []
