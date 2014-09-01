@@ -1,19 +1,15 @@
-import com.intellij.openapi.application.PathManager
+import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.HistoryStorage
+import com.intellij.openapi.application.PathManager
 import liveplugin.PluginUtil
+import miner.Log
 import miner.Miner
 import miner.ui.UI
-import miner.Log
-import codemining.core.common.langutil.Measure
-import vcsaccess.implementation.CommitMunging_Playground
 import vcsaccess.VcsAccess
 
 import static liveplugin.PluginUtil.show
 
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
-
-//noinspection GroovyConstantIfStatement
-if (false) return CommitMunging_Playground.playOnIt()
 
 def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 
