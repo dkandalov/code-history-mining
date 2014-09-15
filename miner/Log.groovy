@@ -3,7 +3,7 @@ package miner
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
-import codemining.core.historystorage.HistoryStorage
+import historystorage.HistoryStorage
 import miner.ui.UI
 import vcsaccess.VcsAccessLog
 

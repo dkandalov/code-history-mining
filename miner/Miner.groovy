@@ -11,8 +11,8 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
 import codemining.core.historystorage.EventStorage
-import codemining.core.historystorage.HistoryGrabberConfig
-import codemining.core.historystorage.HistoryStorage
+import historystorage.HistoryGrabberConfig
+import historystorage.HistoryStorage
 import miner.ui.UI
 import codemining.core.common.langutil.Measure
 import vcsaccess.ChangeEventsReader

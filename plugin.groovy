@@ -1,5 +1,5 @@
 import codemining.core.common.langutil.Measure
-import codemining.core.historystorage.HistoryStorage
+import historystorage.HistoryStorage
 import com.intellij.openapi.application.PathManager
 import liveplugin.PluginUtil
 import miner.Log

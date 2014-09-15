@@ -3,12 +3,12 @@ package miner
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import codemining.core.historystorage.EventStorage
-import codemining.core.historystorage.HistoryStorage
+import historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
 import codemining.core.common.langutil.Measure
 import vcsaccess.ChangeEventsReader
-import codemining.core.historystorage.HistoryGrabberConfig
+import historystorage.HistoryGrabberConfig
 import vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.date

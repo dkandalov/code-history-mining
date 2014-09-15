@@ -11,8 +11,8 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import codemining.core.historystorage.HistoryGrabberConfig
-import codemining.core.historystorage.HistoryStorage
+import historystorage.HistoryGrabberConfig
+import historystorage.HistoryStorage
 import liveplugin.PluginUtil
 import miner.Miner
 import miner.ui.http.HttpUtil
