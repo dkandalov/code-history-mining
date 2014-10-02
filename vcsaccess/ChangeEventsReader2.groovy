@@ -1,6 +1,10 @@
 package vcsaccess
+import codemining.core.vcs.CommitMunger
+import codemining.core.vcs.CommitMungerListener
+import codemining.core.vcs.FileTypes
 import codemining.core.vcs.HistoryReader
-import codemining.core.common.events.FileChangeEvent
+import com.intellij.openapi.fileTypes.FileTypeManager
+import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
 
@@ -12,24 +16,29 @@ class ChangeEventsReader2 {
 
     private final VcsProject project
     private final HistoryReader historyReader
-    private final def extractChangeEvents
+    private final CommitMunger commitMunger
+    private final FileTypes fileTypes
     private final VcsAccessLog log
     private boolean lastRequestHadErrors
 
 
-    ChangeEventsReader2(VcsProject project, Closure<Collection<FileChangeEvent>> extractChangeEvents = null, VcsAccessLog log = null) {
+    ChangeEventsReader2(VcsProject project, VcsAccessLog log = null) {
         this.project = project
-        this.extractChangeEvents = extractChangeEvents
         this.log = log
 
-        this.historyReader = new HistoryReader(new HistoryReader.Listener() {
-            @Override void onFatalError(String error) {
-                lastRequestHadErrors = true
+        this.commitMunger = new CommitMunger(new CommitMungerListener() {
+            @Override void failedToLoadContent(Change change) {
+                // TODO
             }
+        })
 
-            @Override void onError(String error) {
-                lastRequestHadErrors = true
-            }
+        this.historyReader = new HistoryReader(new HistoryReader.Listener() {
+            @Override void onFatalError(String error) { lastRequestHadErrors = true }
+            @Override void onError(String error) { lastRequestHadErrors = true }
+        })
+
+        this.fileTypes = new FileTypes(FileTypeManager.instance.registeredFileTypes.collect {
+            new FileTypes.FileType(it.defaultExtension, it.binary)
         })
     }
 
@@ -49,7 +58,7 @@ class ChangeEventsReader2 {
 
 			consumeWrapper(commit) {
 				try {
-					consume(extractChangeEvents(commit))
+					consume(commitMunger.convertToFileChangeEvents(commit, fileTypes))
 				} catch (Exception e) {
                     log?.onExtractChangeEventException(e)
                 }

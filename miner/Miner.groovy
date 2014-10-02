@@ -1,6 +1,9 @@
 package miner
+
 import codemining.core.analysis.Context
 import codemining.core.analysis.Visualization
+import codemining.core.common.langutil.Measure
+import codemining.core.historystorage.EventStorage
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -10,12 +13,10 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
-import codemining.core.historystorage.EventStorage
 import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
-import codemining.core.common.langutil.Measure
-import vcsaccess.ChangeEventsReader
+import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
@@ -101,7 +102,7 @@ class Miner {
 					measure.start()
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
-						def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
+						def eventsReader = vcsAccess.changeEventsReader2For(project, userInput.grabChangeSizeInLines)
 
 						def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
 
@@ -124,7 +125,7 @@ class Miner {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-				def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
+				def eventsReader = vcsAccess.changeEventsReader2For(project, config.grabChangeSizeInLines)
 				doGrabHistory(eventsReader, eventStorage, config, indicator)
 
 				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(today))
@@ -134,7 +135,7 @@ class Miner {
 		}
 	}
 
-	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
+	private doGrabHistory(ChangeEventsReader2 eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
 		def updateIndicatorText = { changeList, callback ->
 			log?.processingChangeList(changeList.name)
 

@@ -44,11 +44,8 @@ class VcsAccess {
 	}
 
     ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
-        new ChangeEventsReader2(
-            new VcsProjectWrapper(project, vcsRootsIn(project)),
-            new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit,
-            log
-        )
+        // TODO use grabChangeSizeInLines
+        new ChangeEventsReader2(new VcsProjectWrapper(project, vcsRootsIn(project)), log)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
