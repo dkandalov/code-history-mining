@@ -150,28 +150,11 @@ class Miner {
 		def fromDate = config.from
 		def toDate = config.to
 
-		def allEventWereStored = true
-		def appendToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.appendToEventsFile(commitChangeEvents) }
-		def prependToStorage = { commitChangeEvents -> allEventWereStored &= eventStorage.prependToEventsFile(commitChangeEvents) }
-
-		if (eventStorage.hasNoEvents()) {
-			log?.loadingProjectHistory(fromDate, toDate)
-			eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText, appendToStorage)
-
-		} else {
-			if (toDate > eventStorage.mostRecentEventTime) {
-				def (historyStart, historyEnd) = [eventStorage.mostRecentEventTime, toDate]
-				log?.loadingProjectHistory(historyStart, historyEnd)
-				// read events from past into future because they are prepended to storage
-				eventsReader.readPastToPresent(historyStart, historyEnd, isCancelled, updateIndicatorText, prependToStorage)
-			}
-
-			if (fromDate < eventStorage.oldestEventTime) {
-				def (historyStart, historyEnd) = [fromDate, eventStorage.oldestEventTime]
-				log?.loadingProjectHistory(historyStart, historyEnd)
-				eventsReader.readPresentToPast(historyStart, historyEnd, isCancelled, updateIndicatorText, appendToStorage)
-			}
-		}
+        log?.loadingProjectHistory(fromDate, toDate)
+        eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText) { commitChangeEvents ->
+            eventStorage.addEvents(commitChangeEvents)
+        }
+        eventStorage.flush()
 
 		def messageText = ""
 		if (eventStorage.hasNoEvents()) {
@@ -183,9 +166,6 @@ class Miner {
 		}
 		if (eventsReader.lastRequestHadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
-		}
-		if (!allEventWereStored) {
-			messageText += "\nSome of events were not added to csv file because it already contained events within the time range\n"
 		}
 		[text: messageText, title: "Code History Mining"]
 	}
