@@ -1,5 +1,5 @@
 package vcsaccess
-import codemining.cli.HistoryReader
+import codemining.core.vcs.HistoryReader
 import codemining.core.common.events.FileChangeEvent
 import vcsreader.Commit
 import vcsreader.VcsProject
