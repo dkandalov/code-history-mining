@@ -8,11 +8,11 @@ class VcsProjectWrapper extends VcsProject {
     private final IJProject project
 
     VcsProjectWrapper(IJProject project, List<IJVcsRoot> roots) {
-        super(convert(roots))
+        super(convert(roots, project))
         this.project = project
     }
 
-    private static List<VcsRoot> convert(Collection<IJVcsRoot> vcsRoots) {
+    private static List<VcsRoot> convert(Collection<IJVcsRoot> vcsRoots, IJProject project) {
         vcsRoots.collect { new VcsRootWrapper(project, it) }
     }
 }

@@ -4,6 +4,7 @@ import codemining.core.vcs.CommitMungerListener
 import codemining.core.vcs.FileTypes
 import codemining.core.vcs.HistoryReader
 import com.intellij.openapi.fileTypes.FileTypeManager
+import liveplugin.PluginUtil
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
@@ -29,12 +30,19 @@ class ChangeEventsReader2 {
         this.commitMunger = new CommitMunger(new CommitMungerListener() {
             @Override void failedToLoadContent(Change change) {
                 // TODO
+                PluginUtil.show("failedToLoadContent " + change)
             }
         })
 
         this.historyReader = new HistoryReader(new HistoryReader.Listener() {
-            @Override void onFatalError(String error) { lastRequestHadErrors = true }
-            @Override void onError(String error) { lastRequestHadErrors = true }
+            @Override void onFatalError(String error) {
+                PluginUtil.show(error) // TODO
+                lastRequestHadErrors = true
+            }
+            @Override void onError(String error) {
+                PluginUtil.show(error) // TODO
+                lastRequestHadErrors = true
+            }
         })
 
         this.fileTypes = new FileTypes(FileTypeManager.instance.registeredFileTypes.collect {

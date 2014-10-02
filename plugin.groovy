@@ -9,6 +9,7 @@ import vcsaccess.VcsAccess
 
 import static liveplugin.PluginUtil.show
 
+// add-to-classpath $PLUGIN_PATH/lib/vcs-reader.jar
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
 
 def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"

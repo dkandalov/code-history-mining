@@ -18,6 +18,7 @@ import historystorage.HistoryStorage
 import miner.ui.UI
 import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
+import vcsreader.Commit
 
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
@@ -46,8 +47,9 @@ class Miner {
 				def checkIfCancelled = CancelledException.check(indicator)
 
 				def events = storage.readAllEvents(file.name, checkIfCancelled)
-                def log = { String message -> Logger.getInstance("CodeHistoryMining").info(message) }
-				def context = new Context(events, projectName, checkIfCancelled, log)
+				def context = new Context(events, projectName, checkIfCancelled, { String message ->
+                    Logger.getInstance("CodeHistoryMining").info(message)
+                })
 				def html = visualization.generate(context)
 
 				ui.showInBrowser(html, projectName, visualization)
@@ -136,11 +138,11 @@ class Miner {
 	}
 
 	private doGrabHistory(ChangeEventsReader2 eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
-		def updateIndicatorText = { changeList, callback ->
-			log?.processingChangeList(changeList.name)
+		def updateIndicatorText = { Commit commit, callback ->
+			def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
 
-			def date = DateFormatUtil.dateFormat.format((Date) changeList.commitDate)
-			indicator?.text = "Grabbing project history (${date} - '${changeList.comment.trim()}')"
+            log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
+            indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
 
 			callback()
 

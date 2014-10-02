@@ -1,8 +1,6 @@
 package vcsaccess.implementation.wrappers
-
-import vcsreader.Change
 import com.intellij.openapi.vcs.changes.Change as IJChange
-import static vcsreader.Change.Type
+import vcsreader.Change
 
 class ChangeWrapper extends Change {
     private final IJChange ijChange
@@ -10,10 +8,10 @@ class ChangeWrapper extends Change {
     ChangeWrapper(IJChange ijChange) {
         super(
             convert(ijChange.type),
-            ijChange.afterRevision.file.path,
-            ijChange.beforeRevision.file.path,
-            ijChange.afterRevision.revisionNumber.asString(),
-            ijChange.beforeRevision.revisionNumber.asString()
+            withDefault(noFilePath, ijChange.afterRevision?.file?.path),
+            withDefault(noFilePath, ijChange.beforeRevision?.file?.path),
+            withDefault(noRevision, ijChange.afterRevision?.revisionNumber?.asString()),
+            withDefault(noRevision, ijChange.beforeRevision?.revisionNumber?.asString())
         )
         this.ijChange = ijChange
     }
@@ -26,14 +24,18 @@ class ChangeWrapper extends Change {
         ijChange.beforeRevision.content
     }
 
-    private static Type convert(IJChange.Type changeType) {
+    @SuppressWarnings("UnnecessaryQualifiedReference") // because IntelliJ doesn't understand that import is required by groovy
+    private static Change.Type convert(IJChange.Type changeType) {
         switch (changeType) {
-            case IJChange.Type.MODIFICATION: return Type.MODIFICATION
-            case IJChange.Type.NEW: return Type.NEW
-            case IJChange.Type.DELETED: return Type.DELETED
-            case IJChange.Type.MOVED: return Type.MOVED
+            case IJChange.Type.MODIFICATION: return Change.Type.MODIFICATION
+            case IJChange.Type.NEW: return Change.Type.NEW
+            case IJChange.Type.DELETED: return Change.Type.DELETED
+            case IJChange.Type.MOVED: return Change.Type.MOVED
             default: throw new IllegalStateException("Unknown change type: ${changeType}")
         }
     }
+
+    // TODO move to langutil
+    static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }
 

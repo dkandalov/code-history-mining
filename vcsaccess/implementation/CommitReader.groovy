@@ -1,5 +1,4 @@
 package vcsaccess.implementation
-
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.common.langutil.PastToPresentIterator
