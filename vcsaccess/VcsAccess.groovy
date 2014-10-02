@@ -12,6 +12,8 @@ import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
+import vcsaccess.implementation.wrappers.VcsProjectWrapper
+import vcsreader.VcsProject
 
 import static vcsaccess.implementation.CommitMungingUtil.withDefault
 import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
@@ -36,6 +38,11 @@ class VcsAccess {
 				new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit
 		)
 	}
+
+    // TODO replace with HistoryReader
+    VcsProject createVcsProject(Project project) {
+        new VcsProjectWrapper(project, vcsRootsIn(project))
+    }
 
     @SuppressWarnings("GrMethodMayBeStatic")
     def update(Project project) {
