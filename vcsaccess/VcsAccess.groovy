@@ -1,10 +1,14 @@
 package vcsaccess
+
 import codemining.core.common.langutil.Measure
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.util.Ref
-import com.intellij.openapi.vcs.*
+import com.intellij.openapi.vcs.FilePath
+import com.intellij.openapi.vcs.FilePathImpl
+import com.intellij.openapi.vcs.ProjectLevelVcsManager
+import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.update.UpdatedFiles
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
@@ -13,12 +17,11 @@ import org.jetbrains.annotations.Nullable
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
 import vcsaccess.implementation.wrappers.VcsProjectWrapper
-import vcsreader.VcsProject
 
-import static vcsaccess.implementation.CommitMungingUtil.withDefault
 import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
+import static vcsaccess.implementation.CommitMungingUtil.withDefault
 
 class VcsAccess {
 	private final Measure measure
@@ -33,15 +36,19 @@ class VcsAccess {
     ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
 		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
         new ChangeEventsReader(
-				vcsRootsIn(project),
-				new CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
-				new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit
+            vcsRootsIn(project),
+            new CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
+            new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit,
+            log
 		)
 	}
 
-    // TODO replace with HistoryReader
-    VcsProject createVcsProject(Project project) {
-        new VcsProjectWrapper(project, vcsRootsIn(project))
+    ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
+        new ChangeEventsReader2(
+            new VcsProjectWrapper(project, vcsRootsIn(project)),
+            new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit,
+            log
+        )
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
