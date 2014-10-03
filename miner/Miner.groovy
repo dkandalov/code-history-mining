@@ -1,5 +1,4 @@
 package miner
-
 import codemining.core.analysis.Context
 import codemining.core.analysis.Visualization
 import codemining.core.common.langutil.Measure

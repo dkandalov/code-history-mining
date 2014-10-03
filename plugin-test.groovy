@@ -4,6 +4,7 @@ import miner.MinerTest
 import vcsaccess.implementation.ChangeEventsReaderGitTest
 import vcsaccess.implementation.CommitReaderGitTest
 
+// add-to-classpath $PLUGIN_PATH/lib/vcs-reader.jar
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
 
 def unitTests = [GroovyStubber, MinerTest]

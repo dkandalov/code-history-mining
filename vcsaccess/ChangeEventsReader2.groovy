@@ -23,7 +23,7 @@ class ChangeEventsReader2 {
     private boolean lastRequestHadErrors
 
 
-    ChangeEventsReader2(VcsProject project, VcsAccessLog log = null) {
+    ChangeEventsReader2(VcsProject project = null, VcsAccessLog log = null) {
         this.project = project
         this.log = log
 

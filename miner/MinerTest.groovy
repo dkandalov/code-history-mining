@@ -9,6 +9,7 @@ import org.junit.Test
 import codemining.core.common.langutil.Measure
 import vcsaccess.ChangeEventsReader
 import historystorage.HistoryGrabberConfig
+import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.date
@@ -41,7 +42,7 @@ class MinerTest {
 		assert !grabbedVcs
 	}
 
-	@Test def "on VCS update grabs history from latest event in file history util today"() {
+	@Test def "on VCS update grabs history from the today to the latest event in file history"() {
 		// given
 		Date grabbedFrom = null
 		Date grabbedTo = null
@@ -51,9 +52,9 @@ class MinerTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
-				stub(ChangeEventsReader, [
-					readPastToPresent: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
+		def vcsAccess = stub(VcsAccess, [changeEventsReader2For: returns(
+				stub(ChangeEventsReader2, [
+                    readPresentToPast: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
 						grabbedFrom = historyStart
 						grabbedTo = historyEnd
 					}
@@ -63,10 +64,10 @@ class MinerTest {
 
 		// when / then
 		def today = date("23/11/2012")
-		miner.grabHistoryOnVcsUpdate(someProject, today)
-		assert grabbedFrom == dateTime("13:40 20/11/2012")
-		assert grabbedTo == dateTime("00:00 23/11/2012")
-	}
+        miner.grabHistoryOnVcsUpdate(someProject, today)
+        assert grabbedFrom == dateTime("00:00 23/11/2012")
+        assert grabbedTo == dateTime("13:40 20/11/2012")
+    }
 
 	@Test def "on grab history should register VCS update listener"() {
 		// given
