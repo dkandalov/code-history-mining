@@ -1,19 +1,17 @@
 package miner
-
+import codemining.core.common.langutil.Measure
+import codemining.core.historystorage.EventStorage
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import codemining.core.historystorage.EventStorage
+import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
-import codemining.core.common.langutil.Measure
 import vcsaccess.ChangeEventsReader
-import historystorage.HistoryGrabberConfig
 import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
 
-import static codemining.core.common.langutil.DateTimeUtil.date
-import static codemining.core.common.langutil.DateTimeUtil.dateTime
+import static codemining.core.common.langutil.DateTimeUtil.*
 import static miner.GroovyStubber.*
 
 class MinerTest {
@@ -48,7 +46,7 @@ class MinerTest {
 		Date grabbedTo = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageFor: returns(stub(EventStorage, [
-						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
+                        storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
@@ -62,11 +60,13 @@ class MinerTest {
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
 		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
 
-		// when / then
+		// when
 		def today = date("23/11/2012")
         miner.grabHistoryOnVcsUpdate(someProject, today)
-        assert grabbedFrom == dateTime("00:00 23/11/2012")
-        assert grabbedTo == dateTime("13:40 20/11/2012")
+
+        // then
+        assert grabbedFrom == date("20/11/2012")
+        assert grabbedTo == date("23/11/2012")
     }
 
 	@Test def "on grab history should register VCS update listener"() {

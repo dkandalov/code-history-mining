@@ -1,6 +1,7 @@
 package miner
 import codemining.core.analysis.Context
 import codemining.core.analysis.Visualization
+import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
 import com.intellij.openapi.diagnostic.Logger
@@ -19,6 +20,7 @@ import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
 import vcsreader.Commit
 
+import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 class Miner {
@@ -104,8 +106,9 @@ class Miner {
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
 						def eventsReader = vcsAccess.changeEventsReader2For(project, userInput.grabChangeSizeInLines)
+                        def requestDateRange = dateRange(userInput.from, userInput.to)
 
-						def message = doGrabHistory(eventsReader, eventStorage, userInput, indicator)
+                        def message = doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
 
 						ui.showGrabbingFinishedMessage(message.text, message.title, project)
 					}
@@ -119,7 +122,7 @@ class Miner {
 
 	def grabHistoryOnVcsUpdate(Project project, Date today = floorToDay(new Date())) {
 		if (grabHistoryIsInProgress) return
-		def config = storage.loadGrabberConfigFor(project.name).withToDate(today)
+		def config = storage.loadGrabberConfigFor(project.name)
 		if (floorToDay(config.lastGrabTime) == today) return
 
 		grabHistoryIsInProgress = true
@@ -127,7 +130,9 @@ class Miner {
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
 				def eventsReader = vcsAccess.changeEventsReader2For(project, config.grabChangeSizeInLines)
-				doGrabHistory(eventsReader, eventStorage, config, indicator)
+                def requestDateRange = dateRange(eventStorage.storedDateRange().to, today)
+
+				doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
 
 				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(today))
 			} finally {
@@ -136,7 +141,7 @@ class Miner {
 		}
 	}
 
-	private doGrabHistory(ChangeEventsReader2 eventsReader, EventStorage eventStorage, HistoryGrabberConfig config, indicator = null) {
+	private doGrabHistory(ChangeEventsReader2 eventsReader, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
 		def updateIndicatorText = { Commit commit, callback ->
 			def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
 
@@ -148,23 +153,25 @@ class Miner {
 			indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
 		}
 		def isCancelled = { indicator?.canceled }
-
-		def fromDate = config.from
-		def toDate = config.to
-
-        log?.loadingProjectHistory(fromDate, toDate)
-        eventsReader.readPresentToPast(fromDate, toDate, isCancelled, updateIndicatorText) { commitChangeEvents ->
-            eventStorage.addEvents(commitChangeEvents)
+        def loadProjectHistory = { DateRange dateRange ->
+            log?.loadingProjectHistory(dateRange.from, dateRange.to)
+            eventsReader.readPresentToPast(dateRange.from, dateRange.to, isCancelled, updateIndicatorText) { commitChangeEvents ->
+                eventStorage.addEvents(commitChangeEvents)
+            }
+            eventStorage.flush()
         }
-        eventStorage.flush()
+
+        def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
+        if (dateRanges.first != null) loadProjectHistory(dateRanges.first)
+        if (dateRanges.second != null) loadProjectHistory(dateRanges.second)
 
 		def messageText = ""
 		if (eventStorage.hasNoEvents()) {
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "However, it has nothing in it probably because there are no commits from $fromDate to $toDate\n"
+			messageText += "However, it has nothing in it probably because there are no commits from $config.from to $config.to\n"
 		} else {
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "It should have history from '${eventStorage.oldestEventTime}' to '${eventStorage.mostRecentEventTime}'.\n"
+			messageText += "It should have history from '${eventStorage.storedDateRange().from}' to '${eventStorage.storedDateRange().to}'.\n"
 		}
 		if (eventsReader.lastRequestHadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
