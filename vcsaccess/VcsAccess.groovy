@@ -1,5 +1,4 @@
 package vcsaccess
-
 import codemining.core.common.langutil.Measure
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
@@ -21,10 +20,10 @@ import vcsaccess.implementation.CommitReader
 import vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
+import static codemining.core.common.langutil.Misc.withDefault
 import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
-import static vcsaccess.implementation.CommitMungingUtil.withDefault
 
 class VcsAccess {
 	private final Measure measure

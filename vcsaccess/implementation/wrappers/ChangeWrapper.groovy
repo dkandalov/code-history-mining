@@ -2,6 +2,8 @@ package vcsaccess.implementation.wrappers
 import com.intellij.openapi.vcs.changes.Change as IJChange
 import vcsreader.Change
 
+import static codemining.core.common.langutil.Misc.withDefault
+
 @SuppressWarnings("UnnecessaryQualifiedReference") // because IntelliJ doesn't understand that import is required by groovy
 class ChangeWrapper extends Change {
     static ChangeWrapper none = null
@@ -49,8 +51,5 @@ class ChangeWrapper extends Change {
             default: throw new IllegalStateException("Unknown change type: ${changeType}")
         }
     }
-
-    // TODO move to langutil
-    static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }
 

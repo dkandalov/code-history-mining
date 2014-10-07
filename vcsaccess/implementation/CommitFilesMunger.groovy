@@ -1,5 +1,4 @@
 package vcsaccess.implementation
-
 import codemining.core.common.events.ChangeStats
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
@@ -12,6 +11,7 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.util.diff.FilesTooBigForDiffException
 
+import static codemining.core.common.langutil.Misc.withDefault
 import static com.intellij.openapi.diff.impl.util.TextDiffTypeEnum.*
 import static com.intellij.openapi.vcs.changes.Change.Type.MODIFICATION
 import static vcsaccess.implementation.CommitMungingUtil.*

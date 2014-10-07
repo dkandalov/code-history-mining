@@ -1,9 +1,11 @@
 package vcsaccess.implementation
+import codemining.core.common.events.CommitInfo
 import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.changes.ContentRevision
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
-import codemining.core.common.events.CommitInfo
+
+import static codemining.core.common.langutil.Misc.withDefault
 
 class CommitMungingUtil {
 	static CommitInfo commitInfoOf(CommittedChangeList commit) {
@@ -45,6 +47,4 @@ class CommitMungingUtil {
 	private static String removeEmailFrom(String committerName) {
 		committerName.replaceAll(/\s+<.+@.+>/, "").trim()
 	}
-
-	static <T> T withDefault(T defaultValue, T value) { value == null ? defaultValue : value }
 }

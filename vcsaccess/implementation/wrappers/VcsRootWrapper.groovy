@@ -1,4 +1,5 @@
 package vcsaccess.implementation.wrappers
+
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
@@ -8,7 +9,7 @@ import vcsreader.Commit
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
-import static vcsaccess.implementation.wrappers.ChangeWrapper.withDefault
+import static codemining.core.common.langutil.Misc.withDefault
 import static vcsreader.Change.noRevision
 
 class VcsRootWrapper implements VcsRoot {
