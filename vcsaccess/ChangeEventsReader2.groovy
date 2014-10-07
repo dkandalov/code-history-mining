@@ -1,11 +1,9 @@
 package vcsaccess
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.CommitMungerListener
 import codemining.core.vcs.FileTypes
 import codemining.core.vcs.HistoryReader
 import com.intellij.openapi.fileTypes.FileTypeManager
 import liveplugin.PluginUtil
-import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
 
@@ -23,16 +21,10 @@ class ChangeEventsReader2 {
     private boolean lastRequestHadErrors
 
 
-    ChangeEventsReader2(VcsProject project = null, VcsAccessLog log = null) {
+    ChangeEventsReader2(VcsProject project = null, CommitMunger commitMunger = null, VcsAccessLog log = null) {
         this.project = project
         this.log = log
-
-        this.commitMunger = new CommitMunger(new CommitMungerListener() {
-            @Override void failedToLoadContent(Change change) {
-                // TODO
-                PluginUtil.show("failedToLoadContent " + change)
-            }
-        })
+        this.commitMunger = commitMunger
 
         this.historyReader = new HistoryReader(new HistoryReader.Listener() {
             @Override void onFatalError(String error) {
@@ -45,9 +37,11 @@ class ChangeEventsReader2 {
             }
         })
 
-        this.fileTypes = new FileTypes(FileTypeManager.instance.registeredFileTypes.collect {
-            new FileTypes.FileType(it.defaultExtension, it.binary)
-        })
+        this.fileTypes = new FileTypes([]) {
+            @Override boolean isBinary(String fileName) {
+                FileTypeManager.instance.getFileTypeByFileName(fileName).binary
+            }
+        }
     }
 
 	def readPresentToPast(Date historyStart, Date historyEnd, Closure isCancelled = null,
@@ -57,7 +51,7 @@ class ChangeEventsReader2 {
 
 	private request(Date historyStart, Date historyEnd, Closure isCancelled = null, Closure consumeWrapper, Closure consume) {
 		def fromDate = floorToDay(historyStart)
-		def toDate = floorToDay(historyEnd) + 1 // +1 because commitReader end date is exclusive
+		def toDate = floorToDay(historyEnd) + 1 // +1 because commitReader end date is exclusive TODO make it exclusive?
 
 		Iterator<Commit> commits = historyReader.readHistoryFrom(project, dateRange(fromDate, toDate))
 

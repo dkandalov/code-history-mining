@@ -14,11 +14,13 @@ import static vcsreader.Change.noRevision
 class VcsRootWrapper implements VcsRoot {
     private final IJProject project
     private final IJVcsRoot vcsRoot
+    private final String commonVcsRoot
     private final int vcsRequestBatchSizeInDays = 10000 // TODO remove
 
-    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot) {
+    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot, String commonVcsRoot) {
         this.project = project
         this.vcsRoot = vcsRoot
+        this.commonVcsRoot = commonVcsRoot
     }
 
     @Override VcsProject.LogResult log(Date fromDate, Date toDate) {
@@ -32,13 +34,16 @@ class VcsRootWrapper implements VcsRoot {
             def revision = withDefault(noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
             def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 
+            def changes = convertChangesFrom(ijCommit)
+            if (changes.empty) continue
+
             def commit = new Commit(
                     revision,
                     revisionBefore,
                     ijCommit.commitDate,
                     ijCommit.committerName,
-                    ijCommit.comment,
-                    convertChangesFrom(ijCommit)
+                    ijCommit.comment.trim(),
+                    changes
             )
 
             result.add(commit)
@@ -47,9 +52,12 @@ class VcsRootWrapper implements VcsRoot {
         new VcsProject.LogResult(result, [])
     }
 
-    private static List<Change> convertChangesFrom(IJCommit ijCommit) {
-        ijCommit.changes.collect { new ChangeWrapper(it) }
+    private List<Change> convertChangesFrom(IJCommit ijCommit) {
+        ijCommit.changes
+            .collect { ChangeWrapper.create(it, commonVcsRoot) }
+            .findAll{ it != ChangeWrapper.none }
     }
+
 
     @Override VcsProject.LogContentResult contentOf(String filePath, String revision) {
         throw new IllegalStateException("Shouldn't be called (filePath: ${filePath}; revision: ${revision}")

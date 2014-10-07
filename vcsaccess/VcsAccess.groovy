@@ -1,6 +1,8 @@
 package vcsaccess
 
 import codemining.core.common.langutil.Measure
+import codemining.core.vcs.CommitMunger
+import codemining.core.vcs.CommitMungerListener
 import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.Nullable
 import vcsaccess.implementation.CommitFilesMunger
 import vcsaccess.implementation.CommitReader
 import vcsaccess.implementation.wrappers.VcsProjectWrapper
+import vcsreader.Change
 
 import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
@@ -44,8 +47,15 @@ class VcsAccess {
 	}
 
     ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
-        // TODO use grabChangeSizeInLines
-        new ChangeEventsReader2(new VcsProjectWrapper(project, vcsRootsIn(project)), log)
+        def commitMunger = new CommitMunger(grabChangeSizeInLines, commonVcsRootsAncestor(project), new CommitMungerListener() {
+            @Override void failedToLoadContent(Change change) {
+                // TODO
+                PluginUtil.show("failedToLoadContent " + change)
+            }
+        })
+
+        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
+        new ChangeEventsReader2(projectWrapper, commitMunger, log)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
