@@ -1,12 +1,10 @@
 package miner
-
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import historystorage.HistoryStorage
 import miner.ui.UI
 import vcsaccess.VcsAccessLog
-import vcsreader.Change
 
 class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
@@ -43,8 +41,8 @@ class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
         logger.warn(e)
     }
 
-    @Override def failedToLoadContent(Change change) {
-        logger.warn("Filed to load file content for ${change}")
+    @Override def failedToLoadContent(String message) {
+        logger.warn("Filed to load file content: ${message}")
     }
 
     @Override def failedToRead(def line) {

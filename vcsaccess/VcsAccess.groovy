@@ -15,8 +15,6 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import vcsaccess.implementation.CommitFilesMunger
-import vcsaccess.implementation.CommitReader
 import vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
@@ -35,20 +33,10 @@ class VcsAccess {
 		this.log = log
 	}
 
-    ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
-		def vcsRequestBatchSizeInDays = 1 // based on personal observation (hardcoded so that not to clutter UI dialog)
-        new ChangeEventsReader(
-            vcsRootsIn(project),
-            new CommitReader(project, vcsRequestBatchSizeInDays, measure, log),
-            new CommitFilesMunger(commonVcsRootsAncestor(project), grabChangeSizeInLines).&mungeCommit,
-            log
-		)
-	}
-
     ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
         def commitMunger = new CommitMunger(grabChangeSizeInLines, new CommitMungerListener() {
             @Override void failedToLoadContent(Change change) {
-                log.failedToLoadContent(change)
+                log.failedToLoadContent(change.toString())
             }
         })
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
@@ -119,5 +107,5 @@ interface VcsAccessLog {
 
     def onExtractChangeEventException(Exception e)
 
-    def failedToLoadContent(Change change)
+    def failedToLoadContent(String message)
 }

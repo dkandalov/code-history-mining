@@ -7,7 +7,6 @@ import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
 import org.junit.Test
-import vcsaccess.ChangeEventsReader
 import vcsaccess.ChangeEventsReader2
 import vcsaccess.VcsAccess
 
@@ -26,8 +25,8 @@ class MinerTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
-				stub(ChangeEventsReader, [
-					readPastToPresent: { Object... args ->
+				stub(ChangeEventsReader2, [
+					readPresentToPast: { Object... args ->
 						grabbedVcs = true
 					}
 		]))])
@@ -79,7 +78,7 @@ class MinerTest {
 				}
 		])
 		def vcsAccess = stub(VcsAccess, [
-				changeEventsReaderFor: returns(stub(ChangeEventsReader)),
+				changeEventsReaderFor: returns(stub(ChangeEventsReader2)),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
 		def miner = new Miner(ui, stub(HistoryStorage), vcsAccess, new Measure())
@@ -100,7 +99,7 @@ class MinerTest {
 				},
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(stub(ChangeEventsReader))])
+		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(stub(ChangeEventsReader2))])
 		def miner = new Miner(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then
