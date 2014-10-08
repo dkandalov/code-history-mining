@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.VcsRoot
 import historystorage.HistoryStorage
 import miner.ui.UI
 import vcsaccess.VcsAccessLog
+import vcsreader.Change
 
 class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
@@ -30,12 +31,20 @@ class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 		logger.warn("Error while reading commits from ${fromDate} to ${toDate}", e)
 	}
 
+	@Override errorReadingCommits(String error) {
+		logger.warn("Error while reading commits: ${error}")
+	}
+
 	@Override def failedToLocate(VcsRoot vcsRoot, Project project) {
 		logger.warn("Failed to find location for ${vcsRoot} in ${project}")
 	}
 
     @Override def onExtractChangeEventException(Exception e) {
         logger.warn(e)
+    }
+
+    @Override def failedToLoadContent(Change change) {
+        logger.warn("Filed to load file content for ${change}")
     }
 
     @Override def failedToRead(def line) {

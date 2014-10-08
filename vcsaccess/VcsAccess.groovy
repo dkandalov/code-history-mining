@@ -46,13 +46,11 @@ class VcsAccess {
 	}
 
     ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
-        def commitMunger = new CommitMunger(grabChangeSizeInLines, commonVcsRootsAncestor(project), new CommitMungerListener() {
+        def commitMunger = new CommitMunger(grabChangeSizeInLines, new CommitMungerListener() {
             @Override void failedToLoadContent(Change change) {
-                // TODO
-                PluginUtil.show("failedToLoadContent " + change)
+                log.failedToLoadContent(change)
             }
         })
-
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
         new ChangeEventsReader2(projectWrapper, commitMunger, log)
     }
@@ -115,7 +113,11 @@ class VcsAccess {
 interface VcsAccessLog {
 	def errorReadingCommits(Exception e, Date fromDate, Date toDate)
 
+    def errorReadingCommits(String error)
+
 	def failedToLocate(VcsRoot vcsRoot, Project project)
 
     def onExtractChangeEventException(Exception e)
+
+    def failedToLoadContent(Change change)
 }

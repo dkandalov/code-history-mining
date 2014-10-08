@@ -3,7 +3,6 @@ import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.FileTypes
 import codemining.core.vcs.HistoryReader
 import com.intellij.openapi.fileTypes.FileTypeManager
-import liveplugin.PluginUtil
 import vcsreader.Commit
 import vcsreader.VcsProject
 
@@ -28,11 +27,11 @@ class ChangeEventsReader2 {
 
         this.historyReader = new HistoryReader(new HistoryReader.Listener() {
             @Override void onFatalError(String error) {
-                PluginUtil.show(error) // TODO
+                log.errorReadingCommits(error)
                 lastRequestHadErrors = true
             }
             @Override void onError(String error) {
-                PluginUtil.show(error) // TODO
+                log.errorReadingCommits(error)
                 lastRequestHadErrors = true
             }
         })
