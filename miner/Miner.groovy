@@ -16,7 +16,7 @@ import com.intellij.util.text.DateFormatUtil
 import historystorage.HistoryGrabberConfig
 import historystorage.HistoryStorage
 import miner.ui.UI
-import vcsaccess.ChangeEventsReader2
+import vcsaccess.ChangeEventsReader
 import vcsaccess.VcsAccess
 import vcsreader.Commit
 
@@ -105,7 +105,7 @@ class Miner {
 					measure.start()
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
-						def eventsReader = vcsAccess.changeEventsReader2For(project, userInput.grabChangeSizeInLines)
+						def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
                         def requestDateRange = dateRange(userInput.from, userInput.to)
 
                         def message = doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
@@ -129,7 +129,7 @@ class Miner {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-				def eventsReader = vcsAccess.changeEventsReader2For(project, config.grabChangeSizeInLines)
+				def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
                 def requestDateRange = dateRange(eventStorage.storedDateRange().to, today)
 
 				doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
@@ -141,7 +141,7 @@ class Miner {
 		}
 	}
 
-	private doGrabHistory(ChangeEventsReader2 eventsReader, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
+	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
 		def updateIndicatorText = { Commit commit, callback ->
 			def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
 

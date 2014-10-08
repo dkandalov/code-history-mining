@@ -33,14 +33,14 @@ class VcsAccess {
 		this.log = log
 	}
 
-    ChangeEventsReader2 changeEventsReader2For(Project project, boolean grabChangeSizeInLines) {
+    ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
         def commitMunger = new CommitMunger(grabChangeSizeInLines, new CommitMungerListener() {
             @Override void failedToLoadContent(Change change) {
                 log.failedToLoadContent(change.toString())
             }
         })
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
-        new ChangeEventsReader2(projectWrapper, commitMunger, log)
+        new ChangeEventsReader(projectWrapper, commitMunger, log)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")

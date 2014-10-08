@@ -9,7 +9,7 @@ import vcsreader.VcsProject
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
-class ChangeEventsReader2 {
+class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
     private final VcsProject project
@@ -20,7 +20,7 @@ class ChangeEventsReader2 {
     private boolean lastRequestHadErrors
 
 
-    ChangeEventsReader2(VcsProject project = null, CommitMunger commitMunger = null, VcsAccessLog log = null) {
+    ChangeEventsReader(VcsProject project = null, CommitMunger commitMunger = null, VcsAccessLog log = null) {
         this.project = project
         this.log = log
         this.commitMunger = commitMunger

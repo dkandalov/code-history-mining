@@ -7,7 +7,7 @@ import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
 import com.intellij.openapi.project.Project
 import org.junit.Test
-import vcsaccess.ChangeEventsReader2
+import vcsaccess.ChangeEventsReader
 import vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat
 import static vcsaccess.VcsAccess.commonVcsRootsAncestor
 import static vcsaccess.VcsAccess.vcsRootsIn
 
-class ChangeEventsReader2GitTest {
+class ChangeEventsReaderGitTest {
 
     @Test void "should read file events"() {
 		def countChangeSizeInLines = false
@@ -88,7 +88,7 @@ class ChangeEventsReader2GitTest {
     private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, CommitMunger commitMunger) {
 		def eventsConsumer = new EventConsumer()
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
-        def eventsReader = new ChangeEventsReader2(projectWrapper, commitMunger, null)
+        def eventsReader = new ChangeEventsReader(projectWrapper, commitMunger, null)
 
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
 
