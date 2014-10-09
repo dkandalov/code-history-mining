@@ -33,7 +33,7 @@ sourceSets {
 }
 
 task jarPlugin(dependsOn: [compileGroovy]) << {
-    def targetFolder = "${basePath}/build/code-history-mining-plugin"
+    def targetFolder = "${basePath}/build/code-history-mining-plugin/code-history-mining-plugin"
     ant.delete(dir: targetFolder)
 
     ant.copy(toDir: "${basePath}/build/classes/main/META-INF/") {
