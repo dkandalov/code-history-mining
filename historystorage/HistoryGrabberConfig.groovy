@@ -16,10 +16,6 @@ class HistoryGrabberConfig {
 	boolean grabOnVcsUpdate
 	Date lastGrabTime
 
-	HistoryGrabberConfig withToDate(Date newToDate) {
-		new HistoryGrabberConfig(from, newToDate, outputFilePath, grabChangeSizeInLines, grabOnVcsUpdate, lastGrabTime)
-	}
-
 	HistoryGrabberConfig withLastGrabTime(Date updatedLastGrabTime) {
 		new HistoryGrabberConfig(from, to, outputFilePath, grabChangeSizeInLines, grabOnVcsUpdate, updatedLastGrabTime)
 	}
