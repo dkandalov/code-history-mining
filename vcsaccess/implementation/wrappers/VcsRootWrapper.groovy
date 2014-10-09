@@ -1,8 +1,8 @@
 package vcsaccess.implementation.wrappers
-
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
+import vcsaccess.VcsAccessLog
 import vcsaccess.implementation.CommitReader
 import vcsreader.Change
 import vcsreader.Commit
@@ -16,22 +16,21 @@ class VcsRootWrapper implements VcsRoot {
     private final IJProject project
     private final IJVcsRoot vcsRoot
     private final String commonVcsRoot
-    private final int vcsRequestBatchSizeInDays = 10000 // TODO remove
+    private final VcsAccessLog log
 
-    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot, String commonVcsRoot) {
+    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot, String commonVcsRoot, VcsAccessLog log) {
         this.project = project
         this.vcsRoot = vcsRoot
         this.commonVcsRoot = commonVcsRoot
+        this.log = log
     }
 
     @Override VcsProject.LogResult log(Date fromDate, Date toDate) {
-        def reader = new CommitReader(project, vcsRequestBatchSizeInDays)
-        def commits = reader.readCommits(fromDate, toDate, true, [vcsRoot]).toList().findAll{ it != null }
+        def reader = new CommitReader(project, log)
+        def commits = reader.readCommits(fromDate, toDate, [vcsRoot])
 
         def result = []
         for (IJCommit ijCommit in commits) {
-            if (ijCommit == CommitReader.NO_MORE_COMMITS) break
-
             def revision = withDefault(noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
             def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 

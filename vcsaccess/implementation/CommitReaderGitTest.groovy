@@ -38,63 +38,26 @@ class CommitReaderGitTest {
 	@Test void "should ignore merge commits and include merge changes as separate change lists"() {
 		def commits = readSingleCommit("dc730e3", dateTime("09:00 09/05/2013"), dateTime("16:02 09/05/2013"))
 
-		def changes = commits.changes
-		assert changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
+        assert commits.changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
-	@Test void "should order commits by ascending time when reading from past to present"() {
-		def isReadingPresentToPast = false
-		def from = date("03/10/2007")
-		def to = date("04/10/2007")
-
-		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
-
+	@Test void "end date is exclusive"() {
+		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"))
 		assert commits.size() == 3
-		assert commits[0].commitDate.before(commits[1].commitDate)
-		assert commits[1].commitDate.before(commits[2].commitDate)
-	}
-
-	@Test void "should order commits by descending time when reading from present to past"() {
-		def isReadingPresentToPast = true
-		def from = date("03/10/2007")
-		def to = date("04/10/2007")
-
-		def commits = readJUnitCommits(from, to, isReadingPresentToPast)
-
-		assert commits.size() == 3
-		assert commits[0].commitDate.after(commits[1].commitDate)
-		assert commits[1].commitDate.after(commits[2].commitDate)
-	}
-
-	@Test void "end date is exclusive when reading present to past"() {
-		def isReadingPresentToPast = true
-
-		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 3
-		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 7
-	}
-
-	@Test void "end date is exclusive when reading past to present"() {
-		def isReadingPresentToPast = false
-
-		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"), isReadingPresentToPast)
-		assert commits.size() == 3
-		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"), isReadingPresentToPast)
+		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"))
 		assert commits.size() == 7
 	}
 
 	private Commit readSingleCommit(String gitHash, Date from, Date to) {
-		def commits = readJUnitCommits(from, to, true)
+		def commits = readJUnitCommits(from, to)
 				.findAll{ (it as VcsRevisionNumberAware).revisionNumber.asString().startsWith(gitHash) }
 
 		assert commits.size() == 1 : "Expected single element but got ${commits.size()} commits for dates from [${from}] to [${to}]"
 		commits.first()
 	}
 
-	private List<CommittedChangeList> readJUnitCommits(Date from, Date to, boolean isReadingPresentToPast) {
-		new CommitReader(jUnitProject).readCommits(from, to, isReadingPresentToPast, vcsRootsIn(jUnitProject))
-				.toList().findAll{it != CommitReader.NO_MORE_COMMITS}
+	private List<CommittedChangeList> readJUnitCommits(Date from, Date to) {
+		new CommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject))
 	}
 
 	static Project findOpenedJUnitProject() {

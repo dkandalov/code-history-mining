@@ -39,7 +39,7 @@ class VcsAccess {
                 log.failedToLoadContent(change.toString())
             }
         })
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
+        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
         new ChangeEventsReader(projectWrapper, commitMunger, log)
     }
 

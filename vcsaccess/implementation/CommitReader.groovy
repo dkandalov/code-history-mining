@@ -1,8 +1,5 @@
 package vcsaccess.implementation
-import codemining.core.common.langutil.DateRange
-import codemining.core.common.langutil.Measure
-import codemining.core.common.langutil.PastToPresentIterator
-import codemining.core.common.langutil.PresentToPastIterator
+
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
@@ -12,22 +9,16 @@ import org.jetbrains.annotations.Nullable
 import vcsaccess.VcsAccessLog
 
 class CommitReader {
-	static Commit NO_MORE_COMMITS = null
-
 	private final Project project
-	private final Measure measure
 	private final VcsAccessLog log
-	private final int sizeOfVCSRequestInDays
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, int sizeOfVCSRequestInDays = 30, Measure measure = new Measure(), @Nullable VcsAccessLog log = null) {
+	CommitReader(Project project, @Nullable VcsAccessLog log = null) {
 		this.project = project
-		this.sizeOfVCSRequestInDays = sizeOfVCSRequestInDays
-		this.measure = measure
 		this.log = log
 	}
 
-	Iterator<Commit> readCommits(Date historyStartDate, Date historyEndDate, boolean isReadingPresentToPast = true, List<VcsRoot> vcsRoots) {
+	List<Commit> readCommits(Date historyStartDate, Date historyEndDate, List<VcsRoot> vcsRoots) {
 		assert historyStartDate.time < historyEndDate.time
 		// in local timezone dates should not have hours, minutes, seconds
 		// (checking only seconds because Date.time field is in UTC and can have non-zero hours and probably minutes)
@@ -36,42 +27,16 @@ class CommitReader {
 
 		lastRequestHadErrors = false
 
-		Iterator<DateRange> dateIterator = (isReadingPresentToPast ?
-			new PresentToPastIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays) :
-			new PastToPresentIterator(historyStartDate, historyEndDate, sizeOfVCSRequestInDays))
-		List<Commit> changes = []
-
-        def commitReaderLog = log
-		new Iterator<Commit>() {
-			@Override boolean hasNext() {
-				!changes.empty || dateIterator.hasNext()
-			}
-
-			@Override Commit next() {
-				if (!changes.empty) return changes.pop()
-
-				measure.measure("VCS request time") {
-					while (changes.empty && dateIterator.hasNext()) {
-						def dates = dateIterator.next()
-						try {
-							changes = requestCommitsFrom(vcsRoots, project, dates.from, dates.to)
-						} catch (Exception e) {
-							// this is to catch errors in VCS plugin implementation 
-							// e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-							commitReaderLog?.errorReadingCommits(e, dates.from, dates.to)
-							lastRequestHadErrors = true
-						}
-						changes = changes.sort{ it.commitDate }
-						if (!isReadingPresentToPast) changes = changes.reverse()
-					}
-				}
-				changes.empty ? NO_MORE_COMMITS : changes.pop()
-			}
-
-			@Override void remove() {
-				throw new UnsupportedOperationException()
-			}
-		}
+        List<Commit> changes = []
+        try {
+            changes = requestCommitsFrom(vcsRoots, project, historyStartDate, historyEndDate)
+        } catch (Exception e) {
+            // this is to catch errors in VCS plugin implementation
+            // e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
+            log?.errorReadingCommits(e, historyStartDate, historyEndDate)
+            lastRequestHadErrors = true
+        }
+        changes
 	}
 
 	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
