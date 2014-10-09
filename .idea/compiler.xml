@@ -15,6 +15,7 @@
       <entry name="!?*.png" />
       <entry name="!?*.md" />
       <entry name="!?*.jar" />
+      <entry name="!?*.zip" />
     </wildcardResourcePatterns>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="false">
