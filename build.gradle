@@ -19,6 +19,7 @@ dependencies {
     compile files("${basePath}/lib/code-mining-core.jar")
     compile files("${basePath}/lib/LivePlugin.jar")
     compile files("${basePath}/lib/vcs-reader.jar")
+    compile files("${basePath}/lib/commons-csv-1.0.jar")
 
     provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
