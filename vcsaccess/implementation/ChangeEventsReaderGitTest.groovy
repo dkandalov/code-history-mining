@@ -98,7 +98,7 @@ class ChangeEventsReaderGitTest {
 	private static asString(Collection collection) {
 		collection.join(",\n")
 	}
-	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = []) {
+	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = [:]) {
 		new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
 	}
 	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType, lines, chars) {
