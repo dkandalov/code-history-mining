@@ -1,5 +1,8 @@
+ext.home = System.env.HOME
 ext.basePath = System.getProperty("user.dir")
 ext.ideaPath = "/Applications/IntelliJ IDEA 13.app/"
+ext.codeMiningPath = withDefault("$home/Library/Application Support/IntelliJIdea13/live-plugins/code-history-mining", System.getProperty("codeMiningPath"))
+ext.livePluginPath = withDefault("$home/IdeaProjects/live-plugin", System.getProperty("livePluginPath"))
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -55,4 +58,23 @@ task zipPlugin(dependsOn: jarPlugin) << {
         destfile: "${basePath}/build/code-history-mining-plugin.zip",
         basedir: "${basePath}/build/code-history-mining-plugin"
     )
+}
+
+task downloadLibs() << {
+    def libs = [
+        "$ideaPath/lib/groovy-all-2.2.1.jar",
+        "$codeMiningPath/lib/non-maven/vcs-reader.jar",
+        "$codeMiningPath/lib/commons-csv-1.0.jar",
+        "$codeMiningPath/build/libs/code-mining-core.jar",
+        "$livePluginPath/LivePlugin.jar"
+    ]
+    ant.delete(dir: "${basePath}/lib")
+    ant.mkdir(dir: "${basePath}/lib")
+    libs.each { lib ->
+        ant.copy(file: lib, toDir: "${basePath}/lib")
+    }
+}
+
+def withDefault(value, defaultValue) {
+    value == null ? defaultValue : value
 }
