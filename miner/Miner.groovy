@@ -168,7 +168,7 @@ class Miner {
 		def messageText = ""
 		if (eventStorage.hasNoEvents()) {
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "However, it has nothing in it probably because there are no commits from $config.from to $config.to\n"
+			messageText += "However, it has nothing in it probably because there are no commits from ${requestDateRange.from} to ${requestDateRange.to}\n"
 		} else {
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
 			messageText += "It should have history from '${eventStorage.storedDateRange().from}' to '${eventStorage.storedDateRange().to}'.\n"

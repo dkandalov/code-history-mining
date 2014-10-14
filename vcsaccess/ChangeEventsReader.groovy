@@ -1,4 +1,5 @@
 package vcsaccess
+import codemining.core.vcs.CommitData
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.FileTypes
 import codemining.core.vcs.HistoryReader
@@ -59,7 +60,8 @@ class ChangeEventsReader {
 
 			consumeWrapper(commit) {
 				try {
-					consume(commitMunger.convertToFileChangeEvents(commit, fileTypes))
+                    def commitData = commitMunger.convertToFileChangeEvents(new CommitData(commit), fileTypes)
+                    consume(commitData.fileChangeEvents)
 				} catch (Exception e) {
                     log?.onExtractChangeEventException(e)
                 }

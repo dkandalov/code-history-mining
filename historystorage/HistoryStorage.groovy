@@ -45,7 +45,7 @@ class HistoryStorage {
 
 	def readAllEvents(String fileName, Closure<Void> checkIfCancelled) {
 		measure.measure("Storage.readAllEvents"){
-			new EventStorage("$basePath/$fileName").readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
+			new EventStorage("$basePath/$fileName").init().readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
 		}
 	}
 
@@ -56,7 +56,7 @@ class HistoryStorage {
 
 	@SuppressWarnings("GrMethodMayBeStatic")
 	EventStorage eventStorageFor(String filePath) {
-		new EventStorage(filePath)
+		new EventStorage(filePath).init()
 	}
 
 	interface Log {
