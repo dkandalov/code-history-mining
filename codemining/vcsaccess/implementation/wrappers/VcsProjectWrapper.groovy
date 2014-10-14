@@ -1,7 +1,7 @@
-package vcsaccess.implementation.wrappers
+package codemining.vcsaccess.implementation.wrappers
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
-import vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsAccessLog
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 

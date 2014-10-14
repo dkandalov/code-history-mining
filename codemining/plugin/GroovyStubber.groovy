@@ -1,4 +1,4 @@
-package miner
+package codemining.plugin
 import org.junit.Test
 
 @SuppressWarnings("GrMethodMayBeStatic")

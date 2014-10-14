@@ -1,4 +1,4 @@
-package miner.ui.http
+package codemining.plugin.ui.http
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer

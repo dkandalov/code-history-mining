@@ -1,4 +1,4 @@
-package vcsaccess
+package codemining.vcsaccess
 import codemining.core.vcs.CommitData
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.FileTypes

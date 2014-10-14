@@ -1,4 +1,4 @@
-package vcsaccess.implementation.wrappers
+package codemining.vcsaccess.implementation.wrappers
 import com.intellij.openapi.vcs.changes.Change as IJChange
 import vcsreader.Change
 

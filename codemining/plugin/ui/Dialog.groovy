@@ -1,4 +1,4 @@
-package miner.ui
+package codemining.plugin.ui
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
@@ -15,7 +15,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
-import historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryGrabberConfig
 
 import javax.swing.*
 import javax.swing.event.DocumentEvent

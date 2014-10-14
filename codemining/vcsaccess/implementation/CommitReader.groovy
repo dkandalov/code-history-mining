@@ -1,4 +1,4 @@
-package vcsaccess.implementation
+package codemining.vcsaccess.implementation
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
@@ -6,7 +6,7 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
-import vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsAccessLog
 
 class CommitReader {
 	private final Project project

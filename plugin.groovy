@@ -1,11 +1,11 @@
 import codemining.core.common.langutil.Measure
-import historystorage.HistoryStorage
+import codemining.historystorage.HistoryStorage
 import com.intellij.openapi.application.PathManager
 import liveplugin.PluginUtil
-import miner.Log
-import miner.Miner
-import miner.ui.UI
-import vcsaccess.VcsAccess
+import codemining.plugin.Log
+import codemining.plugin.Miner
+import codemining.plugin.ui.UI
+import codemining.vcsaccess.VcsAccess
 
 import static liveplugin.PluginUtil.show
 

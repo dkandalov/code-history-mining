@@ -1,4 +1,4 @@
-package vcsaccess.implementation
+package codemining.vcsaccess.implementation
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -11,7 +11,7 @@ import org.junit.Test
 
 import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
-import static vcsaccess.VcsAccess.vcsRootsIn
+import static codemining.vcsaccess.VcsAccess.vcsRootsIn
 
 class CommitReaderGitTest {
 

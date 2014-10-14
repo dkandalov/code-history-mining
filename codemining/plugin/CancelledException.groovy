@@ -1,4 +1,4 @@
-package miner
+package codemining.plugin
 
 class CancelledException extends Exception {
 	static check(indicator) {

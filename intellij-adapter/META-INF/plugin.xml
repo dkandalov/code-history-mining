@@ -26,7 +26,7 @@
 
     <application-components>
         <component>
-            <implementation-class>codehistorymining.AppComponent</implementation-class>
+            <implementation-class>codemining.AppComponent</implementation-class>
         </component>
     </application-components>
 

@@ -1,10 +1,10 @@
-package miner
+package codemining.plugin
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
-import historystorage.HistoryStorage
-import miner.ui.UI
-import vcsaccess.VcsAccessLog
+import codemining.historystorage.HistoryStorage
+import codemining.plugin.ui.UI
+import codemining.vcsaccess.VcsAccessLog
 
 class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")

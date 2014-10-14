@@ -1,6 +1,6 @@
-package miner.ui.http
+package codemining.plugin.ui.http
 import com.intellij.openapi.util.io.FileUtil
-import miner.ui.UI
+import codemining.plugin.ui.UI
 
 import static liveplugin.PluginUtil.changeGlobalVar
 

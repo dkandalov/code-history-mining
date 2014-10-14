@@ -1,4 +1,4 @@
-package vcsaccess.implementation
+package codemining.vcsaccess.implementation
 import codemining.core.common.events.ChangeStats
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
@@ -7,8 +7,8 @@ import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
 import com.intellij.openapi.project.Project
 import org.junit.Test
-import vcsaccess.ChangeEventsReader
-import vcsaccess.implementation.wrappers.VcsProjectWrapper
+import codemining.vcsaccess.ChangeEventsReader
+import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
 import static codemining.core.common.events.ChangeStats.NA
@@ -16,8 +16,8 @@ import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
-import static vcsaccess.VcsAccess.commonVcsRootsAncestor
-import static vcsaccess.VcsAccess.vcsRootsIn
+import static codemining.vcsaccess.VcsAccess.commonVcsRootsAncestor
+import static codemining.vcsaccess.VcsAccess.vcsRootsIn
 
 class ChangeEventsReaderGitTest {
 

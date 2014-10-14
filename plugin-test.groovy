@@ -1,8 +1,8 @@
 import liveplugin.testrunner.IntegrationTestsRunner
-import miner.GroovyStubber
-import miner.MinerTest
-import vcsaccess.implementation.ChangeEventsReaderGitTest
-import vcsaccess.implementation.CommitReaderGitTest
+import codemining.plugin.GroovyStubber
+import codemining.plugin.MinerTest
+import codemining.vcsaccess.implementation.ChangeEventsReaderGitTest
+import codemining.vcsaccess.implementation.CommitReaderGitTest
 
 // add-to-classpath $PLUGIN_PATH/lib/vcs-reader.jar
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar

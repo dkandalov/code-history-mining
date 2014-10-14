@@ -1,4 +1,4 @@
-package miner
+package codemining.plugin
 import codemining.core.analysis.Context
 import codemining.core.analysis.Visualization
 import codemining.core.common.langutil.DateRange
@@ -13,11 +13,11 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
-import historystorage.HistoryGrabberConfig
-import historystorage.HistoryStorage
-import miner.ui.UI
-import vcsaccess.ChangeEventsReader
-import vcsaccess.VcsAccess
+import codemining.historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryStorage
+import codemining.plugin.ui.UI
+import codemining.vcsaccess.ChangeEventsReader
+import codemining.vcsaccess.VcsAccess
 import vcsreader.Commit
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange

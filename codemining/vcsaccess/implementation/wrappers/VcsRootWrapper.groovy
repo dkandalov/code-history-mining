@@ -1,9 +1,9 @@
-package vcsaccess.implementation.wrappers
+package codemining.vcsaccess.implementation.wrappers
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
-import vcsaccess.VcsAccessLog
-import vcsaccess.implementation.CommitReader
+import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.implementation.CommitReader
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject

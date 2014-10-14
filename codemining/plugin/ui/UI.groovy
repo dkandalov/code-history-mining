@@ -1,4 +1,4 @@
-package miner.ui
+package codemining.plugin.ui
 import codemining.core.analysis.Visualization
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -11,11 +11,11 @@ import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.util.ui.UIUtil
-import historystorage.HistoryGrabberConfig
-import historystorage.HistoryStorage
+import codemining.historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryStorage
 import liveplugin.PluginUtil
-import miner.Miner
-import miner.ui.http.HttpUtil
+import codemining.plugin.Miner
+import codemining.plugin.ui.http.HttpUtil
 import org.jetbrains.annotations.Nullable
 
 @SuppressWarnings("GrMethodMayBeStatic")

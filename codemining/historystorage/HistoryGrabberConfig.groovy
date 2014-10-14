@@ -1,4 +1,4 @@
-package historystorage
+package codemining.historystorage
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper

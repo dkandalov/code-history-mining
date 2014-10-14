@@ -1,4 +1,4 @@
-package vcsaccess
+package codemining.vcsaccess
 import codemining.core.common.langutil.Measure
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
@@ -15,7 +15,7 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import vcsaccess.implementation.wrappers.VcsProjectWrapper
+import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
 import static codemining.core.common.langutil.Misc.withDefault

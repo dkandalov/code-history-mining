@@ -1,17 +1,17 @@
-package miner
+package codemining.plugin
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import historystorage.HistoryGrabberConfig
-import historystorage.HistoryStorage
-import miner.ui.UI
+import codemining.historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryStorage
+import codemining.plugin.ui.UI
 import org.junit.Test
-import vcsaccess.ChangeEventsReader
-import vcsaccess.VcsAccess
+import codemining.vcsaccess.ChangeEventsReader
+import codemining.vcsaccess.VcsAccess
 
 import static codemining.core.common.langutil.DateTimeUtil.*
-import static miner.GroovyStubber.*
+import static codemining.plugin.GroovyStubber.*
 
 class MinerTest {
 

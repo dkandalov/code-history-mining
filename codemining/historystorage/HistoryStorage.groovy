@@ -1,4 +1,4 @@
-package historystorage
+package codemining.historystorage
 import codemining.core.common.langutil.JBFileUtil
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage

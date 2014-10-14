@@ -1,4 +1,4 @@
-package codehistorymining;
+package codemining;
 
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
