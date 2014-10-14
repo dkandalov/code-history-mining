@@ -31,7 +31,7 @@ dependencies {
 
 sourceSets {
     main {
-        java { srcDir "./intellij-plugin/src" }
+        java { srcDir "./intellij-adapter/src" }
         groovy { srcDir "./" }
     }
 }
@@ -41,7 +41,7 @@ task jarPlugin(dependsOn: [compileGroovy]) << {
     ant.delete(dir: targetFolder)
 
     ant.copy(toDir: "${basePath}/build/classes/main/META-INF/") {
-        ant.fileset(dir: "${basePath}/intellij-plugin/META-INF")
+        ant.fileset(dir: "${basePath}/intellij-adapter/META-INF")
     }
 
     ant.delete(dir: "${basePath}/build/classes/main/.idea")
