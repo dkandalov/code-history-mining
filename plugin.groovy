@@ -11,6 +11,7 @@ import static liveplugin.PluginUtil.show
 
 // add-to-classpath $PLUGIN_PATH/lib/vcs-reader.jar
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
+// add-to-classpath $PLUGIN_PATH/lib/commons-csv-1.0.jar
 
 def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 
