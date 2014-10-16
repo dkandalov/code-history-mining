@@ -14,15 +14,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
-      <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="code-history-mining" />
-    <orderEntry type="library" exported="" name="Gradle: code-mining-core" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: LivePlugin" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: vcs-reader" level="project" />
     <orderEntry type="library" exported="" name="Gradle: alloy" level="project" />
     <orderEntry type="library" exported="" name="Gradle: annotations" level="project" />
     <orderEntry type="library" exported="" name="Gradle: asm-all" level="project" />
@@ -135,8 +131,11 @@
     <orderEntry type="library" exported="" name="Gradle: remote-servers-git" level="project" />
     <orderEntry type="library" exported="" name="Gradle: trilead-ssh2" level="project" />
     <orderEntry type="library" exported="" name="Gradle: github" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: commons-csv-1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: groovy-all-2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: _Users_dima_Library_Application_Support_IntelliJIdea13_live_plugins_code_history_mining_plugin_lib_commons_csv_1_0_jar" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: code-mining-core" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: LivePlugin" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: vcs-reader" level="project" />
     <orderEntry type="library" exported="" name="Gradle: resources_en" level="project" />
   </component>
 </module>
