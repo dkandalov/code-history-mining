@@ -161,9 +161,8 @@ class Miner {
             eventStorage.flush()
         }
 
-        def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
-        if (dateRanges.first != null) loadProjectHistory(dateRanges.first)
-        if (dateRanges.second != null) loadProjectHistory(dateRanges.second)
+        requestDateRange.subtract(eventStorage.storedDateRange())
+                .each { loadProjectHistory(it) }
 
 		def messageText = ""
 		if (eventStorage.hasNoEvents()) {
