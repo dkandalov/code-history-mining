@@ -1,7 +1,7 @@
 package codemining.vcsaccess
 import codemining.core.vcs.CommitData
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.FileTypes
+import codemining.core.vcs.filetype.FileTypes
 import codemining.core.vcs.HistoryReader
 import com.intellij.openapi.fileTypes.FileTypeManager
 import vcsreader.Commit
