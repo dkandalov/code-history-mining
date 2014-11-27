@@ -8,7 +8,7 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import groovy.lang.Binding;
-import liveplugin.IdeUtil;
+import liveplugin.IDEUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,8 +18,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 
-import static liveplugin.IdeUtil.askIsUserWantsToRestartIde;
-import static liveplugin.IdeUtil.downloadFile;
+import static liveplugin.IDEUtil.askIsUserWantsToRestartIde;
+import static liveplugin.IDEUtil.downloadFile;
 
 public class AppComponent implements ApplicationComponent {
 	private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining-plugin/lib/";
@@ -109,6 +109,6 @@ public class AppComponent implements ApplicationComponent {
 	}
 
 	private static boolean isGroovyOnClasspath() {
-		return IdeUtil.isOnClasspath("org.codehaus.groovy.runtime.DefaultGroovyMethods");
+		return IDEUtil.isOnClasspath("org.codehaus.groovy.runtime.DefaultGroovyMethods");
 	}
 }
