@@ -61,8 +61,8 @@ class ChangeEventsReader {
 
 			consumeWrapper(commit) {
 				try {
-                    def commitData = commitMunger.munge(new MungedCommit(commit), fileTypes)
-                    consume(commitData.fileChangeEvents)
+                    def mungedCommit = commitMunger.munge(new MungedCommit(commit), [fileTypes: fileTypes])
+                    consume(mungedCommit.fileChangeEvents)
 				} catch (Exception e) {
                     log?.onExtractChangeEventException(e)
                 }
