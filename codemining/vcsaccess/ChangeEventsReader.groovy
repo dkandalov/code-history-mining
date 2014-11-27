@@ -1,5 +1,5 @@
 package codemining.vcsaccess
-import codemining.core.vcs.CommitData
+import codemining.core.vcs.MungedCommit
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.filetype.FileTypes
 import codemining.core.vcs.HistoryReader
@@ -10,6 +10,7 @@ import vcsreader.VcsProject
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
+// TODO move into "core"
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
@@ -60,7 +61,7 @@ class ChangeEventsReader {
 
 			consumeWrapper(commit) {
 				try {
-                    def commitData = commitMunger.convertToFileChangeEvents(new CommitData(commit), fileTypes)
+                    def commitData = commitMunger.convertToFileChangeEvents(new MungedCommit(commit), fileTypes)
                     consume(commitData.fileChangeEvents)
 				} catch (Exception e) {
                     log?.onExtractChangeEventException(e)
