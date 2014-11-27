@@ -5,7 +5,9 @@ import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
+import codemining.vcsaccess.VcsAccessLog
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.VcsRoot
 import org.junit.Test
 import codemining.vcsaccess.ChangeEventsReader
 import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
@@ -87,7 +89,7 @@ class ChangeEventsReaderGitTest {
 
     private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, CommitMunger commitMunger) {
 		def eventsConsumer = new EventConsumer()
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project))
+        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), dummyLog)
         def eventsReader = new ChangeEventsReader(projectWrapper, commitMunger, null)
 
 		eventsReader.readPresentToPast(fromDate, toDate, eventsConsumer.consume)
@@ -116,9 +118,9 @@ class ChangeEventsReaderGitTest {
 	private final commitComment = "Rename TestMethod -> JUnit4MethodRunner Rename methods in JUnit4MethodRunner to make run order clear"
 	private final commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", dateTime("14:42:16 03/10/2007"), commitComment)
     private final commitComment2 = "Update Hamcrest from 1.3.RC2 to 1.3"
-    private final commitInfo2 = new CommitInfo("40375ef1fc08b1f666b21d299d8b52b10a53e6fb", "Marc Philipp <mail@marcphilipp.de>", dateTime("12:03:49 15/07/2012"), commitComment2)
+    private final commitInfo2 = new CommitInfo("40375ef1fc08b1f666b21d299d8b52b10a53e6fb", "Marc Philipp", dateTime("12:03:49 15/07/2012"), commitComment2)
     private final commitComment3 = "fixes #177\n\nnull check for test class in ErrorReportingRunner"
-    private final commitInfo3 = new CommitInfo("96cfed79612de559e454a1a91724a061e8615ae4", "Alexander Jipa <alexander.jipa@gmail.com>", dateTime("19:11:40 11/04/2014"), commitComment3)
+    private final commitInfo3 = new CommitInfo("96cfed79612de559e454a1a91724a061e8615ae4", "Alexander Jipa", dateTime("19:11:40 11/04/2014"), commitComment3)
 
 	private final Project jUnitProject = CommitReaderGitTest.findOpenedJUnitProject()
 
@@ -127,4 +129,12 @@ class ChangeEventsReaderGitTest {
             throw new IllegalStateException("Failed to process: ${change}")
         }
     }
+
+	private final static dummyLog = new VcsAccessLog() {
+		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {}
+		@Override def errorReadingCommits(String error) {}
+		@Override def failedToLocate(VcsRoot vcsRoot, Project project) {}
+		@Override def onExtractChangeEventException(Exception e) {}
+		@Override def failedToLoadContent(String message) {}
+	}
 }
