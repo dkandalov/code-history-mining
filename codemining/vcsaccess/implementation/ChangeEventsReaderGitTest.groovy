@@ -5,27 +5,29 @@ import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
+import codemining.core.vcs.filetype.FileTypes
+import codemining.vcsaccess.ChangeEventsReader
 import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import org.junit.Test
-import codemining.vcsaccess.ChangeEventsReader
-import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import vcsreader.Change
 
 import static codemining.core.common.events.ChangeStats.NA
 import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
-import static org.hamcrest.CoreMatchers.equalTo
-import static org.junit.Assert.assertThat
 import static codemining.vcsaccess.VcsAccess.commonVcsRootsAncestor
 import static codemining.vcsaccess.VcsAccess.vcsRootsIn
+import static org.hamcrest.CoreMatchers.equalTo
+import static org.junit.Assert.assertThat
 
 class ChangeEventsReaderGitTest {
 
     @Test void "should read file events"() {
 		def countChangeSizeInLines = false
-		def commitMunger = new CommitMunger(countChangeSizeInLines, listener)
+		def commitMunger = createCommitMunger(countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(date("03/10/2007"), date("03/10/2007"), jUnitProject, commitMunger)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
@@ -44,7 +46,7 @@ class ChangeEventsReaderGitTest {
 
 	@Test void "should read file events with change size details"() {
 		def countChangeSizeInLines = true
-		def commitMunger = new CommitMunger(countChangeSizeInLines, listener)
+		def commitMunger = createCommitMunger(countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(date("03/10/2007"), date("03/10/2007"), jUnitProject, commitMunger)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
@@ -63,7 +65,7 @@ class ChangeEventsReaderGitTest {
 
     @Test void "should ignore change size details for binary files"() {
         def countChangeSizeInLines = true
-        def commitMunger = new CommitMunger(countChangeSizeInLines, listener)
+        def commitMunger = createCommitMunger(countChangeSizeInLines)
 
         def changeEvents = readChangeEvents(date("15/07/2012"), date("15/07/2012"), jUnitProject, commitMunger)
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
@@ -76,7 +78,7 @@ class ChangeEventsReaderGitTest {
 
     @Test void "merged commits are skipped because change events create from original commits"() {
         def countChangeSizeInLines = false
-        def commitMunger = new CommitMunger(countChangeSizeInLines, listener)
+        def commitMunger = createCommitMunger(countChangeSizeInLines)
 
         def changeEvents = readChangeEvents(date("11/04/2014"), date("13/04/2014"), jUnitProject, commitMunger)
 
@@ -86,8 +88,16 @@ class ChangeEventsReaderGitTest {
         ])))
     }
 
+	private CommitMunger createCommitMunger(boolean countChangeSizeInLines) {
+		def fileTypes = new FileTypes([]) {
+			@Override boolean isBinary(String fileName) {
+				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
+			}
+		}
+		new CommitMunger(countChangeSizeInLines, fileTypes, listener)
+	}
 
-    private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, CommitMunger commitMunger) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, CommitMunger commitMunger) {
 		def eventsConsumer = new EventConsumer()
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), dummyLog)
         def eventsReader = new ChangeEventsReader(projectWrapper, commitMunger, null)

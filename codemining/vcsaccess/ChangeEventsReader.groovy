@@ -1,15 +1,12 @@
 package codemining.vcsaccess
-import codemining.core.vcs.MungedCommit
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.filetype.FileTypes
 import codemining.core.vcs.HistoryReader
-import com.intellij.openapi.fileTypes.FileTypeManager
+import codemining.core.vcs.MungedCommit
 import vcsreader.Commit
 import vcsreader.VcsProject
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
-
 // TODO move into "core"
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
@@ -17,7 +14,6 @@ class ChangeEventsReader {
     private final VcsProject project
     private final HistoryReader historyReader
     private final CommitMunger commitMunger
-    private final FileTypes fileTypes
     private final VcsAccessLog log
     private boolean lastRequestHadErrors
 
@@ -37,12 +33,6 @@ class ChangeEventsReader {
                 lastRequestHadErrors = true
             }
         })
-
-        this.fileTypes = new FileTypes([]) {
-            @Override boolean isBinary(String fileName) {
-                FileTypeManager.instance.getFileTypeByFileName(fileName).binary
-            }
-        }
     }
 
 	def readPresentToPast(Date historyStart, Date historyEnd, Closure isCancelled = null,
@@ -61,7 +51,7 @@ class ChangeEventsReader {
 
 			consumeWrapper(commit) {
 				try {
-                    def mungedCommit = commitMunger.munge(new MungedCommit(commit), [fileTypes: fileTypes])
+                    def mungedCommit = commitMunger.munge(new MungedCommit(commit))
                     consume(mungedCommit.fileChangeEvents)
 				} catch (Exception e) {
                     log?.onExtractChangeEventException(e)
