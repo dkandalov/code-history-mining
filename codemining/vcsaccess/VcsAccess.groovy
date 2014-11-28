@@ -2,6 +2,7 @@ package codemining.vcsaccess
 import codemining.core.common.langutil.Measure
 import codemining.core.vcs.CommitMunger
 import codemining.core.vcs.CommitMungerListener
+import codemining.core.vcs.LineAndCharChangeMunger
 import codemining.core.vcs.filetype.FileTypes
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.EmptyProgressIndicator
@@ -41,11 +42,13 @@ class VcsAccess {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
             }
         }
-        def commitMunger = new CommitMunger(grabChangeSizeInLines, fileTypes, new CommitMungerListener() {
+        def listener = new CommitMungerListener() {
             @Override void failedToLoadContent(Change change) {
                 log.failedToLoadContent(change.toString())
             }
-        })
+        }
+        def mungers = grabChangeSizeInLines ? [new LineAndCharChangeMunger(fileTypes, listener)] : []
+        def commitMunger = new CommitMunger(mungers)
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
         new ChangeEventsReader(projectWrapper, commitMunger, log)
     }
