@@ -1,5 +1,5 @@
 package codemining.vcsaccess.implementation
-import codemining.core.common.events.ChangeStats
+
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
@@ -16,7 +16,7 @@ import com.intellij.openapi.vcs.VcsRoot
 import org.junit.Test
 import vcsreader.Change
 
-import static codemining.core.common.events.ChangeStats.NA
+import static codemining.core.common.events.ChangeStats.*
 import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
 import static codemining.vcsaccess.VcsAccess.commonVcsRootsAncestor
@@ -34,14 +34,14 @@ class ChangeEventsReaderGitTest {
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
         assertThat(asString(changeEvents), equalTo(asString([
-				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA))
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION"))
 		])))
 	}
 
@@ -53,14 +53,14 @@ class ChangeEventsReaderGitTest {
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
 		assertThat(asString(changeEvents), equalTo(asString([
-				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION", NA, NA), [lines: changeStats(37, 37, 0, 4, 0), chars: changeStats(950, 978, 0, 215, 0)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED", NA, NA), [lines: changeStats(129, 123, 2, 8, 15), chars: changeStats(3822, 3824, 165, 413, 414)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA), [lines: changeStats(128, 132, 0, 3, 0), chars: changeStats(3682, 3807, 0, 140, 0)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW", NA, NA), [lines: changeStats(0, 125, 125, 0, 0), chars: changeStats(0, 3316, 3316, 0, 0)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION", NA, NA), [lines: changeStats(157, 64, 0, 26, 84), chars: changeStats(4102, 1582, 0, 809, 2233)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [lines: changeStats(19, 19, 0, 2, 0), chars: changeStats(514, 530, 0, 96, 0)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION", NA, NA), [lines: changeStats(55, 55, 0, 2, 0), chars: changeStats(1698, 1710, 0, 118, 0)]),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION", NA, NA), [lines: changeStats(34, 34, 0, 2, 0), chars: changeStats(814, 838, 0, 109, 0)])
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION"), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED"), linesStats(129, 123, 2, 8, 15) + charsStats(3822, 3824, 165, 413, 414)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION"), linesStats(128, 132, 0, 3, 0) + charsStats(3682, 3807, 0, 140, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW"), linesStats(0, 125, 125, 0, 0) + charsStats(0, 3316, 3316, 0, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION"), linesStats(157, 64, 0, 26, 84) + charsStats(4102, 1582, 0, 809, 2233)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION"), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION"), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION"), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
 		])))
 	}
 
@@ -72,8 +72,8 @@ class ChangeEventsReaderGitTest {
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
         assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED", NA, NA), [lines: NA, chars: NA]),
-                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "NEW", NA, NA), [lines: NA, chars: NA]),
+                fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED"), linesStats(NA) + charsStats(NA)),
+                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "NEW"), linesStats(NA) + charsStats(NA)),
         ])))
     }
 
@@ -84,8 +84,8 @@ class ChangeEventsReaderGitTest {
         def changeEvents = readChangeEvents(date("11/04/2014"), date("13/04/2014"), jUnitProject, commitMunger)
 
         assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION", NA, NA)),
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", "NEW", NA, NA))
+                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION")),
+                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", "NEW"))
         ])))
     }
 
@@ -115,11 +115,8 @@ class ChangeEventsReaderGitTest {
 	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = [:]) {
 		new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
 	}
-	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType, lines, chars) {
-		new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType, lines, chars)
-	}
-	private static changeStats(before, after, added, modified, removed) {
-		new ChangeStats(before, after, added, modified, removed)
+	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType) {
+		new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType)
 	}
 
 	private static class EventConsumer {
