@@ -1,7 +1,7 @@
 package codemining.vcsaccess
 import codemining.core.common.langutil.Measure
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.CommitMungerListener
+import codemining.core.vcs.NoFileContentListener
 import codemining.core.vcs.LineAndCharChangeMunger
 import codemining.core.vcs.filetype.FileTypes
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -42,7 +42,7 @@ class VcsAccess {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
             }
         }
-        def listener = new CommitMungerListener() {
+        def listener = new NoFileContentListener() {
             @Override void failedToLoadContent(Change change) {
                 log.failedToLoadContent(change.toString())
             }

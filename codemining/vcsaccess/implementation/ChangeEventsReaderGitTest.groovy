@@ -4,7 +4,7 @@ import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.CommitMungerListener
+import codemining.core.vcs.NoFileContentListener
 import codemining.core.vcs.LineAndCharChangeMunger
 import codemining.core.vcs.filetype.FileTypes
 import codemining.vcsaccess.ChangeEventsReader
@@ -133,7 +133,7 @@ class ChangeEventsReaderGitTest {
 
 	private final Project jUnitProject = CommitReaderGitTest.findOpenedJUnitProject()
 
-    private final listener = new CommitMungerListener() {
+    private final listener = new NoFileContentListener() {
         @Override void failedToLoadContent(Change change) {
             throw new IllegalStateException("Failed to process: ${change}")
         }
