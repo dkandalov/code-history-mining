@@ -72,8 +72,8 @@ class ChangeEventsReaderGitTest {
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
         assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED"), linesStats(NA) + charsStats(NA)),
-                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "NEW"), linesStats(NA) + charsStats(NA)),
+                fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED"), linesStatsNA() + charsStatsNA()),
+                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "NEW"), linesStatsNA() + charsStatsNA()),
         ])))
     }
 
