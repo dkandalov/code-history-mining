@@ -1,6 +1,6 @@
 package codemining.vcsaccess
 import codemining.core.vcs.CommitMunger
-import codemining.core.vcs.HistoryReader
+import codemining.core.vcs.CommitReader
 import codemining.core.vcs.MungedCommit
 import vcsreader.Commit
 import vcsreader.VcsProject
@@ -12,7 +12,7 @@ class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 
     private final VcsProject project
-    private final HistoryReader historyReader
+    private final CommitReader commitReader
     private final CommitMunger commitMunger
     private final VcsAccessLog log
     private boolean lastRequestHadErrors
@@ -23,7 +23,7 @@ class ChangeEventsReader {
         this.log = log
         this.commitMunger = commitMunger
 
-        this.historyReader = new HistoryReader(new HistoryReader.Listener() {
+        this.commitReader = new CommitReader(new CommitReader.Listener() {
             @Override void onFatalError(String error) {
                 log.errorReadingCommits(error)
                 lastRequestHadErrors = true
@@ -44,7 +44,7 @@ class ChangeEventsReader {
 		def fromDate = floorToDay(historyStart)
 		def toDate = floorToDay(historyEnd) + 1 // +1 because commitReader end date is exclusive TODO make it exclusive?
 
-		Iterator<Commit> commits = historyReader.readHistoryFrom(project, dateRange(fromDate, toDate))
+		Iterator<Commit> commits = commitReader.readFrom(project, dateRange(fromDate, toDate))
 
 		for (commit in commits) {
 			if (isCancelled?.call()) break
