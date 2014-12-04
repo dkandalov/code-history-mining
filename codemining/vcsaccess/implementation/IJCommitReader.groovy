@@ -8,12 +8,12 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
 import codemining.vcsaccess.VcsAccessLog
 
-class CommitReader {  // TODO same name as CommitReader in core
+class IJCommitReader {
 	private final Project project
 	private final VcsAccessLog log
 	boolean lastRequestHadErrors
 
-	CommitReader(Project project, @Nullable VcsAccessLog log = null) {
+	IJCommitReader(Project project, @Nullable VcsAccessLog log = null) {
 		this.project = project
 		this.log = log
 	}

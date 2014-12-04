@@ -64,24 +64,6 @@ class VcsAccess {
         new MungingCommitReader(projectWrapper, mungers, CommitReader.Config.defaults, listener).readCommits(dateRange)
     }
 
-    // TODO  remove
-    ChangeEventsReader changeEventsReaderFor(Project project, boolean grabChangeSizeInLines) {
-        def fileTypes = new FileTypes([]) {
-            @Override boolean isBinary(String fileName) {
-                FileTypeManager.instance.getFileTypeByFileName(fileName).binary
-            }
-        }
-        def listener = new NoFileContentListener() {
-            @Override void failedToLoadContent(Change change) {
-                log.failedToLoadContent(change.toString())
-            }
-        }
-        def mungers = grabChangeSizeInLines ? [new LineAndCharChangeMunger(fileTypes, listener)] : []
-        def commitMunger = new CommitMunger(mungers)
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
-        new ChangeEventsReader(projectWrapper, commitMunger, log)
-    }
-
     @SuppressWarnings("GrMethodMayBeStatic")
     def update(Project project) {
         def vcsManager = project.getComponent(ProjectLevelVcsManager)

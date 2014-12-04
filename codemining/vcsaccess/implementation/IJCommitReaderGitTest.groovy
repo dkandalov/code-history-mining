@@ -13,7 +13,7 @@ import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
 import static codemining.vcsaccess.VcsAccess.vcsRootsIn
 
-class CommitReaderGitTest {
+class IJCommitReaderGitTest {
 
 	@Test void "renamed file is interpreted as a single event"() {
 		def commit = readSingleCommit("43b0fe3", dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"))
@@ -57,7 +57,7 @@ class CommitReaderGitTest {
 	}
 
 	private List<CommittedChangeList> readJUnitCommits(Date from, Date to) {
-		new CommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject))
+		new IJCommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject))
 	}
 
 	static Project findOpenedJUnitProject() {

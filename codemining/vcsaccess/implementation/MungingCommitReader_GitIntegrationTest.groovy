@@ -122,7 +122,7 @@ class MungingCommitReader_GitIntegrationTest {
     private final commitComment3 = "fixes #177\n\nnull check for test class in ErrorReportingRunner"
     private final commitInfo3 = new CommitInfo("96cfed79612de559e454a1a91724a061e8615ae4", "Alexander Jipa", dateTime("19:11:40 11/04/2014"), commitComment3)
 
-	private final Project jUnitProject = CommitReaderGitTest.findOpenedJUnitProject()
+	private final Project jUnitProject = IJCommitReaderGitTest.findOpenedJUnitProject()
 
     private static final listener = new NoFileContentListener() {
         @Override void failedToLoadContent(Change change) {
