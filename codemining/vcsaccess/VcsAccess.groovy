@@ -55,13 +55,14 @@ class VcsAccess {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
         def listener = new MungingCommitReaderListener() {
-            @Override def errorReadingCommits(String error) { log.errorReadingCommits(error) }
-            @Override def onExtractChangeEventException(Exception e) { log.onExtractChangeEventException(e) }
-            @Override def beforeMungingCommit(Commit commit) { readListener?.beforeMungingCommit(commit) }
-            @Override def afterMungingCommit(Commit commit) { readListener?.afterMungingCommit(commit) }
+            @Override void errorReadingCommits(String error) { log.errorReadingCommits(error) }
+            @Override void onExtractChangeEventException(Exception e) { log.onExtractChangeEventException(e) }
+            @Override void onCurrentDateRange(DateRange range) {}
+            @Override void beforeMungingCommit(Commit commit) { readListener?.beforeMungingCommit(commit) }
+            @Override void afterMungingCommit(Commit commit) { readListener?.afterMungingCommit(commit) }
         }
 
-        new MungingCommitReader(projectWrapper, mungers, CommitReader.Config.defaults, listener).readCommits(dateRange)
+        new MungingCommitReader(projectWrapper, mungers, CommitReaderConfig.defaults, listener).readCommits(dateRange)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
