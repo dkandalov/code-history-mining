@@ -1,14 +1,14 @@
 package codemining.plugin
+import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
-import com.intellij.openapi.progress.ProgressIndicator
-import com.intellij.openapi.project.Project
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
-import org.junit.Test
-import codemining.vcsaccess.ChangeEventsReader
 import codemining.vcsaccess.VcsAccess
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.project.Project
+import org.junit.Test
 
 import static codemining.core.common.langutil.DateTimeUtil.*
 import static codemining.plugin.GroovyStubber.*
@@ -24,12 +24,11 @@ class MinerTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
-				stub(ChangeEventsReader, [
-					readPresentToPast: { Object... args ->
-						grabbedVcs = true
-					}
-		]))])
+		def vcsAccess = stub(VcsAccess, [readMungedCommits: {
+			grabbedVcs = true
+			[].iterator()
+		}])
+
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
 		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
 
@@ -49,13 +48,12 @@ class MinerTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(
-				stub(ChangeEventsReader, [
-                    readPresentToPast: { Date historyStart, Date historyEnd, isCancelled, consumeWrapper, consume ->
-						grabbedFrom = historyStart
-						grabbedTo = historyEnd
-					}
-		]))])
+		def vcsAccess = stub(VcsAccess,
+				[readMungedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
+					grabbedFrom = dateRange.from
+					grabbedTo = dateRange.to
+					[].iterator()
+				}])
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
 		def miner = new Miner(ui, historyStorage, vcsAccess, new Measure())
 
@@ -78,7 +76,7 @@ class MinerTest {
 				}
 		])
 		def vcsAccess = stub(VcsAccess, [
-				changeEventsReaderFor: returns(stub(ChangeEventsReader)),
+				readMungedCommits: returns([].iterator()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
 		def miner = new Miner(ui, stub(HistoryStorage), vcsAccess, new Measure())
@@ -99,7 +97,7 @@ class MinerTest {
 				},
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
-		def vcsAccess = stub(VcsAccess, [changeEventsReaderFor: returns(stub(ChangeEventsReader))])
+		def vcsAccess = stub(VcsAccess, [readMungedCommits: returns([].iterator())])
 		def miner = new Miner(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then

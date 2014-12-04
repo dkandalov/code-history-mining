@@ -7,7 +7,8 @@ import vcsreader.VcsProject
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
-// TODO move into "core"
+
+// TODO remove
 class ChangeEventsReader {
 	private static final Closure DEFAULT_WRAPPER = { changes, aCallback -> aCallback(changes) }
 

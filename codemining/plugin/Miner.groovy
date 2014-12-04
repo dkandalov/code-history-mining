@@ -4,6 +4,13 @@ import codemining.core.analysis.Visualization
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
+import codemining.core.vcs.MungedCommit
+import codemining.core.vcs.MungingCommitReader
+import codemining.historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryStorage
+import codemining.plugin.ui.UI
+import codemining.vcsaccess.VcsAccess
+import codemining.vcsaccess.VcsAccessReadListener
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -13,11 +20,6 @@ import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
-import codemining.historystorage.HistoryGrabberConfig
-import codemining.historystorage.HistoryStorage
-import codemining.plugin.ui.UI
-import codemining.vcsaccess.ChangeEventsReader
-import codemining.vcsaccess.VcsAccess
 import vcsreader.Commit
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
@@ -105,10 +107,12 @@ class Miner {
 					measure.start()
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
-						def eventsReader = vcsAccess.changeEventsReaderFor(project, userInput.grabChangeSizeInLines)
                         def requestDateRange = dateRange(userInput.from, userInput.to)
+						def mungedCommits = vcsAccess.readMungedCommits(
+								requestDateRange, project, userInput.grabChangeSizeInLines, readListenerWith(indicator)
+						)
 
-                        def message = doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
+                        def message = doGrabHistory(mungedCommits, eventStorage, requestDateRange, indicator)
 
 						ui.showGrabbingFinishedMessage(message.text, message.title, project)
 					}
@@ -129,10 +133,12 @@ class Miner {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-				def eventsReader = vcsAccess.changeEventsReaderFor(project, config.grabChangeSizeInLines)
                 def requestDateRange = dateRange(eventStorage.storedDateRange().to, today)
+				def mungedCommits = vcsAccess.readMungedCommits(
+						requestDateRange, project, config.grabChangeSizeInLines, readListenerWith(indicator)
+				)
 
-				doGrabHistory(eventsReader, eventStorage, requestDateRange, indicator)
+				doGrabHistory(mungedCommits, eventStorage, requestDateRange, indicator)
 
 				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(today))
 			} finally {
@@ -141,27 +147,37 @@ class Miner {
 		}
 	}
 
-	private doGrabHistory(ChangeEventsReader eventsReader, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
-		def updateIndicatorText = { Commit commit, callback ->
-			def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
+	private VcsAccessReadListener readListenerWith(indicator) {
+		new VcsAccessReadListener() {
+			@Override def beforeMungingCommit(Commit commit) {
+				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
+				log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
+				indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
+			}
 
-            log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
-            indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
-
-			callback()
-
-			indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
+			@Override def afterMungingCommit(Commit commit) {
+				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
+				indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
+			}
 		}
+	}
+
+	private doGrabHistory(Iterator<MungedCommit> mungedCommits, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
+		def hadErrors = false
 		def isCancelled = { indicator?.canceled }
         def loadProjectHistory = { DateRange dateRange ->
             log?.loadingProjectHistory(dateRange.from, dateRange.to)
-            eventsReader.readPresentToPast(dateRange.from, dateRange.to, isCancelled, updateIndicatorText) { commitChangeEvents ->
-                eventStorage.addEvents(commitChangeEvents)
-            }
+			while (mungedCommits.hasNext() && !(isCancelled())) {
+				def mungedCommit = mungedCommits.next()
+				if (mungedCommit == MungingCommitReader.noOutput) hadErrors = true
+
+				eventStorage.addEvents(mungedCommit.fileChangeEvents)
+			}
             eventStorage.flush()
         }
 
-        requestDateRange.subtract(eventStorage.storedDateRange())
+        requestDateRange
+				.subtract(eventStorage.storedDateRange())
                 .each { loadProjectHistory(it) }
 
 		def messageText = ""
@@ -172,7 +188,7 @@ class Miner {
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
 			messageText += "It should have history from '${eventStorage.storedDateRange().from}' to '${eventStorage.storedDateRange().to}'.\n"
 		}
-		if (eventsReader.lastRequestHadErrors) {
+		if (hadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]

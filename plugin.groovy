@@ -9,6 +9,7 @@ import codemining.vcsaccess.VcsAccess
 
 import static liveplugin.PluginUtil.show
 
+// add-to-classpath $HOME/Library/Application Support/IntelliJIdea14/live-plugins/code-history-mining/build/classes/main/
 // add-to-classpath $PLUGIN_PATH/lib/vcs-reader.jar
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
 // add-to-classpath $PLUGIN_PATH/lib/commons-csv-1.0.jar

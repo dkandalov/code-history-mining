@@ -8,7 +8,7 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
 import codemining.vcsaccess.VcsAccessLog
 
-class CommitReader {
+class CommitReader {  // TODO same name as CommitReader in core
 	private final Project project
 	private final VcsAccessLog log
 	boolean lastRequestHadErrors
