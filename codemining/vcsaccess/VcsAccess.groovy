@@ -119,16 +119,3 @@ class VcsAccess {
         withDefault("", getCommonAncestor(vcsRootsIn(project).collect { it.path })?.canonicalPath)
     }
 }
-
-interface VcsAccessReadListener {
-    def beforeMungingCommit(Commit commit)
-    def afterMungingCommit(Commit commit)
-}
-
-interface VcsAccessLog {
-	def errorReadingCommits(Exception e, Date fromDate, Date toDate)
-    def errorReadingCommits(String error)
-	def failedToLocate(VcsRoot vcsRoot, Project project)
-    def onExtractChangeEventException(Exception e)
-    def failedToLoadContent(String message)
-}

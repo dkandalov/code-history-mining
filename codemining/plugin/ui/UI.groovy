@@ -56,7 +56,10 @@ class UI {
 	}
 
 	def dispose(oldUI) {
-		ProjectManager.instance.removeProjectManagerListener(oldUI.listener)
+		def oldListener = oldUI?.listener
+		if (oldListener != null) {
+			ProjectManager.instance.removeProjectManagerListener(oldListener)
+		}
 	}
 
 	def showGrabbingDialog(HistoryGrabberConfig grabberConfig, Project project, Closure onApplyCallback, Closure onGrabCallback) {
