@@ -4,9 +4,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
-import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsActionsLog
 
-class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
+class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
 	@Override def loadingProjectHistory(Date fromDate, Date toDate) {

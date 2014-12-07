@@ -9,8 +9,8 @@ import codemining.core.vcs.MungingCommitReader
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
-import codemining.vcsaccess.VcsAccess
-import codemining.vcsaccess.VcsAccessReadListener
+import codemining.vcsaccess.VcsActions
+import codemining.vcsaccess.VcsActionsReadListener
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -28,12 +28,12 @@ import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 class CodeMiningPlugin {
 	private final UI ui
 	private final HistoryStorage storage
-	private final VcsAccess vcsAccess
+	private final VcsActions vcsAccess
 	private final Measure measure
 	private final CodeMiningPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	CodeMiningPlugin(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, CodeMiningPluginLog log = null) {
+	CodeMiningPlugin(UI ui, HistoryStorage storage, VcsActions vcsAccess, Measure measure, CodeMiningPluginLog log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -147,8 +147,8 @@ class CodeMiningPlugin {
 		}
 	}
 
-	private VcsAccessReadListener readListenerWith(indicator) {
-		new VcsAccessReadListener() {
+	private VcsActionsReadListener readListenerWith(indicator) {
+		new VcsActionsReadListener() {
 			@Override def beforeMungingCommit(Commit commit) {
 				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
 				log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())

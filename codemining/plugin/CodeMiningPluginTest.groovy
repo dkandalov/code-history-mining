@@ -5,7 +5,7 @@ import codemining.core.historystorage.EventStorage
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
-import codemining.vcsaccess.VcsAccess
+import codemining.vcsaccess.VcsActions
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test
@@ -24,7 +24,7 @@ class CodeMiningPluginTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
-		def vcsAccess = stub(VcsAccess, [readMungedCommits: {
+		def vcsAccess = stub(VcsActions, [readMungedCommits: {
 			grabbedVcs = true
 			[].iterator()
 		}])
@@ -48,7 +48,7 @@ class CodeMiningPluginTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
-		def vcsAccess = stub(VcsAccess,
+		def vcsAccess = stub(VcsActions,
 				[readMungedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
 					grabbedFrom = dateRange.from
 					grabbedTo = dateRange.to
@@ -75,7 +75,7 @@ class CodeMiningPluginTest {
 					onOkCallback(new HistoryGrabberConfig(new Date() - 300, new Date(), "some.csv", false, grabOnVcsUpdate, new Date(0)))
 				}
 		])
-		def vcsAccess = stub(VcsAccess, [
+		def vcsAccess = stub(VcsActions, [
 				readMungedCommits: returns([].iterator()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
@@ -97,7 +97,7 @@ class CodeMiningPluginTest {
 				},
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
-		def vcsAccess = stub(VcsAccess, [readMungedCommits: returns([].iterator())])
+		def vcsAccess = stub(VcsActions, [readMungedCommits: returns([].iterator())])
 		def miner = new CodeMiningPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then

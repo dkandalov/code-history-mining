@@ -2,7 +2,7 @@ package codemining.vcsaccess.implementation.wrappers
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
-import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsActionsLog
 import codemining.vcsaccess.implementation.IJCommitReader
 import vcsreader.Change
 import vcsreader.Commit
@@ -16,9 +16,9 @@ class VcsRootWrapper implements VcsRoot {
     private final IJProject project
     private final IJVcsRoot vcsRoot
     private final String commonVcsRoot
-    private final VcsAccessLog log
+    private final VcsActionsLog log
 
-    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot, String commonVcsRoot, VcsAccessLog log) {
+    VcsRootWrapper(IJProject project, IJVcsRoot vcsRoot, String commonVcsRoot, VcsActionsLog log) {
         this.project = project
         this.vcsRoot = vcsRoot
         this.commonVcsRoot = commonVcsRoot

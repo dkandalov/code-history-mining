@@ -27,18 +27,18 @@ import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 
-class VcsAccess {
+class VcsActions {
 	private final Measure measure
-	private final VcsAccessLog log
+	private final VcsActionsLog log
 	private final Map<String, MessageBusConnection> connectionByProjectName = [:]
 
-	VcsAccess(Measure measure = new Measure(), @Nullable VcsAccessLog log = null) {
+    VcsActions(Measure measure = new Measure(), @Nullable VcsActionsLog log = null) {
 		this.measure = measure
 		this.log = log
 	}
 
     Iterator<MungedCommit> readMungedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
-                                             VcsAccessReadListener readListener = null) {
+                                             VcsActionsReadListener readListener = null) {
         def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary

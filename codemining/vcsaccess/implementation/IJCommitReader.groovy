@@ -6,14 +6,14 @@ import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
-import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsActionsLog
 
 class IJCommitReader {
 	private final Project project
-	private final VcsAccessLog log
+	private final VcsActionsLog log
 	boolean lastRequestHadErrors
 
-	IJCommitReader(Project project, @Nullable VcsAccessLog log = null) {
+	IJCommitReader(Project project, @Nullable VcsActionsLog log = null) {
 		this.project = project
 		this.log = log
 	}

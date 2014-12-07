@@ -11,7 +11,7 @@ import org.junit.Test
 
 import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
-import static codemining.vcsaccess.VcsAccess.vcsRootsIn
+import static codemining.vcsaccess.VcsActions.vcsRootsIn
 
 class IJCommitReaderGitTest {
 

@@ -4,7 +4,7 @@ import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
-import codemining.vcsaccess.VcsAccessLog
+import codemining.vcsaccess.VcsActionsLog
 import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
@@ -14,8 +14,8 @@ import vcsreader.Change
 
 import static codemining.core.common.events.ChangeStats.*
 import static codemining.core.common.langutil.DateTimeUtil.*
-import static codemining.vcsaccess.VcsAccess.commonVcsRootsAncestor
-import static codemining.vcsaccess.VcsAccess.vcsRootsIn
+import static codemining.vcsaccess.VcsActions.commonVcsRootsAncestor
+import static codemining.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
@@ -130,7 +130,7 @@ class MungingCommitReader_GitIntegrationTest {
         }
     }
 
-	private final static dummyLog = new VcsAccessLog() {
+	private final static dummyLog = new VcsActionsLog() {
 		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {}
 		@Override def errorReadingCommits(String error) {}
 		@Override def failedToLocate(VcsRoot vcsRoot, Project project) {}
