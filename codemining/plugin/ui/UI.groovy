@@ -1,21 +1,23 @@
 package codemining.plugin.ui
 import codemining.core.analysis.Visualization
+import codemining.historystorage.HistoryGrabberConfig
+import codemining.historystorage.HistoryStorage
+import codemining.plugin.Miner
+import codemining.plugin.ui.http.HttpUtil
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerAdapter
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.UIUtil
-import codemining.historystorage.HistoryGrabberConfig
-import codemining.historystorage.HistoryStorage
 import liveplugin.PluginUtil
-import codemining.plugin.Miner
-import codemining.plugin.ui.http.HttpUtil
 import org.jetbrains.annotations.Nullable
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -81,7 +83,7 @@ class UI {
 			}
 			// don't return and try to open url anyway in case the above check is wrong
 		}
-		BrowserUtil.launchBrowser(url)
+		BrowserUtil.browser(url)
 	}
 
 	private static boolean browserConfiguredIncorrectly() {
@@ -152,9 +154,21 @@ class UI {
 			add(createShowInBrowserAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
 			add(showInFileManager(file))
+			add(openInIde(file))
 			add(rename(file.name))
 			add(delete(file.name))
 			it
+		}
+	}
+
+	private static openInIde(File file) {
+		new AnAction("Open in IDE") {
+			@Override void actionPerformed(AnActionEvent event) {
+				def virtualFile = VirtualFileManager.instance.findFileByUrl("file://" + file.canonicalPath)
+				if (virtualFile != null) {
+					FileEditorManager.getInstance(event.project).openFile(virtualFile, true)
+				}
+			}
 		}
 	}
 
