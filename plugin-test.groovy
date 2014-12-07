@@ -1,6 +1,6 @@
 import liveplugin.testrunner.IntegrationTestsRunner
 import codemining.plugin.GroovyStubber
-import codemining.plugin.MinerTest
+import codemining.plugin.CodeMiningPluginTest
 import codemining.vcsaccess.implementation.MungingCommitReader_GitIntegrationTest
 import codemining.vcsaccess.implementation.IJCommitReaderGitTest
 
@@ -9,7 +9,7 @@ import codemining.vcsaccess.implementation.IJCommitReaderGitTest
 // add-to-classpath $PLUGIN_PATH/lib/code-mining-core.jar
 // add-to-classpath $PLUGIN_PATH/lib/commons-csv-1.0.jar
 
-def unitTests = [GroovyStubber, MinerTest]
+def unitTests = [GroovyStubber, CodeMiningPluginTest]
 def integrationTests = [IJCommitReaderGitTest, MungingCommitReader_GitIntegrationTest]
 def tests = (unitTests + integrationTests).toList()
 IntegrationTestsRunner.runIntegrationTests(tests, project, pluginPath)

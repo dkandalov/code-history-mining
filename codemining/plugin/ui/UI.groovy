@@ -2,7 +2,7 @@ package codemining.plugin.ui
 import codemining.core.analysis.Visualization
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
-import codemining.plugin.Miner
+import codemining.plugin.CodeMiningPlugin
 import codemining.plugin.ui.http.HttpUtil
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
-	Miner miner
+	CodeMiningPlugin miner
 	HistoryStorage storage
 	Log log
 	private ProjectManagerAdapter listener
@@ -83,7 +83,7 @@ class UI {
 			}
 			// don't return and try to open url anyway in case the above check is wrong
 		}
-		BrowserUtil.browser(url)
+		BrowserUtil.browse(url)
 	}
 
 	private static boolean browserConfiguredIncorrectly() {

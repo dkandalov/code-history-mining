@@ -6,7 +6,7 @@ import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
 import codemining.vcsaccess.VcsAccessLog
 
-class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, MinerLog {
+class Log implements VcsAccessLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
 	@Override def loadingProjectHistory(Date fromDate, Date toDate) {

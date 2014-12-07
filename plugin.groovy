@@ -1,7 +1,7 @@
 import codemining.core.common.langutil.Measure
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.Log
-import codemining.plugin.Miner
+import codemining.plugin.CodeMiningPlugin
 import codemining.plugin.ui.UI
 import codemining.vcsaccess.VcsAccess
 import com.intellij.openapi.application.PathManager
@@ -21,7 +21,7 @@ def measure = new Measure()
 def storage = new HistoryStorage(pathToHistoryFiles, measure, log)
 def vcsAccess = new VcsAccess(measure, log)
 def ui = new UI()
-def miner = new Miner(ui, storage, vcsAccess, measure, log)
+def miner = new CodeMiningPlugin(ui, storage, vcsAccess, measure, log)
 ui.miner = miner
 ui.storage = storage
 ui.log = log

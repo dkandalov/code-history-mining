@@ -25,15 +25,15 @@ import vcsreader.Commit
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
-class Miner {
+class CodeMiningPlugin {
 	private final UI ui
 	private final HistoryStorage storage
 	private final VcsAccess vcsAccess
 	private final Measure measure
-	private final MinerLog log
+	private final CodeMiningPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	Miner(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, MinerLog log = null) {
+	CodeMiningPlugin(UI ui, HistoryStorage storage, VcsAccess vcsAccess, Measure measure, CodeMiningPluginLog log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -197,7 +197,7 @@ class Miner {
 	}
 }
 
-interface MinerLog {
+interface CodeMiningPluginLog {
 	def loadingProjectHistory(Date fromDate, Date toDate)
 
 	def processingChangeList(String changeListName)
