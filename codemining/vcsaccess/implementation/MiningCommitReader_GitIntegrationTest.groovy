@@ -23,9 +23,9 @@ class MiningCommitReader_GitIntegrationTest {
 
     @Test void "should read file events"() {
 		def countChangeSizeInLines = false
-		def commitMungers = createCommitMungers(countChangeSizeInLines)
+		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMungers)
+		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -42,9 +42,9 @@ class MiningCommitReader_GitIntegrationTest {
 
 	@Test void "should read file events with change size details"() {
 		def countChangeSizeInLines = true
-		def commitMungers = createCommitMungers(countChangeSizeInLines)
+		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMungers)
+		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
 		assertThat(asString(changeEvents), equalTo(asString([
@@ -61,9 +61,9 @@ class MiningCommitReader_GitIntegrationTest {
 
     @Test void "should ignore change size details for binary files"() {
         def countChangeSizeInLines = true
-        def commitMungers = createCommitMungers(countChangeSizeInLines)
+        def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, commitMungers)
+        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, commitMiners)
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -74,9 +74,9 @@ class MiningCommitReader_GitIntegrationTest {
 
     @Test void "merged commits are skipped because change events create from original commits"() {
         def countChangeSizeInLines = false
-        def commitMungers = createCommitMungers(countChangeSizeInLines)
+        def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, commitMungers)
+        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, commitMiners)
 
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION")),
@@ -84,7 +84,7 @@ class MiningCommitReader_GitIntegrationTest {
         ])))
     }
 
-	private static List<MainFileMiner> createCommitMungers(boolean countChangeSizeInLines) {
+	private static List<MainFileMiner> createCommitMiners(boolean countChangeSizeInLines) {
 		def fileTypes = new FileTypes([]) {
 			@Override boolean isBinary(String fileName) {
 				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
@@ -95,12 +95,12 @@ class MiningCommitReader_GitIntegrationTest {
 			[new MainFileMiner()]
 	}
 
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> mungers) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), dummyLog)
-        def commitReader = new MiningCommitReader(projectWrapper, mungers)
+        def commitReader = new MiningCommitReader(projectWrapper, miners)
 
-		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit mungedCommit ->
-			mungedCommit.fileChangeEvents
+		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
+			minedCommit.fileChangeEvents
 		}
 	}
 

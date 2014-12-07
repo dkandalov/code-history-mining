@@ -37,32 +37,32 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMungedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
+    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
                                              VcsActionsReadListener readListener = null) {
         def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
             }
         }
-        def mungerListener = new NoFileContentListener() {
+        def noContentListener = new NoFileContentListener() {
             @Override void failedToLoadContent(Change change) {
                 log.failedToLoadContent(change.toString())
             }
         }
-        def mungers = grabChangeSizeInLines ?
-                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, mungerListener)] :
+        def miners = grabChangeSizeInLines ?
+                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener)] :
                 [new MainFileMiner()]
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
-        def listener = new MungingCommitReaderListener() {
+        def listener = new MiningCommitReaderListener() {
             @Override void errorReadingCommits(String error) { log.errorReadingCommits(error) }
             @Override void onExtractChangeEventException(Exception e) { log.onExtractChangeEventException(e) }
             @Override void onCurrentDateRange(DateRange range) {}
-            @Override void beforeMungingCommit(Commit commit) { readListener?.beforeMungingCommit(commit) }
-            @Override void afterMungingCommit(Commit commit) { readListener?.afterMungingCommit(commit) }
+            @Override void beforeMiningCommit(Commit commit) { readListener?.beforeMiningCommit(commit) }
+            @Override void afterMiningCommit(Commit commit) { readListener?.afterMiningCommit(commit) }
         }
 
-        new MiningCommitReader(projectWrapper, mungers, CommitReaderConfig.defaults, listener).readCommits(dateRange)
+        new MiningCommitReader(projectWrapper, miners, CommitReaderConfig.defaults, listener).readCommits(dateRange)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")

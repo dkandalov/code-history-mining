@@ -24,7 +24,7 @@ class CodeMiningPluginTest {
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
-		def vcsAccess = stub(VcsActions, [readMungedCommits: {
+		def vcsAccess = stub(VcsActions, [readMinedCommits: {
 			grabbedVcs = true
 			[].iterator()
 		}])
@@ -49,7 +49,7 @@ class CodeMiningPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMungedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
+				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
 					grabbedFrom = dateRange.from
 					grabbedTo = dateRange.to
 					[].iterator()
@@ -76,7 +76,7 @@ class CodeMiningPluginTest {
 				}
 		])
 		def vcsAccess = stub(VcsActions, [
-				readMungedCommits: returns([].iterator()),
+				readMinedCommits: returns([].iterator()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
 		def miner = new CodeMiningPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
@@ -97,7 +97,7 @@ class CodeMiningPluginTest {
 				},
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
-		def vcsAccess = stub(VcsActions, [readMungedCommits: returns([].iterator())])
+		def vcsAccess = stub(VcsActions, [readMinedCommits: returns([].iterator())])
 		def miner = new CodeMiningPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then
