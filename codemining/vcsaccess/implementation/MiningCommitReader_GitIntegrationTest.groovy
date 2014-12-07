@@ -19,7 +19,7 @@ import static codemining.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
-class MungingCommitReader_GitIntegrationTest {
+class MiningCommitReader_GitIntegrationTest {
 
     @Test void "should read file events"() {
 		def countChangeSizeInLines = false
@@ -84,22 +84,22 @@ class MungingCommitReader_GitIntegrationTest {
         ])))
     }
 
-	private static List<CommitMunger> createCommitMungers(boolean countChangeSizeInLines) {
+	private static List<MainFileMiner> createCommitMungers(boolean countChangeSizeInLines) {
 		def fileTypes = new FileTypes([]) {
 			@Override boolean isBinary(String fileName) {
 				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
 			}
 		}
 		countChangeSizeInLines ?
-			[new CommitMunger(), new LineAndCharChangeMunger(fileTypes, listener)] :
-			[new CommitMunger()]
+			[new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, listener)] :
+			[new MainFileMiner()]
 	}
 
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<CommitMunger> mungers) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> mungers) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), dummyLog)
-        def commitReader = new MungingCommitReader(projectWrapper, mungers)
+        def commitReader = new MiningCommitReader(projectWrapper, mungers)
 
-		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MungedCommit mungedCommit ->
+		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit mungedCommit ->
 			mungedCommit.fileChangeEvents
 		}
 	}

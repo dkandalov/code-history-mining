@@ -4,8 +4,8 @@ import codemining.core.analysis.Visualization
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
-import codemining.core.vcs.MungedCommit
-import codemining.core.vcs.MungingCommitReader
+import codemining.core.vcs.MinedCommit
+import codemining.core.vcs.MiningCommitReader
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
@@ -162,14 +162,14 @@ class CodeMiningPlugin {
 		}
 	}
 
-	private doGrabHistory(Iterator<MungedCommit> mungedCommits, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
+	private doGrabHistory(Iterator<MinedCommit> mungedCommits, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
 		def hadErrors = false
 		def isCancelled = { indicator?.canceled }
         def loadProjectHistory = { DateRange dateRange ->
             log?.loadingProjectHistory(dateRange.from, dateRange.to)
 			while (mungedCommits.hasNext() && !(isCancelled())) {
 				def mungedCommit = mungedCommits.next()
-				if (mungedCommit == MungingCommitReader.noOutput) {
+				if (mungedCommit == MiningCommitReader.noOutput) {
 					hadErrors = true
 				} else {
 					eventStorage.addEvents(mungedCommit.fileChangeEvents)

@@ -37,7 +37,7 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MungedCommit> readMungedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
+    Iterator<MinedCommit> readMungedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
                                              VcsActionsReadListener readListener = null) {
         def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
@@ -50,8 +50,8 @@ class VcsActions {
             }
         }
         def mungers = grabChangeSizeInLines ?
-                [new CommitMunger(), new LineAndCharChangeMunger(fileTypes, mungerListener)] :
-                [new CommitMunger()]
+                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, mungerListener)] :
+                [new MainFileMiner()]
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
         def listener = new MungingCommitReaderListener() {
@@ -62,7 +62,7 @@ class VcsActions {
             @Override void afterMungingCommit(Commit commit) { readListener?.afterMungingCommit(commit) }
         }
 
-        new MungingCommitReader(projectWrapper, mungers, CommitReaderConfig.defaults, listener).readCommits(dateRange)
+        new MiningCommitReader(projectWrapper, mungers, CommitReaderConfig.defaults, listener).readCommits(dateRange)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
