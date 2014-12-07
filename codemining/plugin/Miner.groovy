@@ -169,9 +169,11 @@ class Miner {
             log?.loadingProjectHistory(dateRange.from, dateRange.to)
 			while (mungedCommits.hasNext() && !(isCancelled())) {
 				def mungedCommit = mungedCommits.next()
-				if (mungedCommit == MungingCommitReader.noOutput) hadErrors = true
-
-				eventStorage.addEvents(mungedCommit.fileChangeEvents)
+				if (mungedCommit == MungingCommitReader.noOutput) {
+					hadErrors = true
+				} else {
+					eventStorage.addEvents(mungedCommit.fileChangeEvents)
+				}
 			}
             eventStorage.flush()
         }
