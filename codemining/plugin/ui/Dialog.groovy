@@ -73,7 +73,7 @@ class Dialog {
 			add(new JPanel().with {
 				layout = new GridBagLayout()
 				GridBag bag2 = new GridBag()
-				add(new JLabel("Grab change size in lines/characters:"), bag2.nextLine().next())
+				add(new JLabel("Grab change size in lines/characters and amount of TODOs:"), bag2.nextLine().next())
 				add(grabChangeSizeCheckBox, bag2.next().coverLine().weightx(1).fillCellHorizontally())
 				it
 			}, bag.nextLine().coverLine())

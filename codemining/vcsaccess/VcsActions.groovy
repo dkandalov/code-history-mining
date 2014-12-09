@@ -4,6 +4,7 @@ import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
+import codemining.core.vcs.todo.TodoCountMiner
 import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.EmptyProgressIndicator
@@ -38,7 +39,7 @@ class VcsActions {
 	}
 
     Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
-                                             VcsActionsReadListener readListener = null) {
+                                           VcsActionsReadListener readListener = null) {
         def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
@@ -50,7 +51,7 @@ class VcsActions {
             }
         }
         def miners = grabChangeSizeInLines ?
-                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener)] :
+                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
                 [new MainFileMiner()]
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
