@@ -13,7 +13,7 @@ import org.junit.Test
 import vcsreader.Change
 
 import static codemining.core.common.events.ChangeStats.*
-import static codemining.core.common.langutil.DateTimeUtil.*
+import static codemining.core.common.langutil.DateTimeUtil2.*
 import static codemining.vcsaccess.VcsActions.commonVcsRootsAncestor
 import static codemining.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
