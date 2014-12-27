@@ -22,8 +22,8 @@ import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
 import vcsreader.Commit
 
-import static codemining.core.common.langutil.DateTimeUtil2.dateRange
-import static codemining.core.common.langutil.DateTimeUtil2.floorToDay
+import static codemining.core.common.langutil.DateTimeUtil.dateRange
+import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 class CodeMiningPlugin {
 	private final UI ui

@@ -10,7 +10,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test
 
-import static codemining.core.common.langutil.DateTimeUtil2.*
+import static codemining.core.common.langutil.DateTimeUtil.*
 import static codemining.plugin.GroovyStubber.*
 
 class CodeMiningPluginTest {

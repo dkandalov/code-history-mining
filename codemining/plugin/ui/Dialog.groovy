@@ -25,7 +25,7 @@ import java.awt.event.ActionListener
 
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
-import static codemining.core.common.langutil.DateTimeUtil2.floorToDay
+import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 @SuppressWarnings("GrUnresolvedAccess")
 class Dialog {
