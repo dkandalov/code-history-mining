@@ -2,15 +2,19 @@ package codemining.vcsaccess.implementation
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
+import codemining.core.common.langutil.DateRange
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
 import codemining.vcsaccess.VcsActionsLog
 import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
+import com.intellij.notification.NotificationType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
+import liveplugin.PluginUtil
 import org.junit.Test
 import vcsreader.Change
+import vcsreader.Commit
 
 import static codemining.core.common.events.ChangeStats.*
 import static codemining.core.common.langutil.DateTimeUtil.*
@@ -96,8 +100,8 @@ class MiningCommitReader_GitIntegrationTest {
 	}
 
 	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), dummyLog)
-        def commitReader = new MiningCommitReader(projectWrapper, miners)
+        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
+		def commitReader = new MiningCommitReader(projectWrapper, miners, CommitReaderConfig.getDefaults(), commitReaderListener, false)
 
 		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
 			minedCommit.fileChangeEvents
@@ -130,11 +134,31 @@ class MiningCommitReader_GitIntegrationTest {
         }
     }
 
-	private final static dummyLog = new VcsActionsLog() {
-		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {}
-		@Override def errorReadingCommits(String error) {}
+	private final static commitReaderListener = new MiningCommitReaderListener() {
+		@Override void errorReadingCommits(String error) {
+			PluginUtil.show(error, "", NotificationType.ERROR)
+		}
+		@Override void onExtractChangeEventException(Exception e) {
+			PluginUtil.show(e)
+		}
+		@Override void afterMiningCommit(Commit commit) {}
+		@Override void onCurrentDateRange(DateRange dateRange) {}
+		@Override void beforeMiningCommit(Commit commit) {}
+	}
+
+	private final static vcsActionsLog = new VcsActionsLog() {
+		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {
+			PluginUtil.show(e)
+		}
+		@Override def errorReadingCommits(String error) {
+			PluginUtil.show(error)
+		}
+		@Override def onExtractChangeEventException(Exception e) {
+			PluginUtil.show(e)
+		}
+		@Override def failedToLoadContent(String message) {
+			PluginUtil.show(message)
+		}
 		@Override def failedToLocate(VcsRoot vcsRoot, Project project) {}
-		@Override def onExtractChangeEventException(Exception e) {}
-		@Override def failedToLoadContent(String message) {}
 	}
 }
