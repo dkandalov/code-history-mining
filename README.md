@@ -1,7 +1,7 @@
 ### What is this?
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
-and analyze project source code history. Take a look at examples:
+and analyze project source code history. Take a look at examples of visualizations:
  - [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html)
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
@@ -11,6 +11,8 @@ and analyze project source code history. Take a look at examples:
  - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/rails.html)
  - [Node.js code history](http://dkandalov.github.io/code-history-mining/node.html)
  - [GHC code history](http://dkandalov.github.io/code-history-mining/ghc.html)
+
+See also [command line version of code-history-mining](http://dkandalov.github.io/code-history-mining-cli).
 
 
 ### Why?
@@ -56,10 +58,10 @@ For other visualizations please see comments for [JUnit code history](http://dka
 
 ### Limitations
  - all VCS supported by IntelliJ should work but I only tried Git and Svn
- - visualisations are only tested Chrome; they will work in Safari, Firefox but might have minor glitches; mostly broken in IE9
+ - visualisations are only tested Chrome (but should work in Safari, Firefox)
  - some of visualisations might be slow for long history of a big project
  (e.g. building treemap view of commits for project with 1M LOC for 10 years might take forever).
- If this is the case, splitting history into smaller chunks should help.
+ In this case, filtering or splitting history into smaller chunks can help.
 
 
 ### Code history csv format
