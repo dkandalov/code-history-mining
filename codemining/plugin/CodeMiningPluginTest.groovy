@@ -20,20 +20,21 @@ class CodeMiningPluginTest {
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageFor: returns(stub(EventStorage, [
-						getMostRecentEventTime: returns(dateTime("13:40 20/11/2012"))
+						storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(dateTime("09:00 23/11/2012")))
 		])
-		def vcsAccess = stub(VcsActions, [readMinedCommits: {
-			grabbedVcs = true
-			[].iterator()
-		}])
+		def vcsAccess = stub(VcsActions,
+				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
+					grabbedVcs = true
+					[].iterator()
+				}])
 
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
 		def miner = new CodeMiningPlugin(ui, historyStorage, vcsAccess, new Measure())
 
 		// when / then
-		def today = date("23/11/2012")
+		def today = date("23/11/2012", TimeZone.default)
 		miner.grabHistoryOnVcsUpdate(someProject, today)
 		assert !grabbedVcs
 	}
