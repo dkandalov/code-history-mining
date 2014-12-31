@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.2.2 beta</version>
+    <version>0.2.3 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
@@ -12,10 +12,9 @@
             <li>"VCS -> Code History Mining -> [choose cvs file]" to read history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
             <li>(also available as popup menu, alt+shift+H)</li>
         </ul>
-        For more details please see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
+        For more details and examples of visualizations see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
         <br/><br/>
-        See also example visualisations for <a href="http://dkandalov.github.io/code-history-mining/junit.html">JUnit</a>
-        and <a href="http://dkandalov.github.io/code-history-mining/idea.html">IntelliJ</a>.
+        See also <a href="http://dkandalov.github.io/code-history-mining-cli">Command line version of code-history-mining</a> with similar functionality.
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
