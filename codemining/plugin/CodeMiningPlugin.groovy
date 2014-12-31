@@ -4,7 +4,6 @@ import codemining.core.analysis.Visualization
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
-import codemining.core.vcs.MinedCommit
 import codemining.core.vcs.MiningCommitReader
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
@@ -108,11 +107,8 @@ class CodeMiningPlugin {
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
                         def requestDateRange = dateRange(userInput.from, userInput.to)
-						def minedCommits = vcsAccess.readMinedCommits(
-								requestDateRange, project, userInput.grabChangeSizeInLines, readListenerWith(indicator)
-						)
 
-                        def message = doGrabHistory(minedCommits, eventStorage, requestDateRange, indicator)
+                        def message = doGrabHistory(project, eventStorage, requestDateRange, userInput.grabChangeSizeInLines, indicator)
 
 						ui.showGrabbingFinishedMessage(message.text, message.title, project)
 					}
@@ -134,11 +130,8 @@ class CodeMiningPlugin {
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
                 def requestDateRange = dateRange(eventStorage.storedDateRange().to, today)
-				def minedCommits = vcsAccess.readMinedCommits(
-						requestDateRange, project, config.grabChangeSizeInLines, readListenerWith(indicator)
-				)
 
-				doGrabHistory(minedCommits, eventStorage, requestDateRange, indicator)
+				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
 
 				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(today))
 			} finally {
@@ -162,11 +155,17 @@ class CodeMiningPlugin {
 		}
 	}
 
-	private doGrabHistory(Iterator<MinedCommit> minedCommits, EventStorage eventStorage, DateRange requestDateRange, indicator = null) {
+	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
+						  boolean grabChangeSizeInLines, indicator) {
 		def hadErrors = false
 		def isCancelled = { indicator?.canceled }
         def loadProjectHistory = { DateRange dateRange ->
             log?.loadingProjectHistory(dateRange.from, dateRange.to)
+
+			def minedCommits = vcsAccess.readMinedCommits(
+					dateRange, project, grabChangeSizeInLines, readListenerWith(indicator)
+			)
+
 			while (minedCommits.hasNext() && !(isCancelled())) {
 				def minedCommit = minedCommits.next()
 				if (minedCommit == MiningCommitReader.noOutput) {
