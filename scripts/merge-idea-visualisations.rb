@@ -25,15 +25,17 @@ class Template < CodeHistoryTemplate
 end
 
 
-src_path = '/Users/dima/Google Drive/visualisations/'
+src_path = '/Users/dima/Google Drive/visualisations/secr2014/visualizations/idea/'
 merge_visualizations(src_path, Template, 'idea', {
-    'idea-upto-21-09-2013/Change size chart.html' => [with_change_size_chart(grouped_by = 'month', moving_average = true)],
-    'idea-upto-21-09-2013/Amount of committers.html' => [with_amount_of_committers(grouped_by = 'month')],
-    'idea-upto-21-09-2013/Average amount of files in commit.html' => [with_avg_amount_of_files(percentile = '0.95', grouped_by = 'day')],
-    'idea-2012-2013/Files changed in the same commit.html' => [with_files_graph(gravity = 'High', min_link = 8)],
-    'idea-2012-2013/Committers changing same files.html' => [with_committers_and_files_graph(gravity = 'Medium', min_cluster = '2', min_link = '7')],
-    'idea-2012-2013/Amount of commits treemap.html' => [with_treemap],
-    'idea-upto-21-09-2013/Commit time punchcard.html' => [with_punchcard(multiplier = '2')],
-    'idea-upto-21-09-2013/Time between commits histogram.html' => [with_histogram(percentile = '0.8')],
-    'idea-upto-21-09-2013/Commit messages word cloud.html' => [with_wordcloud(exclusions ='"idea", "ideadev"')]
+    'idea-change-size-chart.html' => [with_change_size_chart(grouped_by = 'month', moving_average = true)],
+    'idea-amount-of-committer-chart.html' => [with_amount_of_committers(grouped_by = 'month')],
+    'idea-amount-of-files-chart.html' => [with_avg_amount_of_files(percentile = '0.95', grouped_by = 'day')],
+    'idea-amount-of-changing-files-chart.html' => [],
+    'idea-changes-by-file-type-chart.html' => [],
+    'idea-2013-2014-files-in-commit-graph.html' => [with_files_graph(gravity = 'High', min_link = 8)],
+    'idea-2013-2014-files-and-committers-graph.html' => [with_committers_and_files_graph(gravity = 'Medium', min_cluster = '2', min_link = '7')],
+    'idea-2013-2014-commit-treemap.html' => [with_treemap],
+    'idea-commit-time-punchcard.html' => [with_punchcard(multiplier = '2')],
+    'idea-commit-time-histogram.html' => [with_histogram(percentile = '0.8')],
+    'idea-commit-message-wordcloud.html' => [with_wordcloud(exclusions ='"idea", "ideadev"')]
 })
