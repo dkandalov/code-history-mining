@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2ee9e3e3-9e5c-4599-89a5-3ad9493a1295" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/clojure.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/code-history-mining.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/cucumber.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ghc.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/junit.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/node.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/rails.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/ruby-no-changelog.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/scala.html" afterPath="" />
+    </list>
+    <ignored path="code-history-mining-gh-pages.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path="$PROJECT_DIR$/out/" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/code-history-mining-gh-pages@merge_idea_visualisations.coverage" NAME="merge-idea-visualisations Coverage Results" MODIFIED="1413994278906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+  </component>
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="DebuggerManager">
+    <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true" converted="true">
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <breakpoint_rules converted="true" />
+    <ui_properties converted="true" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="code-history-mining-gh-pages" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="merge-idea-visualisations.rb" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts/merge-idea-visualisations.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5148936" vertical-offset="123" max-vertical-offset="828">
+              <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitLogSettings">
+    <option name="myStructureFilterPaths" />
+    <option name="myShowDetails" value="false" />
+    <option name="myDateState">
+      <MyDateState />
+    </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_PLUGINS_DIR$/live-plugins/sounds/plugin.groovy" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="22" />
+    <option name="width" value="1680" />
+    <option name="height" value="1024" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id />
+          </State>
+          <State>
+            <id>Naming ConventionsRuby</id>
+          </State>
+          <State>
+            <id>Ruby</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>RubyInstanceMethodNamingConvention</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="code-history-mining-gh-pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="code-history-mining-gh-pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="code-history-mining-gh-pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope">
+        <subPane subId="Default">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="code-history-mining-gh-pages">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="scripts">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="options.lastSelected" value="preferences.pluginManager" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="dynamic.classpath" value="false" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="recentsLimit" value="5" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/scripts" />
+      <recent name="$PROJECT_DIR$/html" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/scripts" />
+      <recent name="$PROJECT_DIR$/html" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Ruby.merge-idea-visualisations">
+    <configuration default="false" name="merge-idea-visualisations" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
+      <module name="" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="$PROJECT_DIR$/scripts" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="true" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="Ruby SDK 1.8.7" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/scripts/merge-idea-visualisations.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
+      <option name="PROGRAM_PARAMETERS" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Specs2RunConfiguration" factoryName="Specs2">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e $stdout.sync=true;$stderr.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <EXTENSION ID="BundlerRunConfigurationExtension" bundleExecEnabled="false" />
+      <EXTENSION ID="JRubyRunConfigurationExtension" NailgunExecEnabled="false" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" track_test_folders="true" runner="rcov">
+        <COVERAGE_PATTERN ENABLED="true">
+          <PATTERN REGEXPS="/.rvm/" INCLUDED="false" />
+        </COVERAGE_PATTERN>
+      </EXTENSION>
+      <EXTENSION ID="org.jetbrains.plugins.ruby.motion.run.MotionSimulatorRunExtension" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="uTestRunConfiguration" factoryName="utest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
+      <module name="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="DEPLOY" value="true" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Ruby.merge-idea-visualisations" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Ruby.merge-idea-visualisations" />
+      </list>
+    </recent_temporary>
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" myUseAcceleration="nothing">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2ee9e3e3-9e5c-4599-89a5-3ad9493a1295" name="Default" comment="" />
+      <created>1390264096546</created>
+      <option name="number" value="Default" />
+      <updated>1390264096546</updated>
+      <workItem from="1395302610633" duration="2440000" />
+      <workItem from="1395416943849" duration="17832000" />
+      <workItem from="1395620115849" duration="22000" />
+      <workItem from="1395620186121" duration="4908000" />
+      <workItem from="1395735026451" duration="6006000" />
+      <workItem from="1413964002380" duration="10222000" />
+      <workItem from="1414075083667" duration="3495000" />
+      <workItem from="1420096212063" duration="1369000" />
+    </task>
+    <task id="LOCAL-00001" summary="fixes in rails scrpt; added code-history.js">
+      <created>1390508942804</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1390508942804</updated>
+    </task>
+    <task id="LOCAL-00002" summary="ruby on rails code history">
+      <created>1390516015080</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1390516015080</updated>
+    </task>
+    <task id="LOCAL-00003" summary="ruby on rails code history">
+      <created>1390589998348</created>
+      <option name="number" value="00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1390589998348</updated>
+    </task>
+    <task id="LOCAL-00004" summary="junit code histoty generated with script">
+      <created>1390592322436</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1390592322436</updated>
+    </task>
+    <task id="LOCAL-00005" summary="regenerated clojure code history; misc wording fixes">
+      <created>1390593448315</created>
+      <option name="number" value="00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1390593448315</updated>
+    </task>
+    <task id="LOCAL-00006" summary="extracted merge.rb">
+      <created>1390599868366</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1390599868366</updated>
+    </task>
+    <task id="LOCAL-00007" summary="simplified merge parameters">
+      <created>1390600438294</created>
+      <option name="number" value="00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1390600438294</updated>
+    </task>
+    <task id="LOCAL-00008" summary="extracted visualisation fixes into VisualizationsConfig module">
+      <created>1390614844904</created>
+      <option name="number" value="00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1390614844904</updated>
+    </task>
+    <task id="LOCAL-00009" summary="simplifying more scripts">
+      <created>1390616821314</created>
+      <option name="number" value="00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1390616821314</updated>
+    </task>
+    <task id="LOCAL-00010" summary="simplifying idea merge script">
+      <created>1390649144837</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1390649144837</updated>
+    </task>
+    <task id="LOCAL-00011" summary="updated templates">
+      <created>1390649374323</created>
+      <option name="number" value="00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1390649374323</updated>
+    </task>
+    <task id="LOCAL-00012" summary="updated templates">
+      <created>1390649984447</created>
+      <option name="number" value="00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1390649984447</updated>
+    </task>
+    <task id="LOCAL-00013" summary="mustache template for junit">
+      <created>1390651005664</created>
+      <option name="number" value="00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1390651005664</updated>
+    </task>
+    <task id="LOCAL-00014" summary="fixes in mustache template">
+      <created>1390651560677</created>
+      <option name="number" value="00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1390651560677</updated>
+    </task>
+    <task id="LOCAL-00015" summary="ghc code history">
+      <created>1390652772793</created>
+      <option name="number" value="00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1390652772793</updated>
+    </task>
+    <task id="LOCAL-00016" summary="ruby code history">
+      <created>1390653413064</created>
+      <option name="number" value="00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1390653413064</updated>
+    </task>
+    <task id="LOCAL-00017" summary="node.js code history">
+      <created>1390653775576</created>
+      <option name="number" value="00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1390653775576</updated>
+    </task>
+    <task id="LOCAL-00018" summary="moved most code histories to single template">
+      <created>1391001827276</created>
+      <option name="number" value="00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1391001827276</updated>
+    </task>
+    <task id="LOCAL-00019" summary="moved idea history to common template">
+      <created>1391002263446</created>
+      <option name="number" value="00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002263446</updated>
+    </task>
+    <task id="LOCAL-00020" summary="moved idea history to common template">
+      <created>1391002275316</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002275316</updated>
+    </task>
+    <task id="LOCAL-00021" summary="updated template">
+      <created>1391002334694</created>
+      <option name="number" value="00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002334694</updated>
+    </task>
+    <task id="LOCAL-00022" summary="updated template">
+      <created>1391002519989</created>
+      <option name="number" value="00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002519989</updated>
+    </task>
+    <task id="LOCAL-00023" summary="minimal code history template">
+      <created>1391002939121</created>
+      <option name="number" value="00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002939121</updated>
+    </task>
+    <task id="LOCAL-00024" summary="min projects code history">
+      <created>1391002980966</created>
+      <option name="number" value="00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1391002980966</updated>
+    </task>
+    <task id="LOCAL-00025" summary="updated most of visualizations">
+      <created>1395582146046</created>
+      <option name="number" value="00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1395582146046</updated>
+    </task>
+    <task id="LOCAL-00026" summary="updated most of visualizations">
+      <created>1395774459492</created>
+      <option name="number" value="00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1395774459492</updated>
+    </task>
+    <task id="LOCAL-00027" summary="removed redundant files">
+      <created>1395785616851</created>
+      <option name="number" value="00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1395785616851</updated>
+    </task>
+    <task id="LOCAL-00028" summary="updated scripts">
+      <created>1420096306147</created>
+      <option name="number" value="00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1420096306147</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="46294000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="22" width="1680" height="1024" extended-state="6" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25586137" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32776618" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Plugins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.21488096" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Tool Output" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17916666" sideWeight="0.7813808" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32776618" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="File Amount by Type" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3297619" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32925585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+    <MESSAGE value="fixes in rails scrpt; added code-history.js" />
+    <MESSAGE value="ruby on rails code history" />
+    <MESSAGE value="junit code histoty generated with script" />
+    <MESSAGE value="regenerated clojure code history; misc wording fixes" />
+    <MESSAGE value="extracted merge.rb" />
+    <MESSAGE value="simplified merge parameters" />
+    <MESSAGE value="extracted visualisation fixes into VisualizationsConfig module" />
+    <MESSAGE value="simplifying more scripts" />
+    <MESSAGE value="simplifying idea merge script" />
+    <MESSAGE value="updated templates" />
+    <MESSAGE value="mustache template for junit" />
+    <MESSAGE value="fixes in mustache template" />
+    <MESSAGE value="ghc code history" />
+    <MESSAGE value="ruby code history" />
+    <MESSAGE value="node.js code history" />
+    <MESSAGE value="moved most code histories to single template" />
+    <MESSAGE value="moved idea history to common template" />
+    <MESSAGE value="updated template" />
+    <MESSAGE value="minimal code history template" />
+    <MESSAGE value="min projects code history" />
+    <MESSAGE value="updated most of visualizations" />
+    <MESSAGE value="removed redundant files" />
+    <MESSAGE value="updated scripts" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated scripts" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/scripts/merge-idea-visualisations.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="828">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2772" max-vertical-offset="3456">
+          <caret line="116" column="14" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge-idea-visualisations.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="121" max-vertical-offset="792">
+          <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2772" max-vertical-offset="3456">
+          <caret line="116" column="14" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="918" max-vertical-offset="3456">
+          <caret line="79" column="64" selection-start-line="79" selection-start-column="64" selection-end-line="79" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Google Drive/visualisations/software-archeology-conference/Committers changing same files.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.10285714" vertical-offset="0" max-vertical-offset="0">
+          <caret line="115" column="18" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stylesheets/pygment_trac.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5034965" vertical-offset="0" max-vertical-offset="0">
+          <caret line="20" column="26" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/html/code-history.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="37" max-vertical-offset="990">
+          <caret line="35" column="36" selection-start-line="35" selection-start-column="36" selection-end-line="35" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stylesheets/stylesheet.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="7812">
+          <caret line="18" column="53" selection-start-line="18" selection-start-column="30" selection-end-line="18" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/template.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-44.0" vertical-offset="702" max-vertical-offset="2412">
+          <caret line="105" column="0" selection-start-line="103" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_PLUGINS_DIR$/live-plugins/sounds/plugin.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1458">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/com/intellij/codeInsight/template/impl/editorActions/ExpandLiveTemplateByTabAction.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.10089686" vertical-offset="0" max-vertical-offset="892">
+          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_PLUGINS_DIR$/LivePlugin/lib/LivePlugin.jar!/src/liveplugin/PluginUtil.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17557251" vertical-offset="6715" max-vertical-offset="16560">
+          <caret line="460" column="49" selection-start-line="460" selection-start-column="49" selection-end-line="460" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/images/bg_hr.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.7361702" vertical-offset="864" max-vertical-offset="3456">
+          <caret line="116" column="5" selection-start-line="116" selection-start-column="5" selection-end-line="116" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/merge-idea-visualisations.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5148936" vertical-offset="123" max-vertical-offset="828">
+          <caret line="27" column="9" selection-start-line="27" selection-start-column="9" selection-end-line="27" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI">
+        <settings>
+          <last-edited>No facets are configured</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="GlobalLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>akka 1.3.1</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>1.6</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>gh-pages</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+                <option value="0.6" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
