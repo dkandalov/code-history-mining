@@ -2,15 +2,15 @@
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
 and analyze project source code history. Take a look at examples of visualizations:
- - [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html)
+ - [JUnit code history](http://dkandalov.github.io/code-history-mining/JUnit.html)
+ - [Cucumber code history](http://dkandalov.github.io/code-history-mining/Cucumber.html)
+ - [Scala code history](http://dkandalov.github.io/code-history-mining/Scala.html)
+ - [Clojure code history](http://dkandalov.github.io/code-history-mining/Clojure.html)
+ - [Ruby code history](http://dkandalov.github.io/code-history-mining/Ruby.html)
+ - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/Rails.html)
+ - [Node.js code history](http://dkandalov.github.io/code-history-mining/NodeJS.html)
+ - [GHC code history](http://dkandalov.github.io/code-history-mining/GHC.html)
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
- - [Scala code history](http://dkandalov.github.io/code-history-mining/scala.html)
- - [Clojure code history](http://dkandalov.github.io/code-history-mining/clojure.html)
- - [Cucumber code history](http://dkandalov.github.io/code-history-mining/cucumber.html)
- - [Ruby code history](http://dkandalov.github.io/code-history-mining/ruby-no-changelog.html)
- - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/rails.html)
- - [Node.js code history](http://dkandalov.github.io/code-history-mining/node.html)
- - [GHC code history](http://dkandalov.github.io/code-history-mining/ghc.html)
 
 See also [command line version of code-history-mining](http://dkandalov.github.io/code-history-mining-cli).
 
