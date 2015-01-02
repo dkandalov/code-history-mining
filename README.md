@@ -6,6 +6,8 @@ and analyze project source code history. Take a look at examples of visualizatio
  - [Cucumber code history](http://dkandalov.github.io/code-history-mining/Cucumber.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/Scala.html)
  - [Clojure code history](http://dkandalov.github.io/code-history-mining/Clojure.html)
+ - [Groovy code history](http://dkandalov.github.io/code-history-mining/Groovy.html)
+ - [CoffeeScript code history](http://dkandalov.github.io/code-history-mining/CoffeeScript.html)
  - [Maven code history](http://dkandalov.github.io/code-history-mining/Maven.html)
  - [Gradle code history](http://dkandalov.github.io/code-history-mining/Gradle.html)
  - [Ruby code history](http://dkandalov.github.io/code-history-mining/Ruby.html)
@@ -54,11 +56,6 @@ Files from this folder are displayed in plugin menu.
 All visualizations are self-contained one file pages (i.e. you should be able to save them as standalone files).
 
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
-
-#### Meaning of visualizations
-"Latest Commits as Graph" - shows graph of committers connected to file for 1 month before last commit (but not more than 500 changes).
-
-For other visualizations please see comments for [JUnit code history](http://dkandalov.github.io/code-history-mining/junit.html).
 
 
 ### Limitations
