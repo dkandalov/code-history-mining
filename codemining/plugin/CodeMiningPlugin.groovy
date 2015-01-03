@@ -171,7 +171,7 @@ class CodeMiningPlugin {
 				if (minedCommit == MiningCommitReader.noOutput) {
 					hadErrors = true
 				} else {
-					eventStorage.addEvents(minedCommit.fileChangeEvents)
+					eventStorage.addEvents(minedCommit.fragments)
 				}
 			}
             eventStorage.flush()

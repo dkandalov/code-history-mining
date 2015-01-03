@@ -38,7 +38,7 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
+    Iterator<GenericMinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
                                            VcsActionsReadListener readListener = null) {
         def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
