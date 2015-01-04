@@ -1,19 +1,26 @@
 ### What is this?
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to grab
-and analyze project source code history. Take a look at examples of visualizations:
+and analyze project source code history. You can install it from plugin manager
+or download from [plugin repository](http://plugins.jetbrains.com/plugin/7273).
+
+Take a look at examples of visualizations:
  - [JUnit code history](http://dkandalov.github.io/code-history-mining/JUnit.html)
+ - [TestNG code history](http://dkandalov.github.io/code-history-mining/TestNG.html)
  - [Cucumber code history](http://dkandalov.github.io/code-history-mining/Cucumber.html)
  - [Scala code history](http://dkandalov.github.io/code-history-mining/Scala.html)
  - [Clojure code history](http://dkandalov.github.io/code-history-mining/Clojure.html)
+ - [Kotlin code history](http://dkandalov.github.io/code-history-mining/Kotlin.html)
  - [Groovy code history](http://dkandalov.github.io/code-history-mining/Groovy.html)
  - [CoffeeScript code history](http://dkandalov.github.io/code-history-mining/CoffeeScript.html)
+ - [Go code history](http://dkandalov.github.io/code-history-mining/Go.html)
  - [Maven code history](http://dkandalov.github.io/code-history-mining/Maven.html)
  - [Gradle code history](http://dkandalov.github.io/code-history-mining/Gradle.html)
  - [Ruby code history](http://dkandalov.github.io/code-history-mining/Ruby.html)
  - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/Rails.html)
  - [Node.js code history](http://dkandalov.github.io/code-history-mining/NodeJS.html)
  - [Aeron code history](http://dkandalov.github.io/code-history-mining/Aeron.html)
+ - [ANTLR4 code history](http://dkandalov.github.io/code-history-mining/ANTLR4.html)
  - [GHC code history](http://dkandalov.github.io/code-history-mining/GHC.html)
  - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
 
@@ -28,11 +35,6 @@ This is an attempt to make looking at project history easier.
 
  - converting history to csv is useful because it's easy to read and process in any language (or even in a spreadsheet)
  - interactive visualization is cool because it's fun to play with and can hopefully give deeper insight into project history
-
-
-### How to install?
- - from IntelliJ [plugin repository](http://plugins.jetbrains.com/plugin/7273)
- - as a plugin for [live-plugin](https://github.com/dkandalov/live-plugin)
 
 
 ### How to use?
