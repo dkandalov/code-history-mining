@@ -22,7 +22,7 @@ Take a look at examples of visualizations:
  - [Aeron code history](http://dkandalov.github.io/code-history-mining/Aeron.html)
  - [ANTLR4 code history](http://dkandalov.github.io/code-history-mining/ANTLR4.html)
  - [GHC code history](http://dkandalov.github.io/code-history-mining/GHC.html)
- - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/idea.html)
+ - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/IntelliJ.html)
 
 Csv files with data for the above visualizations are available [here on google drive](https://googledrive.com/host/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ).
 
