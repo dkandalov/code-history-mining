@@ -40,7 +40,7 @@ class SimpleHttpServer {
 					if (handlerResponse != null) {
 						replyWithText(handlerResponse.toString())
 					} else if (requestURI.startsWith("/") && requestURI.size() > 1) {
-						def file = new File(this.webRootPath + "${URLDecoder.decode(requestURI.toString(), "UTF-8")}")
+						def file = new File(this.webRootPath + URLDecoder.decode(requestURI, "UTF-8"))
 						if (!file.exists()) {
 							replyNotFound()
 						} else {
