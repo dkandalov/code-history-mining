@@ -49,8 +49,10 @@ task jarPlugin(dependsOn: [compileGroovy]) << {
     ant.delete(dir: "${basePath}/build/classes/main/lib")
     ant.jar(baseDir: "${basePath}/build/classes/main/", destFile: "$targetFolder/lib/code-history-mining-plugin.jar")
 
-    ant.copy(toDir: "$targetFolder/lib") { file ->
-        ant.fileset(dir: "${basePath}/lib")
+    ant.copy(toDir: "$targetFolder/lib", flatten: true) { file ->
+        ant.fileset(dir: "${basePath}/lib") {
+            include(name: "**/*.jar")
+        }
     }
 }
 

@@ -23,12 +23,12 @@
     <orderEntry type="library" exported="" name="Gradle: codemining:core:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: codemining:vcs-reader:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-csv:1.0" level="project" />
-    <orderEntry type="library" exported="" name="Gradle: liveplugin:live-plugin:0.5.1" level="project" />
     <orderEntry type="module-library" exported="">
       <library name="Gradle: alloy">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/alloy.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/alloy.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/alloy.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/alloy.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/alloy.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -37,8 +37,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: annotations">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/annotations.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/annotations.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -47,8 +48,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: asm-all">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-all.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-all.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -57,8 +59,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: asm-commons">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-commons.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-commons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-commons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-commons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-commons.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -67,8 +70,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: asm-tree-3.0">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-tree-3.0.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm-tree-3.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-tree-3.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-tree-3.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm-tree-3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -77,8 +81,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: asm">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -87,8 +92,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: asm4-all">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm4-all.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/asm4-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm4-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm4-all.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/asm4-all.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -97,8 +103,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: automaton">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/automaton.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/automaton.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/automaton.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/automaton.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/automaton.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -107,8 +114,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: batik">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/batik.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/batik.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/batik.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/batik.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/batik.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -117,8 +125,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: boot">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/boot.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/boot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/boot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/boot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/boot.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -127,8 +136,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: bootstrap">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/bootstrap.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/bootstrap.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/bootstrap.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/bootstrap.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/bootstrap.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -137,8 +147,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: cglib-2.2.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/cglib-2.2.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/cglib-2.2.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cglib-2.2.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cglib-2.2.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cglib-2.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -147,8 +158,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: cli-parser-1.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/cli-parser-1.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/cli-parser-1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cli-parser-1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cli-parser-1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/cli-parser-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -157,8 +169,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: commons-codec-1.8">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-codec-1.8.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-codec-1.8.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-codec-1.8.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-codec-1.8.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-codec-1.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -167,8 +180,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: commons-httpclient-3.1-patched">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-httpclient-3.1-patched.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-httpclient-3.1-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-httpclient-3.1-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-httpclient-3.1-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-httpclient-3.1-patched.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -177,8 +191,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: commons-logging-1.1.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-logging-1.1.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-logging-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-logging-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-logging-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-logging-1.1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -187,8 +202,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: commons-net-3.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-net-3.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/commons-net-3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-net-3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-net-3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-net-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -197,8 +213,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: ecj-4.4">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/ecj-4.4.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/ecj-4.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/ecj-4.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/ecj-4.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/ecj-4.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -207,8 +224,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: extensions">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/extensions.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/extensions.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/extensions.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/extensions.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/extensions.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -217,8 +235,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: fluent-hc-4.3.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/fluent-hc-4.3.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/fluent-hc-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fluent-hc-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fluent-hc-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fluent-hc-4.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -227,8 +246,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: forms_rt">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/forms_rt.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/forms_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/forms_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/forms_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/forms_rt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -237,8 +257,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: freemarker">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/freemarker.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/freemarker.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/freemarker.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/freemarker.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/freemarker.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -247,8 +268,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: fxHelpBrowser">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/fxHelpBrowser.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/fxHelpBrowser.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fxHelpBrowser.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fxHelpBrowser.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/fxHelpBrowser.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -257,8 +279,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: groovy-all-2.2.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/groovy-all-2.2.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/groovy-all-2.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/groovy-all-2.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/groovy-all-2.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/groovy-all-2.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -267,8 +290,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: gson-2.2.4">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/gson-2.2.4.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/gson-2.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/gson-2.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/gson-2.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/gson-2.2.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -277,8 +301,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: guava-17.0">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/guava-17.0.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/guava-17.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/guava-17.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/guava-17.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/guava-17.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -287,8 +312,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: hamcrest-core-1.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/hamcrest-core-1.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-core-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -297,8 +323,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: hamcrest-library-1.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/hamcrest-library-1.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/hamcrest-library-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-library-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-library-1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/hamcrest-library-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -307,8 +334,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: httpclient-4.3.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpclient-4.3.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpclient-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpclient-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpclient-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpclient-4.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -317,8 +345,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: httpcore-4.3.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpcore-4.3.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpcore-4.3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpcore-4.3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpcore-4.3.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpcore-4.3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -327,8 +356,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: httpmime-4.3.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpmime-4.3.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/httpmime-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpmime-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpmime-4.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/httpmime-4.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -337,8 +367,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: icons">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/icons.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/icons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/icons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/icons.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/icons.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -347,8 +378,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: idea-jsp-openapi">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea-jsp-openapi.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea-jsp-openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea-jsp-openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea-jsp-openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea-jsp-openapi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -357,8 +389,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: idea">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -367,8 +400,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: idea_rt">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea_rt.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/idea_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/idea_rt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -377,8 +411,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: isorelax">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/isorelax.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/isorelax.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/isorelax.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/isorelax.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/isorelax.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -387,8 +422,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jasper21_rt">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jasper21_rt.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jasper21_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper21_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper21_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper21_rt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -397,8 +433,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jasper2_rt">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jasper2_rt.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jasper2_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper2_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper2_rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jasper2_rt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -407,8 +444,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: javac2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/javac2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/javac2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javac2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javac2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/javac2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -417,8 +455,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jaxen-1.1.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jaxen-1.1.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jaxen-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jaxen-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jaxen-1.1.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jaxen-1.1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -427,8 +466,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jayatana-1.2.4">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jayatana-1.2.4.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jayatana-1.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jayatana-1.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jayatana-1.2.4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jayatana-1.2.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -437,8 +477,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jcip-annotations">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jcip-annotations.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jcip-annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jcip-annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jcip-annotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jcip-annotations.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -447,8 +488,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jdkAnnotations">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jdkAnnotations.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jdkAnnotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdkAnnotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdkAnnotations.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdkAnnotations.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -457,8 +499,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jdom">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jdom.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jdom.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdom.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdom.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jdom.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -467,8 +510,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jettison-1.3.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jettison-1.3.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jettison-1.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jettison-1.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jettison-1.3.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jettison-1.3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -477,8 +521,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jgoodies-common-1.2.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-common-1.2.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-common-1.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-common-1.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-common-1.2.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-common-1.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -487,8 +532,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jgoodies-forms">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-forms.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-forms.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-forms.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-forms.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-forms.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -497,8 +543,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jgoodies-looks-2.4.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-looks-2.4.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jgoodies-looks-2.4.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-looks-2.4.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-looks-2.4.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jgoodies-looks-2.4.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -507,8 +554,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jh">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jh.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jh.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jh.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jh.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jh.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -517,8 +565,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jing">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jing.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jing.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -527,8 +576,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jna-utils">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jna-utils.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jna-utils.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -537,8 +587,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jna">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jna.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -547,8 +598,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jps-launcher">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-launcher.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-launcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-launcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-launcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-launcher.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -557,8 +609,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jps-model">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-model.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-model.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-model.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-model.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-model.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -567,8 +620,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jps-server">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-server.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jps-server.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-server.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-server.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jps-server.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -577,8 +631,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch-0.1.51">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch-0.1.51.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch-0.1.51.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch-0.1.51.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch-0.1.51.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch-0.1.51.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -587,8 +642,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.connector-factory">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.connector-factory.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.connector-factory.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.connector-factory.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.connector-factory.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.connector-factory.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -597,8 +653,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.core">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.core.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.core.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -607,8 +664,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.pageant">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.pageant.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.pageant.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.pageant.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.pageant.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.pageant.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -617,8 +675,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.sshagent">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.sshagent.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.sshagent.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.sshagent.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.sshagent.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.sshagent.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -627,8 +686,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.usocket-jna">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.usocket-jna.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.usocket-jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-jna.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-jna.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -637,8 +697,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsch.agentproxy.usocket-nc">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.usocket-nc.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsch.agentproxy.usocket-nc.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-nc.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-nc.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsch.agentproxy.usocket-nc.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -647,8 +708,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsp-api">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsp-api.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsp-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsp-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsp-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsp-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -657,8 +719,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsr166e">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsr166e.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsr166e.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr166e.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr166e.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr166e.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -667,8 +730,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jsr173_1.0_api">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsr173_1.0_api.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jsr173_1.0_api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr173_1.0_api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr173_1.0_api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jsr173_1.0_api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -677,8 +741,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: junit-4.11">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/junit-4.11.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/junit-4.11.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.11.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.11.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.11.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -687,8 +752,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: junit">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/junit.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/junit.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/junit.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -697,8 +763,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: jzlib-1.1.1">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jzlib-1.1.1.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/jzlib-1.1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jzlib-1.1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jzlib-1.1.1.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jzlib-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -707,8 +774,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: log4j">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/log4j.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/log4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/log4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/log4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/log4j.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -717,8 +785,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: markdownj-core-0.4.2-SNAPSHOT">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/markdownj-core-0.4.2-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -727,8 +796,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: microba">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/microba.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/microba.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/microba.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/microba.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/microba.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -737,8 +807,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: miglayout-swing">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/miglayout-swing.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/miglayout-swing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/miglayout-swing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/miglayout-swing.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/miglayout-swing.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -747,8 +818,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: nanoxml-2.2.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/nanoxml-2.2.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/nanoxml-2.2.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nanoxml-2.2.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nanoxml-2.2.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nanoxml-2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -757,8 +829,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: nekohtml-1.9.14">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/nekohtml-1.9.14.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/nekohtml-1.9.14.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nekohtml-1.9.14.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nekohtml-1.9.14.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/nekohtml-1.9.14.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -767,8 +840,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: netty-all-4.1.0.Beta3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/netty-all-4.1.0.Beta3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/netty-all-4.1.0.Beta3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/netty-all-4.1.0.Beta3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/netty-all-4.1.0.Beta3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/netty-all-4.1.0.Beta3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -777,8 +851,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: openapi">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/openapi.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/openapi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -787,8 +862,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: optimizedFileManager">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/optimizedFileManager.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/optimizedFileManager.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/optimizedFileManager.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/optimizedFileManager.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/optimizedFileManager.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -797,8 +873,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: oromatcher">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/oromatcher.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/oromatcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/oromatcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/oromatcher.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/oromatcher.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -807,8 +884,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: picocontainer">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/picocontainer.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/picocontainer.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/picocontainer.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/picocontainer.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/picocontainer.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -817,8 +895,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: protobuf-2.5.0">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/protobuf-2.5.0.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/protobuf-2.5.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/protobuf-2.5.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/protobuf-2.5.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/protobuf-2.5.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -827,8 +906,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: proxy-vole_20120920">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/proxy-vole_20120920.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/proxy-vole_20120920.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/proxy-vole_20120920.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/proxy-vole_20120920.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/proxy-vole_20120920.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -837,8 +917,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: pty4j-0.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/pty4j-0.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/pty4j-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -847,8 +928,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: purejavacomm">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/purejavacomm.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/purejavacomm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/purejavacomm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/purejavacomm.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/purejavacomm.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -857,8 +939,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: resolver">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resolver.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resolver.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resolver.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resolver.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resolver.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -867,8 +950,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: resources">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resources.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resources.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -877,8 +961,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: resources_en">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resources_en.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/resources_en.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -887,8 +972,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: rhino-js-1_7R4">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/rhino-js-1_7R4.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/rhino-js-1_7R4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rhino-js-1_7R4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rhino-js-1_7R4.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rhino-js-1_7R4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -897,8 +983,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: rngom-20051226-patched">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/rngom-20051226-patched.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/rngom-20051226-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rngom-20051226-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rngom-20051226-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/rngom-20051226-patched.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -907,8 +994,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: sanselan-0.98-snapshot">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/sanselan-0.98-snapshot.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/sanselan-0.98-snapshot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/sanselan-0.98-snapshot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/sanselan-0.98-snapshot.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/sanselan-0.98-snapshot.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -917,8 +1005,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: serviceMessages">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/serviceMessages.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/serviceMessages.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/serviceMessages.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/serviceMessages.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/serviceMessages.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -927,8 +1016,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: servlet-api">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/servlet-api.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/servlet-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/servlet-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/servlet-api.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/servlet-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -937,8 +1027,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: snappy-in-java-0.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/snappy-in-java-0.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/snappy-in-java-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/snappy-in-java-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/snappy-in-java-0.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/snappy-in-java-0.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -947,8 +1038,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: swingx-core-1.6.2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/swingx-core-1.6.2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/swingx-core-1.6.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/swingx-core-1.6.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/swingx-core-1.6.2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/swingx-core-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -957,8 +1049,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: trang-core">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trang-core.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trang-core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trang-core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trang-core.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trang-core.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -967,8 +1060,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: trove4j">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trove4j.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trove4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -977,8 +1071,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: trove4j_src">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trove4j_src.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/trove4j_src.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j_src.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j_src.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/trove4j_src.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -987,8 +1082,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: util">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/util.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/util.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/util.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -997,8 +1093,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: velocity">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/velocity.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/velocity.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/velocity.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/velocity.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/velocity.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1007,8 +1104,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: winp-1.21-patched">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/winp-1.21-patched.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/winp-1.21-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/winp-1.21-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/winp-1.21-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/winp-1.21-patched.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1017,8 +1115,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xbean">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xbean.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xbean.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xbean.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xbean.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xbean.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1027,8 +1126,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xerces">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xerces.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xerces.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xerces.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xerces.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xerces.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1037,8 +1137,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xml-apis">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xml-apis.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xml-apis.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xml-apis.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xml-apis.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xml-apis.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1047,8 +1148,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xmlrpc-2.0">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xmlrpc-2.0.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xmlrpc-2.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xmlrpc-2.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xmlrpc-2.0.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xmlrpc-2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1057,8 +1159,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xpp3-1.1.4-min">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xpp3-1.1.4-min.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xpp3-1.1.4-min.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xpp3-1.1.4-min.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xpp3-1.1.4-min.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xpp3-1.1.4-min.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1067,8 +1170,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: xstream-1.4.3">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xstream-1.4.3.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/xstream-1.4.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xstream-1.4.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xstream-1.4.3.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/xstream-1.4.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1077,8 +1181,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: yjp-controller-api-redist">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/yjp-controller-api-redist.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/lib/yjp-controller-api-redist.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/yjp-controller-api-redist.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/yjp-controller-api-redist.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/yjp-controller-api-redist.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1087,8 +1192,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: git4idea-rt">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/git4idea-rt.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/git4idea-rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea-rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea-rt.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea-rt.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1097,8 +1203,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: git4idea">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/git4idea.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/git4idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/git4idea.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1107,8 +1214,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: ini4j-0.5.2-patched">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/ini4j-0.5.2-patched.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/ini4j-0.5.2-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/ini4j-0.5.2-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/ini4j-0.5.2-patched.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/ini4j-0.5.2-patched.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1117,8 +1225,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: remote-servers-git">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/remote-servers-git.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/remote-servers-git.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/remote-servers-git.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/remote-servers-git.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/remote-servers-git.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1127,8 +1236,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: resources_en">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/resources_en.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/resources_en.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/resources_en.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1137,8 +1247,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: trilead-ssh2">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/trilead-ssh2.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/git4idea/lib/trilead-ssh2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/trilead-ssh2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/trilead-ssh2.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/git4idea/lib/trilead-ssh2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -1147,12 +1258,15 @@
     <orderEntry type="module-library" exported="">
       <library name="Gradle: github">
         <CLASSES>
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/github/lib/github.jar!/" />
-          <root url="jar:///Applications/IntelliJ IDEA 14.app/Contents/plugins/github/lib/github.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/github/lib/github.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/github/lib/github.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/plugins/github/lib/github.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="Gradle: liveplugin:live-plugin:0.5.2 beta" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: com.intellij:annotations:12.0" level="project" />
   </component>
 </module>
