@@ -11,11 +11,11 @@ class HttpUtil {
 
 		log?.httpServerIsAboutToLoadHtmlFile(tempDir.absolutePath + "/" + fileName)
 
-		def port = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log?.errorOnHttpRequest(it.toString())})
-		"http://localhost:${port}/${fileName}"
+		def server = restartHttpServer(projectName, tempDir.absolutePath, {null}, {log?.errorOnHttpRequest(it.toString())})
+		"http://localhost:${server.port}/${fileName}"
 	}
 
-	private static int restartHttpServer(String id, String webRootPath, Closure handler = {null}, Closure errorListener = {}) {
+	private static SimpleHttpServer restartHttpServer(String id, String webRootPath, Closure handler = {null}, Closure errorListener = {}) {
 		changeGlobalVar(id) { previousServer ->
 			if (previousServer != null) {
 				previousServer.stop()
@@ -23,18 +23,16 @@ class HttpUtil {
 
 			def server = new SimpleHttpServer()
 			def started = false
-			def serverPort = 0
 			for (port in (8100..10000)) {
 				try {
 					server.start(port, webRootPath, handler, errorListener)
-					serverPort = port
 					started = true
 					break
 				} catch (BindException ignore) {
 				}
 			}
 			if (!started) throw new IllegalStateException("Failed to start server '${id}'")
-			serverPort
+			server
 		}
 	}
 }
