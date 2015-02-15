@@ -106,6 +106,7 @@ p {
 
 footer p {
     color: #f2f2f2;
+    text-align: center;
 }
 
 a {
@@ -269,7 +270,7 @@ Full-Width Styles
 
 .inner {
     position: relative;
-    max-width: 800px;
+    max-width: 1200px;
     padding: 20px 10px;
     margin: 0 auto;
 }
@@ -299,7 +300,7 @@ Full-Width Styles
 }
 
 #header_wrap .inner {
-    padding: 50px 10px 30px 10px;
+    padding: 30px 10px 30px 10px;
 }
 
 #project_title {
@@ -308,6 +309,7 @@ Full-Width Styles
     font-size: 42px;
     font-weight: 700;
     text-shadow: #111 0px 0px 10px;
+    text-align: center;
 }
 
 #project_tagline {

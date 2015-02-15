@@ -21,7 +21,6 @@
 <!-- HEADER -->
 <div id="header_wrap" class="outer" style="max-height: 120px">
     <header class="inner">
-        <a id="forkme_banner" href="https://github.com/dkandalov/code-history-mining">View on GitHub</a>
         <h1 id="project_title">Amount of words in commit message</h1>
         <h2 id="project_tagline"></h2>
     </header>
@@ -30,25 +29,42 @@
 <!-- MAIN CONTENT -->
 <div id="main_content_wrap" class="outer">
     <section id="main_content" class="inner">
-        <h3>Scala</h3>
-        <span id="word-occurrences-chart-1" class="bar-chart"></span>
-        <h3>Go language</h3>
-        <span id="word-occurrences-chart-2" class="bar-chart"></span>
-        <h3>Clojure</h3>
-        <span id="word-occurrences-chart-3" class="bar-chart"></span>
-        <h3>CoffeeScript</h3>
-        <span id="word-occurrences-chart-4" class="bar-chart"></span>
-        <h3>NodeJS</h3>
-        <span id="word-occurrences-chart-5" class="bar-chart"></span>
+        <h2>What is it?</h2>
+        <p>
+            This is visualization of amount of word occurrences in commit messages over history of project.
+            Inspired by <a href="http://www.ted.com/talks/what_we_learned_from_5_million_books?language=en">this TED talk.</a>
+            <br/>
+            Visualization data is based on <a href="https://drive.google.com/?utm_source=en&utm_medium=button&utm_campaign=web&utm_content=gotodrive&usp=gtd&ltmpl=drive&pli=1#folders/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ">
+            these csv files</a> generated with <a href="http://codehistorymining.com/">code history mining CLI.</a>
+        </p>
+        <p>
+            The idea is to take all words from commit message, filter out words unrelated to change (e.g. prefix for issue tracker or author name)
+            and count how often words mentioned within a week/month.
+            Absolute value of word occurrences is interesting on its own to see what happened on project.
+            Obviously, if some word is used in commits often, it will strongly correlate with any activity on the project.
+            Considering this it might be worth looking for relative difference between words and how it changes over time.
+        </p>
+        <br/><br/>
+        <h2>Scala</h2>
+        <span id="word-occurrences-chart-1" class="bar-chart"></span><br/><br/>
+        <h2>Go language</h2>
+        <span id="word-occurrences-chart-2" class="bar-chart"></span><br/><br/>
+        <h2>Clojure</h2>
+        <span id="word-occurrences-chart-3" class="bar-chart"></span><br/><br/>
+        <h2>CoffeeScript</h2>
+        <span id="word-occurrences-chart-4" class="bar-chart"></span><br/><br/>
+        <h2>NodeJS</h2>
+        <span id="word-occurrences-chart-5" class="bar-chart"></span><br/><br/><br/>
     </section>
 </div>
 
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
     <footer class="inner">
-        <p class="copyright">Please feel free to <a href="https://twitter.com/dmitrykandalov">drop me a line</a>
-            or <a href="https://github.com/dkandalov/code-history-mining/issues">create an issue</a> on GitHub.
-        </p>
+        <p>Published with
+            <a href="http://pages.github.com">GitHub Pages</a>
+            by <a href="https://twitter.com/dmitrykandalov">@dmitrykandalov</a>
+            on 15 Feb 2015.</p>
     </footer>
 </div>
 
@@ -1727,7 +1743,7 @@ date,add,fix,remove,test,upgrade\n\
 <script>
     var margin = {top: 20, right: 80, bottom: 30, left: 50};
     var uiConfig = {
-        width: /*width*/960/*width*/ - margin.left - margin.right,
+        width: /*width*/1200/*width*/ - margin.left - margin.right,
         height: 500 - margin.top - margin.bottom,
         margin: margin,
         color: d3.scale.category10()
