@@ -1,5 +1,5 @@
 package codemining.plugin.ui
-import codemining.core.analysis.Visualization
+import codemining.core.visualizations.Visualization
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.CodeMiningPlugin

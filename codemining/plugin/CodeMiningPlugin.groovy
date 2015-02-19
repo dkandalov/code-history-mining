@@ -1,6 +1,6 @@
 package codemining.plugin
 import codemining.core.analysis.Context
-import codemining.core.analysis.Visualization
+import codemining.core.visualizations.Visualization
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
@@ -52,7 +52,7 @@ class CodeMiningPlugin {
 				def context = new Context(events, projectName, checkIfCancelled, { String message ->
                     Logger.getInstance("CodeHistoryMining").info(message)
                 })
-				def html = visualization.generate(context)
+				def html = visualization.generateHtml(context).inlineImports().text
 
 				ui.showInBrowser(html, projectName, visualization)
 
