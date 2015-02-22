@@ -66,7 +66,7 @@ All visualizations are self-contained one file pages (i.e. you should be able to
 
 ### Limitations
  - all VCS supported by IntelliJ should work but I only tried Git and Svn
- - visualisations are only tested Chrome (but should work in Safari, Firefox)
+ - visualisations are only tested in Chrome (but should work in Safari, Firefox)
  - some of visualisations might be slow for long history of a big project
  (e.g. building treemap view of commits for project with 1M LOC for 10 years might take forever).
  In this case, filtering or splitting history into smaller chunks can help.
