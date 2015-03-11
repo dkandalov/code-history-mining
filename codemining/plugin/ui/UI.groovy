@@ -152,6 +152,7 @@ class UI {
 			add(createShowInBrowserAction(Visualization.committersChangingSameFilesGraph))
 			add(createShowInBrowserAction(Visualization.commitTimePunchcard))
 			add(createShowInBrowserAction(Visualization.timeBetweenCommitsHistogram))
+			add(createShowInBrowserAction(Visualization.wordOccurrencesChart))
 			add(createShowInBrowserAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
 			add(showInFileManager(file))
