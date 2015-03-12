@@ -30,12 +30,13 @@ class UI {
 	def init() {
 		def grabHistory = grabHistory()
 		def projectStats = projectStats()
+		def currentFileHistoryStats = currentFileHistoryStats()
 		def openReadme = openReadme()
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
-				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, projectStats, openReadme]
+				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, currentFileHistoryStats, projectStats, openReadme]
 			}
 		}
 		PluginUtil.registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
@@ -117,6 +118,18 @@ class UI {
 		new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) {
 				FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
+			}
+		}
+	}
+
+	def showFileHistoryStatsToolWindow(Map statsMap) {
+		PluginUtil.show(statsMap)
+	}
+
+	private currentFileHistoryStats() {
+		new AnAction("Current File History Stats") {
+			@Override void actionPerformed(AnActionEvent event) {
+				UI.this.miner.currentFileHistoryStats(event.project)
 			}
 		}
 	}

@@ -1,10 +1,11 @@
 package codemining.plugin
+
 import codemining.core.analysis.Context
-import codemining.core.visualizations.Visualization
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MiningCommitReader
+import codemining.core.visualizations.Visualization
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
@@ -15,10 +16,16 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.FilePathImpl
+import com.intellij.openapi.vcs.ProjectLevelVcsManager
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
 import com.intellij.util.text.DateFormatUtil
+import groovy.time.TimeCategory
+import liveplugin.PluginUtil
 import vcsreader.Commit
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
@@ -193,6 +200,67 @@ class CodeMiningPlugin {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]
+	}
+
+	def currentFileHistoryStats(Project project) {
+		def virtualFile = PluginUtil.currentFileIn(project)
+		def filePath = new FilePathImpl(virtualFile)
+		def vcsManager = project.getComponent(ProjectLevelVcsManager)
+
+		ui.runInBackground("Looking up history for ${virtualFile.name}") { ProgressIndicator indicator ->
+			def commits = []
+			def visitedLocations = [].toSet()
+			def allVcs = vcsManager.allVcsRoots.collect{it.vcs}.unique()
+			for (vcs in allVcs) {
+				def changesProvider = vcs.committedChangesProvider
+				def location = changesProvider.getLocationFor(filePath)
+				if (location != null && visitedLocations.add(location.key)) {
+					def settings = changesProvider.createDefaultSettings()
+					def commitsInVcsRoot = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
+					commits.addAll(commitsInVcsRoot)
+				}
+				if (indicator.canceled) return
+			}
+			indicator.fraction += 0.5
+
+			def summary = createSummaryStatsFor(commits, virtualFile, indicator)
+			ui.showFileHistoryStatsToolWindow(summary)
+		}
+	}
+
+	private static Map createSummaryStatsFor(Collection<CommittedChangeList> commits, VirtualFile virtualFile, ProgressIndicator indicator) {
+		def fileAgeInDays = use(TimeCategory) {
+			(commits.max{it.commitDate}.commitDate - commits.min{it.commitDate}.commitDate).days
+		}
+
+		def commitsAmountByAuthor = commits
+				.groupBy{ it.committerName.trim() }
+				.collectEntries{[it.key, it.value.size()]}
+				.sort{-it.value}
+
+		def otherFilesInSameCommit = commits.inject([:].withDefault{0}) { map, commit ->
+			commit.changes.each { change ->
+				map[change.virtualFile?.name] += 1
+			}
+			map
+		} as Map
+		otherFilesInSameCommit.remove(virtualFile.name)
+		otherFilesInSameCommit = otherFilesInSameCommit.entrySet().sort{ -it.value }.findAll{ it.value >= 7 }
+
+		def commitsAmountByPrefix = commits.groupBy{ prefixOf(it.comment) }.collectEntries{[it.key, it.value.size()]}.sort{-it.value}
+
+		[
+				amountOfCommits: commits.size(),
+				fileAgeInDays: fileAgeInDays,
+				commitsByAuthor: commitsAmountByAuthor.take(10),
+				otherFileInSameCommit: otherFilesInSameCommit.take(10).join("\n"),
+				commitsAmountByPrefix: commitsAmountByPrefix.take(10)
+		]
+	}
+
+	private static prefixOf(String commitMessage) {
+		def words = commitMessage.split(" ")
+		words.size() > 0 ? words[0].trim() : ""
 	}
 }
 
