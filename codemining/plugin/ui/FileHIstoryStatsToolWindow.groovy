@@ -1,0 +1,119 @@
+package codemining.plugin.ui
+import com.intellij.icons.AllIcons
+import com.intellij.ide.ClipboardSynchronizer
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.keymap.KeymapUtil
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.SimpleToolWindowPanel
+import com.intellij.openapi.wm.ToolWindowAnchor
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.table.JBTable
+import com.intellij.util.ui.GridBag
+import com.intellij.util.ui.UIUtil
+
+import javax.swing.*
+import javax.swing.table.DefaultTableModel
+import java.awt.*
+import java.awt.datatransfer.StringSelection
+import java.awt.event.ActionEvent
+
+import static java.awt.GridBagConstraints.*
+import static liveplugin.PluginUtil.registerToolWindowIn
+import static liveplugin.PluginUtil.unregisterToolWindow
+
+class FileHistoryStatsToolWindow {
+	private static final toolWindowId = "File History Stats"
+
+	static showIn(Project project, Map fileHistoryStats) {
+		def text = "File name: ${fileHistoryStats.virtualFile.name}\n" +
+				"Amount of commits: ${fileHistoryStats.amountOfCommits}\n" +
+				"File age in days: ${fileHistoryStats.fileAgeInDays}\n"
+
+		def createToolWindowPanel = {
+			JPanel rootPanel = new JPanel().with{
+				layout = new GridBagLayout()
+				GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
+
+				if (false) {
+					add(new JPanel().with {
+						layout = new GridBagLayout()
+						add(new JTextArea(text).with{
+							editable = false
+							lineWrap = true
+							wrapStyleWord = true
+							background = UIUtil.labelBackground
+	                        font = UIUtil.labelFont
+							UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, it)
+							it
+						}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
+						it
+					}, bag.nextLine().next().anchor(SOUTH))
+				}
+
+				def overallStats = [
+				        "File name": fileHistoryStats.virtualFile.name,
+				        "Amount of commits": fileHistoryStats.amountOfCommits,
+				        "File age in days": fileHistoryStats.fileAgeInDays
+				]
+				JBTable table = createTable(overallStats, ["", ""])
+				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
+
+				table = createTable(fileHistoryStats.commitsAmountByAuthor, ["Author", "Commits"])
+				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
+
+				table = createTable(fileHistoryStats.commitsAmountByPrefix, ["Commit message prefix", "Commits"])
+				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
+
+				it
+			}
+
+			def actionGroup = new DefaultActionGroup().with{
+				add(new AnAction(AllIcons.Actions.Cancel) {
+					@Override void actionPerformed(AnActionEvent event) {
+						unregisterToolWindow(toolWindowId)
+					}
+				})
+				it
+			}
+
+			def toolWindowPanel = new SimpleToolWindowPanel(true)
+			toolWindowPanel.content = rootPanel
+			toolWindowPanel.toolbar = ActionManager.instance.createActionToolbar(ActionPlaces.EDITOR_TOOLBAR, actionGroup, true).component
+			toolWindowPanel
+		}
+
+		def toolWindow = registerToolWindowIn(project, toolWindowId, createToolWindowPanel(), ToolWindowAnchor.RIGHT)
+		def doNothing = {} as Runnable
+		toolWindow.show(doNothing)
+	}
+
+	private static JBTable createTable(Map commitsAmountByPrefix, java.util.List<String> columns) {
+		def tableModel = new DefaultTableModel() {
+			@Override boolean isCellEditable(int row, int column) { false }
+		}
+		columns.each { tableModel.addColumn(it) }
+		commitsAmountByPrefix.entrySet().each{ tableModel.addRow([it.key, it.value].toArray()) }
+
+		def table = new JBTable(tableModel).with{
+			striped = true
+			showGrid = false
+			it
+		}
+		registerCopyToClipboardShortCut(table, tableModel)
+		table
+	}
+
+	private static registerCopyToClipboardShortCut(JTable table, DefaultTableModel tableModel) {
+		KeyStroke copyKeyStroke = KeymapUtil.getKeyStroke(ActionManager.instance.getAction(IdeActions.ACTION_COPY).shortcutSet)
+		table.registerKeyboardAction(new AbstractAction() {
+			@Override void actionPerformed(ActionEvent event) {
+				def selectedCells = table.selectedRows.collect{ row ->
+					(0..<tableModel.columnCount).collect{ column ->
+						tableModel.getValueAt(row, column).toString() }
+				}
+				def content = new StringSelection(selectedCells.collect{ it.join(",") }.join("\n"))
+				ClipboardSynchronizer.instance.setContent(content, content)
+			}
+		}, "Copy", copyKeyStroke, JComponent.WHEN_FOCUSED)
+	}
+}
