@@ -1,5 +1,4 @@
 package codemining.plugin
-
 import codemining.core.analysis.Context
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
@@ -18,8 +17,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
-import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -209,51 +207,37 @@ class CodeMiningPlugin {
 
 		ui.runInBackground("Looking up history for ${virtualFile.name}") { ProgressIndicator indicator ->
 			def commits = []
-			def visitedLocations = [].toSet()
 			def allVcs = vcsManager.allVcsRoots.collect{it.vcs}.unique()
 			for (vcs in allVcs) {
-				def changesProvider = vcs.committedChangesProvider
-				def location = changesProvider.getLocationFor(filePath)
-				if (location != null && visitedLocations.add(location.key)) {
-					def settings = changesProvider.createDefaultSettings()
-					def commitsInVcsRoot = changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
-					commits.addAll(commitsInVcsRoot)
-				}
+				def session = vcs.vcsHistoryProvider.createSessionFor(filePath)
+				commits.addAll(session.revisionList)
+				// could use this vcs.committedChangesProvider.getOneList(virtualFile, revisionNumber)
+				// to get actual commits and find files in the same commit, but it's too slow and freezes UI for some reason
 				if (indicator.canceled) return
 			}
 			indicator.fraction += 0.5
 
-			def summary = createSummaryStatsFor(commits, virtualFile, indicator)
-			ui.showFileHistoryStatsToolWindow(summary)
+			def summary = createSummaryStatsFor(commits)
+			ui.showFileHistoryStatsToolWindow(project, summary)
 		}
 	}
 
-	private static Map createSummaryStatsFor(Collection<CommittedChangeList> commits, VirtualFile virtualFile, ProgressIndicator indicator) {
+	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits) {
 		def fileAgeInDays = use(TimeCategory) {
-			(commits.max{it.commitDate}.commitDate - commits.min{it.commitDate}.commitDate).days
+			(commits.max{it.revisionDate}.revisionDate - commits.min{it.revisionDate}.revisionDate).days
 		}
 
 		def commitsAmountByAuthor = commits
-				.groupBy{ it.committerName.trim() }
+				.groupBy{ it.author.trim() }
 				.collectEntries{[it.key, it.value.size()]}
 				.sort{-it.value}
 
-		def otherFilesInSameCommit = commits.inject([:].withDefault{0}) { map, commit ->
-			commit.changes.each { change ->
-				map[change.virtualFile?.name] += 1
-			}
-			map
-		} as Map
-		otherFilesInSameCommit.remove(virtualFile.name)
-		otherFilesInSameCommit = otherFilesInSameCommit.entrySet().sort{ -it.value }.findAll{ it.value >= 7 }
-
-		def commitsAmountByPrefix = commits.groupBy{ prefixOf(it.comment) }.collectEntries{[it.key, it.value.size()]}.sort{-it.value}
+		def commitsAmountByPrefix = commits.groupBy{ prefixOf(it.commitMessage) }.collectEntries{[it.key, it.value.size()]}.sort{-it.value}
 
 		[
 				amountOfCommits: commits.size(),
 				fileAgeInDays: fileAgeInDays,
 				commitsByAuthor: commitsAmountByAuthor.take(10),
-				otherFileInSameCommit: otherFilesInSameCommit.take(10).join("\n"),
 				commitsAmountByPrefix: commitsAmountByPrefix.take(10)
 		]
 	}
