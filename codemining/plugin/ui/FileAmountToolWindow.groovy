@@ -23,13 +23,15 @@ import static java.awt.GridBagConstraints.NORTH
 import static java.awt.GridBagConstraints.SOUTH
 
 class FileAmountToolWindow {
+	private static final toolWindowId = "File Amount by Type"
+
 	static showIn(project, fileCountByFileExtension) {
 		def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
 
 		def actionGroup = new DefaultActionGroup().with{
 			add(new AnAction(AllIcons.Actions.Cancel) {
 				@Override void actionPerformed(AnActionEvent event) {
-					unregisterToolWindow("File Amount by Type")
+					unregisterToolWindow(toolWindowId)
 				}
 			})
 			it
@@ -66,7 +68,7 @@ class FileAmountToolWindow {
 			toolWindowPanel
 		}
 
-		def toolWindow = registerToolWindowIn(project, "File Amount by Type", createToolWindowPanel(), ToolWindowAnchor.RIGHT)
+		def toolWindow = registerToolWindowIn(project, toolWindowId, createToolWindowPanel(), ToolWindowAnchor.RIGHT)
 		def doNothing = {} as Runnable
 		toolWindow.show(doNothing)
 	}

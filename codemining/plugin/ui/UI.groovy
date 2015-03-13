@@ -15,6 +15,7 @@ import com.intellij.openapi.project.ProjectManagerAdapter
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.UIUtil
 import liveplugin.PluginUtil
@@ -122,8 +123,14 @@ class UI {
 		}
 	}
 
-	def showFileHistoryStatsToolWindow(Map statsMap) {
-		PluginUtil.show(statsMap)
+	def showFileHistoryStatsToolWindow(Project project, Map statsMap) {
+		PluginUtil.invokeOnEDT {
+			FileHistoryStatsToolWindow.showIn(project, statsMap)
+		}
+	}
+
+	def showFileHasNoVcsHistory(VirtualFile virtualFile) {
+		PluginUtil.show("File ${virtualFile.name} has no VCS history")
 	}
 
 	private currentFileHistoryStats() {
@@ -215,7 +222,6 @@ class UI {
 			}
 		}
 	}
-
 
 	interface Log {
 		def httpServerIsAboutToLoadHtmlFile(String fileName)

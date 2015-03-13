@@ -18,6 +18,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
@@ -217,12 +218,16 @@ class CodeMiningPlugin {
 			}
 			indicator.fraction += 0.5
 
-			def summary = createSummaryStatsFor(commits)
-			ui.showFileHistoryStatsToolWindow(project, summary)
+			if (!commits.empty) {
+				def summary = createSummaryStatsFor(commits, virtualFile)
+				ui.showFileHistoryStatsToolWindow(project, summary)
+			} else {
+				ui.showFileHasNoVcsHistory(virtualFile)
+			}
 		}
 	}
 
-	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits) {
+	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits, VirtualFile virtualFile) {
 		def fileAgeInDays = use(TimeCategory) {
 			(commits.max{it.revisionDate}.revisionDate - commits.min{it.revisionDate}.revisionDate).days
 		}
@@ -235,9 +240,10 @@ class CodeMiningPlugin {
 		def commitsAmountByPrefix = commits.groupBy{ prefixOf(it.commitMessage) }.collectEntries{[it.key, it.value.size()]}.sort{-it.value}
 
 		[
+				virtualFile: virtualFile,
 				amountOfCommits: commits.size(),
 				fileAgeInDays: fileAgeInDays,
-				commitsByAuthor: commitsAmountByAuthor.take(10),
+				commitsAmountByAuthor: commitsAmountByAuthor.take(10),
 				commitsAmountByPrefix: commitsAmountByPrefix.take(10)
 		]
 	}
