@@ -201,7 +201,7 @@ class CodeMiningPlugin {
 		[text: messageText, title: "Code History Mining"]
 	}
 
-	def currentFileHistoryStats(Project project) {
+	def showCurrentFileHistoryStats(Project project) {
 		def virtualFile = PluginUtil.currentFileIn(project)
 		def filePath = new FilePathImpl(virtualFile)
 		def vcsManager = project.getComponent(ProjectLevelVcsManager)
@@ -228,8 +228,9 @@ class CodeMiningPlugin {
 	}
 
 	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits, VirtualFile virtualFile) {
+		def creationDate = commits.min{it.revisionDate}.revisionDate
 		def fileAgeInDays = use(TimeCategory) {
-			(commits.max{it.revisionDate}.revisionDate - commits.min{it.revisionDate}.revisionDate).days
+			(new Date() - commits.min{it.revisionDate}.revisionDate).days
 		}
 
 		def commitsAmountByAuthor = commits
@@ -242,6 +243,7 @@ class CodeMiningPlugin {
 		[
 				virtualFile: virtualFile,
 				amountOfCommits: commits.size(),
+				creationDate: creationDate,
 				fileAgeInDays: fileAgeInDays,
 				commitsAmountByAuthor: commitsAmountByAuthor.take(10),
 				commitsAmountByPrefix: commitsAmountByPrefix.take(10)

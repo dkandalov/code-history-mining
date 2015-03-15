@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.wm.ToolWindowAnchor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
+import com.intellij.util.text.DateFormatUtil
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
 
@@ -25,42 +26,36 @@ class FileHistoryStatsToolWindow {
 	private static final toolWindowId = "File History Stats"
 
 	static showIn(Project project, Map fileHistoryStats) {
-		def text = "File name: ${fileHistoryStats.virtualFile.name}\n" +
-				"Amount of commits: ${fileHistoryStats.amountOfCommits}\n" +
-				"File age in days: ${fileHistoryStats.fileAgeInDays}\n"
-
 		def createToolWindowPanel = {
 			JPanel rootPanel = new JPanel().with{
 				layout = new GridBagLayout()
 				GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
 
-				if (false) {
-					add(new JPanel().with {
-						layout = new GridBagLayout()
-						add(new JTextArea(text).with{
-							editable = false
-							lineWrap = true
-							wrapStyleWord = true
-							background = UIUtil.labelBackground
-	                        font = UIUtil.labelFont
-							UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, it)
-							it
-						}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
-						it
-					}, bag.nextLine().next().anchor(SOUTH))
+				def newLabel = { String title ->
+					def label = new JLabel(title)
+					label.background = UIUtil.labelBackground
+					label.font = UIUtil.labelFont
+					UIUtil.applyStyle(UIUtil.ComponentStyle.REGULAR, label)
+					label
 				}
 
+				add(newLabel("Overall info:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 				def overallStats = [
-				        "File name": fileHistoryStats.virtualFile.name,
-				        "Amount of commits": fileHistoryStats.amountOfCommits,
-				        "File age in days": fileHistoryStats.fileAgeInDays
+						"File name": fileHistoryStats.virtualFile.name,
+						"Creation date": DateFormatUtil.dateFormat.format(fileHistoryStats.creationDate as Date),
+						"Amount of commits": fileHistoryStats.amountOfCommits,
+						"File age in days": fileHistoryStats.fileAgeInDays
 				]
 				JBTable table = createTable(overallStats, ["", ""])
-				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
+				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH).weighty(0.2))
 
+				add(newLabel(" "), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
+				add(newLabel("Amount of commits by author:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 				table = createTable(fileHistoryStats.commitsAmountByAuthor, ["Author", "Commits"])
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 
+				add(newLabel(" "), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
+				add(newLabel("Amount of commits by commit message prefix:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 				table = createTable(fileHistoryStats.commitsAmountByPrefix, ["Commit message prefix", "Commits"])
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 

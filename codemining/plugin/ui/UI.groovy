@@ -136,7 +136,7 @@ class UI {
 	private currentFileHistoryStats() {
 		new AnAction("Current File History Stats") {
 			@Override void actionPerformed(AnActionEvent event) {
-				UI.this.miner.currentFileHistoryStats(event.project)
+				UI.this.miner.showCurrentFileHistoryStats(event.project)
 			}
 		}
 	}
