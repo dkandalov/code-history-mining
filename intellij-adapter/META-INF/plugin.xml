@@ -18,7 +18,8 @@
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
-    <idea-version since-build="134.0"/>
+    <!-- until IJ 14 EAP 140.2493 which has updated groovy libs -->
+    <idea-version since-build="134.0" until-build="140.2493"/>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
     <depends>com.intellij.modules.lang</depends>
