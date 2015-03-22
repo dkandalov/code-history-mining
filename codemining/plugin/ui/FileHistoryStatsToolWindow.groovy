@@ -49,27 +49,27 @@ class FileHistoryStatsToolWindow {
 				}
 
 				def infoPanel = newPanel { GridBag bag ->
-					add(newLabel("Overall info:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
+					add(newLabel("Overall info"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 					def overallStats = [
 							"File name": fileHistoryStats.virtualFile.name,
 							"Creation date": DateFormatUtil.dateFormat.format(fileHistoryStats.creationDate as Date),
 							"Amount of commits": fileHistoryStats.amountOfCommits,
 							"File age in days": fileHistoryStats.fileAgeInDays
 					]
-					JBTable table = createTable(overallStats, ["", ""])
+					JBTable table = createTable(overallStats, ["", "Value"])
 					add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH).weighty(0.2))
 				}
 
 				def authorsPanel = newPanel { GridBag bag ->
 					add(newLabel(" "), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
-					add(newLabel("Amount of commits by author:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
+					add(newLabel("Amount of commits by author (top 10)"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 					JBTable table = createTable(fileHistoryStats.commitsAmountByAuthor, ["Author", "Commits"])
 					add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 				}
 
 				def prefixPanel = newPanel { GridBag bag ->
 					add(newLabel(" "), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
-					add(newLabel("Amount of commits by commit message prefix:"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
+					add(newLabel("Amount of commits by message prefix (top 10)"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 					JBTable table = createTable(fileHistoryStats.commitsAmountByPrefix, ["Commit message prefix", "Commits"])
 					add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 				}
