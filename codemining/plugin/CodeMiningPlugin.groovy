@@ -208,12 +208,15 @@ class CodeMiningPlugin {
 
 		ui.runInBackground("Looking up history for ${virtualFile.name}") { ProgressIndicator indicator ->
 			def commits = []
-			def allVcs = vcsManager.allVcsRoots.collect{it.vcs}.unique()
+			def allVcs = vcsManager.allVcsRoots*.vcs.unique()
+
+			// could use this vcs.committedChangesProvider.getOneList(virtualFile, revisionNumber)
+			// to get actual commits and find files in the same commit, but it's too slow and freezes UI for some reason
 			for (vcs in allVcs) {
-				def session = vcs.vcsHistoryProvider.createSessionFor(filePath)
+				if (!vcs?.vcsHistoryProvider?.canShowHistoryFor(virtualFile)) continue
+				def session = vcs?.vcsHistoryProvider?.createSessionFor(filePath)
+				if (session == null) continue
 				commits.addAll(session.revisionList)
-				// could use this vcs.committedChangesProvider.getOneList(virtualFile, revisionNumber)
-				// to get actual commits and find files in the same commit, but it's too slow and freezes UI for some reason
 				if (indicator.canceled) return
 			}
 			indicator.fraction += 0.5
