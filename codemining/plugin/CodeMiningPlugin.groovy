@@ -203,6 +203,8 @@ class CodeMiningPlugin {
 
 	def showCurrentFileHistoryStats(Project project) {
 		def virtualFile = PluginUtil.currentFileIn(project)
+		if (virtualFile == null) return
+
 		def filePath = new FilePathImpl(virtualFile)
 		def vcsManager = project.getComponent(ProjectLevelVcsManager)
 
