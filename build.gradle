@@ -25,7 +25,7 @@ dependencies {
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.5.2 beta"
 
-    provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar")
+    provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", exclude: "groovy-all*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/github/lib/", include: "*.jar")
 }
