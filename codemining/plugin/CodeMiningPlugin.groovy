@@ -58,7 +58,7 @@ class CodeMiningPlugin {
 				def context = new Context(events, projectName, checkIfCancelled, { String message ->
                     Logger.getInstance("CodeHistoryMining").info(message)
                 })
-				def html = visualization.generateHtml(context).inlineImports().text
+				def html = visualization.generateFrom(context)
 
 				ui.showInBrowser(html, projectName, visualization)
 
