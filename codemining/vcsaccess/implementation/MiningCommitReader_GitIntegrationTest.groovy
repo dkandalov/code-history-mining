@@ -101,7 +101,7 @@ class MiningCommitReader_GitIntegrationTest {
 
 	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
-		def commitReader = new MiningCommitReader(projectWrapper, miners, CommitReaderConfig.getDefaults(), commitReaderListener, false)
+		def commitReader = new MiningCommitReader(projectWrapper, miners, CommitReaderConfig.noCachingDefaults, commitReaderListener)
 
 		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
 			minedCommit.fileChangeEvents
