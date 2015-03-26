@@ -157,7 +157,7 @@ class CodeMiningPlugin {
 
 			while (minedCommits.hasNext() && !(isCancelled())) {
 				def minedCommit = minedCommits.next()
-				if (minedCommit == MiningCommitReader.noOutput) {
+				if (minedCommit == MiningCommitReader.failedToMine) {
 					hadErrors = true
 				} else {
 					eventStorage.addEvents(minedCommit.fileChangeEvents)
