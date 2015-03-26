@@ -144,21 +144,6 @@ class CodeMiningPlugin {
 		}
 	}
 
-	private VcsActionsReadListener readListenerWith(indicator) {
-		new VcsActionsReadListener() {
-			@Override def beforeMiningCommit(Commit commit) {
-				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
-				log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
-				indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
-			}
-
-			@Override def afterMiningCommit(Commit commit) {
-				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
-				indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
-			}
-		}
-	}
-
 	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
 						  boolean grabChangeSizeInLines, indicator) {
 		def hadErrors = false
@@ -197,6 +182,21 @@ class CodeMiningPlugin {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]
+	}
+
+	private VcsActionsReadListener readListenerWith(indicator) {
+		new VcsActionsReadListener() {
+			@Override def beforeMiningCommit(Commit commit) {
+				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
+				log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
+				indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
+			}
+
+			@Override def afterMiningCommit(Commit commit) {
+				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
+				indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
+			}
+		}
 	}
 
 	def showCurrentFileHistoryStats(Project project) {
