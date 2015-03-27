@@ -1,4 +1,6 @@
 package codemining.historystorage
+
+import codemining.core.common.langutil.Cancelled
 import codemining.core.common.langutil.JBFileUtil
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
@@ -43,7 +45,7 @@ class HistoryStorage {
 		JBFileUtil.delete(new File("$basePath/$fileName"))
 	}
 
-	def readAllEvents(String fileName, Closure<Void> checkIfCancelled) {
+	def readAllEvents(String fileName, Cancelled checkIfCancelled) {
 		measure.measure("Storage.readAllEvents"){
 			new EventStorage("$basePath/$fileName").init().readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
 		}

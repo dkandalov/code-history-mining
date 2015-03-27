@@ -1,5 +1,6 @@
 package codemining.plugin
 
+import codemining.core.common.langutil.Cancelled
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.historystorage.EventStorage
@@ -52,7 +53,9 @@ class CodeMiningPlugin {
 				measure.start()
 
 				def projectName = storage.guessProjectNameFrom(file.name)
-				def checkIfCancelled = CancelledException.check(indicator)
+				def checkIfCancelled = new Cancelled() {
+					@Override boolean isCancelled() { indicator.canceled }
+				}
 
 				def events = storage.readAllEvents(file.name, checkIfCancelled)
 				def logCallback = { String message -> Logger.getInstance("CodeHistoryMining").info(message) }
@@ -61,7 +64,7 @@ class CodeMiningPlugin {
 				ui.showInBrowser(html, projectName, visualization)
 
 				measure.forEachDuration{ log?.measuredDuration(it) }
-			} catch (CancelledException ignored) {
+			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(visualization.name)
 			}
 		}

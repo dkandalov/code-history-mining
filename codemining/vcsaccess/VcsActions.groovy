@@ -63,7 +63,8 @@ class VcsActions {
             @Override void afterMiningCommit(Commit commit) { readListener?.afterMiningCommit(commit) }
         }
 
-        new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, listener).readCommits(dateRange)
+	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, listener)
+	    commitReader.readCommits(dateRange)
     }
 
     @SuppressWarnings("GrMethodMayBeStatic")
