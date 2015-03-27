@@ -1,10 +1,9 @@
 package codemining.plugin.ui
+import codemining.historystorage.HistoryGrabberConfig
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
-import com.intellij.openapi.fileTypes.FileType
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogBuilder
 import com.intellij.openapi.ui.DialogWrapper
@@ -15,7 +14,6 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.ui.DocumentAdapter
 import com.intellij.util.ui.GridBag
 import com.michaelbaranov.microba.calendar.DatePicker
-import codemining.historystorage.HistoryGrabberConfig
 
 import javax.swing.*
 import javax.swing.event.DocumentEvent
@@ -23,9 +21,9 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
+import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
-import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 
 @SuppressWarnings("GrUnresolvedAccess")
 class Dialog {
@@ -169,9 +167,8 @@ class Dialog {
 	private static ActionListener onChooseFileAction(Project project, TextFieldWithBrowseButton filePathTextField) {
 		new ActionListener() {
 			@Override void actionPerformed(ActionEvent event) {
-				def csvFileType = FileTypeManager.instance.getFileTypeByExtension("csv")
 				VirtualFile file = FileChooser.chooseFile(
-						fileChooserDescriptor(csvFileType),
+						fileChooserDescriptor("csv"),
 						project,
 						VirtualFileManager.instance.findFileByUrl("file://" + filePathTextField.text)
 				)
@@ -180,8 +177,8 @@ class Dialog {
 		}
 	}
 
-	private static FileChooserDescriptor fileChooserDescriptor(FileType csvFileType) {
-		FileChooserDescriptorFactory.createSingleFileDescriptor(csvFileType).with{
+	private static FileChooserDescriptor fileChooserDescriptor(String fileExtension) {
+		FileChooserDescriptorFactory.createSingleFileDescriptor(fileExtension).with{
 			showFileSystemRoots = true
 			title = "Output File"
 			description = "Select output file"
