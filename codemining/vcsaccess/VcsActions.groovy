@@ -1,5 +1,4 @@
 package codemining.vcsaccess
-
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.common.langutil.Progress
@@ -8,15 +7,10 @@ import codemining.core.vcs.filetype.FileTypes
 import codemining.core.vcs.todo.TodoCountMiner
 import codemining.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager
-import com.intellij.openapi.progress.EmptyProgressIndicator
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.util.Ref
-import com.intellij.openapi.vcs.FilePath
-import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.VcsRoot
-import com.intellij.openapi.vcs.update.UpdatedFiles
 import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
@@ -25,7 +19,6 @@ import vcsreader.Change
 import vcsreader.Commit
 
 import static codemining.core.common.langutil.Misc.withDefault
-import static com.intellij.openapi.vcs.VcsActiveEnvironmentsProxy.proxyVcs
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 
@@ -65,17 +58,6 @@ class VcsActions {
 
 	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, listener)
 	    commitReader.readCommits(dateRange)
-    }
-
-    @SuppressWarnings("GrMethodMayBeStatic")
-    def update(Project project) {
-        def vcsManager = project.getComponent(ProjectLevelVcsManager)
-        vcsManager.allActiveVcss.each { vcs ->
-            def paths = vcsManager.allVcsRoots.collect { new FilePathImpl(it.path) }.toArray(new FilePath[0])
-            def updatedFiles = UpdatedFiles.create()
-            def context = new Ref(null)
-            proxyVcs(vcs).updateEnvironment.updateDirectories(paths, updatedFiles, new EmptyProgressIndicator(), context)
-        }
     }
 
     def addVcsUpdateListenerFor(String projectName, Closure closure) {
