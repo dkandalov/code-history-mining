@@ -1,8 +1,8 @@
 package codemining.plugin
-
 import codemining.core.common.langutil.Cancelled
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
+import codemining.core.common.langutil.Progress
 import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MiningCommitReader
 import codemining.core.visualizations.Visualization
@@ -10,7 +10,6 @@ import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
 import codemining.vcsaccess.VcsActions
-import codemining.vcsaccess.VcsActionsReadListener
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
@@ -23,10 +22,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.indexing.FileBasedIndex
-import com.intellij.util.text.DateFormatUtil
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
-import vcsreader.Commit
 
 import static codemining.core.common.langutil.DateTimeUtil.dateRange
 import static codemining.core.common.langutil.DateTimeUtil.floorToDay
@@ -54,7 +51,7 @@ class CodeMiningPlugin {
 
 				def projectName = storage.guessProjectNameFrom(file.name)
 				def checkIfCancelled = new Cancelled() {
-					@Override boolean isCancelled() { indicator.canceled }
+					@Override boolean isTrue() { indicator.canceled }
 				}
 
 				def events = storage.readAllEvents(file.name, checkIfCancelled)
@@ -149,14 +146,19 @@ class CodeMiningPlugin {
 
 	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
 						  boolean grabChangeSizeInLines, indicator) {
+		def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
+		def progress = new Progress(dateRanges.sum{ it.durationInDays() } as long).with(new Progress.Listener() {
+			@Override void onUpdate(Progress progress) {
+				indicator?.fraction = progress.percentComplete()
+			}
+		})
+
 		def hadErrors = false
 		def isCancelled = { indicator?.canceled }
         def loadProjectHistory = { DateRange dateRange ->
             log?.loadingProjectHistory(dateRange.from, dateRange.to)
 
-			def minedCommits = vcsAccess.readMinedCommits(
-					dateRange, project, grabChangeSizeInLines, readListenerWith(indicator)
-			)
+			def minedCommits = vcsAccess.readMinedCommits(dateRange, project, grabChangeSizeInLines, progress)
 
 			while (minedCommits.hasNext() && !(isCancelled())) {
 				def minedCommit = minedCommits.next()
@@ -169,9 +171,7 @@ class CodeMiningPlugin {
             eventStorage.flush()
         }
 
-        requestDateRange
-				.subtract(eventStorage.storedDateRange())
-                .each { loadProjectHistory(it) }
+		dateRanges.each { loadProjectHistory(it) }
 
 		def messageText = ""
 		if (eventStorage.hasNoEvents()) {
@@ -185,21 +185,6 @@ class CodeMiningPlugin {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]
-	}
-
-	private VcsActionsReadListener readListenerWith(indicator) {
-		new VcsActionsReadListener() {
-			@Override def beforeMiningCommit(Commit commit) {
-				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
-				log?.processingChangeList(date + " - " + commit.revision + " - " + commit.comment.trim())
-				indicator?.text = "Grabbing project history (${date} - '${commit.comment.trim()}')"
-			}
-
-			@Override def afterMiningCommit(Commit commit) {
-				def date = DateFormatUtil.dateFormat.format((Date) commit.commitDate)
-				indicator?.text = "Grabbing project history (${date} - looking for next commit...)"
-			}
-		}
 	}
 
 	def showCurrentFileHistoryStats(Project project) {

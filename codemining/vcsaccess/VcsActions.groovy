@@ -2,6 +2,7 @@ package codemining.vcsaccess
 
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
+import codemining.core.common.langutil.Progress
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
 import codemining.core.vcs.todo.TodoCountMiner
@@ -38,9 +39,8 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
-                                           VcsActionsReadListener readListener = null) {
-        def fileTypes = new FileTypes([]) {
+    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines, Progress progress) {
+	    def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
             }
@@ -58,9 +58,9 @@ class VcsActions {
         def listener = new MiningCommitReaderListener() {
             @Override void errorReadingCommits(String error) { log.errorReadingCommits(error) }
             @Override void onExtractChangeEventException(Exception e) { log.onExtractChangeEventException(e) }
-            @Override void onCurrentDateRange(DateRange range) {}
-            @Override void beforeMiningCommit(Commit commit) { readListener?.beforeMiningCommit(commit) }
-            @Override void afterMiningCommit(Commit commit) { readListener?.afterMiningCommit(commit) }
+            @Override void onCurrentDateRange(DateRange range) { progress.add(range.durationInDays()) }
+            @Override void beforeMiningCommit(Commit commit) {}
+            @Override void afterMiningCommit(Commit commit) {}
         }
 
 	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, listener)
