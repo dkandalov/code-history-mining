@@ -133,7 +133,7 @@ class CodeMiningPlugin {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-                def requestDateRange = dateRange(eventStorage.storedDateRange().to, today)
+                def requestDateRange = dateRange(floorToDay(eventStorage.storedDateRange().to), today)
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
 
