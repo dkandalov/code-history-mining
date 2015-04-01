@@ -1,15 +1,17 @@
 package codemining.plugin
-import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vcs.VcsRoot
+
+import codemining.core.common.langutil.Date2
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
 import codemining.vcsaccess.VcsActionsLog
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.VcsRoot
 
 class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
-	@Override def loadingProjectHistory(Date fromDate, Date toDate) {
+	@Override def loadingProjectHistory(Date2 fromDate, Date2 toDate) {
 		logger.info("Loading project history from ${fromDate} to ${toDate}")
 	}
 

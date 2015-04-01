@@ -9,7 +9,6 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static codemining.core.common.langutil.DateTimeUtil.date
 import static codemining.core.common.langutil.DateTimeUtil.dateTime
 import static codemining.vcsaccess.VcsActions.vcsRootsIn
 
@@ -42,9 +41,9 @@ class IJCommitReaderGitTest {
 	}
 
 	@Test void "end date is exclusive"() {
-		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"))
+		def commits = readJUnitCommits(dateTime("08/10/2007"), dateTime("09/10/2007"))
 		assert commits.size() == 3
-		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"))
+		commits = readJUnitCommits(dateTime("08/10/2007"), dateTime("10/10/2007"))
 		assert commits.size() == 7
 	}
 

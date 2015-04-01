@@ -1,4 +1,5 @@
 package codemining.plugin.ui
+import codemining.core.common.langutil.Date2
 import codemining.historystorage.HistoryGrabberConfig
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
@@ -21,7 +22,6 @@ import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 
-import static codemining.core.common.langutil.DateTimeUtil.floorToDay
 import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
 
@@ -29,8 +29,8 @@ import static java.awt.GridBagConstraints.HORIZONTAL
 class Dialog {
 	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project,
 	                  Closure onApplyCallback, Closure onGrabCallback) {
-		def fromDatePicker = new DatePicker(grabberConfig.from, dateFormat.delegate)
-		def toDatePicker = new DatePicker(grabberConfig.to, dateFormat.delegate)
+		def fromDatePicker = new DatePicker(grabberConfig.from.date, dateFormat.delegate)
+		def toDatePicker = new DatePicker(grabberConfig.to.date, dateFormat.delegate)
 		def filePathTextField = new TextFieldWithBrowseButton()
 		def grabChangeSizeCheckBox = new JCheckBox()
 		def grabOnVcsUpdateCheckBox = new JCheckBox()
@@ -84,8 +84,8 @@ class Dialog {
 
 		def currentUIConfig = {
 			new HistoryGrabberConfig(
-					floorToDay(fromDatePicker.date),
-					floorToDay(toDatePicker.date),
+					new Date2(fromDatePicker.date),
+					new Date2(toDatePicker.date),
 					filePathTextField.text,
 					grabChangeSizeCheckBox.selected,
 					grabOnVcsUpdateCheckBox.selected,

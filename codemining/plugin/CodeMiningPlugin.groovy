@@ -1,8 +1,6 @@
 package codemining.plugin
-import codemining.core.common.langutil.Cancelled
-import codemining.core.common.langutil.DateRange
-import codemining.core.common.langutil.Measure
-import codemining.core.common.langutil.Progress
+
+import codemining.core.common.langutil.*
 import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MiningCommitReader
 import codemining.core.visualizations.Visualization
@@ -25,8 +23,8 @@ import com.intellij.util.indexing.FileBasedIndex
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
-import static codemining.core.common.langutil.DateTimeUtil.dateRange
-import static codemining.core.common.langutil.DateTimeUtil.floorToDay
+import static codemining.core.common.langutil.Date2.Formatter.dd_MM_yyyy
+import static codemining.core.common.langutil.DateTimeUtil.*
 
 class CodeMiningPlugin {
 	private final UI ui
@@ -124,20 +122,20 @@ class CodeMiningPlugin {
 		}
 	}
 
-	def grabHistoryOnVcsUpdate(Project project, Date today = floorToDay(new Date())) {
+	def grabHistoryOnVcsUpdate(Project project, Date now = new Date()) {
 		if (grabHistoryIsInProgress) return
 		def config = storage.loadGrabberConfigFor(project.name)
-		if (floorToDay(config.lastGrabTime) == today) return
+		if (floorToDay(config.lastGrabTime) == floorToDay(now)) return
 
 		grabHistoryIsInProgress = true
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-                def requestDateRange = dateRange(floorToDay(eventStorage.storedDateRange().to), today)
+                def requestDateRange = dateRange(eventStorage.storedDateRange().to, date(now))
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
 
-				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(today))
+				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(now))
 			} finally {
 				grabHistoryIsInProgress = false
 			}
@@ -174,12 +172,17 @@ class CodeMiningPlugin {
 		dateRanges.each { loadProjectHistory(it) }
 
 		def messageText = ""
+		def dateFormatter = dd_MM_yyyy
 		if (eventStorage.hasNoEvents()) {
+			def from = dateFormatter.format(requestDateRange.from)
+			def to = dateFormatter.format(requestDateRange.to)
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "However, it has nothing in it probably because there are no commits from ${requestDateRange.from} to ${requestDateRange.to}\n"
+			messageText += "However, it has nothing in it probably because there are no commits from ${from} to ${to}\n"
 		} else {
+			def from = dateFormatter.format(eventStorage.storedDateRange().from)
+			def to = dateFormatter.format(eventStorage.storedDateRange().to)
 			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "It should have history from '${eventStorage.storedDateRange().from}' to '${eventStorage.storedDateRange().to}'.\n"
+			messageText += "It should have history from '${from}' to '${to}'.\n"
 		}
 		if (hadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
@@ -248,7 +251,7 @@ class CodeMiningPlugin {
 }
 
 interface CodeMiningPluginLog {
-	def loadingProjectHistory(Date fromDate, Date toDate)
+	def loadingProjectHistory(Date2 fromDate, Date2 toDate)
 
 	def processingChangeList(String changeListName)
 

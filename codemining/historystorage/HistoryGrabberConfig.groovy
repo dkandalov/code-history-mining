@@ -1,4 +1,6 @@
 package codemining.historystorage
+
+import codemining.core.common.langutil.Date2
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -7,10 +9,10 @@ import groovy.transform.Immutable
 import java.text.ParseException
 import java.text.SimpleDateFormat
 
-@Immutable
+@Immutable(knownImmutableClasses = [Date2])
 class HistoryGrabberConfig {
-	Date from
-	Date to
+	Date2 from
+	Date2 to
 	String outputFilePath
 	boolean grabChangeSizeInLines
 	boolean grabOnVcsUpdate
@@ -25,7 +27,7 @@ class HistoryGrabberConfig {
 	}
 
 	static defaultConfig() {
-		new HistoryGrabberConfig(new Date() - 300, new Date(), "", false, false, new Date(1))
+		new HistoryGrabberConfig(Date2.today().shiftDays(-300), Date2.today(), "", false, false, new Date(1))
 	}
 
 	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
@@ -52,7 +54,7 @@ class HistoryGrabberConfig {
 					map.outputFilePath,
 					parseBoolean(map.grabChangeSizeInLines),
 					parseBoolean(map.grabOnVcsUpdate),
-					parseDate(map.lastGrabTime)
+					parseDateTime(map.lastGrabTime)
 			)}
 
 			def json = readConfigFile(pathToFolder)
@@ -63,14 +65,21 @@ class HistoryGrabberConfig {
 		}
 	}
 
-	private static Date parseDate(String s) {
-		if (s == null) new Date(0)
-		else {
-			try {
-				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s)
-			} catch (ParseException ignored) {
-				new Date(0)
-			}
+	private static Date2 parseDate(String s) {
+		def defaultDate = new Date2(new Date(0))
+		try {
+			s == null ? defaultDate : Date2.Formatter.ISO1806.parse(s)
+		} catch (ParseException ignored) {
+			defaultDate
+		}
+	}
+
+	private static Date parseDateTime(String s) {
+		def defaultDate = new Date(0)
+		try {
+			s == null ? defaultDate : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s)
+		} catch (ParseException ignored) {
+			defaultDate
 		}
 	}
 

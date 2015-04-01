@@ -2,6 +2,7 @@ package codemining.vcsaccess.implementation
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
+import codemining.core.common.langutil.Date2
 import codemining.core.common.langutil.DateRange
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
@@ -29,7 +30,7 @@ class MiningCommitReader_GitIntegrationTest {
 		def countChangeSizeInLines = false
 		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
+		def changeEvents = readChangeEvents(date("03/10/2007", london), date("04/10/2007", london), jUnitProject, commitMiners)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -48,7 +49,7 @@ class MiningCommitReader_GitIntegrationTest {
 		def countChangeSizeInLines = true
 		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
+		def changeEvents = readChangeEvents(date("03/10/2007", london), date("04/10/2007", london), jUnitProject, commitMiners)
                 .findAll{ it.revisionDate == commitInfo.revisionDate }
 
 		assertThat(asString(changeEvents), equalTo(asString([
@@ -63,11 +64,11 @@ class MiningCommitReader_GitIntegrationTest {
 		])))
 	}
 
-    @Test void "should ignore change size details for binary files"() {
+	@Test void "should ignore change size details for binary files"() {
         def countChangeSizeInLines = true
         def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, commitMiners)
+        def changeEvents = readChangeEvents(date("15/07/2012", london), date("16/07/2012", london), jUnitProject, commitMiners)
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -76,11 +77,11 @@ class MiningCommitReader_GitIntegrationTest {
         ])))
     }
 
-    @Test void "merged commits are skipped because change events create from original commits"() {
+	@Test void "merged commits are skipped because change events create from original commits"() {
         def countChangeSizeInLines = false
         def commitMiners = createCommitMiners(countChangeSizeInLines)
 
-        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, commitMiners)
+        def changeEvents = readChangeEvents(date("11/04/2014", london), date("14/04/2014", london), jUnitProject, commitMiners)
 
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION")),
@@ -99,7 +100,7 @@ class MiningCommitReader_GitIntegrationTest {
 			[new MainFileMiner()]
 	}
 
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
+	private static List<FileChangeEvent> readChangeEvents(Date2 fromDate, Date2 toDate, Project project, List<MainFileMiner> miners) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
 		def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, commitReaderListener)
 
@@ -128,7 +129,8 @@ class MiningCommitReader_GitIntegrationTest {
 
 	private final Project jUnitProject = IJCommitReaderGitTest.findOpenedJUnitProject()
 
-    private static final listener = new NoFileContentListener() {
+	private static final london = TimeZone.getTimeZone("Europe/London")
+	private static final listener = new NoFileContentListener() {
         @Override void failedToLoadContent(Change change) {
             throw new IllegalStateException("Failed to process: ${change}")
         }
