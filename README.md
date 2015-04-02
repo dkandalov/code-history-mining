@@ -114,3 +114,9 @@ Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/r
  - inspired by Michael Feathers [workshop](http://codehistorymining.eventbrite.co.uk/)
  and [Delta Flora](https://github.com/michaelfeathers/delta-flora) project.
  - all visualizations are based on awesome [d3.js examples](https://github.com/mbostock/d3/wiki/Gallery).
+
+
+### Similar projects
+ - [Delta Flora](https://github.com/michaelfeathers/delta-flora)
+ - [Code Maat](https://github.com/adamtornhill/code-maat).
+ See also [Your Code as a Crime Scene book](https://pragprog.com/book/atcrime/your-code-as-a-crime-scene).
