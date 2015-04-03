@@ -32,7 +32,7 @@ class MiningCommitReader_GitIntegrationTest {
 		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(date("03/10/2007", london), date("04/10/2007", london), jUnitProject, commitMiners)
-                .findAll{ it.revisionDate == commitInfo.revisionDate }
+                .findAll{ it.commitTime == commitInfo.commitTime }
 
         assertThat(asString(changeEvents), equalTo(asString([
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION")),
@@ -51,7 +51,7 @@ class MiningCommitReader_GitIntegrationTest {
 		def commitMiners = createCommitMiners(countChangeSizeInLines)
 
 		def changeEvents = readChangeEvents(date("03/10/2007", london), date("04/10/2007", london), jUnitProject, commitMiners)
-                .findAll{ it.revisionDate == commitInfo.revisionDate }
+                .findAll{ it.commitTime == commitInfo.commitTime }
 
 		assertThat(asString(changeEvents), equalTo(asString([
 				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION"), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
