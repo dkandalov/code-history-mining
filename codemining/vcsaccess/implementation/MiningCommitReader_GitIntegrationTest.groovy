@@ -18,7 +18,8 @@ import vcsreader.Change
 import vcsreader.Commit
 
 import static codemining.core.common.events.ChangeStats.*
-import static codemining.core.common.langutil.DateTimeUtil.*
+import static codemining.core.common.langutil.DateTimeTestUtil.date
+import static codemining.core.common.langutil.DateTimeTestUtil.dateTime
 import static codemining.vcsaccess.VcsActions.commonVcsRootsAncestor
 import static codemining.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
@@ -104,7 +105,7 @@ class MiningCommitReader_GitIntegrationTest {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
 		def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, commitReaderListener)
 
-		commitReader.readCommits(dateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
+		commitReader.readCommits(new DateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
 			minedCommit.fileChangeEvents
 		}
 	}

@@ -1,5 +1,4 @@
 package codemining.plugin
-
 import codemining.core.common.langutil.Date2
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
@@ -12,7 +11,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test
 
-import static codemining.core.common.langutil.DateTimeUtil.*
+import static codemining.core.common.langutil.DateTimeTestUtil.*
 import static codemining.plugin.GroovyStubber.*
 
 class CodeMiningPluginTest {

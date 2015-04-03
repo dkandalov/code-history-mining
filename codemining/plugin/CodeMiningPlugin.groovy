@@ -108,7 +108,7 @@ class CodeMiningPlugin {
 					measure.start()
 					measure.measure("Total time") {
 						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
-                        def requestDateRange = dateRange(userInput.from, userInput.to)
+                        def requestDateRange = new DateRange(userInput.from, userInput.to)
 
                         def message = doGrabHistory(project, eventStorage, requestDateRange, userInput.grabChangeSizeInLines, indicator)
 
@@ -131,7 +131,9 @@ class CodeMiningPlugin {
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
-                def requestDateRange = dateRange(eventStorage.storedDateRange().to, date(now))
+				def fromDate = eventStorage.storedDateRange().to
+				def toDate = new Date2(now).withTimeZone(fromDate.timeZone)
+				def requestDateRange = new DateRange(fromDate, toDate)
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
 
