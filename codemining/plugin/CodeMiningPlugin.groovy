@@ -1,5 +1,4 @@
 package codemining.plugin
-
 import codemining.core.common.langutil.*
 import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MiningCommitReader
@@ -24,7 +23,6 @@ import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
 import static codemining.core.common.langutil.Date2.Formatter.dd_MM_yyyy
-import static codemining.core.common.langutil.DateTimeUtil.*
 
 class CodeMiningPlugin {
 	private final UI ui
@@ -122,17 +120,18 @@ class CodeMiningPlugin {
 		}
 	}
 
-	def grabHistoryOnVcsUpdate(Project project, Date now = new Date()) {
+	def grabHistoryOnVcsUpdate(Project project, Time now = Time.now()) {
 		if (grabHistoryIsInProgress) return
 		def config = storage.loadGrabberConfigFor(project.name)
-		if (floorToDay(config.lastGrabTime) == floorToDay(now)) return
+		now = now.withTimeZone(config.lastGrabTime.timeZone())
+		if (config.lastGrabTime.floorToDay() == now.floorToDay()) return
 
 		grabHistoryIsInProgress = true
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
 				def fromDate = eventStorage.storedDateRange().to
-				def toDate = new Date2(now).withTimeZone(fromDate.timeZone())
+				def toDate = now.toDate().withTimeZone(fromDate.timeZone())
 				def requestDateRange = new DateRange(fromDate, toDate)
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)

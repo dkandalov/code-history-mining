@@ -1,24 +1,21 @@
 package codemining.historystorage
-
 import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Time
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.Immutable
 
-import java.text.ParseException
-import java.text.SimpleDateFormat
-
-@Immutable(knownImmutableClasses = [Date2])
+@Immutable(knownImmutableClasses = [Date2, Time])
 class HistoryGrabberConfig {
 	Date2 from
 	Date2 to
 	String outputFilePath
 	boolean grabChangeSizeInLines
 	boolean grabOnVcsUpdate
-	Date lastGrabTime
+	Time lastGrabTime
 
-	HistoryGrabberConfig withLastGrabTime(Date updatedLastGrabTime) {
+	HistoryGrabberConfig withLastGrabTime(Time updatedLastGrabTime) {
 		new HistoryGrabberConfig(from, to, outputFilePath, grabChangeSizeInLines, grabOnVcsUpdate, updatedLastGrabTime)
 	}
 
@@ -27,7 +24,7 @@ class HistoryGrabberConfig {
 	}
 
 	static defaultConfig() {
-		new HistoryGrabberConfig(Date2.today().shiftDays(-300), Date2.today(), "", false, false, new Date(1))
+		new HistoryGrabberConfig(Date2.today().shiftDays(-300), Date2.today(), "", false, false, Time.zero())
 	}
 
 	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
@@ -54,7 +51,7 @@ class HistoryGrabberConfig {
 					map.outputFilePath,
 					parseBoolean(map.grabChangeSizeInLines),
 					parseBoolean(map.grabOnVcsUpdate),
-					parseDateTime(map.lastGrabTime)
+					parseTime(map.lastGrabTime)
 			)}
 
 			def json = readConfigFile(pathToFolder)
@@ -69,17 +66,16 @@ class HistoryGrabberConfig {
 		def defaultDate = new Date2(new Date(0))
 		try {
 			s == null ? defaultDate : Date2.Formatter.ISO1806.parse(s)
-		} catch (ParseException ignored) {
+		} catch (Exception ignored) {
 			defaultDate
 		}
 	}
 
-	private static Date parseDateTime(String s) {
-		def defaultDate = new Date(0)
+	private static Time parseTime(String s) {
 		try {
-			s == null ? defaultDate : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(s)
-		} catch (ParseException ignored) {
-			defaultDate
+			s == null ? Time.zero() : Time.Formatter.ISO1806.parse(s)
+		} catch (Exception ignored) {
+			Time.zero()
 		}
 	}
 
