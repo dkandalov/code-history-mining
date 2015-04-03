@@ -132,7 +132,7 @@ class CodeMiningPlugin {
 			try {
 				def eventStorage = storage.eventStorageFor(config.outputFilePath)
 				def fromDate = eventStorage.storedDateRange().to
-				def toDate = new Date2(now).withTimeZone(fromDate.timeZone)
+				def toDate = new Date2(now).withTimeZone(fromDate.timeZone())
 				def requestDateRange = new DateRange(fromDate, toDate)
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)

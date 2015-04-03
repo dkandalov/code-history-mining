@@ -29,8 +29,8 @@ import static java.awt.GridBagConstraints.HORIZONTAL
 class Dialog {
 	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project,
 	                  Closure onApplyCallback, Closure onGrabCallback) {
-		def fromDatePicker = new DatePicker(grabberConfig.from.date, dateFormat.delegate)
-		def toDatePicker = new DatePicker(grabberConfig.to.date, dateFormat.delegate)
+		def fromDatePicker = new DatePicker(grabberConfig.from.javaDate(), dateFormat.delegate)
+		def toDatePicker = new DatePicker(grabberConfig.to.javaDate(), dateFormat.delegate)
 		def filePathTextField = new TextFieldWithBrowseButton()
 		def grabChangeSizeCheckBox = new JCheckBox()
 		def grabOnVcsUpdateCheckBox = new JCheckBox()
