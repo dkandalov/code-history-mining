@@ -27,7 +27,7 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPlugin
 		logger.info((String) entry.key + ": " + entry.value)
 	}
 
-	@Override errorReadingCommits(Exception e, Date fromDate, Date toDate) {
+	@Override errorReadingCommits(Exception e, Date2 fromDate, Date2 toDate) {
 		logger.warn("Error while reading commits from ${fromDate} to ${toDate}", e)
 	}
 

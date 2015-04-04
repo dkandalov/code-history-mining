@@ -1,5 +1,6 @@
 package codemining.vcsaccess.implementation
 
+import codemining.core.common.langutil.Date2
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
@@ -16,15 +17,15 @@ class GitPluginWorkaround {
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
 	static List<CommittedChangeList> getCommittedChanges_with_intellij_git_api_workarounds(Project project, RepositoryLocation location,
-	                                                                                       Date fromDate = null, Date toDate = null) {
+	                                                                                       Date2 fromDate = null, Date2 toDate = null) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {
 				// makes git notice file renames/moves (not sure but seems that otherwise intellij api doesn't do it)
 				h.addParameters("-M")
 
-				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate));
-				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate));
+				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate.javaDate()));
+				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate.javaDate()));
 			}
 		}
 		def resultConsumer = new Consumer<GitCommittedChangeList>() {

@@ -1,12 +1,13 @@
 package codemining.vcsaccess.implementation
 
+import codemining.core.common.langutil.Date2
+import codemining.vcsaccess.VcsActionsLog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.FilePathImpl
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
-import codemining.vcsaccess.VcsActionsLog
 
 class IJCommitReader {
 	private final Project project
@@ -18,12 +19,8 @@ class IJCommitReader {
 		this.log = log
 	}
 
-	List<Commit> readCommits(Date historyStartDate, Date historyEndDate, List<VcsRoot> vcsRoots) {
-		assert historyStartDate.time < historyEndDate.time
-		// in local timezone dates should not have hours, minutes, seconds
-		// (checking only seconds because Date.time field is in UTC and can have non-zero hours and probably minutes)
-		assert historyStartDate.time % (60 * 1000) == 0
-		assert historyEndDate.time % (60 * 1000) == 0
+	List<Commit> readCommits(Date2 historyStartDate, Date2 historyEndDate, List<VcsRoot> vcsRoots) {
+		assert historyStartDate.before(historyEndDate)
 
 		lastRequestHadErrors = false
 
@@ -39,13 +36,13 @@ class IJCommitReader {
         changes
 	}
 
-	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
+	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date2 fromDate, Date2 toDate) {
 		vcsRoots
             .collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
             .sort{ it.commitDate }
 	}
 
-	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
+	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date2 fromDate, Date2 toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 
@@ -62,11 +59,11 @@ class IJCommitReader {
 		def settings = changesProvider.createDefaultSettings()
 		if (fromDate != null) {
 			settings.USE_DATE_AFTER_FILTER = true
-			settings.dateAfter = fromDate
+			settings.dateAfter = fromDate.javaDate()
 		}
 		if (toDate != null) {
 			settings.USE_DATE_BEFORE_FILTER = true
-			settings.dateBefore = toDate
+			settings.dateBefore = toDate.javaDate()
 		}
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}

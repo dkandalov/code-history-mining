@@ -148,7 +148,7 @@ class MiningCommitReader_GitIntegrationTest {
 	}
 
 	private final static vcsActionsLog = new VcsActionsLog() {
-		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {
+		@Override def errorReadingCommits(Exception e, Date2 fromDate, Date2 toDate) {
 			PluginUtil.show(e)
 		}
 		@Override def errorReadingCommits(String error) {

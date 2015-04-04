@@ -1,4 +1,5 @@
 package codemining.vcsaccess.implementation
+import codemining.core.common.langutil.Date2
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -9,13 +10,13 @@ import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
-import static codemining.core.common.langutil.DateTimeTestUtil.dateTime
+import static codemining.core.common.langutil.DateTimeTestUtil.date
 import static codemining.vcsaccess.VcsActions.vcsRootsIn
 
 class IJCommitReaderGitTest {
 
 	@Test void "renamed file is interpreted as a single event"() {
-		def commit = readSingleCommit("43b0fe3", dateTime("14:40 03/10/2007"), dateTime("14:45 03/10/2007"))
+		def commit = readSingleCommit("43b0fe3", date("03/10/2007"), date("04/10/2007"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("TheoryMethod") }
 
 		assert change.type == Change.Type.MOVED
@@ -24,7 +25,7 @@ class IJCommitReaderGitTest {
 	}
 
 	@Test void "moved file is interpreted as a single event"() {
-		def commit = readSingleCommit("a19e98f", dateTime("07:50 28/07/2011"), dateTime("08:00 28/07/2011"))
+		def commit = readSingleCommit("a19e98f", date("28/07/2011"), date("29/07/2011"))
 		def change = commit.changes.find{ it.beforeRevision.file.name.contains("RuleFieldValidator") }
 
 		assert change.type == Change.Type.MOVED
@@ -35,19 +36,19 @@ class IJCommitReaderGitTest {
 	}
 
 	@Test void "should ignore merge commits and include merge changes as separate change lists"() {
-		def commits = readSingleCommit("dc730e3", dateTime("09:00 09/05/2013"), dateTime("16:02 09/05/2013"))
+		def commits = readSingleCommit("dc730e3", date("09/05/2013"), date("10/05/2013"))
 
         assert commits.changes.first().beforeRevision.file.name == "ComparisonFailureTest.java"
 	}
 
 	@Test void "end date is exclusive"() {
-		def commits = readJUnitCommits(dateTime("08/10/2007"), dateTime("09/10/2007"))
+		def commits = readJUnitCommits(date("08/10/2007"), date("09/10/2007"))
 		assert commits.size() == 3
-		commits = readJUnitCommits(dateTime("08/10/2007"), dateTime("10/10/2007"))
+		commits = readJUnitCommits(date("08/10/2007"), date("10/10/2007"))
 		assert commits.size() == 7
 	}
 
-	private Commit readSingleCommit(String gitHash, Date from, Date to) {
+	private Commit readSingleCommit(String gitHash, Date2 from, Date2 to) {
 		def commits = readJUnitCommits(from, to)
 				.findAll{ (it as VcsRevisionNumberAware).revisionNumber.asString().startsWith(gitHash) }
 
@@ -55,7 +56,7 @@ class IJCommitReaderGitTest {
 		commits.first()
 	}
 
-	private List<CommittedChangeList> readJUnitCommits(Date from, Date to) {
+	private List<CommittedChangeList> readJUnitCommits(Date2 from, Date2 to) {
 		new IJCommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject))
 	}
 

@@ -1,4 +1,6 @@
 package codemining.vcsaccess.implementation.wrappers
+
+import codemining.core.common.langutil.Date2
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
@@ -27,7 +29,7 @@ class VcsRootWrapper implements VcsRoot {
 
     @Override VcsProject.LogResult log(Date fromDate, Date toDate) {
         def reader = new IJCommitReader(project, log)
-        def commits = reader.readCommits(fromDate, toDate, [vcsRoot])
+        def commits = reader.readCommits(new Date2(fromDate), new Date2(toDate), [vcsRoot])
 
         def result = []
         for (IJCommit ijCommit in commits) {
