@@ -1,6 +1,6 @@
 package codemining.plugin
 
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
 import codemining.vcsaccess.VcsActionsLog
@@ -11,7 +11,7 @@ import com.intellij.openapi.vcs.VcsRoot
 class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
-	@Override def loadingProjectHistory(Date2 fromDate, Date2 toDate) {
+	@Override def loadingProjectHistory(Date fromDate, Date toDate) {
 		logger.info("Loading project history from ${fromDate} to ${toDate}")
 	}
 
@@ -27,7 +27,7 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPlugin
 		logger.info((String) entry.key + ": " + entry.value)
 	}
 
-	@Override errorReadingCommits(Exception e, Date2 fromDate, Date2 toDate) {
+	@Override errorReadingCommits(Exception e, Date fromDate, Date toDate) {
 		logger.warn("Error while reading commits from ${fromDate} to ${toDate}", e)
 	}
 

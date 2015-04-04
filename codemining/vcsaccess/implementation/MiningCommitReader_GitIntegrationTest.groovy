@@ -2,7 +2,7 @@ package codemining.vcsaccess.implementation
 import codemining.core.common.events.CommitInfo
 import codemining.core.common.events.FileChangeEvent
 import codemining.core.common.events.FileChangeInfo
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.core.common.langutil.DateRange
 import codemining.core.vcs.*
 import codemining.core.vcs.filetype.FileTypes
@@ -100,7 +100,7 @@ class MiningCommitReader_GitIntegrationTest {
 			[new MainFileMiner(UTC)]
 	}
 
-	private static List<FileChangeEvent> readChangeEvents(Date2 fromDate, Date2 toDate, Project project, List<MainFileMiner> miners) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
 		def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, commitReaderListener)
 
@@ -148,7 +148,7 @@ class MiningCommitReader_GitIntegrationTest {
 	}
 
 	private final static vcsActionsLog = new VcsActionsLog() {
-		@Override def errorReadingCommits(Exception e, Date2 fromDate, Date2 toDate) {
+		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {
 			PluginUtil.show(e)
 		}
 		@Override def errorReadingCommits(String error) {

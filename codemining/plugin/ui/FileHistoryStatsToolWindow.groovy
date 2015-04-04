@@ -1,6 +1,6 @@
 package codemining.plugin.ui
 
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
 import com.intellij.openapi.actionSystem.*
@@ -54,7 +54,7 @@ class FileHistoryStatsToolWindow {
 					add(newLabel("Overall info"), bag.nextLine().next().fillCellHorizontally().weighty(0.01))
 					def overallStats = [
 							"File name": fileHistoryStats.virtualFile.name,
-							"Creation date": DateFormatUtil.dateFormat.format((fileHistoryStats.creationDate as Date2).javaDate()),
+							"Creation date": DateFormatUtil.dateFormat.format((fileHistoryStats.creationDate as Date).javaDate()),
 							"Amount of commits": fileHistoryStats.amountOfCommits,
 							"File age in days": fileHistoryStats.fileAgeInDays
 					]
@@ -115,7 +115,7 @@ class FileHistoryStatsToolWindow {
 		showIn(project, [
 				virtualFile: currentFileIn(project),
 				amountOfCommits: 123,
-				creationDate: Date2.today(),
+				creationDate: Date.today(),
 				fileAgeInDays: 234,
 				commitsAmountByAuthor: ["Me": 1],
 				commitsAmountByPrefix: ["added": 1, "removed" :2]

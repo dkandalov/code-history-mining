@@ -1,5 +1,5 @@
 package codemining.plugin.ui
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.historystorage.HistoryGrabberConfig
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser
@@ -84,8 +84,8 @@ class Dialog {
 
 		def currentUIConfig = {
 			new HistoryGrabberConfig(
-					new Date2(fromDatePicker.date),
-					new Date2(toDatePicker.date),
+					new Date(fromDatePicker.date),
+					new Date(toDatePicker.date),
 					filePathTextField.text,
 					grabChangeSizeCheckBox.selected,
 					grabOnVcsUpdateCheckBox.selected,

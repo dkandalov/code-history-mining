@@ -1,5 +1,5 @@
 package codemining.vcsaccess.implementation
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.roots.ProjectRootManager
@@ -48,7 +48,7 @@ class IJCommitReaderGitTest {
 		assert commits.size() == 7
 	}
 
-	private Commit readSingleCommit(String gitHash, Date2 from, Date2 to) {
+	private Commit readSingleCommit(String gitHash, Date from, Date to) {
 		def commits = readJUnitCommits(from, to)
 				.findAll{ (it as VcsRevisionNumberAware).revisionNumber.asString().startsWith(gitHash) }
 
@@ -56,7 +56,7 @@ class IJCommitReaderGitTest {
 		commits.first()
 	}
 
-	private List<CommittedChangeList> readJUnitCommits(Date2 from, Date2 to) {
+	private List<CommittedChangeList> readJUnitCommits(Date from, Date to) {
 		new IJCommitReader(jUnitProject).readCommits(from, to, vcsRootsIn(jUnitProject))
 	}
 

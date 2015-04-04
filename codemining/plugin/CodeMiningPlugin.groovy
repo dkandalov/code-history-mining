@@ -22,7 +22,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
-import static codemining.core.common.langutil.Date2.Formatter.dd_MM_yyyy
+import static codemining.core.common.langutil.Date.Formatter.dd_MM_yyyy
 
 class CodeMiningPlugin {
 	private final UI ui
@@ -223,9 +223,9 @@ class CodeMiningPlugin {
 	}
 
 	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits, VirtualFile virtualFile) {
-		def creationDate = new Date2(commits.min{it.revisionDate}.revisionDate)
+		def creationDate = new Date(commits.min{it.revisionDate}.revisionDate)
 		def fileAgeInDays = use(TimeCategory) {
-			(Date2.today().javaDate() - commits.min{it.revisionDate}.revisionDate).days
+			(Date.today().javaDate() - commits.min{it.revisionDate}.revisionDate).days
 		}
 
 		def commitsAmountByAuthor = commits
@@ -252,7 +252,7 @@ class CodeMiningPlugin {
 }
 
 interface CodeMiningPluginLog {
-	def loadingProjectHistory(Date2 fromDate, Date2 toDate)
+	def loadingProjectHistory(Date fromDate, Date toDate)
 
 	def processingChangeList(String changeListName)
 

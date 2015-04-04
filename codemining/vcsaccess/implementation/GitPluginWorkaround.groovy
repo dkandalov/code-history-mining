@@ -1,6 +1,6 @@
 package codemining.vcsaccess.implementation
 
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
@@ -17,7 +17,7 @@ class GitPluginWorkaround {
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
 	static List<CommittedChangeList> getCommittedChanges_with_intellij_git_api_workarounds(Project project, RepositoryLocation location,
-	                                                                                       Date2 fromDate = null, Date2 toDate = null) {
+	                                                                                       Date fromDate = null, Date toDate = null) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler h) {

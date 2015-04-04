@@ -1,6 +1,6 @@
 package codemining.vcsaccess.implementation
 
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.vcsaccess.VcsActionsLog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
@@ -19,7 +19,7 @@ class IJCommitReader {
 		this.log = log
 	}
 
-	List<Commit> readCommits(Date2 historyStartDate, Date2 historyEndDate, List<VcsRoot> vcsRoots) {
+	List<Commit> readCommits(Date historyStartDate, Date historyEndDate, List<VcsRoot> vcsRoots) {
 		assert historyStartDate.before(historyEndDate)
 
 		lastRequestHadErrors = false
@@ -36,13 +36,13 @@ class IJCommitReader {
         changes
 	}
 
-	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date2 fromDate, Date2 toDate) {
+	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
 		vcsRoots
             .collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
             .sort{ it.commitDate }
 	}
 
-	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date2 fromDate, Date2 toDate) {
+	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
 

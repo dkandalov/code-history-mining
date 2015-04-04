@@ -1,15 +1,15 @@
 package codemining.historystorage
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.core.common.langutil.Time
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.Immutable
 
-@Immutable(knownImmutableClasses = [Date2, Time])
+@Immutable(knownImmutableClasses = [Date, Time])
 class HistoryGrabberConfig {
-	Date2 from
-	Date2 to
+	Date from
+	Date to
 	String outputFilePath
 	boolean grabChangeSizeInLines
 	boolean grabOnVcsUpdate
@@ -24,7 +24,7 @@ class HistoryGrabberConfig {
 	}
 
 	static defaultConfig() {
-		new HistoryGrabberConfig(Date2.today().shiftDays(-300), Date2.today(), "", false, false, Time.zero())
+		new HistoryGrabberConfig(Date.today().shiftDays(-300), Date.today(), "", false, false, Time.zero())
 	}
 
 	static HistoryGrabberConfig loadGrabberConfigFor(String projectName, String pathToFolder, Closure<HistoryGrabberConfig> createDefault) {
@@ -62,10 +62,10 @@ class HistoryGrabberConfig {
 		}
 	}
 
-	private static Date2 parseDate(String s) {
-		def defaultDate = Date2.zero()
+	private static Date parseDate(String s) {
+		def defaultDate = Date.zero()
 		try {
-			s == null ? defaultDate : Date2.Formatter.ISO1806.parse(s)
+			s == null ? defaultDate : Date.Formatter.ISO1806.parse(s)
 		} catch (Exception ignored) {
 			defaultDate
 		}

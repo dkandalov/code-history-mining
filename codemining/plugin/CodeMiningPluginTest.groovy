@@ -1,5 +1,5 @@
 package codemining.plugin
-import codemining.core.common.langutil.Date2
+import codemining.core.common.langutil.Date
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.common.langutil.Time
@@ -43,8 +43,8 @@ class CodeMiningPluginTest {
 
 	@Test def "on VCS update grabs history from the today to the latest event in file history"() {
 		// given
-		Date2 grabbedFrom = null
-		Date2 grabbedTo = null
+		Date grabbedFrom = null
+		Date grabbedTo = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageFor: returns(stub(EventStorage, [
                         storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
@@ -75,7 +75,7 @@ class CodeMiningPluginTest {
 		def ui = stub(UI, [
 				showGrabbingDialog: { config, project, onApplyConfig, Closure onOkCallback ->
 					def grabOnVcsUpdate = true
-					onOkCallback(new HistoryGrabberConfig(Date2.today().shiftDays(-300), Date2.today(), "some.csv", false, grabOnVcsUpdate, Time.zero()))
+					onOkCallback(new HistoryGrabberConfig(Date.today().shiftDays(-300), Date.today(), "some.csv", false, grabOnVcsUpdate, Time.zero()))
 				}
 		])
 		def vcsAccess = stub(VcsActions, [
