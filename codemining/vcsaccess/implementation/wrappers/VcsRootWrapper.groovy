@@ -27,7 +27,7 @@ class VcsRootWrapper implements VcsRoot {
         this.log = log
     }
 
-    @Override VcsProject.LogResult log(Date fromDate, Date toDate) {
+    @Override VcsProject.LogResult log(java.util.Date fromDate, java.util.Date toDate) {
         def reader = new IJCommitReader(project, log)
         def commits = reader.readCommits(new Date2(fromDate), new Date2(toDate), [vcsRoot])
 

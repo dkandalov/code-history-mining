@@ -63,7 +63,7 @@ class HistoryGrabberConfig {
 	}
 
 	private static Date2 parseDate(String s) {
-		def defaultDate = new Date2(new Date(0))
+		def defaultDate = Date2.zero()
 		try {
 			s == null ? defaultDate : Date2.Formatter.ISO1806.parse(s)
 		} catch (Exception ignored) {

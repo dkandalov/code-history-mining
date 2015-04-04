@@ -223,9 +223,9 @@ class CodeMiningPlugin {
 	}
 
 	private static Map createSummaryStatsFor(Collection<VcsFileRevision> commits, VirtualFile virtualFile) {
-		def creationDate = commits.min{it.revisionDate}.revisionDate
+		def creationDate = new Date2(commits.min{it.revisionDate}.revisionDate)
 		def fileAgeInDays = use(TimeCategory) {
-			(new Date() - commits.min{it.revisionDate}.revisionDate).days
+			(Date2.today().javaDate() - commits.min{it.revisionDate}.revisionDate).days
 		}
 
 		def commitsAmountByAuthor = commits
