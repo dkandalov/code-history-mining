@@ -60,7 +60,7 @@ class VcsActions {
             @Override void afterMiningCommit(Commit commit) {}
         }
 
-	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, noCachingDefaults), miners, listener)
+	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, noCachingDefaults).with(cancelled), miners, listener)
 	    cancelled.wrap(commitReader.readCommits(dateRange))
     }
 

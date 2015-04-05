@@ -47,13 +47,13 @@ class CodeMiningPlugin {
 				measure.start()
 
 				def projectName = storage.guessProjectNameFrom(file.name)
-				def checkIfCancelled = new Cancelled() {
+				def cancelled = new Cancelled() {
 					@Override boolean isTrue() { indicator.canceled }
 				}
 
-				def events = storage.readAllEvents(file.name, checkIfCancelled)
+				def events = storage.readAllEvents(file.name, cancelled)
 				def logCallback = { String message -> Logger.getInstance("CodeHistoryMining").info(message) }
-				def html = visualization.generateFrom(events, projectName, checkIfCancelled, logCallback)
+				def html = visualization.generateFrom(events, projectName, cancelled, logCallback)
 
 				ui.showInBrowser(html, projectName, visualization)
 
