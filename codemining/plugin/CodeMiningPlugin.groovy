@@ -1,6 +1,7 @@
 package codemining.plugin
 import codemining.core.common.langutil.*
 import codemining.core.historystorage.EventStorage
+import codemining.core.vcs.MinedCommit
 import codemining.core.vcs.MiningCommitReader
 import codemining.core.visualizations.Visualization
 import codemining.historystorage.HistoryGrabberConfig
@@ -151,26 +152,29 @@ class CodeMiningPlugin {
 				indicator?.fraction = progress.percentComplete()
 			}
 		})
+		def cancelled = new Cancelled() {
+			@Override boolean isTrue() {
+				indicator?.canceled
+			}
+		}
 
 		def hadErrors = false
-		def isCancelled = { indicator?.canceled }
-        def loadProjectHistory = { DateRange dateRange ->
-            log?.loadingProjectHistory(dateRange.from, dateRange.to)
+		try {
+			for (DateRange dateRange in dateRanges) {
+				log?.loadingProjectHistory(dateRange.from, dateRange.to)
 
-			def minedCommits = vcsAccess.readMinedCommits(dateRange, project, grabChangeSizeInLines, progress)
+				def minedCommits = vcsAccess.readMinedCommits(dateRange, project, grabChangeSizeInLines, progress, cancelled)
 
-			while (minedCommits.hasNext() && !(isCancelled())) {
-				def minedCommit = minedCommits.next()
-				if (minedCommit == MiningCommitReader.failedToMine) {
-					hadErrors = true
-				} else {
-					eventStorage.addEvents(minedCommit.fileChangeEvents)
+				for (MinedCommit minedCommit in minedCommits) {
+					if (minedCommit == MiningCommitReader.failedToMine) {
+						hadErrors = true
+					} else {
+						eventStorage.addEvents(minedCommit.fileChangeEvents)
+					}
 				}
+				eventStorage.flush()
 			}
-            eventStorage.flush()
-        }
-
-		dateRanges.each { loadProjectHistory(it) }
+		} catch (Cancelled ignore) {}
 
 		def messageText = ""
 		def dateFormatter = dd_MM_yyyy

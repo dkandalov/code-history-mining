@@ -1,4 +1,6 @@
 package codemining.vcsaccess
+
+import codemining.core.common.langutil.Cancelled
 import codemining.core.common.langutil.DateRange
 import codemining.core.common.langutil.Measure
 import codemining.core.common.langutil.Progress
@@ -19,6 +21,7 @@ import vcsreader.Change
 import vcsreader.Commit
 
 import static codemining.core.common.langutil.Misc.withDefault
+import static codemining.core.vcs.CommitReaderConfig.noCachingDefaults
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 
@@ -32,7 +35,8 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines, Progress progress) {
+    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
+                                           Progress progress, Cancelled cancelled) {
 	    def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
@@ -56,8 +60,8 @@ class VcsActions {
             @Override void afterMiningCommit(Commit commit) {}
         }
 
-	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, listener)
-	    commitReader.readCommits(dateRange)
+	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, noCachingDefaults), miners, listener)
+	    cancelled.wrap(commitReader.readCommits(dateRange))
     }
 
     def addVcsUpdateListenerFor(String projectName, Closure closure) {
