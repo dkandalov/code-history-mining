@@ -52,8 +52,11 @@ class CodeMiningPlugin {
 				}
 
 				def events = storage.readAllEvents(file.name, cancelled)
-				def logCallback = { String message -> Logger.getInstance("CodeHistoryMining").info(message) }
-				def html = visualization.generateFrom(events, projectName, cancelled, logCallback)
+				def listener = new Visualization.Listener() {
+					@Override void onProgress(Progress progress) { indicator.fraction = progress.percentComplete() }
+					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
+				}
+				def html = visualization.generateFrom(events, projectName, cancelled, listener)
 
 				ui.showInBrowser(html, projectName, visualization)
 
