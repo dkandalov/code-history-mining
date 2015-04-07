@@ -42,9 +42,9 @@ class VcsActions {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
             }
         }
-        def noContentListener = new NoFileContentListener() {
-            @Override void failedToLoadContent(Change change) {
-                log.failedToLoadContent(change.toString())
+        def noContentListener = new MinerListener() {
+            @Override void failedToMine(Change change, String message, Throwable throwable) {
+                log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
         }
         def miners = grabChangeSizeInLines ?

@@ -39,7 +39,7 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPlugin
         logger.warn(e)
     }
 
-    @Override def failedToLoadContent(String message) {
+    @Override def failedToMine(String message) {
         logger.warn("Filed to load file content: ${message}")
     }
 

@@ -129,9 +129,9 @@ class MiningCommitReader_GitIntegrationTest {
 
 	private final Project jUnitProject = IJCommitReaderGitTest.findOpenedJUnitProject()
 
-	private static final listener = new NoFileContentListener() {
-        @Override void failedToLoadContent(Change change) {
-            throw new IllegalStateException("Failed to process: ${change}")
+	private static final listener = new MinerListener() {
+        @Override void failedToMine(Change change) {
+            throw new IllegalStateException("Failed to mine: ${change}")
         }
     }
 
@@ -157,7 +157,7 @@ class MiningCommitReader_GitIntegrationTest {
 		@Override def onExtractChangeEventException(Exception e) {
 			PluginUtil.show(e)
 		}
-		@Override def failedToLoadContent(String message) {
+		@Override def failedToMine(String message) {
 			PluginUtil.show(message)
 		}
 		@Override def failedToLocate(VcsRoot vcsRoot, Project project) {}

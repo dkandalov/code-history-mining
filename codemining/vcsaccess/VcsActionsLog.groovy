@@ -9,5 +9,5 @@ interface VcsActionsLog {
     def errorReadingCommits(String error)
     def failedToLocate(VcsRoot vcsRoot, Project project)
     def onExtractChangeEventException(Exception e)
-    def failedToLoadContent(String message)
+    def failedToMine(String message)
 }
