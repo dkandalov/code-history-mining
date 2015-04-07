@@ -4,6 +4,7 @@ import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MinedCommit
 import codemining.core.vcs.MiningCommitReader
 import codemining.core.visualizations.Visualization
+import codemining.core.visualizations.VisualizationListener
 import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.ui.UI
@@ -52,7 +53,7 @@ class CodeMiningPlugin {
 				}
 
 				def events = storage.readAllEvents(file.name, cancelled)
-				def listener = new Visualization.Listener() {
+				def listener = new VisualizationListener() {
 					@Override void onProgress(Progress progress) { indicator.fraction = progress.percentComplete() }
 					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 				}
