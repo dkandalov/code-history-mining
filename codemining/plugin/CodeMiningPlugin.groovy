@@ -261,8 +261,6 @@ class CodeMiningPlugin {
 interface CodeMiningPluginLog {
 	def loadingProjectHistory(Date fromDate, Date toDate)
 
-	def processingChangeList(String changeListName)
-
 	def cancelledBuilding(String visualizationName)
 
 	def measuredDuration(def entry)

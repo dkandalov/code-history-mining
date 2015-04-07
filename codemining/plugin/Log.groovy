@@ -15,10 +15,6 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPlugin
 		logger.info("Loading project history from ${fromDate} to ${toDate}")
 	}
 
-	@Override def processingChangeList(String changeListName) {
-		logger.info(changeListName)
-	}
-
 	@Override def cancelledBuilding(String visualizationName) {
 		logger.info("Cancelled building '${visualizationName}'")
 	}
