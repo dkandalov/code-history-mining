@@ -4,6 +4,7 @@ import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.CodeMiningPlugin
 import codemining.plugin.ui.http.HttpUtil
+import codemining.plugin.ui.templates.PluginTemplates
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -157,8 +158,11 @@ class UI {
 				}
 			}
 		}
+		Closure<Visualization> withPluginFooter = { Visualization visualization ->
+			visualization.withTemplate(visualization.template.replaceFooterCutPointFrom(PluginTemplates.aggregateFooter))
+		}
 		new DefaultActionGroup(file.name, true).with {
-			add(createShowInBrowserAction(Visualization.all))
+			add(createShowInBrowserAction(withPluginFooter(Visualization.all)))
 			add(createShowInBrowserAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
 			add(createShowInBrowserAction(Visualization.changeSizeChart))
