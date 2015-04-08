@@ -41,7 +41,7 @@ class CodeMiningPluginTest {
 		assert !grabbedVcs
 	}
 
-	@Test def "on VCS update grabs history from the today to the latest event in file history"() {
+	@Test def "on VCS update grabs history from today to the latest event in file history"() {
 		// given
 		Date grabbedFrom = null
 		Date grabbedTo = null
@@ -52,7 +52,7 @@ class CodeMiningPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
+				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, progress, cancelled ->
 					grabbedFrom = dateRange.from
 					grabbedTo = dateRange.to
 					[].iterator()
