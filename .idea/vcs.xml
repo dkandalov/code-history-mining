@@ -2,6 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$APPLICATION_PLUGINS_DIR$/live-plugins/code-history-mining-cli-gh-pages" vcs="Git" />
   </component>
 </project>
-

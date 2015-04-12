@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$APPLICATION_PLUGINS_DIR$/live-plugins/code-history-mining-cli-gh-pages/code-history-mining-cli-gh-pages.iml" filepath="$APPLICATION_PLUGINS_DIR$/live-plugins/code-history-mining-cli-gh-pages/code-history-mining-cli-gh-pages.iml" />
       <module fileurl="file://$PROJECT_DIR$/gh-pages.iml" filepath="$PROJECT_DIR$/gh-pages.iml" />
     </modules>
   </component>
 </project>
-
