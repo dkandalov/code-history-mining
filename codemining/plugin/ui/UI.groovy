@@ -167,6 +167,7 @@ class UI {
 			add(Separator.instance)
 			add(createShowInBrowserAction(Visualization.changeSizeChart))
 			add(createShowInBrowserAction(Visualization.amountOfCommittersChart))
+			add(createShowInBrowserAction(Visualization.amountOfCommitsByCommitter))
 			add(createShowInBrowserAction(Visualization.amountOfTodosChart))
 			add(createShowInBrowserAction(Visualization.amountOfFilesInCommitChart))
 			add(createShowInBrowserAction(Visualization.amountOfChangingFilesChart))
