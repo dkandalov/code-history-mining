@@ -4,29 +4,30 @@ This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community)
 and analyze project source code history. You can install it from plugin manager
 or download from [plugin repository](http://plugins.jetbrains.com/plugin/7273).
 
-Take a look at examples of visualizations:
- - [JUnit code history](http://dkandalov.github.io/code-history-mining/JUnit.html)
- - [TestNG code history](http://dkandalov.github.io/code-history-mining/TestNG.html)
- - [Cucumber code history](http://dkandalov.github.io/code-history-mining/Cucumber.html)
- - [Scala code history](http://dkandalov.github.io/code-history-mining/Scala.html)
- - [Clojure code history](http://dkandalov.github.io/code-history-mining/Clojure.html)
- - [Kotlin code history](http://dkandalov.github.io/code-history-mining/Kotlin.html)
- - [Groovy code history](http://dkandalov.github.io/code-history-mining/Groovy.html)
- - [CoffeeScript code history](http://dkandalov.github.io/code-history-mining/CoffeeScript.html)
- - [Go code history](http://dkandalov.github.io/code-history-mining/Go.html)
- - [Erlang code history](http://dkandalov.github.io/code-history-mining/Erlang.html)
- - [Maven code history](http://dkandalov.github.io/code-history-mining/Maven.html)
- - [Gradle code history](http://dkandalov.github.io/code-history-mining/Gradle.html)
- - [Ruby code history](http://dkandalov.github.io/code-history-mining/Ruby.html)
- - [Ruby on Rails code history](http://dkandalov.github.io/code-history-mining/Rails.html)
- - [Node.js code history](http://dkandalov.github.io/code-history-mining/NodeJS.html)
- - [GWT code history](http://dkandalov.github.io/code-history-mining/GWT.html)
- - [jQuery code history](http://dkandalov.github.io/code-history-mining/jQuery.html)
- - [Bootstrap code history](http://dkandalov.github.io/code-history-mining/Bootstrap.html)
- - [Aeron code history](http://dkandalov.github.io/code-history-mining/Aeron.html)
- - [ANTLR4 code history](http://dkandalov.github.io/code-history-mining/ANTLR4.html)
- - [GHC code history](http://dkandalov.github.io/code-history-mining/GHC.html)
- - [IntelliJ code history](http://dkandalov.github.io/code-history-mining/IntelliJ.html)
+Take a look at examples of code history visualizations:
+[JUnit](http://dkandalov.github.io/code-history-mining/JUnit.html),
+[TestNG](http://dkandalov.github.io/code-history-mining/TestNG.html),
+[Cucumber](http://dkandalov.github.io/code-history-mining/Cucumber.html),
+[Scala](http://dkandalov.github.io/code-history-mining/Scala.html),
+[Clojure](http://dkandalov.github.io/code-history-mining/Clojure.html),
+[Kotlin](http://dkandalov.github.io/code-history-mining/Kotlin.html),
+[Groovy](http://dkandalov.github.io/code-history-mining/Groovy.html),
+[CoffeeScript](http://dkandalov.github.io/code-history-mining/CoffeeScript.html),
+[Go](http://dkandalov.github.io/code-history-mining/Go.html),
+[Erlang](http://dkandalov.github.io/code-history-mining/Erlang.html),
+[Maven](http://dkandalov.github.io/code-history-mining/Maven.html),
+[Gradle](http://dkandalov.github.io/code-history-mining/Gradle.html),
+[Ruby](http://dkandalov.github.io/code-history-mining/Ruby.html),
+[Ruby on Rails](http://dkandalov.github.io/code-history-mining/Rails.html),
+[Node.js](http://dkandalov.github.io/code-history-mining/NodeJS.html),
+[GWT](http://dkandalov.github.io/code-history-mining/GWT.html),
+[jQuery](http://dkandalov.github.io/code-history-mining/jQuery.html),
+[Bootstrap](http://dkandalov.github.io/code-history-mining/Bootstrap.html),
+[Aeron](http://dkandalov.github.io/code-history-mining/Aeron.html),
+[ANTLR4](http://dkandalov.github.io/code-history-mining/ANTLR4.html),
+[GHC](http://dkandalov.github.io/code-history-mining/GHC.html),
+[IntelliJ](http://dkandalov.github.io/code-history-mining/IntelliJ.html)
+
 
 Csv files with data for the above visualizations are available [here on google drive](https://googledrive.com/host/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ).
 
