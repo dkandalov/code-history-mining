@@ -26,7 +26,7 @@ import static com.intellij.util.text.DateFormatUtil.getDateFormat
 import static java.awt.GridBagConstraints.HORIZONTAL
 
 @SuppressWarnings("GrUnresolvedAccess")
-class Dialog {
+class GrabHistoryDialog {
 	static showDialog(HistoryGrabberConfig grabberConfig, String dialogTitle, Project project,
 	                  Closure onApplyCallback, Closure onGrabCallback) {
 		def fromDatePicker = new DatePicker(grabberConfig.from.javaDate(), dateFormat.delegate)

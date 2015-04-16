@@ -1,3 +1,4 @@
+import codemining.historystorage.HistoryGrabberConfigTest
 import liveplugin.testrunner.IntegrationTestsRunner
 import codemining.plugin.GroovyStubber
 import codemining.plugin.CodeMiningPluginTest
@@ -10,7 +11,7 @@ import codemining.vcsaccess.implementation.IJCommitReaderGitTest
 // add-to-classpath $PLUGIN_PATH/lib/liveplugin/live-plugin/0.5.2 beta/live-plugin-0.5.2 beta.jar
 // add-to-classpath $PLUGIN_PATH/lib/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar
 
-def unitTests = [GroovyStubber, CodeMiningPluginTest]
+def unitTests = [GroovyStubber, CodeMiningPluginTest, HistoryGrabberConfigTest]
 def integrationTests = [IJCommitReaderGitTest, MiningCommitReader_GitIntegrationTest]
 def tests = (unitTests + integrationTests).toList()
 IntegrationTestsRunner.runIntegrationTests(tests, project, pluginPath)
