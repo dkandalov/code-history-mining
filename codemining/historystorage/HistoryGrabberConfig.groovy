@@ -61,7 +61,10 @@ class HistoryGrabberConfig {
 
 	/*private*/ static class Serializer {
 		static String stateToJson(Map<String, HistoryGrabberConfig> state) {
-			def values = state.collect{ '"' + it.key + '":' + toJsonObjectString(it.value) }
+			def values = state.entrySet().collect{
+				//noinspection UnnecessaryQualifiedReference (because of groovy error: java.lang.Class cannot be cast to groovy.lang.Closure)
+				'"' + it.key + '":' + Serializer.toJsonObjectString(it.value)
+			}
 			"{" + values.join(",") + "}"
 		}
 
