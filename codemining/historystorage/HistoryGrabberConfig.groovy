@@ -37,39 +37,27 @@ class HistoryGrabberConfig {
 		stateByProject.put(projectName, grabberConfig)
 
 		FileUtil.writeToFile(new File(pathToFolder + "/grabber-config.json"), Serializer.stateToJson(stateByProject))
-
-		def oldFile = new File(pathToFolder + "/dialog-state.json")
-		if (oldFile.exists()) FileUtil.delete(oldFile)
 	}
 
 	private static Map<String, HistoryGrabberConfig> loadStateByProject(String pathToFolder) {
 		try {
-			Serializer.stateFromJson(readConfigFile(pathToFolder))
+			Serializer.stateFromJson(FileUtil.loadFile(new File(pathToFolder + "/grabber-config.json")))
 		} catch (Exception ignored) {
 			[:]
 		}
 	}
 
-	private static String readConfigFile(String pathToFolder) {
-		def oldFile = new File(pathToFolder + "/dialog-state.json")
-		if (oldFile.exists()) {
-			FileUtil.loadFile(oldFile)
-		} else {
-			FileUtil.loadFile(new File(pathToFolder + "/grabber-config.json"))
-		}
-	}
 
 	/*private*/ static class Serializer {
+		@SuppressWarnings("UnnecessaryQualifiedReference") // because of groovy error: java.lang.Class cannot be cast to groovy.lang.Closure
 		static String stateToJson(Map<String, HistoryGrabberConfig> state) {
-			def values = state.entrySet().collect{
-				//noinspection UnnecessaryQualifiedReference (because of groovy error: java.lang.Class cannot be cast to groovy.lang.Closure)
-				'"' + it.key + '":' + Serializer.toJsonObjectString(it.value)
-			}
+			def values = state.entrySet().collect{ '"' + it.key + '":' + Serializer.toJsonObjectString(it.value) }
 			"{" + values.join(",") + "}"
 		}
 
+		@SuppressWarnings("UnnecessaryQualifiedReference") // because of groovy error: java.lang.Class cannot be cast to groovy.lang.Closure
 		static Map<String, HistoryGrabberConfig> stateFromJson(String json) {
-			new JsonSlurper().parseText(json).collectEntries{ [it.key, fromJsonMap(it.value)] }
+			new JsonSlurper().parseText(json).collectEntries{ [it.key, Serializer.fromJsonMap(it.value)] }
 		}
 
 		private static String toJsonObjectString(HistoryGrabberConfig config) {
