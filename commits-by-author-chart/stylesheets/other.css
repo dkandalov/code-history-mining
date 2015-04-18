@@ -1,0 +1,82 @@
+/* css for visualizations which need to be refactored into common.css */
+
+#commit-treemap .chart {
+    display: block;
+    margin: auto;
+}
+#commit-treemap text {
+    font-size: 14px;
+}
+#commit-treemap rect {
+    fill: none;
+}
+#commit-treemap div.tooltip {
+    position: absolute;
+    text-align: center;
+    height: 15px;
+    padding: 5px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0;
+    border-radius: 8px;
+    pointer-events: none;
+}
+#commit-treemap #footer {
+    z-index: 1;
+    font-size: 24px;
+    font-weight: 300;
+    text-shadow: 0 1px 0 #fff;
+    text-align: right;
+}
+#commit-treemap .hint {
+    font-size: 12px;
+    color: #999;
+}
+
+
+#commit-time-punchcard {
+    font: 11px sans-serif;
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    display: block;
+    margin: auto;
+}
+#commit-time-punchcard .dot {
+    fill: steelblue;
+}
+#commit-time-punchcard .dot:hover {
+    fill: rgb(62, 104, 146);
+}
+#commit-time-punchcard .axis path,
+#commit-time-punchcard .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+
+#time-between-commits-histogram {
+    font: 11px sans-serif;
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+    display: block;
+    margin: auto;
+}
+#time-between-commits-histogram .bar rect {
+    fill: steelblue;
+    shape-rendering: crispEdges;
+}
+#time-between-commits-histogram .bar rect:hover {
+    fill: rgb(62, 104, 146);
+}
+#time-between-commits-histogram .axis path, .axis line {
+    fill: none;
+    stroke: #aaa;
+    shape-rendering: crispEdges;
+}
+
+#commit-word-cloud {
+    font: 11px sans-serif;
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+}
+#commit-word-cloud text {
+    cursor: default;
+}

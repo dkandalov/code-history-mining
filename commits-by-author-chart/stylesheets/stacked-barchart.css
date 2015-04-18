@@ -1,0 +1,60 @@
+.bar-chart text,
+.bar-chart label {
+    font: 11px sans-serif;
+    font-family: 'Lucida Grande','Calibri',Helvetica,Arial,sans-serif;
+}
+.bar-chart .line-movingAvg {
+    fill: none;
+    stroke-width: 2px;
+    stroke: #b2182b;
+}
+.bar-chart .axis path,
+.bar-chart .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+.bar-chart .brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}
+
+/* based on http://nvd3.org/examples/multiBar.html */
+.tooltip {
+    position: absolute;
+    background-color: rgba(245,245,245,1.0);
+    padding: 5px;
+    border: 1px solid rgba(0,0,0,.2);
+    z-index: 10000;
+
+    font: 12px sans-serif;
+    text-align: center;
+    pointer-events: none;
+
+    white-space: nowrap;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.legend .box {
+    fill: #f9f9f9;
+    stroke: black;
+    opacity: 0.8;
+}
+.legend .items {
+    font-size: 12px;
+}
