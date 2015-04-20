@@ -87,7 +87,7 @@ public class AppComponent implements ApplicationComponent {
 
 		NotificationListener listener = new NotificationListener() {
 			@Override public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
-				boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.2.1/", "groovy-all-2.2.1.jar", PLUGIN_LIBS_PATH);
+				boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.3.9/", "groovy-all-2.3.9.jar", PLUGIN_LIBS_PATH);
 				if (downloaded) {
 					notification.expire();
 					askIsUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
