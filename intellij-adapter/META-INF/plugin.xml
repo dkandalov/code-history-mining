@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.2.6 beta</version>
+    <version>0.2.7 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
@@ -9,7 +9,7 @@
         How to use:
         <ul>
             <li>"VCS -> Code History Mining -> Grab Project History" to grab history from version control and save it as csv file</li>
-            <li>"VCS -> Code History Mining -> [choose cvs file]" to read history from csv and visualizes it with d3.js (needs a browser with SVG support)</li>
+            <li>"VCS -> Code History Mining -> [choose cvs file]" to read history from csv and visualizes it (needs a browser with SVG support)</li>
             <li>(also available as popup menu, alt+shift+H)</li>
         </ul>
         For more details and examples of visualizations see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
@@ -18,8 +18,8 @@
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
-    <!-- until IJ 14 EAP 140.2493 which has updated groovy libs -->
-    <idea-version since-build="134.0" until-build="140.2493"/>
+    <!-- since IJ 14 EAP 140.2493 which had groovy libs updated to 2.3.9 -->
+    <idea-version since-build="140.2493"/>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
     <depends>com.intellij.modules.lang</depends>
