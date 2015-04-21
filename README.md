@@ -27,8 +27,8 @@ Some examples of code history visualizations:
 [GHC](http://dkandalov.github.io/code-history-mining/GHC.html),
 [IntelliJ](http://dkandalov.github.io/code-history-mining/IntelliJ.html)
 .
-(Csv files with VCS data for the above visualizations
-are available [on google drive](https://googledrive.com/host/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ).)
+Csv files with VCS data for the above visualizations
+are available [on google drive](https://googledrive.com/host/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ).
 
 See also [command line version of code-history-mining](http://dkandalov.github.io/code-history-mining-cli).
 
@@ -41,16 +41,17 @@ See also [Your Code as a Crime Scene book](https://pragprog.com/book/atcrime/you
 
 
 ### How to use?
- - *grab project history from version control into csv file* -
+ - **grab project history from version control into csv file** -
  Grab Project History action will use VCS roots configured in current project for checked out VCS branches.
  The main reason for separate grabbing step is that code history often contains some noise (e.g. automatically updated build system files).
  Having code history in csv file should make it easier to process it with some scripts before visualization.
- - *visualize code history from csv file* -
+ - **visualize code history from csv file** -
  at this step code history is consumed from csv file and visualized in browser.
- All visualizations are self-contained one file pages so that they can be saved and shared without external dependencies.
+ All visualizations are self-contained one file html pages so that they can be saved and shared without external dependencies.
 
-#### Grabbing VCS history
+#### Grab VCS history
 Use "Main menu -> VCS -> Code History Mining" or "alt+shift+H".
+
 You should see this window:
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
  - **From/To** - desired date range to be grabbed from VCS. Commits are loaded from version control only if they are not already in csv file.
@@ -59,7 +60,7 @@ You should see this window:
  This is useful to grab history in small chunks so that when you run visualization grabbed history is already up-to-date.
  - **Grab change size in lines/characters and amount of TODOs** - grab amount of lines and characters before/after commit and size of change.
  This is used by some of visualizations and is optional.
- Note that this requires loading file content and can slow down grabbing history and IDE responsiveness.
+ Note that it requires loading file content and can slow down grabbing history and IDE responsiveness.
 
 #### Visualize
 By default cvs files with history are saved to "[\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
@@ -93,7 +94,7 @@ For example few lines from JUnit csv:
 2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.classpath,,,NEW,0,6,6,0,0,0,241,241,0,0,added .classpath for eclipse
 2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.vcm_meta,,,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,added .classpath for eclipse
 ```
-daColumns (WARNING: this is slightly out of date, please check csv header):
+Columns (WARNING: this is slightly out of date, please check csv header):
  - __commit date__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
  - __revision__ - format depends on underlying VCS.
  - __author__ - committer name from VCS.
@@ -126,5 +127,5 @@ Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/r
 
 
 ### Similar projects
- - https://github.com/michaelfeathers/delta-flora for Ruby code (with commit breakdown to method level)
  - https://github.com/adamtornhill/code-maat for any language
+ - https://github.com/michaelfeathers/delta-flora for Ruby (with commit breakdown to method level)
