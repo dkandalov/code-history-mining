@@ -1254,6 +1254,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy-all:2.3.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy:2.3.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy-json:2.3.9" level="project" />
   </component>
 </module>

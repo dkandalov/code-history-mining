@@ -19,7 +19,8 @@ configurations {
 }
 
 dependencies {
-    compile "org.codehaus.groovy:groovy-all:2.3.9"
+	compile "org.codehaus.groovy:groovy:2.3.9"
+	compile "org.codehaus.groovy:groovy-json:2.3.9"
     compile "codemining:core:1.0"
     compile "codemining:vcs-reader:1.0"
     compile "org.apache.commons:commons-csv:1.0"
