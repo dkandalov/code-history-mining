@@ -84,38 +84,31 @@ e.g. see visualizations for [JUnit](http://dkandalov.github.io/code-history-mini
 
 ### Code history csv format
 Each commit is broken down into several lines. One line corresponds to one file changed in commit.
-Commits are stored ordered by time from present to past as they are read from VCS.
-For example few lines from JUnit csv:
+Commits are stored ordered by time from present to past.
+For example two commits from JUnit csv:
 ```
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,IMoney.java,,/junit/samples/money,MODIFICATION,38,42,4,0,0,817,888,71,0,0,Cleaning up MoneyBag construction
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,Money.java,,/junit/samples/money,MODIFICATION,70,73,3,1,0,1595,1684,86,32,0,Cleaning up MoneyBag construction
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,MoneyBag.java,,/junit/samples/money,MODIFICATION,140,131,8,4,23,3721,3594,214,154,511,Cleaning up MoneyBag construction
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck <kbeck>,,MoneyTest.java,,/junit/samples/money,MODIFICATION,156,141,0,34,0,5187,4785,0,1594,0,Cleaning up MoneyBag construction
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.classpath,,,NEW,0,6,6,0,0,0,241,241,0,0,added .classpath for eclipse
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma <egamma>,,.vcm_meta,,,MODIFICATION,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,added .classpath for eclipse
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,IMoney.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,38,42,4,0,0,817,888,71,0,0,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,Money.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,70,73,3,1,0,1595,1684,86,32,0,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyBag.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,140,131,8,4,23,3721,3594,214,154,511,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyTest.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,156,141,0,34,0,5187,4785,0,1594,0,0,0
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.classpath,,,NEW,added .classpath for eclipse,0,6,6,0,0,0,240,240,0,0,0,0
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.vcm_meta,,,MODIFICATION,added .classpath for eclipse,6,7,1,0,0,199,221,21,0,0,0,0
 ```
-Columns (WARNING: this is slightly out of date, please check csv header):
- - __commit date__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
- - __revision__ - format depends on underlying VCS.
+Columns:
+ - __revisionDate__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
+ - __revision__ - unique commit id, format depends on VCS.
  - __author__ - committer name from VCS.
- - __file name before change__ - empty if file was added or name didn't change.
- - __file name after change__ - empty if file was deleted.
- - __path to file before change__ - empty if file was added, path didn't change or file is in root folder.
- - __path to file after change__ - empty if files was deleted or is in root folder.
- - __change type__ - can be "NEW", "MODIFICATION", "MOVED" or "DELETED". Renaming or moving file is "MOVED" even if file content has changed.
- - __number of lines in file before change__ - "-1" if file is binary or "Grab change size" checkbox is not selected in "Grab Project History" dialog;
-   "-2" if file is too big for IntelliJ to diff.
- - __number of lines in file after change__ - similar to above.
- - __number of lines added__ - similar to above.
- - __number of lines modified__ - similar to above.
- - __number of lines removed__ - similar to above.
- - __number of chars in file before change__ - similar to above.
- - __number of chars in file after change__ - similar to above.
- - __number of chars added__ - similar to above.
- - __number of chars modified__ - similar to above.
- - __number of chars removed__ - similar to above.
- - __commit message__ - new line breaks are replaced with "\\n".
-
+ - __fileNameBefore__ - file name before change, empty if file was added or name didn't change.
+ - __fileName__ - file name after change, empty if file was deleted.
+ - __packageNameBefore__ - file path before change, empty if file was added, path didn't change or file is in root folder.
+ - __packageName__ - file path after change, empty if files was deleted or is in root folder.
+ - __fileChangeType__ - "NEW", "MODIFICATION", "MOVED" or "DELETED". Renamed or moved files are "MOVED" even if file content has changed.
+ - __commitMessage__ - commit message, new line breaks are replaced with "\\n".
+ - __linesBefore__ - number of lines in file before change;
+     "-1" if file is binary or "Grab change size" checkbox is not selected in "Grab Project History" dialog;
+     "-2" if file is too big for IntelliJ to diff.
+ - __linesAfter__ - similar to the above.
+ - __<rest of the columns>__ - similar to the above.
 
 Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/rfc/rfc4180.html).
 
