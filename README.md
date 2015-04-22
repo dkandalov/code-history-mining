@@ -108,7 +108,7 @@ Columns:
      "-1" if file is binary or "Grab change size" checkbox is not selected in "Grab Project History" dialog;
      "-2" if file is too big for IntelliJ to diff.
  - __linesAfter__ - similar to the above.
- - __<rest of the columns>__ - similar to the above.
+ - __other before/after columns__ - similar to the above, should be self-explanatory.
 
 Output csv format should be compatible with [RFC4180](http://www.apps.ietf.org/rfc/rfc4180.html).
 
