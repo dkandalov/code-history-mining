@@ -1,7 +1,7 @@
 ### Code History Mining IntelliJ Plugin
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to visualize project source code history.
-Analysis is based on file and therefore programming language-agnostic.
+Analysis is based on file-level changes and therefore programming language-agnostic.
 You can install it from IDE Settings -> Plugins or download from [plugin repository](http://plugins.jetbrains.com/plugin/7273).
 
 Some examples of code history visualizations:
