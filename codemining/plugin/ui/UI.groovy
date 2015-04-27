@@ -165,7 +165,7 @@ class UI {
 			add(createShowInBrowserAction(withPluginFooter(Visualization.all)))
 			add(createShowInBrowserAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
-			add(createShowInBrowserAction(Visualization.changeSizeChart))
+			add(createShowInBrowserAction(Visualization.codeChurnChart))
 			add(createShowInBrowserAction(Visualization.amountOfCommittersChart))
 			add(createShowInBrowserAction(Visualization.amountOfCommitsByCommitter))
 			add(createShowInBrowserAction(Visualization.amountOfTodosChart))
