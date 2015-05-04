@@ -159,7 +159,7 @@ class UI {
 			}
 		}
 		Closure<Visualization> withPluginFooter = { Visualization visualization ->
-			visualization.withTemplate(visualization.template.replaceFooterCutPointFrom(PluginTemplates.aggregateFooter))
+			visualization.withTemplate(PluginTemplates.aggregateFooter.pasteAndReplaceFooterInto(visualization.template))
 		}
 		new DefaultActionGroup(file.name, true).with {
 			add(createShowInBrowserAction(withPluginFooter(Visualization.all)))
