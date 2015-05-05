@@ -71,7 +71,7 @@ class CodeMiningPlugin {
 	@SuppressWarnings("GrMethodMayBeStatic")
 	def fileCountByFileExtension(Project project) {
 		def scope = GlobalSearchScope.projectScope(project)
-		FileTypeManager.instance.registeredFileTypes.inject([:]) { Map map, FileType fileType ->
+		FileTypeManager.instance.registeredFileTypes.inject([:]) { LinkedHashMap map, FileType fileType ->
 			int fileCount = FileBasedIndex.instance.getContainingFiles(FileTypeIndex.NAME, fileType, scope).size()
 			if (fileCount > 0) map.put(fileType.defaultExtension, fileCount)
 			map
