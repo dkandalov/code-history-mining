@@ -154,15 +154,14 @@ class UI {
 		Closure<AnAction> createShowInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.createVisualization(file, visualization)
+					miner.createVisualization(file, Visualization.combineVisualizations(
+							visualization.name, PluginTemplates.pluginTemplate, visualization
+					))
 				}
 			}
 		}
-		Closure<Visualization> withPluginFooter = { Visualization visualization ->
-			visualization.withTemplate(PluginTemplates.aggregateFooter.pasteAndReplaceFooterInto(visualization.template))
-		}
 		new DefaultActionGroup(file.name, true).with {
-			add(createShowInBrowserAction(withPluginFooter(Visualization.all)))
+			add(createShowInBrowserAction(Visualization.all))
 			add(createShowInBrowserAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
 			add(createShowInBrowserAction(Visualization.codeChurnChart))
