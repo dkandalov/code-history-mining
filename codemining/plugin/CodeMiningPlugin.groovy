@@ -61,6 +61,7 @@ class CodeMiningPlugin {
 				def html = visualization
 						.generateFrom(events, projectName, cancelled, listener)
 						.pasteInto(pluginTemplate)
+						.fillProjectName(projectName)
 						.inlineImports()
 						.text
 
