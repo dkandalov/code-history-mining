@@ -25,6 +25,7 @@ import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
 import static codemining.core.common.langutil.Date.Formatter.dd_MM_yyyy
+import static codemining.plugin.ui.templates.PluginTemplates.pluginTemplate
 
 class CodeMiningPlugin {
 	private final UI ui
@@ -57,7 +58,11 @@ class CodeMiningPlugin {
 					@Override void onProgress(Progress progress) { indicator.fraction = progress.percentComplete() }
 					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 				}
-				def html = visualization.generateFrom(events, projectName, cancelled, listener)
+				def html = visualization
+						.generateFrom(events, projectName, cancelled, listener)
+						.pasteInto(pluginTemplate)
+						.inlineImports()
+						.text
 
 				ui.showInBrowser(html, projectName, visualization)
 

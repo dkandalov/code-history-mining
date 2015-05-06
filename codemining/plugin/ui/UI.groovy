@@ -4,7 +4,6 @@ import codemining.historystorage.HistoryGrabberConfig
 import codemining.historystorage.HistoryStorage
 import codemining.plugin.CodeMiningPlugin
 import codemining.plugin.ui.http.HttpUtil
-import codemining.plugin.ui.templates.PluginTemplates
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -154,9 +153,7 @@ class UI {
 		Closure<AnAction> createShowInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.createVisualization(file, Visualization.combineVisualizations(
-							visualization.name, PluginTemplates.pluginTemplate, visualization
-					))
+					miner.createVisualization(file, visualization)
 				}
 			}
 		}
