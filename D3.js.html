@@ -3,7 +3,7 @@
 <head>
     <meta charset='utf-8'/>
     <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-    <meta name="description" content="D3.js code history"/>
+    <meta name="description" content="D3.js"/>
 <style>/*!
  * Bootstrap v3.3.1 (http://getbootstrap.com)
  * Copyright 2011-2015 Twitter, Inc.
@@ -7045,6 +7045,7 @@ body {
     /* Set the fixed height of the footer here */
     height: 60px;
     background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
 }
 
 
@@ -7125,7 +7126,15 @@ div.helpTooltip {
 .controlPanel input {
     vertical-align: text-bottom;
 }
-</style>
+
+.mesh path {
+    opacity: 0;
+}
+.mesh {
+    opacity: 0.7;
+    stroke: #aaa;
+    stroke-dasharray: 2,2;
+}</style>
 <style>/* css for visualizations which need to be refactored into common.css */
 
 #commit-treemap .chart {
@@ -7732,11 +7741,11 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
 
     exports.cloud = cloud;
 })(typeof exports === "undefined" ? d3.layout || (d3.layout = {}) : exports);</script>
-    <script>//     Underscore.js 1.5.2
+    <script>//     Underscore.js 1.7.0
 //     http://underscorejs.org
-//     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+//     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
-(function(){var n=this,t=n._,r={},e=Array.prototype,u=Object.prototype,i=Function.prototype,a=e.push,o=e.slice,c=e.concat,l=u.toString,f=u.hasOwnProperty,s=e.forEach,p=e.map,h=e.reduce,v=e.reduceRight,g=e.filter,d=e.every,m=e.some,y=e.indexOf,b=e.lastIndexOf,x=Array.isArray,w=Object.keys,_=i.bind,j=function(n){return n instanceof j?n:this instanceof j?(this._wrapped=n,void 0):new j(n)};"undefined"!=typeof exports?("undefined"!=typeof module&&module.exports&&(exports=module.exports=j),exports._=j):n._=j,j.VERSION="1.5.2";var A=j.each=j.forEach=function(n,t,e){if(null!=n)if(s&&n.forEach===s)n.forEach(t,e);else if(n.length===+n.length){for(var u=0,i=n.length;i>u;u++)if(t.call(e,n[u],u,n)===r)return}else for(var a=j.keys(n),u=0,i=a.length;i>u;u++)if(t.call(e,n[a[u]],a[u],n)===r)return};j.map=j.collect=function(n,t,r){var e=[];return null==n?e:p&&n.map===p?n.map(t,r):(A(n,function(n,u,i){e.push(t.call(r,n,u,i))}),e)};var E="Reduce of empty array with no initial value";j.reduce=j.foldl=j.inject=function(n,t,r,e){var u=arguments.length>2;if(null==n&&(n=[]),h&&n.reduce===h)return e&&(t=j.bind(t,e)),u?n.reduce(t,r):n.reduce(t);if(A(n,function(n,i,a){u?r=t.call(e,r,n,i,a):(r=n,u=!0)}),!u)throw new TypeError(E);return r},j.reduceRight=j.foldr=function(n,t,r,e){var u=arguments.length>2;if(null==n&&(n=[]),v&&n.reduceRight===v)return e&&(t=j.bind(t,e)),u?n.reduceRight(t,r):n.reduceRight(t);var i=n.length;if(i!==+i){var a=j.keys(n);i=a.length}if(A(n,function(o,c,l){c=a?a[--i]:--i,u?r=t.call(e,r,n[c],c,l):(r=n[c],u=!0)}),!u)throw new TypeError(E);return r},j.find=j.detect=function(n,t,r){var e;return O(n,function(n,u,i){return t.call(r,n,u,i)?(e=n,!0):void 0}),e},j.filter=j.select=function(n,t,r){var e=[];return null==n?e:g&&n.filter===g?n.filter(t,r):(A(n,function(n,u,i){t.call(r,n,u,i)&&e.push(n)}),e)},j.reject=function(n,t,r){return j.filter(n,function(n,e,u){return!t.call(r,n,e,u)},r)},j.every=j.all=function(n,t,e){t||(t=j.identity);var u=!0;return null==n?u:d&&n.every===d?n.every(t,e):(A(n,function(n,i,a){return(u=u&&t.call(e,n,i,a))?void 0:r}),!!u)};var O=j.some=j.any=function(n,t,e){t||(t=j.identity);var u=!1;return null==n?u:m&&n.some===m?n.some(t,e):(A(n,function(n,i,a){return u||(u=t.call(e,n,i,a))?r:void 0}),!!u)};j.contains=j.include=function(n,t){return null==n?!1:y&&n.indexOf===y?n.indexOf(t)!=-1:O(n,function(n){return n===t})},j.invoke=function(n,t){var r=o.call(arguments,2),e=j.isFunction(t);return j.map(n,function(n){return(e?t:n[t]).apply(n,r)})},j.pluck=function(n,t){return j.map(n,function(n){return n[t]})},j.where=function(n,t,r){return j.isEmpty(t)?r?void 0:[]:j[r?"find":"filter"](n,function(n){for(var r in t)if(t[r]!==n[r])return!1;return!0})},j.findWhere=function(n,t){return j.where(n,t,!0)},j.max=function(n,t,r){if(!t&&j.isArray(n)&&n[0]===+n[0]&&n.length<65535)return Math.max.apply(Math,n);if(!t&&j.isEmpty(n))return-1/0;var e={computed:-1/0,value:-1/0};return A(n,function(n,u,i){var a=t?t.call(r,n,u,i):n;a>e.computed&&(e={value:n,computed:a})}),e.value},j.min=function(n,t,r){if(!t&&j.isArray(n)&&n[0]===+n[0]&&n.length<65535)return Math.min.apply(Math,n);if(!t&&j.isEmpty(n))return 1/0;var e={computed:1/0,value:1/0};return A(n,function(n,u,i){var a=t?t.call(r,n,u,i):n;a<e.computed&&(e={value:n,computed:a})}),e.value},j.shuffle=function(n){var t,r=0,e=[];return A(n,function(n){t=j.random(r++),e[r-1]=e[t],e[t]=n}),e},j.sample=function(n,t,r){return arguments.length<2||r?n[j.random(n.length-1)]:j.shuffle(n).slice(0,Math.max(0,t))};var k=function(n){return j.isFunction(n)?n:function(t){return t[n]}};j.sortBy=function(n,t,r){var e=k(t);return j.pluck(j.map(n,function(n,t,u){return{value:n,index:t,criteria:e.call(r,n,t,u)}}).sort(function(n,t){var r=n.criteria,e=t.criteria;if(r!==e){if(r>e||r===void 0)return 1;if(e>r||e===void 0)return-1}return n.index-t.index}),"value")};var F=function(n){return function(t,r,e){var u={},i=null==r?j.identity:k(r);return A(t,function(r,a){var o=i.call(e,r,a,t);n(u,o,r)}),u}};j.groupBy=F(function(n,t,r){(j.has(n,t)?n[t]:n[t]=[]).push(r)}),j.indexBy=F(function(n,t,r){n[t]=r}),j.countBy=F(function(n,t){j.has(n,t)?n[t]++:n[t]=1}),j.sortedIndex=function(n,t,r,e){r=null==r?j.identity:k(r);for(var u=r.call(e,t),i=0,a=n.length;a>i;){var o=i+a>>>1;r.call(e,n[o])<u?i=o+1:a=o}return i},j.toArray=function(n){return n?j.isArray(n)?o.call(n):n.length===+n.length?j.map(n,j.identity):j.values(n):[]},j.size=function(n){return null==n?0:n.length===+n.length?n.length:j.keys(n).length},j.first=j.head=j.take=function(n,t,r){return null==n?void 0:null==t||r?n[0]:o.call(n,0,t)},j.initial=function(n,t,r){return o.call(n,0,n.length-(null==t||r?1:t))},j.last=function(n,t,r){return null==n?void 0:null==t||r?n[n.length-1]:o.call(n,Math.max(n.length-t,0))},j.rest=j.tail=j.drop=function(n,t,r){return o.call(n,null==t||r?1:t)},j.compact=function(n){return j.filter(n,j.identity)};var M=function(n,t,r){return t&&j.every(n,j.isArray)?c.apply(r,n):(A(n,function(n){j.isArray(n)||j.isArguments(n)?t?a.apply(r,n):M(n,t,r):r.push(n)}),r)};j.flatten=function(n,t){return M(n,t,[])},j.without=function(n){return j.difference(n,o.call(arguments,1))},j.uniq=j.unique=function(n,t,r,e){j.isFunction(t)&&(e=r,r=t,t=!1);var u=r?j.map(n,r,e):n,i=[],a=[];return A(u,function(r,e){(t?e&&a[a.length-1]===r:j.contains(a,r))||(a.push(r),i.push(n[e]))}),i},j.union=function(){return j.uniq(j.flatten(arguments,!0))},j.intersection=function(n){var t=o.call(arguments,1);return j.filter(j.uniq(n),function(n){return j.every(t,function(t){return j.indexOf(t,n)>=0})})},j.difference=function(n){var t=c.apply(e,o.call(arguments,1));return j.filter(n,function(n){return!j.contains(t,n)})},j.zip=function(){for(var n=j.max(j.pluck(arguments,"length").concat(0)),t=new Array(n),r=0;n>r;r++)t[r]=j.pluck(arguments,""+r);return t},j.object=function(n,t){if(null==n)return{};for(var r={},e=0,u=n.length;u>e;e++)t?r[n[e]]=t[e]:r[n[e][0]]=n[e][1];return r},j.indexOf=function(n,t,r){if(null==n)return-1;var e=0,u=n.length;if(r){if("number"!=typeof r)return e=j.sortedIndex(n,t),n[e]===t?e:-1;e=0>r?Math.max(0,u+r):r}if(y&&n.indexOf===y)return n.indexOf(t,r);for(;u>e;e++)if(n[e]===t)return e;return-1},j.lastIndexOf=function(n,t,r){if(null==n)return-1;var e=null!=r;if(b&&n.lastIndexOf===b)return e?n.lastIndexOf(t,r):n.lastIndexOf(t);for(var u=e?r:n.length;u--;)if(n[u]===t)return u;return-1},j.range=function(n,t,r){arguments.length<=1&&(t=n||0,n=0),r=arguments[2]||1;for(var e=Math.max(Math.ceil((t-n)/r),0),u=0,i=new Array(e);e>u;)i[u++]=n,n+=r;return i};var R=function(){};j.bind=function(n,t){var r,e;if(_&&n.bind===_)return _.apply(n,o.call(arguments,1));if(!j.isFunction(n))throw new TypeError;return r=o.call(arguments,2),e=function(){if(!(this instanceof e))return n.apply(t,r.concat(o.call(arguments)));R.prototype=n.prototype;var u=new R;R.prototype=null;var i=n.apply(u,r.concat(o.call(arguments)));return Object(i)===i?i:u}},j.partial=function(n){var t=o.call(arguments,1);return function(){return n.apply(this,t.concat(o.call(arguments)))}},j.bindAll=function(n){var t=o.call(arguments,1);if(0===t.length)throw new Error("bindAll must be passed function names");return A(t,function(t){n[t]=j.bind(n[t],n)}),n},j.memoize=function(n,t){var r={};return t||(t=j.identity),function(){var e=t.apply(this,arguments);return j.has(r,e)?r[e]:r[e]=n.apply(this,arguments)}},j.delay=function(n,t){var r=o.call(arguments,2);return setTimeout(function(){return n.apply(null,r)},t)},j.defer=function(n){return j.delay.apply(j,[n,1].concat(o.call(arguments,1)))},j.throttle=function(n,t,r){var e,u,i,a=null,o=0;r||(r={});var c=function(){o=r.leading===!1?0:new Date,a=null,i=n.apply(e,u)};return function(){var l=new Date;o||r.leading!==!1||(o=l);var f=t-(l-o);return e=this,u=arguments,0>=f?(clearTimeout(a),a=null,o=l,i=n.apply(e,u)):a||r.trailing===!1||(a=setTimeout(c,f)),i}},j.debounce=function(n,t,r){var e,u,i,a,o;return function(){i=this,u=arguments,a=new Date;var c=function(){var l=new Date-a;t>l?e=setTimeout(c,t-l):(e=null,r||(o=n.apply(i,u)))},l=r&&!e;return e||(e=setTimeout(c,t)),l&&(o=n.apply(i,u)),o}},j.once=function(n){var t,r=!1;return function(){return r?t:(r=!0,t=n.apply(this,arguments),n=null,t)}},j.wrap=function(n,t){return function(){var r=[n];return a.apply(r,arguments),t.apply(this,r)}},j.compose=function(){var n=arguments;return function(){for(var t=arguments,r=n.length-1;r>=0;r--)t=[n[r].apply(this,t)];return t[0]}},j.after=function(n,t){return function(){return--n<1?t.apply(this,arguments):void 0}},j.keys=w||function(n){if(n!==Object(n))throw new TypeError("Invalid object");var t=[];for(var r in n)j.has(n,r)&&t.push(r);return t},j.values=function(n){for(var t=j.keys(n),r=t.length,e=new Array(r),u=0;r>u;u++)e[u]=n[t[u]];return e},j.pairs=function(n){for(var t=j.keys(n),r=t.length,e=new Array(r),u=0;r>u;u++)e[u]=[t[u],n[t[u]]];return e},j.invert=function(n){for(var t={},r=j.keys(n),e=0,u=r.length;u>e;e++)t[n[r[e]]]=r[e];return t},j.functions=j.methods=function(n){var t=[];for(var r in n)j.isFunction(n[r])&&t.push(r);return t.sort()},j.extend=function(n){return A(o.call(arguments,1),function(t){if(t)for(var r in t)n[r]=t[r]}),n},j.pick=function(n){var t={},r=c.apply(e,o.call(arguments,1));return A(r,function(r){r in n&&(t[r]=n[r])}),t},j.omit=function(n){var t={},r=c.apply(e,o.call(arguments,1));for(var u in n)j.contains(r,u)||(t[u]=n[u]);return t},j.defaults=function(n){return A(o.call(arguments,1),function(t){if(t)for(var r in t)n[r]===void 0&&(n[r]=t[r])}),n},j.clone=function(n){return j.isObject(n)?j.isArray(n)?n.slice():j.extend({},n):n},j.tap=function(n,t){return t(n),n};var S=function(n,t,r,e){if(n===t)return 0!==n||1/n==1/t;if(null==n||null==t)return n===t;n instanceof j&&(n=n._wrapped),t instanceof j&&(t=t._wrapped);var u=l.call(n);if(u!=l.call(t))return!1;switch(u){case"[object String]":return n==String(t);case"[object Number]":return n!=+n?t!=+t:0==n?1/n==1/t:n==+t;case"[object Date]":case"[object Boolean]":return+n==+t;case"[object RegExp]":return n.source==t.source&&n.global==t.global&&n.multiline==t.multiline&&n.ignoreCase==t.ignoreCase}if("object"!=typeof n||"object"!=typeof t)return!1;for(var i=r.length;i--;)if(r[i]==n)return e[i]==t;var a=n.constructor,o=t.constructor;if(a!==o&&!(j.isFunction(a)&&a instanceof a&&j.isFunction(o)&&o instanceof o))return!1;r.push(n),e.push(t);var c=0,f=!0;if("[object Array]"==u){if(c=n.length,f=c==t.length)for(;c--&&(f=S(n[c],t[c],r,e)););}else{for(var s in n)if(j.has(n,s)&&(c++,!(f=j.has(t,s)&&S(n[s],t[s],r,e))))break;if(f){for(s in t)if(j.has(t,s)&&!c--)break;f=!c}}return r.pop(),e.pop(),f};j.isEqual=function(n,t){return S(n,t,[],[])},j.isEmpty=function(n){if(null==n)return!0;if(j.isArray(n)||j.isString(n))return 0===n.length;for(var t in n)if(j.has(n,t))return!1;return!0},j.isElement=function(n){return!(!n||1!==n.nodeType)},j.isArray=x||function(n){return"[object Array]"==l.call(n)},j.isObject=function(n){return n===Object(n)},A(["Arguments","Function","String","Number","Date","RegExp"],function(n){j["is"+n]=function(t){return l.call(t)=="[object "+n+"]"}}),j.isArguments(arguments)||(j.isArguments=function(n){return!(!n||!j.has(n,"callee"))}),"function"!=typeof/./&&(j.isFunction=function(n){return"function"==typeof n}),j.isFinite=function(n){return isFinite(n)&&!isNaN(parseFloat(n))},j.isNaN=function(n){return j.isNumber(n)&&n!=+n},j.isBoolean=function(n){return n===!0||n===!1||"[object Boolean]"==l.call(n)},j.isNull=function(n){return null===n},j.isUndefined=function(n){return n===void 0},j.has=function(n,t){return f.call(n,t)},j.noConflict=function(){return n._=t,this},j.identity=function(n){return n},j.times=function(n,t,r){for(var e=Array(Math.max(0,n)),u=0;n>u;u++)e[u]=t.call(r,u);return e},j.random=function(n,t){return null==t&&(t=n,n=0),n+Math.floor(Math.random()*(t-n+1))};var I={escape:{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;"}};I.unescape=j.invert(I.escape);var T={escape:new RegExp("["+j.keys(I.escape).join("")+"]","g"),unescape:new RegExp("("+j.keys(I.unescape).join("|")+")","g")};j.each(["escape","unescape"],function(n){j[n]=function(t){return null==t?"":(""+t).replace(T[n],function(t){return I[n][t]})}}),j.result=function(n,t){if(null==n)return void 0;var r=n[t];return j.isFunction(r)?r.call(n):r},j.mixin=function(n){A(j.functions(n),function(t){var r=j[t]=n[t];j.prototype[t]=function(){var n=[this._wrapped];return a.apply(n,arguments),z.call(this,r.apply(j,n))}})};var N=0;j.uniqueId=function(n){var t=++N+"";return n?n+t:t},j.templateSettings={evaluate:/<%([\s\S]+?)%>/g,interpolate:/<%=([\s\S]+?)%>/g,escape:/<%-([\s\S]+?)%>/g};var q=/(.)^/,B={"'":"'","\\":"\\","\r":"r","\n":"n","	":"t","\u2028":"u2028","\u2029":"u2029"},D=/\\|'|\r|\n|\t|\u2028|\u2029/g;j.template=function(n,t,r){var e;r=j.defaults({},r,j.templateSettings);var u=new RegExp([(r.escape||q).source,(r.interpolate||q).source,(r.evaluate||q).source].join("|")+"|$","g"),i=0,a="__p+='";n.replace(u,function(t,r,e,u,o){return a+=n.slice(i,o).replace(D,function(n){return"\\"+B[n]}),r&&(a+="'+\n((__t=("+r+"))==null?'':_.escape(__t))+\n'"),e&&(a+="'+\n((__t=("+e+"))==null?'':__t)+\n'"),u&&(a+="';\n"+u+"\n__p+='"),i=o+t.length,t}),a+="';\n",r.variable||(a="with(obj||{}){\n"+a+"}\n"),a="var __t,__p='',__j=Array.prototype.join,"+"print=function(){__p+=__j.call(arguments,'');};\n"+a+"return __p;\n";try{e=new Function(r.variable||"obj","_",a)}catch(o){throw o.source=a,o}if(t)return e(t,j);var c=function(n){return e.call(this,n,j)};return c.source="function("+(r.variable||"obj")+"){\n"+a+"}",c},j.chain=function(n){return j(n).chain()};var z=function(n){return this._chain?j(n).chain():n};j.mixin(j),A(["pop","push","reverse","shift","sort","splice","unshift"],function(n){var t=e[n];j.prototype[n]=function(){var r=this._wrapped;return t.apply(r,arguments),"shift"!=n&&"splice"!=n||0!==r.length||delete r[0],z.call(this,r)}}),A(["concat","join","slice"],function(n){var t=e[n];j.prototype[n]=function(){return z.call(this,t.apply(this._wrapped,arguments))}}),j.extend(j.prototype,{chain:function(){return this._chain=!0,this},value:function(){return this._wrapped}})}).call(this);</script>
+(function(){var n=this,t=n._,r=Array.prototype,e=Object.prototype,u=Function.prototype,i=r.push,a=r.slice,o=r.concat,l=e.toString,c=e.hasOwnProperty,f=Array.isArray,s=Object.keys,p=u.bind,h=function(n){return n instanceof h?n:this instanceof h?void(this._wrapped=n):new h(n)};"undefined"!=typeof exports?("undefined"!=typeof module&&module.exports&&(exports=module.exports=h),exports._=h):n._=h,h.VERSION="1.7.0";var g=function(n,t,r){if(t===void 0)return n;switch(null==r?3:r){case 1:return function(r){return n.call(t,r)};case 2:return function(r,e){return n.call(t,r,e)};case 3:return function(r,e,u){return n.call(t,r,e,u)};case 4:return function(r,e,u,i){return n.call(t,r,e,u,i)}}return function(){return n.apply(t,arguments)}};h.iteratee=function(n,t,r){return null==n?h.identity:h.isFunction(n)?g(n,t,r):h.isObject(n)?h.matches(n):h.property(n)},h.each=h.forEach=function(n,t,r){if(null==n)return n;t=g(t,r);var e,u=n.length;if(u===+u)for(e=0;u>e;e++)t(n[e],e,n);else{var i=h.keys(n);for(e=0,u=i.length;u>e;e++)t(n[i[e]],i[e],n)}return n},h.map=h.collect=function(n,t,r){if(null==n)return[];t=h.iteratee(t,r);for(var e,u=n.length!==+n.length&&h.keys(n),i=(u||n).length,a=Array(i),o=0;i>o;o++)e=u?u[o]:o,a[o]=t(n[e],e,n);return a};var v="Reduce of empty array with no initial value";h.reduce=h.foldl=h.inject=function(n,t,r,e){null==n&&(n=[]),t=g(t,e,4);var u,i=n.length!==+n.length&&h.keys(n),a=(i||n).length,o=0;if(arguments.length<3){if(!a)throw new TypeError(v);r=n[i?i[o++]:o++]}for(;a>o;o++)u=i?i[o]:o,r=t(r,n[u],u,n);return r},h.reduceRight=h.foldr=function(n,t,r,e){null==n&&(n=[]),t=g(t,e,4);var u,i=n.length!==+n.length&&h.keys(n),a=(i||n).length;if(arguments.length<3){if(!a)throw new TypeError(v);r=n[i?i[--a]:--a]}for(;a--;)u=i?i[a]:a,r=t(r,n[u],u,n);return r},h.find=h.detect=function(n,t,r){var e;return t=h.iteratee(t,r),h.some(n,function(n,r,u){return t(n,r,u)?(e=n,!0):void 0}),e},h.filter=h.select=function(n,t,r){var e=[];return null==n?e:(t=h.iteratee(t,r),h.each(n,function(n,r,u){t(n,r,u)&&e.push(n)}),e)},h.reject=function(n,t,r){return h.filter(n,h.negate(h.iteratee(t)),r)},h.every=h.all=function(n,t,r){if(null==n)return!0;t=h.iteratee(t,r);var e,u,i=n.length!==+n.length&&h.keys(n),a=(i||n).length;for(e=0;a>e;e++)if(u=i?i[e]:e,!t(n[u],u,n))return!1;return!0},h.some=h.any=function(n,t,r){if(null==n)return!1;t=h.iteratee(t,r);var e,u,i=n.length!==+n.length&&h.keys(n),a=(i||n).length;for(e=0;a>e;e++)if(u=i?i[e]:e,t(n[u],u,n))return!0;return!1},h.contains=h.include=function(n,t){return null==n?!1:(n.length!==+n.length&&(n=h.values(n)),h.indexOf(n,t)>=0)},h.invoke=function(n,t){var r=a.call(arguments,2),e=h.isFunction(t);return h.map(n,function(n){return(e?t:n[t]).apply(n,r)})},h.pluck=function(n,t){return h.map(n,h.property(t))},h.where=function(n,t){return h.filter(n,h.matches(t))},h.findWhere=function(n,t){return h.find(n,h.matches(t))},h.max=function(n,t,r){var e,u,i=-1/0,a=-1/0;if(null==t&&null!=n){n=n.length===+n.length?n:h.values(n);for(var o=0,l=n.length;l>o;o++)e=n[o],e>i&&(i=e)}else t=h.iteratee(t,r),h.each(n,function(n,r,e){u=t(n,r,e),(u>a||u===-1/0&&i===-1/0)&&(i=n,a=u)});return i},h.min=function(n,t,r){var e,u,i=1/0,a=1/0;if(null==t&&null!=n){n=n.length===+n.length?n:h.values(n);for(var o=0,l=n.length;l>o;o++)e=n[o],i>e&&(i=e)}else t=h.iteratee(t,r),h.each(n,function(n,r,e){u=t(n,r,e),(a>u||1/0===u&&1/0===i)&&(i=n,a=u)});return i},h.shuffle=function(n){for(var t,r=n&&n.length===+n.length?n:h.values(n),e=r.length,u=Array(e),i=0;e>i;i++)t=h.random(0,i),t!==i&&(u[i]=u[t]),u[t]=r[i];return u},h.sample=function(n,t,r){return null==t||r?(n.length!==+n.length&&(n=h.values(n)),n[h.random(n.length-1)]):h.shuffle(n).slice(0,Math.max(0,t))},h.sortBy=function(n,t,r){return t=h.iteratee(t,r),h.pluck(h.map(n,function(n,r,e){return{value:n,index:r,criteria:t(n,r,e)}}).sort(function(n,t){var r=n.criteria,e=t.criteria;if(r!==e){if(r>e||r===void 0)return 1;if(e>r||e===void 0)return-1}return n.index-t.index}),"value")};var m=function(n){return function(t,r,e){var u={};return r=h.iteratee(r,e),h.each(t,function(e,i){var a=r(e,i,t);n(u,e,a)}),u}};h.groupBy=m(function(n,t,r){h.has(n,r)?n[r].push(t):n[r]=[t]}),h.indexBy=m(function(n,t,r){n[r]=t}),h.countBy=m(function(n,t,r){h.has(n,r)?n[r]++:n[r]=1}),h.sortedIndex=function(n,t,r,e){r=h.iteratee(r,e,1);for(var u=r(t),i=0,a=n.length;a>i;){var o=i+a>>>1;r(n[o])<u?i=o+1:a=o}return i},h.toArray=function(n){return n?h.isArray(n)?a.call(n):n.length===+n.length?h.map(n,h.identity):h.values(n):[]},h.size=function(n){return null==n?0:n.length===+n.length?n.length:h.keys(n).length},h.partition=function(n,t,r){t=h.iteratee(t,r);var e=[],u=[];return h.each(n,function(n,r,i){(t(n,r,i)?e:u).push(n)}),[e,u]},h.first=h.head=h.take=function(n,t,r){return null==n?void 0:null==t||r?n[0]:0>t?[]:a.call(n,0,t)},h.initial=function(n,t,r){return a.call(n,0,Math.max(0,n.length-(null==t||r?1:t)))},h.last=function(n,t,r){return null==n?void 0:null==t||r?n[n.length-1]:a.call(n,Math.max(n.length-t,0))},h.rest=h.tail=h.drop=function(n,t,r){return a.call(n,null==t||r?1:t)},h.compact=function(n){return h.filter(n,h.identity)};var y=function(n,t,r,e){if(t&&h.every(n,h.isArray))return o.apply(e,n);for(var u=0,a=n.length;a>u;u++){var l=n[u];h.isArray(l)||h.isArguments(l)?t?i.apply(e,l):y(l,t,r,e):r||e.push(l)}return e};h.flatten=function(n,t){return y(n,t,!1,[])},h.without=function(n){return h.difference(n,a.call(arguments,1))},h.uniq=h.unique=function(n,t,r,e){if(null==n)return[];h.isBoolean(t)||(e=r,r=t,t=!1),null!=r&&(r=h.iteratee(r,e));for(var u=[],i=[],a=0,o=n.length;o>a;a++){var l=n[a];if(t)a&&i===l||u.push(l),i=l;else if(r){var c=r(l,a,n);h.indexOf(i,c)<0&&(i.push(c),u.push(l))}else h.indexOf(u,l)<0&&u.push(l)}return u},h.union=function(){return h.uniq(y(arguments,!0,!0,[]))},h.intersection=function(n){if(null==n)return[];for(var t=[],r=arguments.length,e=0,u=n.length;u>e;e++){var i=n[e];if(!h.contains(t,i)){for(var a=1;r>a&&h.contains(arguments[a],i);a++);a===r&&t.push(i)}}return t},h.difference=function(n){var t=y(a.call(arguments,1),!0,!0,[]);return h.filter(n,function(n){return!h.contains(t,n)})},h.zip=function(n){if(null==n)return[];for(var t=h.max(arguments,"length").length,r=Array(t),e=0;t>e;e++)r[e]=h.pluck(arguments,e);return r},h.object=function(n,t){if(null==n)return{};for(var r={},e=0,u=n.length;u>e;e++)t?r[n[e]]=t[e]:r[n[e][0]]=n[e][1];return r},h.indexOf=function(n,t,r){if(null==n)return-1;var e=0,u=n.length;if(r){if("number"!=typeof r)return e=h.sortedIndex(n,t),n[e]===t?e:-1;e=0>r?Math.max(0,u+r):r}for(;u>e;e++)if(n[e]===t)return e;return-1},h.lastIndexOf=function(n,t,r){if(null==n)return-1;var e=n.length;for("number"==typeof r&&(e=0>r?e+r+1:Math.min(e,r+1));--e>=0;)if(n[e]===t)return e;return-1},h.range=function(n,t,r){arguments.length<=1&&(t=n||0,n=0),r=r||1;for(var e=Math.max(Math.ceil((t-n)/r),0),u=Array(e),i=0;e>i;i++,n+=r)u[i]=n;return u};var d=function(){};h.bind=function(n,t){var r,e;if(p&&n.bind===p)return p.apply(n,a.call(arguments,1));if(!h.isFunction(n))throw new TypeError("Bind must be called on a function");return r=a.call(arguments,2),e=function(){if(!(this instanceof e))return n.apply(t,r.concat(a.call(arguments)));d.prototype=n.prototype;var u=new d;d.prototype=null;var i=n.apply(u,r.concat(a.call(arguments)));return h.isObject(i)?i:u}},h.partial=function(n){var t=a.call(arguments,1);return function(){for(var r=0,e=t.slice(),u=0,i=e.length;i>u;u++)e[u]===h&&(e[u]=arguments[r++]);for(;r<arguments.length;)e.push(arguments[r++]);return n.apply(this,e)}},h.bindAll=function(n){var t,r,e=arguments.length;if(1>=e)throw new Error("bindAll must be passed function names");for(t=1;e>t;t++)r=arguments[t],n[r]=h.bind(n[r],n);return n},h.memoize=function(n,t){var r=function(e){var u=r.cache,i=t?t.apply(this,arguments):e;return h.has(u,i)||(u[i]=n.apply(this,arguments)),u[i]};return r.cache={},r},h.delay=function(n,t){var r=a.call(arguments,2);return setTimeout(function(){return n.apply(null,r)},t)},h.defer=function(n){return h.delay.apply(h,[n,1].concat(a.call(arguments,1)))},h.throttle=function(n,t,r){var e,u,i,a=null,o=0;r||(r={});var l=function(){o=r.leading===!1?0:h.now(),a=null,i=n.apply(e,u),a||(e=u=null)};return function(){var c=h.now();o||r.leading!==!1||(o=c);var f=t-(c-o);return e=this,u=arguments,0>=f||f>t?(clearTimeout(a),a=null,o=c,i=n.apply(e,u),a||(e=u=null)):a||r.trailing===!1||(a=setTimeout(l,f)),i}},h.debounce=function(n,t,r){var e,u,i,a,o,l=function(){var c=h.now()-a;t>c&&c>0?e=setTimeout(l,t-c):(e=null,r||(o=n.apply(i,u),e||(i=u=null)))};return function(){i=this,u=arguments,a=h.now();var c=r&&!e;return e||(e=setTimeout(l,t)),c&&(o=n.apply(i,u),i=u=null),o}},h.wrap=function(n,t){return h.partial(t,n)},h.negate=function(n){return function(){return!n.apply(this,arguments)}},h.compose=function(){var n=arguments,t=n.length-1;return function(){for(var r=t,e=n[t].apply(this,arguments);r--;)e=n[r].call(this,e);return e}},h.after=function(n,t){return function(){return--n<1?t.apply(this,arguments):void 0}},h.before=function(n,t){var r;return function(){return--n>0?r=t.apply(this,arguments):t=null,r}},h.once=h.partial(h.before,2),h.keys=function(n){if(!h.isObject(n))return[];if(s)return s(n);var t=[];for(var r in n)h.has(n,r)&&t.push(r);return t},h.values=function(n){for(var t=h.keys(n),r=t.length,e=Array(r),u=0;r>u;u++)e[u]=n[t[u]];return e},h.pairs=function(n){for(var t=h.keys(n),r=t.length,e=Array(r),u=0;r>u;u++)e[u]=[t[u],n[t[u]]];return e},h.invert=function(n){for(var t={},r=h.keys(n),e=0,u=r.length;u>e;e++)t[n[r[e]]]=r[e];return t},h.functions=h.methods=function(n){var t=[];for(var r in n)h.isFunction(n[r])&&t.push(r);return t.sort()},h.extend=function(n){if(!h.isObject(n))return n;for(var t,r,e=1,u=arguments.length;u>e;e++){t=arguments[e];for(r in t)c.call(t,r)&&(n[r]=t[r])}return n},h.pick=function(n,t,r){var e,u={};if(null==n)return u;if(h.isFunction(t)){t=g(t,r);for(e in n){var i=n[e];t(i,e,n)&&(u[e]=i)}}else{var l=o.apply([],a.call(arguments,1));n=new Object(n);for(var c=0,f=l.length;f>c;c++)e=l[c],e in n&&(u[e]=n[e])}return u},h.omit=function(n,t,r){if(h.isFunction(t))t=h.negate(t);else{var e=h.map(o.apply([],a.call(arguments,1)),String);t=function(n,t){return!h.contains(e,t)}}return h.pick(n,t,r)},h.defaults=function(n){if(!h.isObject(n))return n;for(var t=1,r=arguments.length;r>t;t++){var e=arguments[t];for(var u in e)n[u]===void 0&&(n[u]=e[u])}return n},h.clone=function(n){return h.isObject(n)?h.isArray(n)?n.slice():h.extend({},n):n},h.tap=function(n,t){return t(n),n};var b=function(n,t,r,e){if(n===t)return 0!==n||1/n===1/t;if(null==n||null==t)return n===t;n instanceof h&&(n=n._wrapped),t instanceof h&&(t=t._wrapped);var u=l.call(n);if(u!==l.call(t))return!1;switch(u){case"[object RegExp]":case"[object String]":return""+n==""+t;case"[object Number]":return+n!==+n?+t!==+t:0===+n?1/+n===1/t:+n===+t;case"[object Date]":case"[object Boolean]":return+n===+t}if("object"!=typeof n||"object"!=typeof t)return!1;for(var i=r.length;i--;)if(r[i]===n)return e[i]===t;var a=n.constructor,o=t.constructor;if(a!==o&&"constructor"in n&&"constructor"in t&&!(h.isFunction(a)&&a instanceof a&&h.isFunction(o)&&o instanceof o))return!1;r.push(n),e.push(t);var c,f;if("[object Array]"===u){if(c=n.length,f=c===t.length)for(;c--&&(f=b(n[c],t[c],r,e)););}else{var s,p=h.keys(n);if(c=p.length,f=h.keys(t).length===c)for(;c--&&(s=p[c],f=h.has(t,s)&&b(n[s],t[s],r,e)););}return r.pop(),e.pop(),f};h.isEqual=function(n,t){return b(n,t,[],[])},h.isEmpty=function(n){if(null==n)return!0;if(h.isArray(n)||h.isString(n)||h.isArguments(n))return 0===n.length;for(var t in n)if(h.has(n,t))return!1;return!0},h.isElement=function(n){return!(!n||1!==n.nodeType)},h.isArray=f||function(n){return"[object Array]"===l.call(n)},h.isObject=function(n){var t=typeof n;return"function"===t||"object"===t&&!!n},h.each(["Arguments","Function","String","Number","Date","RegExp"],function(n){h["is"+n]=function(t){return l.call(t)==="[object "+n+"]"}}),h.isArguments(arguments)||(h.isArguments=function(n){return h.has(n,"callee")}),"function"!=typeof/./&&(h.isFunction=function(n){return"function"==typeof n||!1}),h.isFinite=function(n){return isFinite(n)&&!isNaN(parseFloat(n))},h.isNaN=function(n){return h.isNumber(n)&&n!==+n},h.isBoolean=function(n){return n===!0||n===!1||"[object Boolean]"===l.call(n)},h.isNull=function(n){return null===n},h.isUndefined=function(n){return n===void 0},h.has=function(n,t){return null!=n&&c.call(n,t)},h.noConflict=function(){return n._=t,this},h.identity=function(n){return n},h.constant=function(n){return function(){return n}},h.noop=function(){},h.property=function(n){return function(t){return t[n]}},h.matches=function(n){var t=h.pairs(n),r=t.length;return function(n){if(null==n)return!r;n=new Object(n);for(var e=0;r>e;e++){var u=t[e],i=u[0];if(u[1]!==n[i]||!(i in n))return!1}return!0}},h.times=function(n,t,r){var e=Array(Math.max(0,n));t=g(t,r,1);for(var u=0;n>u;u++)e[u]=t(u);return e},h.random=function(n,t){return null==t&&(t=n,n=0),n+Math.floor(Math.random()*(t-n+1))},h.now=Date.now||function(){return(new Date).getTime()};var _={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#x27;","`":"&#x60;"},w=h.invert(_),j=function(n){var t=function(t){return n[t]},r="(?:"+h.keys(n).join("|")+")",e=RegExp(r),u=RegExp(r,"g");return function(n){return n=null==n?"":""+n,e.test(n)?n.replace(u,t):n}};h.escape=j(_),h.unescape=j(w),h.result=function(n,t){if(null==n)return void 0;var r=n[t];return h.isFunction(r)?n[t]():r};var x=0;h.uniqueId=function(n){var t=++x+"";return n?n+t:t},h.templateSettings={evaluate:/<%([\s\S]+?)%>/g,interpolate:/<%=([\s\S]+?)%>/g,escape:/<%-([\s\S]+?)%>/g};var A=/(.)^/,k={"'":"'","\\":"\\","\r":"r","\n":"n","\u2028":"u2028","\u2029":"u2029"},O=/\\|'|\r|\n|\u2028|\u2029/g,F=function(n){return"\\"+k[n]};h.template=function(n,t,r){!t&&r&&(t=r),t=h.defaults({},t,h.templateSettings);var e=RegExp([(t.escape||A).source,(t.interpolate||A).source,(t.evaluate||A).source].join("|")+"|$","g"),u=0,i="__p+='";n.replace(e,function(t,r,e,a,o){return i+=n.slice(u,o).replace(O,F),u=o+t.length,r?i+="'+\n((__t=("+r+"))==null?'':_.escape(__t))+\n'":e?i+="'+\n((__t=("+e+"))==null?'':__t)+\n'":a&&(i+="';\n"+a+"\n__p+='"),t}),i+="';\n",t.variable||(i="with(obj||{}){\n"+i+"}\n"),i="var __t,__p='',__j=Array.prototype.join,"+"print=function(){__p+=__j.call(arguments,'');};\n"+i+"return __p;\n";try{var a=new Function(t.variable||"obj","_",i)}catch(o){throw o.source=i,o}var l=function(n){return a.call(this,n,h)},c=t.variable||"obj";return l.source="function("+c+"){\n"+i+"}",l},h.chain=function(n){var t=h(n);return t._chain=!0,t};var E=function(n){return this._chain?h(n).chain():n};h.mixin=function(n){h.each(h.functions(n),function(t){var r=h[t]=n[t];h.prototype[t]=function(){var n=[this._wrapped];return i.apply(n,arguments),E.call(this,r.apply(h,n))}})},h.mixin(h),h.each(["pop","push","reverse","shift","sort","splice","unshift"],function(n){var t=r[n];h.prototype[n]=function(){var r=this._wrapped;return t.apply(r,arguments),"shift"!==n&&"splice"!==n||0!==r.length||delete r[0],E.call(this,r)}}),h.each(["concat","join","slice"],function(n){var t=r[n];h.prototype[n]=function(){return E.call(this,t.apply(this._wrapped,arguments))}}),h.prototype.value=function(){return this._wrapped},"function"==typeof define&&define.amd&&define("underscore",[],function(){return h})}).call(this);</script>
     <script>(function() {
 this.d3c = _.extend(this.d3c || {}, {common: common});
 function common() {
@@ -7968,13 +7977,11 @@ function common() {
 
         filteredByPercentile: function(category, dataSource) {
             var percentile = 1.0;
-            var lastUpdate;
             var it = _.clone(dataSource);
             var notifyListeners = observable(it);
             dataSource.onUpdate(function(update) {
-                lastUpdate = update;
-                var filteredData = filter(lastUpdate.data, percentile);
-                notifyListeners(extendCopyOf(lastUpdate, {
+                var filteredData = filter(update.data, category, percentile);
+                notifyListeners(extendCopyOf(update, {
                     percentile: percentile,
                     data: filteredData
                 }));
@@ -7988,7 +7995,7 @@ function common() {
             };
             return it;
 
-            function filter(data, percentile) {
+            function filter(data, category, percentile) {
                 if (percentile === 1.0) return data;
 
                 var sortedData = _.clone(data).sort(function(a, b){ return a[category] - b[category]; });
@@ -8353,6 +8360,51 @@ function common() {
             return it;
         },
 
+        newMesh: function(root, uiConfig, yScale, xScale) {
+            if (uiConfig.meshCss === undefined) uiConfig.meshCss = "mesh";
+
+            // create subroot so that when mesh updated it still rendered before chart and stays behind
+            root = root.append("g");
+
+            var xMesh = d3.svg.axis().scale(yScale).orient("left").tickFormat("").tickSize(-uiConfig.width);
+            xMesh.update = function() {
+                root.selectAll(".x." + uiConfig.meshCss.replace(" ", ".")).remove();
+                root.append("g")
+                    .attr("class", "x " + uiConfig.meshCss)
+                    .attr("transform", function() { return ""; })
+                    .call(xMesh);
+                root.selectAll("g")
+                    .filter(function(d){ return d === 0; })
+                    .classed("hidden", true);
+            };
+            if (xScale !== undefined) {
+                var yMesh = d3.svg.axis().scale(xScale).orient("bottom").tickFormat("").tickSize(uiConfig.height);
+                yMesh.update = function() {
+                    root.selectAll(".y." + uiConfig.meshCss.replace(" ", ".")).remove();
+                    root.append("g")
+                        .attr("class", "y " + uiConfig.meshCss)
+                        .attr("transform", function() { return ""; })
+                        .call(yMesh);
+                    root.selectAll("g")
+                        .filter(function(d){ return d === 0; })
+                        .classed("hidden", true);
+                };
+                yMesh.onXScaleUpdate = function() {
+                    root.select(".y." + uiConfig.meshCss.replace(" ", ".")).call(yMesh);
+                };
+            }
+
+            return {
+                update: function() {
+                    xMesh.update();
+                    if (yMesh !== undefined) yMesh.update();
+                },
+                onXScaleUpdate: function() {
+                    if (yMesh !== undefined) yMesh.onXScaleUpdate();
+                }
+            };
+        },
+
         newEmptyChartLabel: function(root, svgRoot, uiConfig) {
             var label = root.append("div")
                 .html("Unfortunately, there is nothing to show.")
@@ -8669,9 +8721,9 @@ function barCharts() {
             var stackedDataSource = withStackedData(
                 autoGroupOnFirstUpdate(100,
                 clampedMin(0, withMinMax(rowTotal,
+                filteredByPercentile(rowTotal,
                 withRowTotal(rowTotal,
                 withMinMaxKey(
-                filteredByPercentile(rowTotal,
                 groupedBy(d3time([d3.time.day, d3.time.monday, d3.time.month]),
                 dataSource
             ))))))));
@@ -8687,8 +8739,8 @@ function barCharts() {
             var stackedDataSource = withStackedData(
                 autoGroupOnFirstUpdate(100,
                 clampedMin(0, withMinMax(rowTotal,
-                withRowTotal(rowTotal,
                 filteredByPercentile(rowTotal,
+                withRowTotal(rowTotal,
                 withMinMaxKey(
                 withDataSourceIndexAsGroup(groupFunctions,
                 dataSource
@@ -8822,7 +8874,7 @@ function barCharts() {
                 var legend = root.append("g").attr("class", "legend")
                     .attr("transform", "translate(" + position.x + "," + position.y + ")");
 
-                if (items.length === 0) {
+                if (items.length <= 1) {
                     legend.style("opacity", 0);
                 } else {
                     legend.style("opacity", 0.9)
@@ -9658,9 +9710,60 @@ function seriesCharts() {
                     .x(function(d) { return xScale.getAndApply(d); })
                     .y(function(d) { return yScale.getAndApply(d); });
             }
+        },
+
+        newCategoriesPanel: function(root, lineSeries, dataSource, labelText) {
+            var hiddenCategories = [];
+
+            var wordPanel = root.append("span");
+            wordPanel.append("label").html(labelText);
+            var wordsSpan = wordPanel.append("span");
+            wordPanel.append("button").text("Reset").on("click", function() {
+                dataSource.clearCategoryExclusions();
+            });
+
+            var it = {};
+            it.update = function(update) {
+                wordsSpan.selectAll(".word").remove();
+
+                var word = wordsSpan.selectAll(".word")
+                    .data(update.seriesData).enter()
+                    .append("span")
+                    .attr("class", "word");
+
+                word.on("mouseover", function(d) {
+                    lineSeries.setSelectedCategory(d.category);
+                });
+                word.on("mouseout", function() {
+                    lineSeries.setSelectedCategory(null);
+                });
+
+                word.append("input").attr("type", "checkbox")
+                    .attr("checked", function(it) { return _.contains(hiddenCategories, it.category) ? null : ""; })
+                    .on("click", function(it) {
+                        if (d3.event.altKey) {
+                            dataSource.excludeCategory(it.category);
+                        } else {
+                            var visible = this.checked;
+                            lineSeries.setCategoryVisible(it.category, visible);
+                            if (visible) {
+                                hiddenCategories = _.without(hiddenCategories, it.category);
+                            } else {
+                                hiddenCategories.push(it.category);
+                            }
+                        }
+                    });
+                word.append("label").html(function(d){ return "&nbsp;" + d.category; });
+            };
+            it.onLineSeriesUpdate = function() {
+                hiddenCategories.forEach(function(it) {
+                    lineSeries.setCategoryVisible(it, false);
+                });
+            };
+            return it;
         }
 
-    }.__init__();
+}.__init__();
 }
 }());</script>
     <style>
@@ -9675,129 +9778,156 @@ function seriesCharts() {
             float:none;
         }
     </style>
-    <title>D3.js code history</title>
+    <title>D3.js</title>
 </head>
 
 <body>
 <!-- HEADER -->
 <nav class="navbar navbar-inverse" role="navigation">
     <div class="navbar-header">
-        <span class="navbar-brand">D3.js code history</span>
+        <span class="navbar-brand">D3.js</span>
     </div>
 </nav>
 
 <!-- MAIN CONTENT -->
 <div class="container">
+    
+    
     <section class="row">
+        <h4 style="text-align: center">Code Churn Chart</h4>
         
-<h4>Change Size Chart</h4>
-
         <div id="change-size-chart" class="bar-chart"></div>
-        <br/><br/>
         
-
-<h4>Amount Of Committers Chart</h4>
-
-        <div id="amount-of-committers-chart" class="bar-chart"></div>
         <br/><br/>
-        
-
-<h4>Amount Of Commits By Committer</h4>
-
-        <div id="amount-of-commits-by-committer" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Amount Of TODOs Chart</h4>
-
-        <div id="amount-of-todos-chart" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Amount Of Files In Commit Chart</h4>
-
-        <div id="amount-of-files-in-commit-chart" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Amount Of Changing Files Chart</h4>
-
-        <div id="amount-of-changing-files-chart" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Change Size By File Type Chart</h4>
-
-        <div id="change-size-by-file-type-chart" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Files In The Same Commit Graph</h4>
-
-        <div id="files-in-the-same-commit" class="force-graph"></div>
-        <br/><br/>
-        
-
-<h4>Committers Changing Same Files Graph</h4>
-
-        <div id="author-to-file-graph" class="force-graph"></div>
-        <br/><br/>
-        
-
-<h4>Amount Of Commits Treemap</h4>
-
-        <div id="commit-treemap"></div>
-        <br/><br/>
-        
-
-<h4>Commit Time Punchcard</h4>
-
-        <div id="commit-time-punchcard"></div>
-        <br/><br/>
-        
-
-<h4>Time Between Commits Histogram</h4>
-
-        <div id="time-between-commits-histogram"></div>
-        <br/><br/>
-        
-
-<h4>Commit Messages Word Chart</h4>
-
-        <div id="commit-messages-word-chart" class="bar-chart"></div>
-        <br/><br/>
-        
-
-<h4>Commit Messages Word Cloud</h4>
-
-        <div id="commit-word-cloud"></div>
-        <br/><br/>
-        
-<!--tag-insert-point-->
     </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of Committers Chart</h4>
+        
+        <div id="amount-of-committers-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of Commits By Committer</h4>
+        
+        <div id="amount-of-commits-by-committer" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of TODOs Chart</h4>
+        
+        <div id="amount-of-todos-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of Files In Commit Chart</h4>
+        
+        <div id="amount-of-files-in-commit-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of Changing Files Chart</h4>
+        
+        <div id="amount-of-changing-files-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Change Size By File Type Chart</h4>
+        
+        <div id="change-size-by-file-type-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Files In The Same Commit Graph</h4>
+        
+        <div id="files-in-the-same-commit" class="force-graph"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Committers Changing Same Files Graph</h4>
+        
+        <div id="author-to-file-graph" class="force-graph"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Amount Of Commits Treemap</h4>
+        
+        <div id="commit-treemap"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Commit Time Punchcard</h4>
+        
+        <div id="commit-time-punchcard"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Time Between Commits Histogram</h4>
+        
+        <div id="time-between-commits-histogram"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Commit Messages Word Chart</h4>
+        
+        <div id="commit-messages-word-chart" class="bar-chart"></div>
+        
+        <br/><br/>
+    </section>
+
+    <section class="row">
+        <h4 style="text-align: center">Commit Messages Word Cloud</h4>
+        
+        <div id="commit-word-cloud"></div>
+        
+        <br/><br/>
+    </section>
+<!--tag-insert-point-->
+<!--tag-insert-point-->
 </div>
 
 <!-- FOOTER  -->
 <footer class="footer">
     <div class="container">
         <div class="row">
-            
-<p class="text-muted">
-    <span class="col-md-1"></span>
-    <span class="col-md-9">
-        Generated with <a href="http://codehistorymining.com">Code History Mining CLI</a>
-    </span>
-    <span class="col-md-2">
-        <a href="https://github.com/dkandalov/code-history-mining-cli/issues">Feedback</a>
-    </span>
-</p>
-
+            <p class="text-muted">
+                <span class="col-md-1"></span>
+                <span class="col-md-9">
+                    Generated with <a href="http://codehistorymining.com">Code History Mining CLI</a>
+                </span>
+                <span class="col-md-2">
+                    <a href="https://github.com/dkandalov/code-history-mining-cli/issues">Feedback</a>
+                </span>
+            </p>
         </div>
     </div>
 </footer>
 
 
-
+    
+    
 <script>
     (function() {
         var rawData = ["\
@@ -10498,2100 +10628,2103 @@ date,value\n\
 12/02/2015,2\n\
 13/02/2015,1\n\
 06/04/2015,1\n\
-","\
-date,value\n\
-27/09/2010,2\n\
-28/09/2010,57\n\
-29/09/2010,22\n\
-02/10/2010,27\n\
-04/10/2010,1\n\
-05/10/2010,24\n\
-06/10/2010,4\n\
-10/10/2010,1\n\
-14/10/2010,19\n\
-20/10/2010,16\n\
-21/10/2010,10\n\
-22/10/2010,11\n\
-23/10/2010,27\n\
-24/10/2010,115\n\
-25/10/2010,32\n\
-26/10/2010,10\n\
-27/10/2010,4\n\
-29/10/2010,4\n\
-30/10/2010,67\n\
-02/11/2010,27\n\
-03/11/2010,44\n\
-04/11/2010,4\n\
-05/11/2010,87\n\
-06/11/2010,2\n\
-07/11/2010,32\n\
-08/11/2010,20\n\
-09/11/2010,25\n\
-10/11/2010,15\n\
-11/11/2010,1\n\
-12/11/2010,5\n\
-16/11/2010,10\n\
-19/11/2010,5\n\
-23/11/2010,13\n\
-26/11/2010,1\n\
-27/11/2010,31\n\
-28/11/2010,23\n\
-29/11/2010,7\n\
-30/11/2010,7\n\
-06/12/2010,6\n\
-07/12/2010,9\n\
-09/12/2010,11\n\
-11/12/2010,4\n\
-14/12/2010,6\n\
-15/12/2010,6\n\
-16/12/2010,6\n\
-17/12/2010,4\n\
-03/01/2011,9\n\
-04/01/2011,10\n\
-05/01/2011,38\n\
-08/01/2011,12\n\
-10/01/2011,4\n\
-11/01/2011,6\n\
-12/01/2011,1\n\
-17/01/2011,22\n\
-20/01/2011,3\n\
-21/01/2011,9\n\
-25/01/2011,7\n\
-27/01/2011,2\n\
-28/01/2011,10\n\
-29/01/2011,4\n\
-31/01/2011,48\n\
-01/02/2011,3\n\
-02/02/2011,8\n\
-07/02/2011,1\n\
-08/02/2011,8\n\
-11/02/2011,14\n\
-12/02/2011,11\n\
-14/02/2011,8\n\
-16/02/2011,8\n\
-17/02/2011,10\n\
-18/02/2011,8\n\
-23/02/2011,18\n\
-24/02/2011,21\n\
-25/02/2011,1\n\
-26/02/2011,5\n\
-27/02/2011,31\n\
-28/02/2011,14\n\
-01/03/2011,7\n\
-02/03/2011,7\n\
-03/03/2011,17\n\
-04/03/2011,55\n\
-05/03/2011,15\n\
-08/03/2011,9\n\
-09/03/2011,8\n\
-10/03/2011,2\n\
-11/03/2011,12\n\
-12/03/2011,50\n\
-13/03/2011,46\n\
-15/03/2011,7\n\
-17/03/2011,4\n\
-25/03/2011,97\n\
-26/03/2011,4\n\
-29/03/2011,2\n\
-30/03/2011,11\n\
-01/04/2011,1\n\
-06/04/2011,18\n\
-07/04/2011,42\n\
-08/04/2011,48\n\
-09/04/2011,43\n\
-10/04/2011,49\n\
-11/04/2011,52\n\
-12/04/2011,11\n\
-13/04/2011,69\n\
-14/04/2011,85\n\
-15/04/2011,1\n\
-19/04/2011,19\n\
-20/04/2011,18\n\
-24/04/2011,2\n\
-25/04/2011,28\n\
-26/04/2011,13\n\
-27/04/2011,27\n\
-28/04/2011,19\n\
-29/04/2011,7\n\
-30/04/2011,9\n\
-01/05/2011,47\n\
-02/05/2011,33\n\
-03/05/2011,26\n\
-04/05/2011,3\n\
-05/05/2011,41\n\
-07/05/2011,22\n\
-08/05/2011,15\n\
-09/05/2011,7\n\
-10/05/2011,33\n\
-11/05/2011,24\n\
-12/05/2011,25\n\
-13/05/2011,6\n\
-14/05/2011,3\n\
-19/05/2011,9\n\
-20/05/2011,15\n\
-21/05/2011,28\n\
-22/05/2011,24\n\
-23/05/2011,9\n\
-26/05/2011,7\n\
-27/05/2011,35\n\
-28/05/2011,6\n\
-30/05/2011,40\n\
-02/06/2011,2\n\
-03/06/2011,3\n\
-06/06/2011,30\n\
-07/06/2011,43\n\
-11/06/2011,35\n\
-12/06/2011,32\n\
-13/06/2011,1\n\
-14/06/2011,14\n\
-15/06/2011,33\n\
-17/06/2011,24\n\
-18/06/2011,2\n\
-22/06/2011,34\n\
-23/06/2011,17\n\
-24/06/2011,25\n\
-25/06/2011,9\n\
-26/06/2011,1\n\
-28/06/2011,9\n\
-30/06/2011,6\n\
-02/07/2011,35\n\
-03/07/2011,56\n\
-04/07/2011,12\n\
-06/07/2011,41\n\
-07/07/2011,1\n\
-08/07/2011,31\n\
-09/07/2011,18\n\
-10/07/2011,9\n\
-12/07/2011,13\n\
-14/07/2011,3\n\
-15/07/2011,1\n\
-16/07/2011,6\n\
-17/07/2011,4\n\
-19/07/2011,171\n\
-20/07/2011,48\n\
-27/07/2011,3\n\
-01/08/2011,53\n\
-08/08/2011,3\n\
-09/08/2011,4\n\
-10/08/2011,1\n\
-11/08/2011,3\n\
-12/08/2011,12\n\
-13/08/2011,48\n\
-14/08/2011,84\n\
-15/08/2011,113\n\
-16/08/2011,59\n\
-17/08/2011,47\n\
-18/08/2011,28\n\
-19/08/2011,35\n\
-20/08/2011,2\n\
-21/08/2011,67\n\
-22/08/2011,95\n\
-23/08/2011,58\n\
-24/08/2011,19\n\
-25/08/2011,33\n\
-26/08/2011,15\n\
-27/08/2011,37\n\
-28/08/2011,12\n\
-29/08/2011,28\n\
-30/08/2011,6\n\
-31/08/2011,4\n\
-02/09/2011,8\n\
-03/09/2011,7\n\
-07/09/2011,3\n\
-08/09/2011,12\n\
-09/09/2011,7\n\
-10/09/2011,16\n\
-12/09/2011,57\n\
-14/09/2011,12\n\
-15/09/2011,3\n\
-18/09/2011,16\n\
-19/09/2011,3\n\
-20/09/2011,5\n\
-21/09/2011,17\n\
-22/09/2011,7\n\
-24/09/2011,2\n\
-26/09/2011,9\n\
-27/09/2011,54\n\
-28/09/2011,1\n\
-29/09/2011,12\n\
-30/09/2011,15\n\
-01/10/2011,1\n\
-03/10/2011,2\n\
-04/10/2011,1\n\
-05/10/2011,13\n\
-06/10/2011,20\n\
-07/10/2011,44\n\
-08/10/2011,11\n\
-11/10/2011,23\n\
-12/10/2011,25\n\
-13/10/2011,17\n\
-14/10/2011,10\n\
-17/10/2011,4\n\
-19/10/2011,1\n\
-20/10/2011,25\n\
-24/10/2011,7\n\
-25/10/2011,13\n\
-29/10/2011,31\n\
-31/10/2011,10\n\
-01/11/2011,21\n\
-02/11/2011,21\n\
-03/11/2011,9\n\
-04/11/2011,51\n\
-05/11/2011,8\n\
-09/11/2011,5\n\
-10/11/2011,19\n\
-14/11/2011,1\n\
-15/11/2011,3\n\
-16/11/2011,11\n\
-19/11/2011,1\n\
-22/11/2011,21\n\
-23/11/2011,126\n\
-30/11/2011,8\n\
-07/12/2011,4\n\
-09/12/2011,14\n\
-10/12/2011,2\n\
-11/12/2011,3\n\
-13/12/2011,15\n\
-14/12/2011,9\n\
-15/12/2011,10\n\
-20/12/2011,3\n\
-27/12/2011,5\n\
-28/12/2011,2\n\
-30/12/2011,9\n\
-31/12/2011,3\n\
-01/01/2012,5\n\
-02/01/2012,3\n\
-09/01/2012,26\n\
-13/01/2012,1\n\
-17/01/2012,4\n\
-18/01/2012,4\n\
-19/01/2012,9\n\
-22/01/2012,3\n\
-23/01/2012,12\n\
-24/01/2012,10\n\
-25/01/2012,4\n\
-26/01/2012,13\n\
-29/01/2012,15\n\
-30/01/2012,3\n\
-03/02/2012,6\n\
-07/02/2012,4\n\
-08/02/2012,2\n\
-09/02/2012,6\n\
-10/02/2012,2\n\
-12/02/2012,1\n\
-13/02/2012,7\n\
-14/02/2012,14\n\
-15/02/2012,31\n\
-16/02/2012,8\n\
-17/02/2012,6\n\
-18/02/2012,274\n\
-19/02/2012,121\n\
-20/02/2012,57\n\
-21/02/2012,95\n\
-22/02/2012,14\n\
-23/02/2012,29\n\
-25/02/2012,1\n\
-26/02/2012,6\n\
-27/02/2012,3\n\
-29/02/2012,27\n\
-02/03/2012,3\n\
-04/03/2012,8\n\
-06/03/2012,1\n\
-08/03/2012,6\n\
-09/03/2012,1\n\
-15/03/2012,3\n\
-16/03/2012,21\n\
-17/03/2012,18\n\
-18/03/2012,2\n\
-19/03/2012,13\n\
-20/03/2012,1\n\
-23/03/2012,5\n\
-28/03/2012,3\n\
-30/03/2012,9\n\
-03/04/2012,6\n\
-04/04/2012,20\n\
-06/04/2012,78\n\
-07/04/2012,22\n\
-15/04/2012,12\n\
-19/04/2012,5\n\
-25/04/2012,1\n\
-26/04/2012,12\n\
-01/05/2012,3\n\
-04/05/2012,6\n\
-09/05/2012,6\n\
-10/05/2012,1\n\
-11/05/2012,6\n\
-27/05/2012,2\n\
-29/05/2012,1\n\
-01/06/2012,4\n\
-14/06/2012,4\n\
-20/06/2012,1\n\
-22/06/2012,4\n\
-24/06/2012,17\n\
-25/06/2012,3\n\
-28/06/2012,22\n\
-29/06/2012,13\n\
-30/06/2012,5\n\
-02/07/2012,11\n\
-03/07/2012,9\n\
-04/07/2012,7\n\
-05/07/2012,3\n\
-10/07/2012,4\n\
-13/07/2012,2\n\
-17/07/2012,10\n\
-19/07/2012,3\n\
-21/07/2012,3\n\
-23/07/2012,8\n\
-24/07/2012,16\n\
-25/07/2012,29\n\
-26/07/2012,5\n\
-31/07/2012,40\n\
-01/08/2012,13\n\
-03/08/2012,6\n\
-04/08/2012,11\n\
-05/08/2012,41\n\
-06/08/2012,10\n\
-07/08/2012,13\n\
-09/08/2012,36\n\
-12/08/2012,16\n\
-13/08/2012,20\n\
-15/08/2012,18\n\
-16/08/2012,11\n\
-20/08/2012,4\n\
-21/08/2012,5\n\
-31/08/2012,5\n\
-04/09/2012,7\n\
-05/09/2012,6\n\
-06/09/2012,7\n\
-14/09/2012,9\n\
-17/09/2012,1\n\
-18/09/2012,14\n\
-19/09/2012,45\n\
-20/09/2012,18\n\
-23/09/2012,7\n\
-24/09/2012,67\n\
-25/09/2012,35\n\
-26/09/2012,76\n\
-27/09/2012,35\n\
-28/09/2012,23\n\
-29/09/2012,35\n\
-02/10/2012,64\n\
-03/10/2012,6\n\
-04/10/2012,6\n\
-05/10/2012,32\n\
-06/10/2012,218\n\
-07/10/2012,4\n\
-08/10/2012,2\n\
-11/10/2012,25\n\
-12/10/2012,166\n\
-15/10/2012,3\n\
-16/10/2012,7\n\
-17/10/2012,25\n\
-19/10/2012,3\n\
-25/10/2012,5\n\
-27/10/2012,4\n\
-29/10/2012,5\n\
-30/10/2012,8\n\
-31/10/2012,6\n\
-02/11/2012,9\n\
-03/11/2012,3\n\
-10/11/2012,13\n\
-11/11/2012,104\n\
-13/11/2012,14\n\
-14/11/2012,21\n\
-15/11/2012,10\n\
-16/11/2012,2\n\
-18/11/2012,35\n\
-19/11/2012,5\n\
-20/11/2012,5\n\
-21/11/2012,18\n\
-26/11/2012,3\n\
-30/11/2012,3\n\
-04/12/2012,6\n\
-05/12/2012,53\n\
-06/12/2012,20\n\
-07/12/2012,9\n\
-08/12/2012,2\n\
-09/12/2012,24\n\
-10/12/2012,29\n\
-11/12/2012,42\n\
-12/12/2012,125\n\
-13/12/2012,115\n\
-14/12/2012,13\n\
-15/12/2012,34\n\
-17/12/2012,8\n\
-18/12/2012,14\n\
-19/12/2012,147\n\
-20/12/2012,45\n\
-21/12/2012,7\n\
-25/12/2012,4\n\
-27/12/2012,7\n\
-28/12/2012,4\n\
-29/12/2012,4\n\
-01/01/2013,5\n\
-04/01/2013,1\n\
-05/01/2013,5\n\
-07/01/2013,1\n\
-08/01/2013,11\n\
-13/01/2013,4\n\
-15/01/2013,3\n\
-16/01/2013,4\n\
-20/01/2013,3\n\
-22/01/2013,3\n\
-23/01/2013,18\n\
-24/01/2013,13\n\
-31/01/2013,31\n\
-01/02/2013,20\n\
-05/02/2013,5\n\
-06/02/2013,20\n\
-07/02/2013,2\n\
-09/02/2013,5\n\
-10/02/2013,3\n\
-11/02/2013,11\n\
-14/02/2013,3\n\
-18/02/2013,6\n\
-19/02/2013,3\n\
-22/02/2013,16\n\
-23/02/2013,3\n\
-26/02/2013,8\n\
-01/03/2013,4\n\
-02/03/2013,178\n\
-03/03/2013,15\n\
-04/03/2013,10\n\
-05/03/2013,163\n\
-06/03/2013,22\n\
-07/03/2013,20\n\
-11/03/2013,51\n\
-12/03/2013,8\n\
-13/03/2013,551\n\
-14/03/2013,611\n\
-15/03/2013,17\n\
-16/03/2013,16\n\
-19/03/2013,57\n\
-20/03/2013,2\n\
-21/03/2013,28\n\
-22/03/2013,8\n\
-24/03/2013,3\n\
-25/03/2013,2\n\
-26/03/2013,6\n\
-27/03/2013,1\n\
-30/03/2013,3\n\
-31/03/2013,15\n\
-02/04/2013,12\n\
-03/04/2013,8\n\
-05/04/2013,4\n\
-07/04/2013,5\n\
-11/04/2013,4\n\
-15/04/2013,1\n\
-17/04/2013,5\n\
-18/04/2013,2\n\
-19/04/2013,19\n\
-20/04/2013,4\n\
-25/04/2013,7\n\
-30/04/2013,20\n\
-01/05/2013,7\n\
-04/05/2013,5\n\
-05/05/2013,7\n\
-07/05/2013,6\n\
-08/05/2013,2\n\
-13/05/2013,6\n\
-15/05/2013,4\n\
-16/05/2013,5\n\
-17/05/2013,1\n\
-19/05/2013,13\n\
-20/05/2013,51\n\
-21/05/2013,10\n\
-22/05/2013,9\n\
-23/05/2013,4\n\
-24/05/2013,5\n\
-25/05/2013,5\n\
-26/05/2013,3\n\
-28/05/2013,37\n\
-29/05/2013,34\n\
-30/05/2013,37\n\
-01/06/2013,7\n\
-02/06/2013,10\n\
-03/06/2013,4\n\
-04/06/2013,5\n\
-08/06/2013,17\n\
-11/06/2013,23\n\
-12/06/2013,14\n\
-13/06/2013,22\n\
-14/06/2013,7\n\
-18/06/2013,20\n\
-19/06/2013,6\n\
-20/06/2013,7\n\
-21/06/2013,9\n\
-24/06/2013,3\n\
-25/06/2013,7\n\
-26/06/2013,20\n\
-27/06/2013,14\n\
-28/06/2013,15\n\
-29/06/2013,15\n\
-30/06/2013,17\n\
-01/07/2013,2\n\
-02/07/2013,14\n\
-03/07/2013,16\n\
-04/07/2013,8\n\
-05/07/2013,40\n\
-06/07/2013,5\n\
-10/07/2013,10\n\
-11/07/2013,18\n\
-12/07/2013,11\n\
-16/07/2013,3\n\
-18/07/2013,10\n\
-19/07/2013,28\n\
-21/07/2013,4\n\
-22/07/2013,3\n\
-23/07/2013,6\n\
-24/07/2013,10\n\
-29/07/2013,5\n\
-31/07/2013,12\n\
-01/08/2013,10\n\
-02/08/2013,6\n\
-05/08/2013,7\n\
-10/08/2013,14\n\
-12/08/2013,3\n\
-13/08/2013,45\n\
-14/08/2013,9\n\
-15/08/2013,47\n\
-16/08/2013,15\n\
-19/08/2013,17\n\
-21/08/2013,24\n\
-22/08/2013,18\n\
-23/08/2013,20\n\
-27/08/2013,11\n\
-28/08/2013,5\n\
-30/08/2013,3\n\
-31/08/2013,17\n\
-05/09/2013,15\n\
-17/09/2013,4\n\
-19/09/2013,8\n\
-21/09/2013,4\n\
-24/09/2013,14\n\
-25/09/2013,39\n\
-26/09/2013,15\n\
-03/10/2013,18\n\
-05/10/2013,219\n\
-07/10/2013,9\n\
-09/10/2013,28\n\
-10/10/2013,23\n\
-11/10/2013,43\n\
-12/10/2013,8\n\
-15/10/2013,4\n\
-16/10/2013,9\n\
-17/10/2013,9\n\
-25/10/2013,3\n\
-04/11/2013,4\n\
-11/11/2013,2\n\
-15/11/2013,1\n\
-18/11/2013,4\n\
-19/11/2013,16\n\
-20/11/2013,2\n\
-23/11/2013,8\n\
-24/11/2013,5\n\
-25/11/2013,1\n\
-30/11/2013,7\n\
-03/12/2013,4\n\
-04/12/2013,10\n\
-05/12/2013,1\n\
-12/12/2013,5\n\
-13/12/2013,9\n\
-16/12/2013,5\n\
-08/01/2014,71\n\
-09/01/2014,31\n\
-10/01/2014,13\n\
-13/01/2014,9\n\
-14/01/2014,2\n\
-15/01/2014,2\n\
-21/01/2014,1\n\
-03/02/2014,1\n\
-11/02/2014,1\n\
-12/02/2014,1\n\
-18/02/2014,5\n\
-27/02/2014,4\n\
-09/03/2014,1\n\
-13/03/2014,1\n\
-17/03/2014,2\n\
-20/03/2014,4\n\
-21/03/2014,2\n\
-22/03/2014,1\n\
-24/03/2014,82\n\
-04/04/2014,4\n\
-06/04/2014,10\n\
-08/04/2014,4\n\
-10/04/2014,1\n\
-11/04/2014,10\n\
-22/04/2014,3\n\
-10/05/2014,4\n\
-13/05/2014,1\n\
-18/05/2014,22\n\
-19/05/2014,8\n\
-22/05/2014,2\n\
-23/05/2014,4\n\
-28/05/2014,1\n\
-30/05/2014,4\n\
-06/06/2014,3\n\
-08/06/2014,13\n\
-24/06/2014,1\n\
-25/06/2014,8\n\
-27/06/2014,3\n\
-30/06/2014,6\n\
-01/07/2014,1\n\
-07/07/2014,3\n\
-12/07/2014,1\n\
-17/07/2014,5\n\
-29/07/2014,3\n\
-05/08/2014,12\n\
-06/08/2014,14\n\
-12/08/2014,1\n\
-13/08/2014,1\n\
-15/08/2014,7\n\
-25/08/2014,1\n\
-28/08/2014,2\n\
-10/09/2014,3\n\
-27/09/2014,9\n\
-28/09/2014,1\n\
-30/09/2014,4\n\
-02/10/2014,5\n\
-03/10/2014,4\n\
-08/10/2014,10\n\
-09/10/2014,15\n\
-10/10/2014,38\n\
-13/10/2014,8\n\
-14/10/2014,17\n\
-15/10/2014,8\n\
-16/10/2014,8\n\
-17/10/2014,42\n\
-21/10/2014,3\n\
-22/10/2014,1\n\
-23/10/2014,28\n\
-24/10/2014,4\n\
-03/11/2014,3\n\
-13/11/2014,4\n\
-14/11/2014,14\n\
-15/11/2014,12\n\
-16/11/2014,12\n\
-17/11/2014,45\n\
-18/11/2014,6\n\
-19/11/2014,32\n\
-20/11/2014,15\n\
-01/12/2014,3\n\
-06/12/2014,10\n\
-08/12/2014,14\n\
-09/12/2014,3\n\
-30/12/2014,8\n\
-31/12/2014,4\n\
-13/01/2015,1\n\
-14/01/2015,1\n\
-15/01/2015,1\n\
-28/01/2015,3\n\
-31/01/2015,10\n\
-05/02/2015,1\n\
-06/02/2015,7\n\
-07/02/2015,36\n\
-08/02/2015,4\n\
-10/02/2015,14\n\
-11/02/2015,1\n\
-12/02/2015,2\n\
-13/02/2015,1\n\
-06/04/2015,1\n\
-","\
-date,value\n\
-27/09/2010,1\n\
-28/09/2010,26300\n\
-29/09/2010,478\n\
-02/10/2010,102\n\
-04/10/2010,131\n\
-05/10/2010,12315\n\
-06/10/2010,23\n\
-10/10/2010,10\n\
-14/10/2010,174\n\
-20/10/2010,500\n\
-21/10/2010,154\n\
-22/10/2010,148\n\
-23/10/2010,957\n\
-24/10/2010,4589\n\
-25/10/2010,687\n\
-26/10/2010,168\n\
-27/10/2010,49\n\
-29/10/2010,33\n\
-30/10/2010,1596\n\
-02/11/2010,4144\n\
-03/11/2010,1431\n\
-04/11/2010,14\n\
-05/11/2010,11298\n\
-06/11/2010,192\n\
-07/11/2010,1085\n\
-08/11/2010,795\n\
-09/11/2010,428\n\
-10/11/2010,212\n\
-11/11/2010,1\n\
-12/11/2010,18\n\
-16/11/2010,331\n\
-19/11/2010,12\n\
-23/11/2010,409\n\
-26/11/2010,53\n\
-27/11/2010,1020\n\
-28/11/2010,692\n\
-29/11/2010,62\n\
-30/11/2010,158\n\
-06/12/2010,43\n\
-07/12/2010,289\n\
-09/12/2010,120\n\
-11/12/2010,13\n\
-14/12/2010,81\n\
-15/12/2010,542\n\
-16/12/2010,418\n\
-17/12/2010,64\n\
-03/01/2011,159\n\
-04/01/2011,173\n\
-05/01/2011,938\n\
-08/01/2011,177\n\
-10/01/2011,11\n\
-11/01/2011,75\n\
-12/01/2011,2\n\
-17/01/2011,839\n\
-20/01/2011,247\n\
-21/01/2011,336\n\
-25/01/2011,123\n\
-27/01/2011,2\n\
-28/01/2011,181\n\
-29/01/2011,48\n\
-31/01/2011,793\n\
-01/02/2011,223\n\
-02/02/2011,17\n\
-07/02/2011,28\n\
-08/02/2011,147\n\
-11/02/2011,593\n\
-12/02/2011,340\n\
-14/02/2011,349\n\
-16/02/2011,144\n\
-17/02/2011,8611\n\
-18/02/2011,139\n\
-23/02/2011,289\n\
-24/02/2011,485\n\
-25/02/2011,8\n\
-26/02/2011,121\n\
-27/02/2011,1354\n\
-28/02/2011,770\n\
-01/03/2011,198\n\
-02/03/2011,231\n\
-03/03/2011,542\n\
-04/03/2011,37482\n\
-05/03/2011,213\n\
-08/03/2011,159\n\
-09/03/2011,105\n\
-10/03/2011,58\n\
-11/03/2011,283\n\
-12/03/2011,1066\n\
-13/03/2011,1530\n\
-15/03/2011,171\n\
-17/03/2011,6\n\
-25/03/2011,25949\n\
-26/03/2011,376\n\
-29/03/2011,10\n\
-30/03/2011,120\n\
-01/04/2011,10\n\
-06/04/2011,457\n\
-07/04/2011,672\n\
-08/04/2011,1216\n\
-09/04/2011,670\n\
-10/04/2011,1774\n\
-11/04/2011,1881\n\
-12/04/2011,33\n\
-13/04/2011,918\n\
-14/04/2011,2052\n\
-15/04/2011,4\n\
-19/04/2011,524\n\
-20/04/2011,167\n\
-24/04/2011,4\n\
-25/04/2011,993\n\
-26/04/2011,69\n\
-27/04/2011,603\n\
-28/04/2011,181\n\
-29/04/2011,170\n\
-30/04/2011,282\n\
-01/05/2011,662\n\
-02/05/2011,392\n\
-03/05/2011,131\n\
-04/05/2011,31\n\
-05/05/2011,256\n\
-07/05/2011,319\n\
-08/05/2011,302\n\
-09/05/2011,48\n\
-10/05/2011,586\n\
-11/05/2011,141\n\
-12/05/2011,387\n\
-13/05/2011,198\n\
-14/05/2011,34\n\
-19/05/2011,126\n\
-20/05/2011,335\n\
-21/05/2011,992\n\
-22/05/2011,306\n\
-23/05/2011,109\n\
-26/05/2011,75\n\
-27/05/2011,171\n\
-28/05/2011,156\n\
-30/05/2011,302\n\
-02/06/2011,134\n\
-03/06/2011,142\n\
-06/06/2011,204\n\
-07/06/2011,753\n\
-11/06/2011,775\n\
-12/06/2011,1554\n\
-13/06/2011,1\n\
-14/06/2011,26\n\
-15/06/2011,622\n\
-17/06/2011,612\n\
-18/06/2011,28\n\
-22/06/2011,656\n\
-23/06/2011,253\n\
-24/06/2011,430\n\
-25/06/2011,132\n\
-26/06/2011,1\n\
-28/06/2011,171\n\
-30/06/2011,58\n\
-02/07/2011,170\n\
-03/07/2011,1102\n\
-04/07/2011,12\n\
-06/07/2011,367\n\
-07/07/2011,7\n\
-08/07/2011,339\n\
-09/07/2011,218\n\
-10/07/2011,405\n\
-12/07/2011,33\n\
-14/07/2011,5\n\
-15/07/2011,1\n\
-16/07/2011,9\n\
-17/07/2011,5\n\
-19/07/2011,1207\n\
-20/07/2011,1920\n\
-27/07/2011,5\n\
-01/08/2011,1385\n\
-08/08/2011,3\n\
-09/08/2011,202\n\
-10/08/2011,3\n\
-11/08/2011,3\n\
-12/08/2011,254\n\
-13/08/2011,1944\n\
-14/08/2011,3817\n\
-15/08/2011,7097\n\
-16/08/2011,38404\n\
-17/08/2011,4336\n\
-18/08/2011,1435\n\
-19/08/2011,3101\n\
-20/08/2011,2\n\
-21/08/2011,2698\n\
-22/08/2011,1348\n\
-23/08/2011,1114\n\
-24/08/2011,132\n\
-25/08/2011,312\n\
-26/08/2011,107\n\
-27/08/2011,462\n\
-28/08/2011,227\n\
-29/08/2011,167\n\
-30/08/2011,156\n\
-31/08/2011,10\n\
-02/09/2011,65\n\
-03/09/2011,26\n\
-07/09/2011,5\n\
-08/09/2011,125\n\
-09/09/2011,799\n\
-10/09/2011,167\n\
-12/09/2011,820\n\
-14/09/2011,107\n\
-15/09/2011,37\n\
-18/09/2011,252\n\
-19/09/2011,4\n\
-20/09/2011,5\n\
-21/09/2011,181\n\
-22/09/2011,35\n\
-24/09/2011,4\n\
-26/09/2011,350\n\
-27/09/2011,1750\n\
-28/09/2011,70\n\
-29/09/2011,81\n\
-30/09/2011,98\n\
-01/10/2011,661\n\
-03/10/2011,3\n\
-04/10/2011,15\n\
-05/10/2011,48\n\
-06/10/2011,124\n\
-07/10/2011,217\n\
-08/10/2011,77\n\
-11/10/2011,405\n\
-12/10/2011,381\n\
-13/10/2011,390\n\
-14/10/2011,64\n\
-17/10/2011,109\n\
-19/10/2011,4\n\
-20/10/2011,251\n\
-24/10/2011,9\n\
-25/10/2011,37\n\
-29/10/2011,236\n\
-31/10/2011,538\n\
-01/11/2011,650\n\
-02/11/2011,926\n\
-03/11/2011,122\n\
-04/11/2011,358\n\
-05/11/2011,76\n\
-09/11/2011,11\n\
-10/11/2011,222\n\
-14/11/2011,14\n\
-15/11/2011,14\n\
-16/11/2011,112\n\
-19/11/2011,4\n\
-22/11/2011,167\n\
-23/11/2011,902\n\
-30/11/2011,17\n\
-07/12/2011,16\n\
-09/12/2011,127\n\
-10/12/2011,9\n\
-11/12/2011,9\n\
-13/12/2011,68\n\
-14/12/2011,29\n\
-15/12/2011,40\n\
-20/12/2011,5\n\
-27/12/2011,23\n\
-28/12/2011,4\n\
-30/12/2011,33\n\
-31/12/2011,3\n\
-01/01/2012,28\n\
-02/01/2012,25\n\
-09/01/2012,241\n\
-13/01/2012,4\n\
-17/01/2012,55\n\
-18/01/2012,22\n\
-19/01/2012,63\n\
-22/01/2012,9\n\
-23/01/2012,22\n\
-24/01/2012,5639\n\
-25/01/2012,41\n\
-26/01/2012,24\n\
-29/01/2012,189\n\
-30/01/2012,4\n\
-03/02/2012,686\n\
-07/02/2012,21\n\
-08/02/2012,2\n\
-09/02/2012,31\n\
-10/02/2012,13\n\
-12/02/2012,2\n\
-13/02/2012,12\n\
-14/02/2012,970\n\
-15/02/2012,350\n\
-16/02/2012,285\n\
-17/02/2012,80\n\
-18/02/2012,12384\n\
-19/02/2012,1962\n\
-20/02/2012,583\n\
-21/02/2012,822\n\
-22/02/2012,139\n\
-23/02/2012,1298\n\
-25/02/2012,1\n\
-26/02/2012,92\n\
-27/02/2012,14\n\
-29/02/2012,513\n\
-02/03/2012,4\n\
-04/03/2012,19\n\
-06/03/2012,1\n\
-08/03/2012,16\n\
-09/03/2012,1\n\
-15/03/2012,5\n\
-16/03/2012,48\n\
-17/03/2012,365\n\
-18/03/2012,4\n\
-19/03/2012,242\n\
-20/03/2012,1\n\
-23/03/2012,11\n\
-28/03/2012,5\n\
-30/03/2012,14\n\
-03/04/2012,13\n\
-04/04/2012,1089\n\
-06/04/2012,772\n\
-07/04/2012,206\n\
-15/04/2012,33\n\
-19/04/2012,10\n\
-25/04/2012,53\n\
-26/04/2012,25\n\
-01/05/2012,5\n\
-04/05/2012,78\n\
-09/05/2012,15\n\
-10/05/2012,2\n\
-11/05/2012,9\n\
-27/05/2012,13\n\
-29/05/2012,1\n\
-01/06/2012,7\n\
-14/06/2012,25\n\
-20/06/2012,3\n\
-22/06/2012,7\n\
-24/06/2012,206\n\
-25/06/2012,48\n\
-28/06/2012,703\n\
-29/06/2012,70\n\
-30/06/2012,73\n\
-02/07/2012,82\n\
-03/07/2012,157\n\
-04/07/2012,31\n\
-05/07/2012,8\n\
-10/07/2012,18\n\
-13/07/2012,2\n\
-17/07/2012,20\n\
-19/07/2012,2396\n\
-21/07/2012,11\n\
-23/07/2012,34\n\
-24/07/2012,496\n\
-25/07/2012,206\n\
-26/07/2012,9\n\
-31/07/2012,3870\n\
-01/08/2012,130\n\
-03/08/2012,38\n\
-04/08/2012,203\n\
-05/08/2012,604\n\
-06/08/2012,74\n\
-07/08/2012,225\n\
-09/08/2012,716\n\
-12/08/2012,123\n\
-13/08/2012,166\n\
-15/08/2012,476\n\
-16/08/2012,37\n\
-20/08/2012,6\n\
-21/08/2012,5\n\
-31/08/2012,78\n\
-04/09/2012,24\n\
-05/09/2012,11\n\
-06/09/2012,24\n\
-14/09/2012,24\n\
-17/09/2012,6\n\
-18/09/2012,171\n\
-19/09/2012,337\n\
-20/09/2012,260\n\
-23/09/2012,48\n\
-24/09/2012,1545\n\
-25/09/2012,719\n\
-26/09/2012,515\n\
-27/09/2012,240\n\
-28/09/2012,364\n\
-29/09/2012,1113\n\
-02/10/2012,1554\n\
-03/10/2012,85\n\
-04/10/2012,49\n\
-05/10/2012,270\n\
-06/10/2012,1884\n\
-07/10/2012,96\n\
-08/10/2012,95\n\
-11/10/2012,381\n\
-12/10/2012,3503\n\
-15/10/2012,23\n\
-16/10/2012,17\n\
-17/10/2012,402\n\
-19/10/2012,60\n\
-25/10/2012,70\n\
-27/10/2012,13\n\
-29/10/2012,27\n\
-30/10/2012,130\n\
-31/10/2012,17\n\
-02/11/2012,26\n\
-03/11/2012,21\n\
-10/11/2012,81\n\
-11/11/2012,9776\n\
-13/11/2012,52\n\
-14/11/2012,127\n\
-15/11/2012,44\n\
-16/11/2012,9\n\
-18/11/2012,803\n\
-19/11/2012,175\n\
-20/11/2012,122\n\
-21/11/2012,145\n\
-26/11/2012,6\n\
-30/11/2012,16\n\
-04/12/2012,47\n\
-05/12/2012,801\n\
-06/12/2012,360\n\
-07/12/2012,48\n\
-08/12/2012,5\n\
-09/12/2012,427\n\
-10/12/2012,592\n\
-11/12/2012,2398\n\
-12/12/2012,2451\n\
-13/12/2012,1748\n\
-14/12/2012,120\n\
-15/12/2012,1253\n\
-17/12/2012,69\n\
-18/12/2012,61\n\
-19/12/2012,27103\n\
-20/12/2012,3043\n\
-21/12/2012,3192\n\
-25/12/2012,17\n\
-27/12/2012,44\n\
-28/12/2012,40\n\
-29/12/2012,8\n\
-01/01/2013,35\n\
-04/01/2013,1\n\
-05/01/2013,26\n\
-07/01/2013,2\n\
-08/01/2013,79\n\
-13/01/2013,37\n\
-15/01/2013,69\n\
-16/01/2013,127\n\
-20/01/2013,4\n\
-22/01/2013,12\n\
-23/01/2013,130\n\
-24/01/2013,1496\n\
-31/01/2013,157\n\
-01/02/2013,95\n\
-05/02/2013,88\n\
-06/02/2013,236\n\
-07/02/2013,2\n\
-09/02/2013,210\n\
-10/02/2013,16\n\
-11/02/2013,172\n\
-14/02/2013,37\n\
-18/02/2013,45\n\
-19/02/2013,44\n\
-22/02/2013,122\n\
-23/02/2013,18\n\
-26/02/2013,119\n\
-01/03/2013,62\n\
-02/03/2013,495\n\
-03/03/2013,79\n\
-04/03/2013,334\n\
-05/03/2013,280\n\
-06/03/2013,655\n\
-07/03/2013,575\n\
-11/03/2013,1705\n\
-12/03/2013,51\n\
-13/03/2013,5554\n\
-14/03/2013,15059\n\
-15/03/2013,287\n\
-16/03/2013,52\n\
-19/03/2013,1708\n\
-20/03/2013,2\n\
-21/03/2013,64\n\
-22/03/2013,101\n\
-24/03/2013,5\n\
-25/03/2013,24\n\
-26/03/2013,24\n\
-27/03/2013,6\n\
-30/03/2013,29\n\
-31/03/2013,199\n\
-02/04/2013,83\n\
-03/04/2013,26\n\
-05/04/2013,12\n\
-07/04/2013,30\n\
-11/04/2013,4\n\
-15/04/2013,10\n\
-17/04/2013,27\n\
-18/04/2013,13\n\
-19/04/2013,224\n\
-20/04/2013,37\n\
-25/04/2013,80\n\
-30/04/2013,154\n\
-01/05/2013,19\n\
-04/05/2013,51\n\
-05/05/2013,363\n\
-07/05/2013,23\n\
-08/05/2013,6\n\
-13/05/2013,107\n\
-15/05/2013,42\n\
-16/05/2013,5\n\
-17/05/2013,1\n\
-19/05/2013,166\n\
-20/05/2013,276\n\
-21/05/2013,43\n\
-22/05/2013,25\n\
-23/05/2013,10\n\
-24/05/2013,42\n\
-25/05/2013,19\n\
-26/05/2013,26\n\
-28/05/2013,308\n\
-29/05/2013,986\n\
-30/05/2013,314\n\
-01/06/2013,15\n\
-02/06/2013,318\n\
-03/06/2013,12\n\
-04/06/2013,168\n\
-08/06/2013,799\n\
-11/06/2013,216\n\
-12/06/2013,127\n\
-13/06/2013,163\n\
-14/06/2013,11\n\
-18/06/2013,71\n\
-19/06/2013,18\n\
-20/06/2013,93\n\
-21/06/2013,15\n\
-24/06/2013,67\n\
-25/06/2013,58\n\
-26/06/2013,174\n\
-27/06/2013,150\n\
-28/06/2013,353\n\
-29/06/2013,52\n\
-30/06/2013,125\n\
-01/07/2013,10\n\
-02/07/2013,103\n\
-03/07/2013,78\n\
-04/07/2013,29\n\
-05/07/2013,376\n\
-06/07/2013,37\n\
-10/07/2013,191\n\
-11/07/2013,190\n\
-12/07/2013,33\n\
-16/07/2013,3\n\
-18/07/2013,95\n\
-19/07/2013,506\n\
-21/07/2013,16\n\
-22/07/2013,3\n\
-23/07/2013,47\n\
-24/07/2013,27\n\
-29/07/2013,13\n\
-31/07/2013,69\n\
-01/08/2013,11\n\
-02/08/2013,49\n\
-05/08/2013,43\n\
-10/08/2013,369\n\
-12/08/2013,3\n\
-13/08/2013,431\n\
-14/08/2013,55\n\
-15/08/2013,567\n\
-16/08/2013,361\n\
-19/08/2013,300\n\
-21/08/2013,338\n\
-22/08/2013,157\n\
-23/08/2013,54\n\
-27/08/2013,65\n\
-28/08/2013,38\n\
-30/08/2013,30\n\
-31/08/2013,46\n\
-05/09/2013,45\n\
-17/09/2013,49\n\
-19/09/2013,16\n\
-21/09/2013,86\n\
-24/09/2013,137\n\
-25/09/2013,147\n\
-26/09/2013,98\n\
-03/10/2013,356\n\
-05/10/2013,8592\n\
-07/10/2013,34\n\
-09/10/2013,115\n\
-10/10/2013,165\n\
-11/10/2013,4032\n\
-12/10/2013,20\n\
-15/10/2013,95\n\
-16/10/2013,218\n\
-17/10/2013,67\n\
-25/10/2013,14\n\
-04/11/2013,6\n\
-11/11/2013,2\n\
-15/11/2013,5\n\
-18/11/2013,198\n\
-19/11/2013,145\n\
-20/11/2013,3\n\
-23/11/2013,264\n\
-24/11/2013,38\n\
-25/11/2013,5\n\
-30/11/2013,11\n\
-03/12/2013,60\n\
-04/12/2013,101\n\
-05/12/2013,3\n\
-12/12/2013,51\n\
-13/12/2013,94\n\
-16/12/2013,20\n\
-08/01/2014,3078\n\
-09/01/2014,294\n\
-10/01/2014,31\n\
-13/01/2014,44\n\
-14/01/2014,22\n\
-15/01/2014,2\n\
-21/01/2014,1\n\
-03/02/2014,1\n\
-11/02/2014,4\n\
-12/02/2014,5\n\
-18/02/2014,31\n\
-27/02/2014,14\n\
-09/03/2014,1\n\
-13/03/2014,16\n\
-17/03/2014,136\n\
-20/03/2014,19\n\
-21/03/2014,136\n\
-22/03/2014,12\n\
-24/03/2014,513\n\
-04/04/2014,25\n\
-06/04/2014,205\n\
-08/04/2014,11\n\
-10/04/2014,0\n\
-11/04/2014,25\n\
-22/04/2014,9\n\
-10/05/2014,45\n\
-13/05/2014,1\n\
-18/05/2014,1217\n\
-19/05/2014,164\n\
-22/05/2014,7\n\
-23/05/2014,5\n\
-28/05/2014,1\n\
-30/05/2014,107\n\
-06/06/2014,79\n\
-08/06/2014,66\n\
-24/06/2014,4\n\
-25/06/2014,144\n\
-27/06/2014,39\n\
-30/06/2014,14\n\
-01/07/2014,16\n\
-07/07/2014,24\n\
-12/07/2014,1\n\
-17/07/2014,12\n\
-29/07/2014,18\n\
-05/08/2014,96\n\
-06/08/2014,80\n\
-12/08/2014,16\n\
-13/08/2014,16\n\
-15/08/2014,31\n\
-25/08/2014,1\n\
-28/08/2014,32\n\
-10/09/2014,8\n\
-27/09/2014,51\n\
-28/09/2014,0\n\
-30/09/2014,7\n\
-02/10/2014,11\n\
-03/10/2014,8\n\
-08/10/2014,14\n\
-09/10/2014,77\n\
-10/10/2014,230\n\
-13/10/2014,259\n\
-14/10/2014,198\n\
-15/10/2014,272\n\
-16/10/2014,27\n\
-17/10/2014,496\n\
-21/10/2014,24\n\
-22/10/2014,1\n\
-23/10/2014,141\n\
-24/10/2014,21\n\
-03/11/2014,3\n\
-13/11/2014,6\n\
-14/11/2014,27\n\
-15/11/2014,151\n\
-16/11/2014,192\n\
-17/11/2014,355\n\
-18/11/2014,182\n\
-19/11/2014,436\n\
-20/11/2014,33\n\
-01/12/2014,27\n\
-06/12/2014,34\n\
-08/12/2014,172\n\
-09/12/2014,8\n\
-30/12/2014,57\n\
-31/12/2014,12\n\
-13/01/2015,3\n\
-14/01/2015,16\n\
-15/01/2015,4\n\
-28/01/2015,7\n\
-31/01/2015,85\n\
-05/02/2015,1\n\
-06/02/2015,23\n\
-07/02/2015,226\n\
-08/02/2015,8\n\
-10/02/2015,96\n\
-11/02/2015,1\n\
-12/02/2015,2\n\
-13/02/2015,1\n\
-06/04/2015,1\n\
-","\
-date,value\n\
-27/09/2010,3\n\
-28/09/2010,4169623\n\
-29/09/2010,30367\n\
-02/10/2010,5033\n\
-04/10/2010,2778\n\
-05/10/2010,666872\n\
-06/10/2010,7234\n\
-10/10/2010,729\n\
-14/10/2010,33595\n\
-20/10/2010,44208\n\
-21/10/2010,31153\n\
-22/10/2010,32965\n\
-23/10/2010,32890\n\
-24/10/2010,282118\n\
-25/10/2010,81995\n\
-26/10/2010,40597\n\
-27/10/2010,20441\n\
-29/10/2010,12744\n\
-30/10/2010,74767\n\
-02/11/2010,1104173\n\
-03/11/2010,183956\n\
-04/11/2010,1533\n\
-05/11/2010,591379\n\
-06/11/2010,5100\n\
-07/11/2010,61804\n\
-08/11/2010,30218\n\
-09/11/2010,211284\n\
-10/11/2010,41759\n\
-11/11/2010,54\n\
-12/11/2010,3810\n\
-16/11/2010,32225\n\
-19/11/2010,1683\n\
-23/11/2010,21972\n\
-26/11/2010,1176\n\
-27/11/2010,112065\n\
-28/11/2010,51247\n\
-29/11/2010,9476\n\
-30/11/2010,21634\n\
-06/12/2010,7562\n\
-07/12/2010,17624\n\
-09/12/2010,15047\n\
-11/12/2010,3559\n\
-14/12/2010,23276\n\
-15/12/2010,35626\n\
-16/12/2010,34258\n\
-17/12/2010,21092\n\
-03/01/2011,19715\n\
-04/01/2011,8445\n\
-05/01/2011,67459\n\
-08/01/2011,31352\n\
-10/01/2011,3751\n\
-11/01/2011,6195\n\
-12/01/2011,120\n\
-17/01/2011,36779\n\
-20/01/2011,323932\n\
-21/01/2011,16364\n\
-25/01/2011,28751\n\
-27/01/2011,180\n\
-28/01/2011,34335\n\
-29/01/2011,21669\n\
-31/01/2011,51748\n\
-01/02/2011,5576\n\
-02/02/2011,3084\n\
-07/02/2011,824\n\
-08/02/2011,33168\n\
-11/02/2011,44704\n\
-12/02/2011,13324\n\
-14/02/2011,39465\n\
-16/02/2011,52393\n\
-17/02/2011,267721\n\
-18/02/2011,36239\n\
-23/02/2011,112401\n\
-24/02/2011,52564\n\
-25/02/2011,503\n\
-26/02/2011,2366\n\
-27/02/2011,54156\n\
-28/02/2011,17849\n\
-01/03/2011,24865\n\
-02/03/2011,10312\n\
-03/03/2011,17940\n\
-04/03/2011,1315637\n\
-05/03/2011,15663\n\
-08/03/2011,27638\n\
-09/03/2011,29699\n\
-10/03/2011,1964\n\
-11/03/2011,30077\n\
-12/03/2011,88261\n\
-13/03/2011,91253\n\
-15/03/2011,12178\n\
-17/03/2011,1239\n\
-25/03/2011,4216110\n\
-26/03/2011,13196\n\
-29/03/2011,368\n\
-30/03/2011,29563\n\
-01/04/2011,297\n\
-06/04/2011,53736\n\
-07/04/2011,85999\n\
-08/04/2011,102204\n\
-09/04/2011,132402\n\
-10/04/2011,167258\n\
-11/04/2011,166218\n\
-12/04/2011,36872\n\
-13/04/2011,128814\n\
-14/04/2011,255201\n\
-15/04/2011,98\n\
-19/04/2011,75510\n\
-20/04/2011,96401\n\
-24/04/2011,112\n\
-25/04/2011,124008\n\
-26/04/2011,81305\n\
-27/04/2011,138464\n\
-28/04/2011,142689\n\
-29/04/2011,4678\n\
-30/04/2011,8223\n\
-01/05/2011,257193\n\
-02/05/2011,61815\n\
-03/05/2011,251854\n\
-04/05/2011,15734\n\
-05/05/2011,337083\n\
-07/05/2011,118681\n\
-08/05/2011,83597\n\
-09/05/2011,54112\n\
-10/05/2011,32822\n\
-11/05/2011,86099\n\
-12/05/2011,188006\n\
-13/05/2011,8512\n\
-14/05/2011,872\n\
-19/05/2011,75297\n\
-20/05/2011,88608\n\
-21/05/2011,115218\n\
-22/05/2011,95407\n\
-23/05/2011,58549\n\
-26/05/2011,15252\n\
-27/05/2011,183936\n\
-28/05/2011,9553\n\
-30/05/2011,171452\n\
-02/06/2011,4368\n\
-03/06/2011,4069\n\
-06/06/2011,50970\n\
-07/06/2011,233965\n\
-11/06/2011,246209\n\
-12/06/2011,86431\n\
-13/06/2011,5\n\
-14/06/2011,32924\n\
-15/06/2011,65724\n\
-17/06/2011,143488\n\
-18/06/2011,1199\n\
-22/06/2011,175253\n\
-23/06/2011,48820\n\
-24/06/2011,179131\n\
-25/06/2011,53030\n\
-26/06/2011,101\n\
-28/06/2011,46789\n\
-30/06/2011,43506\n\
-02/07/2011,39364\n\
-03/07/2011,47780\n\
-04/07/2011,476\n\
-06/07/2011,24154\n\
-07/07/2011,165\n\
-08/07/2011,95676\n\
-09/07/2011,84221\n\
-10/07/2011,59811\n\
-12/07/2011,70158\n\
-14/07/2011,17345\n\
-15/07/2011,59\n\
-16/07/2011,56179\n\
-17/07/2011,60091\n\
-19/07/2011,140744\n\
-20/07/2011,116366\n\
-27/07/2011,17953\n\
-01/08/2011,152104\n\
-08/08/2011,17872\n\
-09/08/2011,5582\n\
-10/08/2011,98\n\
-11/08/2011,17872\n\
-12/08/2011,60256\n\
-13/08/2011,67028\n\
-14/08/2011,128633\n\
-15/08/2011,308646\n\
-16/08/2011,1485843\n\
-17/08/2011,279240\n\
-18/08/2011,141164\n\
-19/08/2011,185519\n\
-20/08/2011,102\n\
-21/08/2011,254476\n\
-22/08/2011,199166\n\
-23/08/2011,413106\n\
-24/08/2011,105853\n\
-25/08/2011,236423\n\
-26/08/2011,70975\n\
-27/08/2011,118890\n\
-28/08/2011,81147\n\
-29/08/2011,168759\n\
-30/08/2011,55110\n\
-31/08/2011,50960\n\
-02/09/2011,69276\n\
-03/09/2011,36265\n\
-07/09/2011,17795\n\
-08/09/2011,38761\n\
-09/09/2011,23531\n\
-10/09/2011,29623\n\
-12/09/2011,114040\n\
-14/09/2011,52851\n\
-15/09/2011,907\n\
-18/09/2011,50358\n\
-19/09/2011,50313\n\
-20/09/2011,17913\n\
-21/09/2011,139797\n\
-22/09/2011,69360\n\
-24/09/2011,208\n\
-26/09/2011,25415\n\
-27/09/2011,351919\n\
-28/09/2011,1629\n\
-29/09/2011,122106\n\
-30/09/2011,72113\n\
-01/10/2011,18811\n\
-03/10/2011,75\n\
-04/10/2011,231\n\
-05/10/2011,87890\n\
-06/10/2011,175773\n\
-07/10/2011,248150\n\
-08/10/2011,10788\n\
-11/10/2011,189701\n\
-12/10/2011,120035\n\
-13/10/2011,125294\n\
-14/10/2011,54412\n\
-17/10/2011,89262\n\
-19/10/2011,103\n\
-20/10/2011,321493\n\
-24/10/2011,50486\n\
-25/10/2011,176301\n\
-29/10/2011,130307\n\
-31/10/2011,65437\n\
-01/11/2011,239268\n\
-02/11/2011,222580\n\
-03/11/2011,93408\n\
-04/11/2011,670498\n\
-05/11/2011,59309\n\
-09/11/2011,314\n\
-10/11/2011,221367\n\
-14/11/2011,526\n\
-15/11/2011,57963\n\
-16/11/2011,174942\n\
-19/11/2011,30\n\
-22/11/2011,148679\n\
-23/11/2011,313581\n\
-30/11/2011,91792\n\
-07/12/2011,23890\n\
-09/12/2011,99708\n\
-10/12/2011,182\n\
-11/12/2011,25712\n\
-13/12/2011,71538\n\
-14/12/2011,86208\n\
-15/12/2011,52659\n\
-20/12/2011,386\n\
-27/12/2011,908\n\
-28/12/2011,92\n\
-30/12/2011,117634\n\
-31/12/2011,25789\n\
-01/01/2012,59547\n\
-02/01/2012,27642\n\
-09/01/2012,151419\n\
-13/01/2012,258\n\
-17/01/2012,19539\n\
-18/01/2012,59662\n\
-19/01/2012,2763\n\
-22/01/2012,26426\n\
-23/01/2012,55142\n\
-24/01/2012,461617\n\
-25/01/2012,19262\n\
-26/01/2012,203494\n\
-29/01/2012,37671\n\
-30/01/2012,59021\n\
-03/02/2012,80055\n\
-07/02/2012,60429\n\
-08/02/2012,5\n\
-09/02/2012,945\n\
-10/02/2012,304\n\
-12/02/2012,128\n\
-13/02/2012,33\n\
-14/02/2012,205823\n\
-15/02/2012,287271\n\
-16/02/2012,24785\n\
-17/02/2012,122766\n\
-18/02/2012,571211\n\
-19/02/2012,786802\n\
-20/02/2012,1118411\n\
-21/02/2012,1755314\n\
-22/02/2012,305171\n\
-23/02/2012,611896\n\
-25/02/2012,22\n\
-26/02/2012,114664\n\
-27/02/2012,111572\n\
-29/02/2012,174446\n\
-02/03/2012,45870\n\
-04/03/2012,223595\n\
-06/03/2012,39\n\
-08/03/2012,79322\n\
-09/03/2012,18\n\
-15/03/2012,78742\n\
-16/03/2012,429424\n\
-17/03/2012,344877\n\
-18/03/2012,185\n\
-19/03/2012,118483\n\
-20/03/2012,22\n\
-23/03/2012,78988\n\
-28/03/2012,32834\n\
-30/03/2012,79310\n\
-03/04/2012,190391\n\
-04/04/2012,23293\n\
-06/04/2012,28178\n\
-07/04/2012,7480\n\
-15/04/2012,112739\n\
-19/04/2012,79172\n\
-25/04/2012,2297\n\
-26/04/2012,111929\n\
-01/05/2012,438\n\
-04/05/2012,226113\n\
-09/05/2012,111768\n\
-10/05/2012,68\n\
-11/05/2012,144286\n\
-27/05/2012,258\n\
-29/05/2012,66\n\
-01/06/2012,111616\n\
-14/06/2012,112514\n\
-20/06/2012,104\n\
-22/06/2012,79095\n\
-24/06/2012,341238\n\
-25/06/2012,49632\n\
-28/06/2012,290288\n\
-29/06/2012,193699\n\
-30/06/2012,114262\n\
-02/07/2012,140583\n\
-03/07/2012,163532\n\
-04/07/2012,223655\n\
-05/07/2012,46188\n\
-10/07/2012,112319\n\
-13/07/2012,74\n\
-17/07/2012,14254\n\
-19/07/2012,58933\n\
-21/07/2012,79082\n\
-23/07/2012,125543\n\
-24/07/2012,465301\n\
-25/07/2012,643428\n\
-26/07/2012,111841\n\
-31/07/2012,1647290\n\
-01/08/2012,197246\n\
-03/08/2012,34635\n\
-04/08/2012,232601\n\
-05/08/2012,786201\n\
-06/08/2012,196337\n\
-07/08/2012,202027\n\
-09/08/2012,557956\n\
-12/08/2012,204404\n\
-13/08/2012,553559\n\
-15/08/2012,414552\n\
-16/08/2012,283704\n\
-20/08/2012,435\n\
-21/08/2012,311\n\
-31/08/2012,119094\n\
-04/09/2012,51117\n\
-05/09/2012,33202\n\
-06/09/2012,116831\n\
-14/09/2012,33228\n\
-17/09/2012,82\n\
-18/09/2012,121355\n\
-19/09/2012,965080\n\
-20/09/2012,412155\n\
-23/09/2012,36979\n\
-24/09/2012,759822\n\
-25/09/2012,860623\n\
-26/09/2012,2228076\n\
-27/09/2012,645249\n\
-28/09/2012,516478\n\
-29/09/2012,1152456\n\
-02/10/2012,1653793\n\
-03/10/2012,212319\n\
-04/10/2012,206240\n\
-05/10/2012,178528\n\
-06/10/2012,1144242\n\
-07/10/2012,29543\n\
-08/10/2012,2832\n\
-11/10/2012,265659\n\
-12/10/2012,120564\n\
-15/10/2012,58687\n\
-16/10/2012,157244\n\
-17/10/2012,513113\n\
-19/10/2012,100431\n\
-25/10/2012,126049\n\
-27/10/2012,26851\n\
-29/10/2012,93338\n\
-30/10/2012,222311\n\
-31/10/2012,93551\n\
-02/11/2012,218955\n\
-03/11/2012,125767\n\
-10/11/2012,214888\n\
-11/11/2012,507669\n\
-13/11/2012,410287\n\
-14/11/2012,256483\n\
-15/11/2012,346198\n\
-16/11/2012,501\n\
-18/11/2012,869619\n\
-19/11/2012,141955\n\
-20/11/2012,128380\n\
-21/11/2012,352877\n\
-26/11/2012,59782\n\
-30/11/2012,124676\n\
-04/12/2012,29642\n\
-05/12/2012,833055\n\
-06/12/2012,311443\n\
-07/12/2012,217678\n\
-08/12/2012,310\n\
-09/12/2012,363724\n\
-10/12/2012,529471\n\
-11/12/2012,755049\n\
-12/12/2012,2045593\n\
-13/12/2012,2181322\n\
-14/12/2012,195958\n\
-15/12/2012,522212\n\
-17/12/2012,256245\n\
-18/12/2012,131280\n\
-19/12/2012,2594776\n\
-20/12/2012,84515\n\
-21/12/2012,981896\n\
-25/12/2012,31394\n\
-27/12/2012,96479\n\
-28/12/2012,31930\n\
-29/12/2012,31106\n\
-01/01/2013,64162\n\
-04/01/2013,30\n\
-05/01/2013,32832\n\
-07/01/2013,204\n\
-08/01/2013,194237\n\
-13/01/2013,32370\n\
-15/01/2013,129282\n\
-16/01/2013,41549\n\
-20/01/2013,32268\n\
-22/01/2013,127839\n\
-23/01/2013,199412\n\
-24/01/2013,82590\n\
-31/01/2013,262093\n\
-01/02/2013,352598\n\
-05/02/2013,129463\n\
-06/02/2013,449956\n\
-07/02/2013,132\n\
-09/02/2013,132516\n\
-10/02/2013,127553\n\
-11/02/2013,74803\n\
-14/02/2013,25375\n\
-18/02/2013,128050\n\
-19/02/2013,128104\n\
-22/02/2013,108613\n\
-23/02/2013,35389\n\
-26/02/2013,165626\n\
-01/03/2013,30965\n\
-02/03/2013,333792\n\
-03/03/2013,355167\n\
-04/03/2013,291654\n\
-05/03/2013,169590\n\
-06/03/2013,482237\n\
-07/03/2013,516914\n\
-11/03/2013,599285\n\
-12/03/2013,137122\n\
-13/03/2013,1629683\n\
-14/03/2013,1460253\n\
-15/03/2013,377757\n\
-16/03/2013,326093\n\
-19/03/2013,1052922\n\
-20/03/2013,180\n\
-21/03/2013,203905\n\
-22/03/2013,140094\n\
-24/03/2013,32193\n\
-25/03/2013,851\n\
-26/03/2013,1070\n\
-27/03/2013,118\n\
-30/03/2013,928\n\
-31/03/2013,74933\n\
-02/04/2013,117654\n\
-03/04/2013,492\n\
-05/04/2013,64618\n\
-07/04/2013,138466\n\
-11/04/2013,138\n\
-15/04/2013,264\n\
-17/04/2013,1036\n\
-18/04/2013,552\n\
-19/04/2013,325240\n\
-20/04/2013,42629\n\
-25/04/2013,1774\n\
-30/04/2013,184593\n\
-01/05/2013,64642\n\
-04/05/2013,33616\n\
-05/05/2013,149185\n\
-07/05/2013,915\n\
-08/05/2013,238\n\
-13/05/2013,141508\n\
-15/05/2013,2333\n\
-16/05/2013,32159\n\
-17/05/2013,63\n\
-19/05/2013,391683\n\
-20/05/2013,697120\n\
-21/05/2013,1318\n\
-22/05/2013,752\n\
-23/05/2013,32593\n\
-24/05/2013,140357\n\
-25/05/2013,692\n\
-26/05/2013,76477\n\
-28/05/2013,867853\n\
-29/05/2013,804428\n\
-30/05/2013,649020\n\
-01/06/2013,250094\n\
-02/06/2013,155782\n\
-03/06/2013,32482\n\
-04/06/2013,40142\n\
-08/06/2013,345217\n\
-11/06/2013,577117\n\
-12/06/2013,180486\n\
-13/06/2013,434560\n\
-14/06/2013,47300\n\
-18/06/2013,321461\n\
-19/06/2013,64847\n\
-20/06/2013,145710\n\
-21/06/2013,97324\n\
-24/06/2013,2763\n\
-25/06/2013,289364\n\
-26/06/2013,340855\n\
-27/06/2013,51735\n\
-28/06/2013,297437\n\
-29/06/2013,1910\n\
-30/06/2013,273639\n\
-01/07/2013,277\n\
-02/07/2013,147125\n\
-03/07/2013,211700\n\
-04/07/2013,193584\n\
-05/07/2013,482892\n\
-06/07/2013,34378\n\
-10/07/2013,345638\n\
-11/07/2013,360279\n\
-12/07/2013,97763\n\
-16/07/2013,32239\n\
-18/07/2013,211795\n\
-19/07/2013,369648\n\
-21/07/2013,96786\n\
-22/07/2013,32169\n\
-23/07/2013,98697\n\
-24/07/2013,33214\n\
-29/07/2013,128711\n\
-31/07/2013,99342\n\
-01/08/2013,96512\n\
-02/08/2013,144984\n\
-05/08/2013,97471\n\
-10/08/2013,446649\n\
-12/08/2013,32194\n\
-13/08/2013,473862\n\
-14/08/2013,47964\n\
-15/08/2013,936550\n\
-16/08/2013,220039\n\
-19/08/2013,364120\n\
-21/08/2013,336506\n\
-22/08/2013,360887\n\
-23/08/2013,227579\n\
-27/08/2013,146384\n\
-28/08/2013,145859\n\
-30/08/2013,82125\n\
-31/08/2013,274291\n\
-05/09/2013,146216\n\
-17/09/2013,34218\n\
-19/09/2013,49971\n\
-21/09/2013,35599\n\
-24/09/2013,214169\n\
-25/09/2013,569509\n\
-26/09/2013,149751\n\
-03/10/2013,366581\n\
-05/10/2013,3265585\n\
-07/10/2013,97461\n\
-09/10/2013,230613\n\
-10/10/2013,572214\n\
-11/10/2013,2604342\n\
-12/10/2013,64605\n\
-15/10/2013,98363\n\
-16/10/2013,297816\n\
-17/10/2013,150002\n\
-25/10/2013,65249\n\
-04/11/2013,50470\n\
-11/11/2013,110\n\
-15/11/2013,100\n\
-18/11/2013,9067\n\
-19/11/2013,220329\n\
-20/11/2013,177\n\
-23/11/2013,8369\n\
-24/11/2013,1895\n\
-25/11/2013,67\n\
-30/11/2013,64401\n\
-03/12/2013,148104\n\
-04/12/2013,200346\n\
-05/12/2013,347\n\
-12/12/2013,65984\n\
-13/12/2013,277509\n\
-16/12/2013,18919\n\
-08/01/2014,1138567\n\
-09/01/2014,158063\n\
-10/01/2014,179748\n\
-13/01/2014,148589\n\
-14/01/2014,624\n\
-15/01/2014,61\n\
-21/01/2014,5\n\
-03/02/2014,36\n\
-11/02/2014,180\n\
-12/02/2014,140\n\
-18/02/2014,33684\n\
-27/02/2014,96919\n\
-09/03/2014,41\n\
-13/03/2014,524\n\
-17/03/2014,5158\n\
-20/03/2014,711\n\
-21/03/2014,5185\n\
-22/03/2014,468\n\
-24/03/2014,1442930\n\
-04/04/2014,148065\n\
-06/04/2014,187784\n\
-08/04/2014,146988\n\
-10/04/2014,0\n\
-11/04/2014,65252\n\
-22/04/2014,32799\n\
-10/05/2014,33757\n\
-13/05/2014,21\n\
-18/05/2014,774176\n\
-19/05/2014,38407\n\
-22/05/2014,52\n\
-23/05/2014,34906\n\
-28/05/2014,166\n\
-30/05/2014,101644\n\
-06/06/2014,149730\n\
-08/06/2014,195627\n\
-24/06/2014,46\n\
-25/06/2014,152428\n\
-27/06/2014,147778\n\
-30/06/2014,64696\n\
-01/07/2014,614\n\
-07/07/2014,33677\n\
-12/07/2014,64\n\
-17/07/2014,32800\n\
-29/07/2014,147296\n\
-05/08/2014,100820\n\
-06/08/2014,151139\n\
-12/08/2014,613\n\
-13/08/2014,635\n\
-15/08/2014,116027\n\
-25/08/2014,37\n\
-28/08/2014,1211\n\
-10/09/2014,32830\n\
-27/09/2014,163187\n\
-28/09/2014,0\n\
-30/09/2014,32454\n\
-02/10/2014,478\n\
-03/10/2014,32289\n\
-08/10/2014,64847\n\
-09/10/2014,392701\n\
-10/10/2014,592063\n\
-13/10/2014,48202\n\
-14/10/2014,249859\n\
-15/10/2014,299900\n\
-16/10/2014,97504\n\
-17/10/2014,846755\n\
-21/10/2014,147076\n\
-22/10/2014,238\n\
-23/10/2014,217912\n\
-24/10/2014,83778\n\
-03/11/2014,32296\n\
-13/11/2014,32240\n\
-14/11/2014,134767\n\
-15/11/2014,447580\n\
-16/11/2014,306336\n\
-17/11/2014,484523\n\
-18/11/2014,115322\n\
-19/11/2014,655652\n\
-20/11/2014,143129\n\
-01/12/2014,86743\n\
-06/12/2014,87260\n\
-08/12/2014,329283\n\
-09/12/2014,150963\n\
-30/12/2014,34006\n\
-31/12/2014,32503\n\
-13/01/2015,679\n\
-14/01/2015,614\n\
-15/01/2015,383\n\
-28/01/2015,150815\n\
-31/01/2015,2432\n\
-05/02/2015,41\n\
-06/02/2015,151727\n\
-07/02/2015,506105\n\
-08/02/2015,981\n\
-10/02/2015,67963\n\
-11/02/2015,363\n\
-12/02/2015,738\n\
-13/02/2015,372\n\
-06/04/2015,368\n\
+",
+"\
+date,added,modified,removed\n\
+27/09/2010,2,0,0\n\
+28/09/2010,53,4,0\n\
+29/09/2010,0,22,0\n\
+02/10/2010,0,27,0\n\
+04/10/2010,1,0,0\n\
+05/10/2010,13,11,0\n\
+06/10/2010,1,3,0\n\
+10/10/2010,0,1,0\n\
+14/10/2010,2,15,2\n\
+20/10/2010,6,10,0\n\
+21/10/2010,1,9,0\n\
+22/10/2010,0,11,0\n\
+23/10/2010,2,25,0\n\
+24/10/2010,13,84,18\n\
+25/10/2010,5,26,1\n\
+26/10/2010,1,9,0\n\
+27/10/2010,0,4,0\n\
+29/10/2010,0,4,0\n\
+30/10/2010,5,55,7\n\
+02/11/2010,12,15,0\n\
+03/11/2010,23,20,1\n\
+04/11/2010,0,4,0\n\
+05/11/2010,29,54,4\n\
+06/11/2010,2,0,0\n\
+07/11/2010,8,24,0\n\
+08/11/2010,1,17,2\n\
+09/11/2010,3,22,0\n\
+10/11/2010,0,15,0\n\
+11/11/2010,0,1,0\n\
+12/11/2010,0,5,0\n\
+16/11/2010,0,10,0\n\
+19/11/2010,0,5,0\n\
+23/11/2010,2,11,0\n\
+26/11/2010,1,0,0\n\
+27/11/2010,4,27,0\n\
+28/11/2010,7,15,1\n\
+29/11/2010,0,7,0\n\
+30/11/2010,2,5,0\n\
+06/12/2010,0,6,0\n\
+07/12/2010,2,7,0\n\
+09/12/2010,3,8,0\n\
+11/12/2010,0,4,0\n\
+14/12/2010,0,6,0\n\
+15/12/2010,2,4,0\n\
+16/12/2010,0,5,1\n\
+17/12/2010,0,4,0\n\
+03/01/2011,1,7,1\n\
+04/01/2011,0,10,0\n\
+05/01/2011,2,36,0\n\
+08/01/2011,4,8,0\n\
+10/01/2011,0,4,0\n\
+11/01/2011,0,6,0\n\
+12/01/2011,0,1,0\n\
+17/01/2011,3,11,8\n\
+20/01/2011,0,3,0\n\
+21/01/2011,2,7,0\n\
+25/01/2011,1,6,0\n\
+27/01/2011,0,2,0\n\
+28/01/2011,1,9,0\n\
+29/01/2011,0,4,0\n\
+31/01/2011,5,43,0\n\
+01/02/2011,2,1,0\n\
+02/02/2011,0,8,0\n\
+07/02/2011,0,1,0\n\
+08/02/2011,1,6,1\n\
+11/02/2011,6,8,0\n\
+12/02/2011,3,8,0\n\
+14/02/2011,1,7,0\n\
+16/02/2011,0,8,0\n\
+17/02/2011,5,5,0\n\
+18/02/2011,0,8,0\n\
+23/02/2011,1,17,0\n\
+24/02/2011,1,20,0\n\
+25/02/2011,0,1,0\n\
+26/02/2011,4,1,0\n\
+27/02/2011,11,20,0\n\
+28/02/2011,6,8,0\n\
+01/03/2011,0,7,0\n\
+02/03/2011,4,3,0\n\
+03/03/2011,2,15,0\n\
+04/03/2011,28,27,0\n\
+05/03/2011,6,8,1\n\
+08/03/2011,2,7,0\n\
+09/03/2011,0,8,0\n\
+10/03/2011,0,2,0\n\
+11/03/2011,4,8,0\n\
+12/03/2011,12,38,0\n\
+13/03/2011,13,33,0\n\
+15/03/2011,0,7,0\n\
+17/03/2011,0,4,0\n\
+25/03/2011,83,11,3\n\
+26/03/2011,3,1,0\n\
+29/03/2011,0,2,0\n\
+30/03/2011,0,10,1\n\
+01/04/2011,0,1,0\n\
+06/04/2011,4,14,0\n\
+07/04/2011,4,38,0\n\
+08/04/2011,1,47,0\n\
+09/04/2011,7,33,3\n\
+10/04/2011,7,42,0\n\
+11/04/2011,12,40,0\n\
+12/04/2011,1,10,0\n\
+13/04/2011,6,62,1\n\
+14/04/2011,7,77,1\n\
+15/04/2011,0,1,0\n\
+19/04/2011,1,18,0\n\
+20/04/2011,0,18,0\n\
+24/04/2011,0,2,0\n\
+25/04/2011,7,19,2\n\
+26/04/2011,0,13,0\n\
+27/04/2011,5,22,0\n\
+28/04/2011,0,19,0\n\
+29/04/2011,3,4,0\n\
+30/04/2011,3,6,0\n\
+01/05/2011,2,44,1\n\
+02/05/2011,2,31,0\n\
+03/05/2011,2,24,0\n\
+04/05/2011,0,3,0\n\
+05/05/2011,5,36,0\n\
+07/05/2011,4,18,0\n\
+08/05/2011,3,12,0\n\
+09/05/2011,0,6,1\n\
+10/05/2011,16,17,0\n\
+11/05/2011,3,21,0\n\
+12/05/2011,4,21,0\n\
+13/05/2011,0,6,0\n\
+14/05/2011,0,3,0\n\
+19/05/2011,0,9,0\n\
+20/05/2011,5,10,0\n\
+21/05/2011,7,21,0\n\
+22/05/2011,0,24,0\n\
+23/05/2011,0,9,0\n\
+26/05/2011,1,6,0\n\
+27/05/2011,3,32,0\n\
+28/05/2011,0,6,0\n\
+30/05/2011,4,36,0\n\
+02/06/2011,2,0,0\n\
+03/06/2011,2,1,0\n\
+06/06/2011,6,24,0\n\
+07/06/2011,3,40,0\n\
+11/06/2011,3,31,1\n\
+12/06/2011,10,18,4\n\
+13/06/2011,0,1,0\n\
+14/06/2011,0,14,0\n\
+15/06/2011,13,20,0\n\
+17/06/2011,5,19,0\n\
+18/06/2011,0,2,0\n\
+22/06/2011,5,29,0\n\
+23/06/2011,1,16,0\n\
+24/06/2011,2,23,0\n\
+25/06/2011,1,8,0\n\
+26/06/2011,0,1,0\n\
+28/06/2011,0,9,0\n\
+30/06/2011,2,4,0\n\
+02/07/2011,0,35,0\n\
+03/07/2011,3,46,7\n\
+04/07/2011,0,9,3\n\
+06/07/2011,4,16,21\n\
+07/07/2011,0,1,0\n\
+08/07/2011,7,24,0\n\
+09/07/2011,2,16,0\n\
+10/07/2011,0,9,0\n\
+12/07/2011,0,13,0\n\
+14/07/2011,0,3,0\n\
+15/07/2011,0,1,0\n\
+16/07/2011,0,6,0\n\
+17/07/2011,0,4,0\n\
+19/07/2011,45,126,0\n\
+20/07/2011,10,38,0\n\
+27/07/2011,0,3,0\n\
+01/08/2011,7,46,0\n\
+08/08/2011,0,3,0\n\
+09/08/2011,3,1,0\n\
+10/08/2011,0,1,0\n\
+11/08/2011,0,3,0\n\
+12/08/2011,0,12,0\n\
+13/08/2011,20,18,10\n\
+14/08/2011,25,26,33\n\
+15/08/2011,25,22,66\n\
+16/08/2011,13,17,29\n\
+17/08/2011,21,18,8\n\
+18/08/2011,4,23,1\n\
+19/08/2011,7,28,0\n\
+20/08/2011,0,2,0\n\
+21/08/2011,41,26,0\n\
+22/08/2011,8,87,0\n\
+23/08/2011,2,56,0\n\
+24/08/2011,0,19,0\n\
+25/08/2011,5,28,0\n\
+26/08/2011,1,12,2\n\
+27/08/2011,4,33,0\n\
+28/08/2011,2,10,0\n\
+29/08/2011,1,26,1\n\
+30/08/2011,1,5,0\n\
+31/08/2011,0,4,0\n\
+02/09/2011,1,7,0\n\
+03/09/2011,0,7,0\n\
+07/09/2011,0,3,0\n\
+08/09/2011,2,10,0\n\
+09/09/2011,2,5,0\n\
+10/09/2011,0,16,0\n\
+12/09/2011,2,55,0\n\
+14/09/2011,0,12,0\n\
+15/09/2011,1,2,0\n\
+18/09/2011,2,13,1\n\
+19/09/2011,0,3,0\n\
+20/09/2011,0,5,0\n\
+21/09/2011,0,17,0\n\
+22/09/2011,0,7,0\n\
+24/09/2011,0,2,0\n\
+26/09/2011,3,6,0\n\
+27/09/2011,5,47,2\n\
+28/09/2011,1,0,0\n\
+29/09/2011,0,12,0\n\
+30/09/2011,0,15,0\n\
+01/10/2011,1,0,0\n\
+03/10/2011,0,2,0\n\
+04/10/2011,0,1,0\n\
+05/10/2011,0,13,0\n\
+06/10/2011,0,20,0\n\
+07/10/2011,1,43,0\n\
+08/10/2011,1,10,0\n\
+11/10/2011,4,19,0\n\
+12/10/2011,3,22,0\n\
+13/10/2011,1,15,1\n\
+14/10/2011,1,9,0\n\
+17/10/2011,0,4,0\n\
+19/10/2011,0,1,0\n\
+20/10/2011,0,25,0\n\
+24/10/2011,0,7,0\n\
+25/10/2011,0,13,0\n\
+29/10/2011,0,31,0\n\
+31/10/2011,5,5,0\n\
+01/11/2011,1,19,1\n\
+02/11/2011,3,17,1\n\
+03/11/2011,2,7,0\n\
+04/11/2011,1,50,0\n\
+05/11/2011,1,7,0\n\
+09/11/2011,0,5,0\n\
+10/11/2011,1,18,0\n\
+14/11/2011,0,1,0\n\
+15/11/2011,0,3,0\n\
+16/11/2011,1,10,0\n\
+19/11/2011,1,0,0\n\
+22/11/2011,0,21,0\n\
+23/11/2011,4,122,0\n\
+30/11/2011,0,8,0\n\
+07/12/2011,0,4,0\n\
+09/12/2011,3,11,0\n\
+10/12/2011,0,2,0\n\
+11/12/2011,0,3,0\n\
+13/12/2011,1,14,0\n\
+14/12/2011,0,9,0\n\
+15/12/2011,0,10,0\n\
+20/12/2011,0,3,0\n\
+27/12/2011,0,5,0\n\
+28/12/2011,0,2,0\n\
+30/12/2011,0,9,0\n\
+31/12/2011,0,3,0\n\
+01/01/2012,0,5,0\n\
+02/01/2012,0,3,0\n\
+09/01/2012,2,23,1\n\
+13/01/2012,0,1,0\n\
+17/01/2012,0,4,0\n\
+18/01/2012,0,4,0\n\
+19/01/2012,0,9,0\n\
+22/01/2012,0,3,0\n\
+23/01/2012,0,12,0\n\
+24/01/2012,1,8,1\n\
+25/01/2012,0,4,0\n\
+26/01/2012,0,13,0\n\
+29/01/2012,0,15,0\n\
+30/01/2012,0,3,0\n\
+03/02/2012,1,5,0\n\
+07/02/2012,0,4,0\n\
+08/02/2012,0,2,0\n\
+09/02/2012,1,5,0\n\
+10/02/2012,0,2,0\n\
+12/02/2012,0,1,0\n\
+13/02/2012,0,7,0\n\
+14/02/2012,3,11,0\n\
+15/02/2012,1,30,0\n\
+16/02/2012,1,7,0\n\
+17/02/2012,0,6,0\n\
+18/02/2012,1,255,18\n\
+19/02/2012,2,110,9\n\
+20/02/2012,3,54,0\n\
+21/02/2012,3,90,2\n\
+22/02/2012,0,14,0\n\
+23/02/2012,1,28,0\n\
+25/02/2012,0,1,0\n\
+26/02/2012,0,6,0\n\
+27/02/2012,0,3,0\n\
+29/02/2012,3,24,0\n\
+02/03/2012,0,3,0\n\
+04/03/2012,0,8,0\n\
+06/03/2012,0,1,0\n\
+08/03/2012,0,6,0\n\
+09/03/2012,0,1,0\n\
+15/03/2012,0,3,0\n\
+16/03/2012,0,21,0\n\
+17/03/2012,4,14,0\n\
+18/03/2012,0,2,0\n\
+19/03/2012,1,12,0\n\
+20/03/2012,0,1,0\n\
+23/03/2012,0,5,0\n\
+28/03/2012,0,3,0\n\
+30/03/2012,0,9,0\n\
+03/04/2012,0,6,0\n\
+04/04/2012,10,3,7\n\
+06/04/2012,0,78,0\n\
+07/04/2012,0,22,0\n\
+15/04/2012,0,12,0\n\
+19/04/2012,0,5,0\n\
+25/04/2012,0,1,0\n\
+26/04/2012,0,12,0\n\
+01/05/2012,1,2,0\n\
+04/05/2012,0,6,0\n\
+09/05/2012,0,6,0\n\
+10/05/2012,0,1,0\n\
+11/05/2012,0,6,0\n\
+27/05/2012,0,2,0\n\
+29/05/2012,0,1,0\n\
+01/06/2012,0,4,0\n\
+14/06/2012,0,4,0\n\
+20/06/2012,0,1,0\n\
+22/06/2012,0,4,0\n\
+24/06/2012,1,16,0\n\
+25/06/2012,0,3,0\n\
+28/06/2012,5,12,5\n\
+29/06/2012,0,13,0\n\
+30/06/2012,0,5,0\n\
+02/07/2012,1,10,0\n\
+03/07/2012,0,9,0\n\
+04/07/2012,0,7,0\n\
+05/07/2012,0,3,0\n\
+10/07/2012,0,4,0\n\
+13/07/2012,0,2,0\n\
+17/07/2012,0,10,0\n\
+19/07/2012,0,3,0\n\
+21/07/2012,0,3,0\n\
+23/07/2012,1,7,0\n\
+24/07/2012,0,16,0\n\
+25/07/2012,2,27,0\n\
+26/07/2012,0,5,0\n\
+31/07/2012,2,38,0\n\
+01/08/2012,1,12,0\n\
+03/08/2012,0,6,0\n\
+04/08/2012,0,11,0\n\
+05/08/2012,0,41,0\n\
+06/08/2012,0,10,0\n\
+07/08/2012,2,11,0\n\
+09/08/2012,10,26,0\n\
+12/08/2012,2,11,3\n\
+13/08/2012,2,18,0\n\
+15/08/2012,1,17,0\n\
+16/08/2012,0,11,0\n\
+20/08/2012,0,4,0\n\
+21/08/2012,0,5,0\n\
+31/08/2012,0,5,0\n\
+04/09/2012,0,7,0\n\
+05/09/2012,0,6,0\n\
+06/09/2012,0,7,0\n\
+14/09/2012,2,7,0\n\
+17/09/2012,0,1,0\n\
+18/09/2012,0,14,0\n\
+19/09/2012,0,45,0\n\
+20/09/2012,2,14,2\n\
+23/09/2012,0,7,0\n\
+24/09/2012,10,55,2\n\
+25/09/2012,1,34,0\n\
+26/09/2012,0,76,0\n\
+27/09/2012,0,35,0\n\
+28/09/2012,2,21,0\n\
+29/09/2012,0,35,0\n\
+02/10/2012,2,62,0\n\
+03/10/2012,0,6,0\n\
+04/10/2012,0,6,0\n\
+05/10/2012,1,31,0\n\
+06/10/2012,6,201,11\n\
+07/10/2012,1,3,0\n\
+08/10/2012,0,2,0\n\
+11/10/2012,2,23,0\n\
+12/10/2012,0,129,37\n\
+15/10/2012,0,3,0\n\
+16/10/2012,0,7,0\n\
+17/10/2012,0,23,2\n\
+19/10/2012,0,3,0\n\
+25/10/2012,0,5,0\n\
+27/10/2012,0,4,0\n\
+29/10/2012,0,4,1\n\
+30/10/2012,0,8,0\n\
+31/10/2012,0,6,0\n\
+02/11/2012,0,9,0\n\
+03/11/2012,0,3,0\n\
+10/11/2012,0,13,0\n\
+11/11/2012,3,49,52\n\
+13/11/2012,0,14,0\n\
+14/11/2012,0,21,0\n\
+15/11/2012,0,10,0\n\
+16/11/2012,0,2,0\n\
+18/11/2012,0,35,0\n\
+19/11/2012,0,5,0\n\
+20/11/2012,0,5,0\n\
+21/11/2012,1,17,0\n\
+26/11/2012,0,3,0\n\
+30/11/2012,0,3,0\n\
+04/12/2012,0,6,0\n\
+05/12/2012,0,53,0\n\
+06/12/2012,0,20,0\n\
+07/12/2012,2,7,0\n\
+08/12/2012,0,2,0\n\
+09/12/2012,3,21,0\n\
+10/12/2012,3,26,0\n\
+11/12/2012,2,40,0\n\
+12/12/2012,9,115,1\n\
+13/12/2012,2,112,1\n\
+14/12/2012,0,13,0\n\
+15/12/2012,1,30,3\n\
+17/12/2012,0,8,0\n\
+18/12/2012,0,14,0\n\
+19/12/2012,1,20,126\n\
+20/12/2012,5,8,32\n\
+21/12/2012,1,6,0\n\
+25/12/2012,0,4,0\n\
+27/12/2012,0,7,0\n\
+28/12/2012,0,4,0\n\
+29/12/2012,0,4,0\n\
+01/01/2013,0,5,0\n\
+04/01/2013,0,1,0\n\
+05/01/2013,1,4,0\n\
+07/01/2013,0,1,0\n\
+08/01/2013,0,11,0\n\
+13/01/2013,0,4,0\n\
+15/01/2013,0,3,0\n\
+16/01/2013,0,4,0\n\
+20/01/2013,0,3,0\n\
+22/01/2013,0,3,0\n\
+23/01/2013,2,16,0\n\
+24/01/2013,1,9,3\n\
+31/01/2013,1,30,0\n\
+01/02/2013,0,20,0\n\
+05/02/2013,1,4,0\n\
+06/02/2013,1,19,0\n\
+07/02/2013,0,2,0\n\
+09/02/2013,2,3,0\n\
+10/02/2013,0,3,0\n\
+11/02/2013,4,7,0\n\
+14/02/2013,0,3,0\n\
+18/02/2013,2,4,0\n\
+19/02/2013,0,3,0\n\
+22/02/2013,2,12,2\n\
+23/02/2013,0,3,0\n\
+26/02/2013,1,7,0\n\
+01/03/2013,1,3,0\n\
+02/03/2013,3,175,0\n\
+03/03/2013,0,15,0\n\
+04/03/2013,1,9,0\n\
+05/03/2013,0,163,0\n\
+06/03/2013,1,21,0\n\
+07/03/2013,1,19,0\n\
+11/03/2013,10,41,0\n\
+12/03/2013,0,8,0\n\
+13/03/2013,26,519,6\n\
+14/03/2013,40,549,22\n\
+15/03/2013,1,16,0\n\
+16/03/2013,0,16,0\n\
+19/03/2013,1,54,2\n\
+20/03/2013,0,2,0\n\
+21/03/2013,0,28,0\n\
+22/03/2013,0,8,0\n\
+24/03/2013,0,3,0\n\
+25/03/2013,0,2,0\n\
+26/03/2013,0,6,0\n\
+27/03/2013,0,1,0\n\
+30/03/2013,0,3,0\n\
+31/03/2013,0,15,0\n\
+02/04/2013,0,12,0\n\
+03/04/2013,0,8,0\n\
+05/04/2013,0,4,0\n\
+07/04/2013,0,5,0\n\
+11/04/2013,0,4,0\n\
+15/04/2013,0,1,0\n\
+17/04/2013,0,5,0\n\
+18/04/2013,0,2,0\n\
+19/04/2013,1,18,0\n\
+20/04/2013,0,4,0\n\
+25/04/2013,1,5,1\n\
+30/04/2013,0,20,0\n\
+01/05/2013,0,7,0\n\
+04/05/2013,2,3,0\n\
+05/05/2013,1,6,0\n\
+07/05/2013,1,4,1\n\
+08/05/2013,0,2,0\n\
+13/05/2013,0,6,0\n\
+15/05/2013,0,4,0\n\
+16/05/2013,0,5,0\n\
+17/05/2013,0,1,0\n\
+19/05/2013,0,13,0\n\
+20/05/2013,0,51,0\n\
+21/05/2013,0,10,0\n\
+22/05/2013,0,9,0\n\
+23/05/2013,0,4,0\n\
+24/05/2013,1,4,0\n\
+25/05/2013,0,5,0\n\
+26/05/2013,0,3,0\n\
+28/05/2013,0,37,0\n\
+29/05/2013,0,34,0\n\
+30/05/2013,2,35,0\n\
+01/06/2013,0,7,0\n\
+02/06/2013,0,10,0\n\
+03/06/2013,0,4,0\n\
+04/06/2013,1,4,0\n\
+08/06/2013,3,14,0\n\
+11/06/2013,2,21,0\n\
+12/06/2013,2,12,0\n\
+13/06/2013,0,22,0\n\
+14/06/2013,0,7,0\n\
+18/06/2013,0,20,0\n\
+19/06/2013,0,6,0\n\
+20/06/2013,2,5,0\n\
+21/06/2013,0,9,0\n\
+24/06/2013,1,2,0\n\
+25/06/2013,0,7,0\n\
+26/06/2013,1,18,1\n\
+27/06/2013,2,8,4\n\
+28/06/2013,1,14,0\n\
+29/06/2013,2,13,0\n\
+30/06/2013,0,17,0\n\
+01/07/2013,0,2,0\n\
+02/07/2013,1,13,0\n\
+03/07/2013,0,16,0\n\
+04/07/2013,0,8,0\n\
+05/07/2013,1,39,0\n\
+06/07/2013,0,5,0\n\
+10/07/2013,0,10,0\n\
+11/07/2013,0,18,0\n\
+12/07/2013,0,11,0\n\
+16/07/2013,0,3,0\n\
+18/07/2013,0,10,0\n\
+19/07/2013,0,28,0\n\
+21/07/2013,0,4,0\n\
+22/07/2013,0,3,0\n\
+23/07/2013,0,6,0\n\
+24/07/2013,0,10,0\n\
+29/07/2013,0,5,0\n\
+31/07/2013,0,12,0\n\
+01/08/2013,0,10,0\n\
+02/08/2013,0,6,0\n\
+05/08/2013,1,6,0\n\
+10/08/2013,0,14,0\n\
+12/08/2013,0,3,0\n\
+13/08/2013,2,43,0\n\
+14/08/2013,0,9,0\n\
+15/08/2013,2,45,0\n\
+16/08/2013,1,13,1\n\
+19/08/2013,3,11,3\n\
+21/08/2013,0,24,0\n\
+22/08/2013,0,18,0\n\
+23/08/2013,0,20,0\n\
+27/08/2013,0,11,0\n\
+28/08/2013,0,5,0\n\
+30/08/2013,0,3,0\n\
+31/08/2013,0,17,0\n\
+05/09/2013,0,15,0\n\
+17/09/2013,0,4,0\n\
+19/09/2013,0,8,0\n\
+21/09/2013,0,4,0\n\
+24/09/2013,0,14,0\n\
+25/09/2013,0,39,0\n\
+26/09/2013,0,15,0\n\
+03/10/2013,0,18,0\n\
+05/10/2013,18,193,8\n\
+07/10/2013,0,9,0\n\
+09/10/2013,0,28,0\n\
+10/10/2013,0,23,0\n\
+11/10/2013,2,41,0\n\
+12/10/2013,1,7,0\n\
+15/10/2013,0,4,0\n\
+16/10/2013,0,9,0\n\
+17/10/2013,0,9,0\n\
+25/10/2013,0,3,0\n\
+04/11/2013,0,4,0\n\
+11/11/2013,0,2,0\n\
+15/11/2013,0,1,0\n\
+18/11/2013,1,3,0\n\
+19/11/2013,0,16,0\n\
+20/11/2013,0,2,0\n\
+23/11/2013,0,8,0\n\
+24/11/2013,0,5,0\n\
+25/11/2013,0,1,0\n\
+30/11/2013,0,7,0\n\
+03/12/2013,1,3,0\n\
+04/12/2013,0,10,0\n\
+05/12/2013,0,1,0\n\
+12/12/2013,0,5,0\n\
+13/12/2013,0,8,1\n\
+16/12/2013,0,5,0\n\
+08/01/2014,9,56,6\n\
+09/01/2014,1,28,2\n\
+10/01/2014,0,13,0\n\
+13/01/2014,0,9,0\n\
+14/01/2014,1,1,0\n\
+15/01/2014,0,2,0\n\
+21/01/2014,0,1,0\n\
+03/02/2014,0,1,0\n\
+11/02/2014,0,1,0\n\
+12/02/2014,0,1,0\n\
+18/02/2014,0,5,0\n\
+27/02/2014,0,4,0\n\
+09/03/2014,0,1,0\n\
+13/03/2014,1,0,0\n\
+17/03/2014,2,0,0\n\
+20/03/2014,1,3,0\n\
+21/03/2014,2,0,0\n\
+22/03/2014,0,1,0\n\
+24/03/2014,1,81,0\n\
+04/04/2014,0,4,0\n\
+06/04/2014,1,9,0\n\
+08/04/2014,0,4,0\n\
+10/04/2014,0,1,0\n\
+11/04/2014,0,10,0\n\
+22/04/2014,0,3,0\n\
+10/05/2014,1,3,0\n\
+13/05/2014,0,1,0\n\
+18/05/2014,0,22,0\n\
+19/05/2014,2,6,0\n\
+22/05/2014,1,1,0\n\
+23/05/2014,0,4,0\n\
+28/05/2014,0,1,0\n\
+30/05/2014,0,4,0\n\
+06/06/2014,0,3,0\n\
+08/06/2014,0,13,0\n\
+24/06/2014,0,1,0\n\
+25/06/2014,0,8,0\n\
+27/06/2014,0,3,0\n\
+30/06/2014,0,6,0\n\
+01/07/2014,1,0,0\n\
+07/07/2014,0,3,0\n\
+12/07/2014,0,1,0\n\
+17/07/2014,0,5,0\n\
+29/07/2014,0,3,0\n\
+05/08/2014,0,12,0\n\
+06/08/2014,0,14,0\n\
+12/08/2014,1,0,0\n\
+13/08/2014,1,0,0\n\
+15/08/2014,0,7,0\n\
+25/08/2014,0,1,0\n\
+28/08/2014,2,0,0\n\
+10/09/2014,0,3,0\n\
+27/09/2014,0,9,0\n\
+28/09/2014,0,1,0\n\
+30/09/2014,0,4,0\n\
+02/10/2014,0,5,0\n\
+03/10/2014,0,4,0\n\
+08/10/2014,0,10,0\n\
+09/10/2014,0,15,0\n\
+10/10/2014,4,33,1\n\
+13/10/2014,1,7,0\n\
+14/10/2014,2,15,0\n\
+15/10/2014,0,8,0\n\
+16/10/2014,0,8,0\n\
+17/10/2014,1,41,0\n\
+21/10/2014,0,3,0\n\
+22/10/2014,0,1,0\n\
+23/10/2014,0,28,0\n\
+24/10/2014,0,4,0\n\
+03/11/2014,0,3,0\n\
+13/11/2014,0,4,0\n\
+14/11/2014,0,14,0\n\
+15/11/2014,0,12,0\n\
+16/11/2014,1,11,0\n\
+17/11/2014,0,45,0\n\
+18/11/2014,0,6,0\n\
+19/11/2014,0,32,0\n\
+20/11/2014,0,15,0\n\
+01/12/2014,0,3,0\n\
+06/12/2014,0,10,0\n\
+08/12/2014,0,14,0\n\
+09/12/2014,0,3,0\n\
+30/12/2014,0,8,0\n\
+31/12/2014,0,4,0\n\
+13/01/2015,0,1,0\n\
+14/01/2015,1,0,0\n\
+15/01/2015,0,1,0\n\
+28/01/2015,0,3,0\n\
+31/01/2015,2,5,3\n\
+05/02/2015,0,1,0\n\
+06/02/2015,0,7,0\n\
+07/02/2015,1,35,0\n\
+08/02/2015,1,3,0\n\
+10/02/2015,2,12,0\n\
+11/02/2015,0,1,0\n\
+12/02/2015,0,2,0\n\
+13/02/2015,0,1,0\n\
+06/04/2015,0,1,0\n\
+",
+"\
+date,added,modified,removed\n\
+27/09/2010,0,0,0\n\
+28/09/2010,16,3,16\n\
+29/09/2010,99,227,152\n\
+02/10/2010,0,102,0\n\
+04/10/2010,0,0,0\n\
+05/10/2010,52,52,15\n\
+06/10/2010,5,14,0\n\
+10/10/2010,0,10,0\n\
+14/10/2010,33,67,54\n\
+20/10/2010,201,105,15\n\
+21/10/2010,63,56,0\n\
+22/10/2010,60,77,11\n\
+23/10/2010,351,323,104\n\
+24/10/2010,524,1569,1869\n\
+25/10/2010,209,190,114\n\
+26/10/2010,81,81,0\n\
+27/10/2010,2,47,0\n\
+29/10/2010,4,29,0\n\
+30/10/2010,551,253,547\n\
+02/11/2010,346,152,1\n\
+03/11/2010,147,151,102\n\
+04/11/2010,6,8,0\n\
+05/11/2010,360,339,3969\n\
+06/11/2010,0,0,0\n\
+07/11/2010,104,226,72\n\
+08/11/2010,508,93,163\n\
+09/11/2010,54,159,56\n\
+10/11/2010,99,107,6\n\
+11/11/2010,0,1,0\n\
+12/11/2010,15,3,0\n\
+16/11/2010,160,163,8\n\
+19/11/2010,4,7,1\n\
+23/11/2010,133,41,46\n\
+26/11/2010,0,0,0\n\
+27/11/2010,337,448,38\n\
+28/11/2010,73,201,57\n\
+29/11/2010,34,26,2\n\
+30/11/2010,84,50,16\n\
+06/12/2010,0,43,0\n\
+07/12/2010,71,38,10\n\
+09/12/2010,38,52,0\n\
+11/12/2010,4,9,0\n\
+14/12/2010,26,55,0\n\
+15/12/2010,118,56,0\n\
+16/12/2010,174,83,161\n\
+17/12/2010,2,62,0\n\
+03/01/2011,47,42,26\n\
+04/01/2011,144,29,0\n\
+05/01/2011,16,914,6\n\
+08/01/2011,24,68,2\n\
+10/01/2011,2,9,0\n\
+11/01/2011,46,29,0\n\
+12/01/2011,2,0,0\n\
+17/01/2011,195,50,405\n\
+20/01/2011,0,247,0\n\
+21/01/2011,124,16,0\n\
+25/01/2011,29,65,0\n\
+27/01/2011,1,1,0\n\
+28/01/2011,56,91,27\n\
+29/01/2011,4,44,0\n\
+31/01/2011,123,379,87\n\
+01/02/2011,0,116,0\n\
+02/02/2011,2,11,4\n\
+07/02/2011,13,15,0\n\
+08/02/2011,14,75,16\n\
+11/02/2011,28,75,13\n\
+12/02/2011,85,58,20\n\
+14/02/2011,130,110,4\n\
+16/02/2011,22,120,2\n\
+17/02/2011,149,120,4\n\
+18/02/2011,31,102,6\n\
+23/02/2011,166,37,0\n\
+24/02/2011,150,141,108\n\
+25/02/2011,0,8,0\n\
+26/02/2011,0,62,0\n\
+27/02/2011,35,744,3\n\
+28/02/2011,45,130,16\n\
+01/03/2011,88,77,33\n\
+02/03/2011,40,11,0\n\
+03/03/2011,413,80,15\n\
+04/03/2011,18,135,1\n\
+05/03/2011,4,31,96\n\
+08/03/2011,18,54,0\n\
+09/03/2011,16,73,16\n\
+10/03/2011,30,7,21\n\
+11/03/2011,24,67,16\n\
+12/03/2011,174,290,93\n\
+13/03/2011,161,524,29\n\
+15/03/2011,140,29,2\n\
+17/03/2011,0,6,0\n\
+25/03/2011,2,133,20716\n\
+26/03/2011,1,0,0\n\
+29/03/2011,0,3,7\n\
+30/03/2011,28,73,19\n\
+01/04/2011,4,2,4\n\
+06/04/2011,214,54,6\n\
+07/04/2011,108,135,228\n\
+08/04/2011,509,522,177\n\
+09/04/2011,64,154,258\n\
+10/04/2011,431,608,56\n\
+11/04/2011,398,283,63\n\
+12/04/2011,11,19,1\n\
+13/04/2011,364,188,38\n\
+14/04/2011,401,1178,243\n\
+15/04/2011,1,3,0\n\
+19/04/2011,188,145,80\n\
+20/04/2011,43,108,16\n\
+24/04/2011,0,4,0\n\
+25/04/2011,402,12,133\n\
+26/04/2011,41,28,0\n\
+27/04/2011,149,141,74\n\
+28/04/2011,77,44,60\n\
+29/04/2011,23,30,8\n\
+30/04/2011,35,91,47\n\
+01/05/2011,125,310,173\n\
+02/05/2011,250,6,0\n\
+03/05/2011,92,19,6\n\
+04/05/2011,31,0,0\n\
+05/05/2011,71,136,0\n\
+07/05/2011,24,75,66\n\
+08/05/2011,110,149,0\n\
+09/05/2011,0,21,27\n\
+10/05/2011,77,132,0\n\
+11/05/2011,61,43,3\n\
+12/05/2011,99,119,33\n\
+13/05/2011,158,32,8\n\
+14/05/2011,29,5,0\n\
+19/05/2011,103,21,2\n\
+20/05/2011,106,38,19\n\
+21/05/2011,228,129,85\n\
+22/05/2011,71,210,25\n\
+23/05/2011,39,63,7\n\
+26/05/2011,39,18,9\n\
+27/05/2011,49,96,1\n\
+28/05/2011,56,46,54\n\
+30/05/2011,104,130,16\n\
+02/06/2011,0,0,0\n\
+03/06/2011,7,2,0\n\
+06/06/2011,70,26,29\n\
+07/06/2011,280,181,38\n\
+11/06/2011,156,100,281\n\
+12/06/2011,10,68,488\n\
+13/06/2011,1,0,0\n\
+14/06/2011,9,17,0\n\
+15/06/2011,155,47,64\n\
+17/06/2011,161,24,9\n\
+18/06/2011,28,0,0\n\
+22/06/2011,180,147,113\n\
+23/06/2011,41,104,59\n\
+24/06/2011,148,149,75\n\
+25/06/2011,1,19,2\n\
+26/06/2011,0,1,0\n\
+28/06/2011,60,105,6\n\
+30/06/2011,28,4,0\n\
+02/07/2011,55,55,60\n\
+03/07/2011,46,80,325\n\
+04/07/2011,5,1,6\n\
+06/07/2011,4,31,299\n\
+07/07/2011,0,7,0\n\
+08/07/2011,95,60,12\n\
+09/07/2011,21,55,30\n\
+10/07/2011,168,181,56\n\
+12/07/2011,5,28,0\n\
+14/07/2011,0,3,2\n\
+15/07/2011,0,1,0\n\
+16/07/2011,0,9,0\n\
+17/07/2011,2,3,0\n\
+19/07/2011,170,262,38\n\
+20/07/2011,204,198,5\n\
+27/07/2011,4,1,0\n\
+01/08/2011,362,142,3\n\
+08/08/2011,0,3,0\n\
+09/08/2011,0,6,3\n\
+10/08/2011,3,0,0\n\
+11/08/2011,0,3,0\n\
+12/08/2011,117,133,4\n\
+13/08/2011,170,105,270\n\
+14/08/2011,114,12,1650\n\
+15/08/2011,659,13,3953\n\
+16/08/2011,191,19,37438\n\
+17/08/2011,169,207,3216\n\
+18/08/2011,382,306,108\n\
+19/08/2011,160,61,8\n\
+20/08/2011,2,0,0\n\
+21/08/2011,92,1210,354\n\
+22/08/2011,359,275,235\n\
+23/08/2011,644,153,294\n\
+24/08/2011,56,34,42\n\
+25/08/2011,55,48,22\n\
+26/08/2011,52,13,26\n\
+27/08/2011,100,91,8\n\
+28/08/2011,63,64,2\n\
+29/08/2011,72,77,9\n\
+30/08/2011,14,31,2\n\
+31/08/2011,0,10,0\n\
+02/09/2011,10,11,4\n\
+03/09/2011,16,10,0\n\
+07/09/2011,0,5,0\n\
+08/09/2011,45,14,6\n\
+09/09/2011,768,3,0\n\
+10/09/2011,151,12,4\n\
+12/09/2011,381,241,88\n\
+14/09/2011,28,46,33\n\
+15/09/2011,0,9,2\n\
+18/09/2011,74,50,42\n\
+19/09/2011,2,2,0\n\
+20/09/2011,5,0,0\n\
+21/09/2011,135,32,14\n\
+22/09/2011,18,17,0\n\
+24/09/2011,0,4,0\n\
+26/09/2011,66,7,3\n\
+27/09/2011,247,871,300\n\
+28/09/2011,0,0,0\n\
+29/09/2011,59,20,2\n\
+30/09/2011,37,45,16\n\
+01/10/2011,0,0,0\n\
+03/10/2011,1,1,1\n\
+04/10/2011,0,10,5\n\
+05/10/2011,28,20,0\n\
+06/10/2011,38,84,2\n\
+07/10/2011,40,130,4\n\
+08/10/2011,33,10,0\n\
+11/10/2011,75,168,28\n\
+12/10/2011,79,41,14\n\
+13/10/2011,24,82,61\n\
+14/10/2011,12,16,0\n\
+17/10/2011,29,79,1\n\
+19/10/2011,1,3,0\n\
+20/10/2011,119,92,40\n\
+24/10/2011,0,9,0\n\
+25/10/2011,10,25,2\n\
+29/10/2011,63,134,39\n\
+31/10/2011,151,9,10\n\
+01/11/2011,339,214,82\n\
+02/11/2011,180,143,59\n\
+03/11/2011,1,11,0\n\
+04/11/2011,117,147,45\n\
+05/11/2011,2,14,0\n\
+09/11/2011,0,11,0\n\
+10/11/2011,73,73,32\n\
+14/11/2011,10,4,0\n\
+15/11/2011,6,8,0\n\
+16/11/2011,6,17,4\n\
+19/11/2011,0,0,0\n\
+22/11/2011,40,86,41\n\
+23/11/2011,74,140,508\n\
+30/11/2011,6,11,0\n\
+07/12/2011,14,1,1\n\
+09/12/2011,31,25,2\n\
+10/12/2011,0,9,0\n\
+11/12/2011,4,5,0\n\
+13/12/2011,15,24,3\n\
+14/12/2011,19,2,8\n\
+15/12/2011,16,20,4\n\
+20/12/2011,1,4,0\n\
+27/12/2011,6,17,0\n\
+28/12/2011,2,2,0\n\
+30/12/2011,10,16,7\n\
+31/12/2011,1,2,0\n\
+01/01/2012,22,6,0\n\
+02/01/2012,25,0,0\n\
+09/01/2012,57,45,69\n\
+13/01/2012,0,1,3\n\
+17/01/2012,26,3,26\n\
+18/01/2012,14,8,0\n\
+19/01/2012,54,9,0\n\
+22/01/2012,6,1,2\n\
+23/01/2012,4,18,0\n\
+24/01/2012,131,149,5235\n\
+25/01/2012,10,27,4\n\
+26/01/2012,8,16,0\n\
+29/01/2012,142,43,4\n\
+30/01/2012,0,4,0\n\
+03/02/2012,91,256,272\n\
+07/02/2012,15,6,0\n\
+08/02/2012,0,0,2\n\
+09/02/2012,0,5,0\n\
+10/02/2012,0,13,0\n\
+12/02/2012,0,2,0\n\
+13/02/2012,0,0,12\n\
+14/02/2012,434,460,1\n\
+15/02/2012,89,139,13\n\
+16/02/2012,24,20,14\n\
+17/02/2012,50,28,2\n\
+18/02/2012,5523,205,6652\n\
+19/02/2012,958,453,439\n\
+20/02/2012,154,126,48\n\
+21/02/2012,249,370,103\n\
+22/02/2012,89,48,2\n\
+23/02/2012,357,599,176\n\
+25/02/2012,0,1,0\n\
+26/02/2012,32,32,28\n\
+27/02/2012,0,12,2\n\
+29/02/2012,36,114,185\n\
+02/03/2012,2,2,0\n\
+04/03/2012,4,15,0\n\
+06/03/2012,1,0,0\n\
+08/03/2012,10,6,0\n\
+09/03/2012,0,1,0\n\
+15/03/2012,0,5,0\n\
+16/03/2012,14,24,10\n\
+17/03/2012,36,86,0\n\
+18/03/2012,3,1,0\n\
+19/03/2012,63,86,90\n\
+20/03/2012,1,0,0\n\
+23/03/2012,6,5,0\n\
+28/03/2012,0,3,2\n\
+30/03/2012,7,6,1\n\
+03/04/2012,0,13,0\n\
+04/04/2012,22,79,372\n\
+06/04/2012,70,702,0\n\
+07/04/2012,12,194,0\n\
+15/04/2012,6,20,7\n\
+19/04/2012,0,6,4\n\
+25/04/2012,1,52,0\n\
+26/04/2012,6,9,10\n\
+01/05/2012,1,2,0\n\
+04/05/2012,34,12,32\n\
+09/05/2012,7,8,0\n\
+10/05/2012,2,0,0\n\
+11/05/2012,2,7,0\n\
+27/05/2012,7,0,6\n\
+29/05/2012,1,0,0\n\
+01/06/2012,1,6,0\n\
+14/06/2012,21,4,0\n\
+20/06/2012,0,1,2\n\
+22/06/2012,4,3,0\n\
+24/06/2012,0,70,9\n\
+25/06/2012,12,34,2\n\
+28/06/2012,98,111,238\n\
+29/06/2012,26,44,0\n\
+30/06/2012,19,50,4\n\
+02/07/2012,0,48,0\n\
+03/07/2012,79,76,2\n\
+04/07/2012,10,21,0\n\
+05/07/2012,4,4,0\n\
+10/07/2012,0,18,0\n\
+13/07/2012,0,2,0\n\
+17/07/2012,12,8,0\n\
+19/07/2012,23,618,1755\n\
+21/07/2012,2,7,2\n\
+23/07/2012,4,8,0\n\
+24/07/2012,196,156,144\n\
+25/07/2012,18,76,24\n\
+26/07/2012,1,8,0\n\
+31/07/2012,243,3438,145\n\
+01/08/2012,47,37,6\n\
+03/08/2012,0,38,0\n\
+04/08/2012,6,29,168\n\
+05/08/2012,218,227,159\n\
+06/08/2012,25,43,6\n\
+07/08/2012,47,22,126\n\
+09/08/2012,154,82,47\n\
+12/08/2012,8,29,36\n\
+13/08/2012,24,99,10\n\
+15/08/2012,271,182,3\n\
+16/08/2012,21,16,0\n\
+20/08/2012,0,3,3\n\
+21/08/2012,0,0,5\n\
+31/08/2012,12,64,2\n\
+04/09/2012,10,14,0\n\
+05/09/2012,6,5,0\n\
+06/09/2012,0,24,0\n\
+14/09/2012,7,5,0\n\
+17/09/2012,6,0,0\n\
+18/09/2012,84,69,18\n\
+19/09/2012,75,201,61\n\
+20/09/2012,26,27,117\n\
+23/09/2012,15,26,7\n\
+24/09/2012,242,720,287\n\
+25/09/2012,162,397,111\n\
+26/09/2012,193,267,55\n\
+27/09/2012,73,113,54\n\
+28/09/2012,178,126,28\n\
+29/09/2012,379,518,216\n\
+02/10/2012,434,482,452\n\
+03/10/2012,64,20,1\n\
+04/10/2012,7,31,11\n\
+05/10/2012,57,164,42\n\
+06/10/2012,403,143,947\n\
+07/10/2012,21,29,1\n\
+08/10/2012,22,60,13\n\
+11/10/2012,62,171,111\n\
+12/10/2012,121,673,2709\n\
+15/10/2012,19,4,0\n\
+16/10/2012,2,9,6\n\
+17/10/2012,138,106,158\n\
+19/10/2012,2,52,6\n\
+25/10/2012,64,6,0\n\
+27/10/2012,5,7,1\n\
+29/10/2012,10,3,14\n\
+30/10/2012,51,77,2\n\
+31/10/2012,3,14,0\n\
+02/11/2012,3,14,9\n\
+03/11/2012,16,5,0\n\
+10/11/2012,32,39,10\n\
+11/11/2012,60,296,9323\n\
+13/11/2012,5,30,17\n\
+14/11/2012,78,38,11\n\
+15/11/2012,20,23,1\n\
+16/11/2012,8,1,0\n\
+18/11/2012,119,330,354\n\
+19/11/2012,87,77,11\n\
+20/11/2012,38,55,29\n\
+21/11/2012,42,45,7\n\
+26/11/2012,0,6,0\n\
+30/11/2012,3,11,2\n\
+04/12/2012,36,9,2\n\
+05/12/2012,382,286,133\n\
+06/12/2012,76,198,86\n\
+07/12/2012,32,7,0\n\
+08/12/2012,0,5,0\n\
+09/12/2012,165,34,23\n\
+10/12/2012,164,134,202\n\
+11/12/2012,539,833,757\n\
+12/12/2012,447,900,547\n\
+13/12/2012,506,635,515\n\
+14/12/2012,72,47,1\n\
+15/12/2012,391,485,276\n\
+17/12/2012,6,61,2\n\
+18/12/2012,42,15,4\n\
+19/12/2012,37,26,27035\n\
+20/12/2012,2,10,3021\n\
+21/12/2012,0,6,0\n\
+25/12/2012,14,3,0\n\
+27/12/2012,25,8,11\n\
+28/12/2012,31,1,8\n\
+29/12/2012,8,0,0\n\
+01/01/2013,23,9,3\n\
+04/01/2013,0,1,0\n\
+05/01/2013,3,2,0\n\
+07/01/2013,2,0,0\n\
+08/01/2013,38,28,13\n\
+13/01/2013,20,17,0\n\
+15/01/2013,51,18,0\n\
+16/01/2013,69,52,6\n\
+20/01/2013,0,2,2\n\
+22/01/2013,0,10,2\n\
+23/01/2013,16,57,34\n\
+24/01/2013,2,46,1437\n\
+31/01/2013,24,106,15\n\
+01/02/2013,8,82,5\n\
+05/02/2013,42,4,0\n\
+06/02/2013,44,63,15\n\
+07/02/2013,1,0,1\n\
+09/02/2013,35,4,0\n\
+10/02/2013,0,12,4\n\
+11/02/2013,34,32,3\n\
+14/02/2013,1,36,0\n\
+18/02/2013,4,13,0\n\
+19/02/2013,17,26,1\n\
+22/02/2013,0,27,49\n\
+23/02/2013,6,12,0\n\
+26/02/2013,81,7,3\n\
+01/03/2013,1,13,1\n\
+02/03/2013,255,36,16\n\
+03/03/2013,4,75,0\n\
+04/03/2013,192,25,21\n\
+05/03/2013,208,60,12\n\
+06/03/2013,235,90,238\n\
+07/03/2013,540,28,4\n\
+11/03/2013,429,787,245\n\
+12/03/2013,24,27,0\n\
+13/03/2013,2309,1259,1527\n\
+14/03/2013,1590,6234,4097\n\
+15/03/2013,136,37,54\n\
+16/03/2013,23,27,2\n\
+19/03/2013,614,263,767\n\
+20/03/2013,0,2,0\n\
+21/03/2013,26,13,25\n\
+22/03/2013,88,13,0\n\
+24/03/2013,0,5,0\n\
+25/03/2013,24,0,0\n\
+26/03/2013,17,5,2\n\
+27/03/2013,6,0,0\n\
+30/03/2013,16,7,6\n\
+31/03/2013,98,101,0\n\
+02/04/2013,45,25,13\n\
+03/04/2013,21,5,0\n\
+05/04/2013,12,0,0\n\
+07/04/2013,2,28,0\n\
+11/04/2013,0,2,2\n\
+15/04/2013,10,0,0\n\
+17/04/2013,13,11,3\n\
+18/04/2013,13,0,0\n\
+19/04/2013,114,59,4\n\
+20/04/2013,25,12,0\n\
+25/04/2013,7,8,62\n\
+30/04/2013,50,73,31\n\
+01/05/2013,14,4,1\n\
+04/05/2013,3,0,0\n\
+05/05/2013,245,62,35\n\
+07/05/2013,7,7,6\n\
+08/05/2013,1,4,1\n\
+13/05/2013,60,14,33\n\
+15/05/2013,15,16,11\n\
+16/05/2013,0,5,0\n\
+17/05/2013,1,0,0\n\
+19/05/2013,12,125,29\n\
+20/05/2013,54,143,79\n\
+21/05/2013,32,5,6\n\
+22/05/2013,0,7,18\n\
+23/05/2013,1,9,0\n\
+24/05/2013,2,6,0\n\
+25/05/2013,8,2,9\n\
+26/05/2013,21,5,0\n\
+28/05/2013,55,218,35\n\
+29/05/2013,494,114,378\n\
+30/05/2013,125,120,10\n\
+01/06/2013,0,15,0\n\
+02/06/2013,132,138,48\n\
+03/06/2013,0,11,1\n\
+04/06/2013,1,3,0\n\
+08/06/2013,196,58,104\n\
+11/06/2013,51,97,7\n\
+12/06/2013,40,48,13\n\
+13/06/2013,51,66,46\n\
+14/06/2013,6,5,0\n\
+18/06/2013,32,39,0\n\
+19/06/2013,2,12,4\n\
+20/06/2013,11,6,0\n\
+21/06/2013,0,15,0\n\
+24/06/2013,46,0,2\n\
+25/06/2013,4,37,17\n\
+26/06/2013,35,40,86\n\
+27/06/2013,47,34,26\n\
+28/06/2013,136,60,146\n\
+29/06/2013,3,8,10\n\
+30/06/2013,51,55,19\n\
+01/07/2013,0,10,0\n\
+02/07/2013,63,19,4\n\
+03/07/2013,33,45,0\n\
+04/07/2013,8,16,5\n\
+05/07/2013,97,185,63\n\
+06/07/2013,9,24,4\n\
+10/07/2013,60,96,35\n\
+11/07/2013,45,125,20\n\
+12/07/2013,21,12,0\n\
+16/07/2013,0,3,0\n\
+18/07/2013,27,49,19\n\
+19/07/2013,17,480,9\n\
+21/07/2013,16,0,0\n\
+22/07/2013,0,3,0\n\
+23/07/2013,26,17,4\n\
+24/07/2013,10,17,0\n\
+29/07/2013,5,8,0\n\
+31/07/2013,32,36,1\n\
+01/08/2013,3,8,0\n\
+02/08/2013,30,5,14\n\
+05/08/2013,18,0,5\n\
+10/08/2013,106,213,50\n\
+12/08/2013,2,1,0\n\
+13/08/2013,152,188,48\n\
+14/08/2013,12,35,8\n\
+15/08/2013,180,284,38\n\
+16/08/2013,77,156,103\n\
+19/08/2013,7,34,98\n\
+21/08/2013,30,281,27\n\
+22/08/2013,114,42,1\n\
+23/08/2013,10,42,2\n\
+27/08/2013,28,11,26\n\
+28/08/2013,27,11,0\n\
+30/08/2013,10,16,4\n\
+31/08/2013,15,26,5\n\
+05/09/2013,9,20,16\n\
+17/09/2013,30,12,7\n\
+19/09/2013,11,5,0\n\
+21/09/2013,60,1,25\n\
+24/09/2013,79,54,4\n\
+25/09/2013,24,88,35\n\
+26/09/2013,20,59,19\n\
+03/10/2013,165,161,30\n\
+05/10/2013,504,2601,2565\n\
+07/10/2013,13,15,6\n\
+09/10/2013,21,86,8\n\
+10/10/2013,6,138,21\n\
+11/10/2013,336,3339,355\n\
+12/10/2013,3,6,4\n\
+15/10/2013,60,3,32\n\
+16/10/2013,95,67,56\n\
+17/10/2013,9,56,2\n\
+25/10/2013,7,4,3\n\
+04/11/2013,6,0,0\n\
+11/11/2013,1,1,0\n\
+15/11/2013,5,0,0\n\
+18/11/2013,8,165,0\n\
+19/11/2013,30,82,33\n\
+20/11/2013,3,0,0\n\
+23/11/2013,174,53,37\n\
+24/11/2013,8,22,8\n\
+25/11/2013,5,0,0\n\
+30/11/2013,0,9,2\n\
+03/12/2013,0,24,8\n\
+04/12/2013,39,45,17\n\
+05/12/2013,0,3,0\n\
+12/12/2013,16,35,0\n\
+13/12/2013,28,31,35\n\
+16/12/2013,13,7,0\n\
+08/01/2014,700,1289,525\n\
+09/01/2014,53,66,59\n\
+10/01/2014,10,13,8\n\
+13/01/2014,1,40,3\n\
+14/01/2014,0,2,0\n\
+15/01/2014,1,1,0\n\
+21/01/2014,1,0,0\n\
+03/02/2014,0,1,0\n\
+11/02/2014,2,2,0\n\
+12/02/2014,5,0,0\n\
+18/02/2014,23,7,1\n\
+27/02/2014,2,12,0\n\
+09/03/2014,1,0,0\n\
+13/03/2014,0,0,0\n\
+17/03/2014,0,0,0\n\
+20/03/2014,0,1,2\n\
+21/03/2014,0,0,0\n\
+22/03/2014,0,12,0\n\
+24/03/2014,97,341,64\n\
+04/04/2014,18,5,2\n\
+06/04/2014,14,132,18\n\
+08/04/2014,2,9,0\n\
+10/04/2014,0,0,0\n\
+11/04/2014,2,16,7\n\
+22/04/2014,3,6,0\n\
+10/05/2014,2,5,0\n\
+13/05/2014,0,0,1\n\
+18/05/2014,336,541,340\n\
+19/05/2014,19,3,6\n\
+22/05/2014,3,0,0\n\
+23/05/2014,3,2,0\n\
+28/05/2014,1,0,0\n\
+30/05/2014,95,12,0\n\
+06/06/2014,74,5,0\n\
+08/06/2014,12,51,3\n\
+24/06/2014,2,0,2\n\
+25/06/2014,25,67,52\n\
+27/06/2014,34,5,0\n\
+30/06/2014,13,1,0\n\
+01/07/2014,0,0,0\n\
+07/07/2014,6,3,15\n\
+12/07/2014,0,1,0\n\
+17/07/2014,7,5,0\n\
+29/07/2014,11,7,0\n\
+05/08/2014,38,12,46\n\
+06/08/2014,0,80,0\n\
+12/08/2014,0,0,0\n\
+13/08/2014,0,0,0\n\
+15/08/2014,18,12,1\n\
+25/08/2014,1,0,0\n\
+28/08/2014,0,0,0\n\
+10/09/2014,5,1,2\n\
+27/09/2014,7,41,3\n\
+28/09/2014,0,0,0\n\
+30/09/2014,2,5,0\n\
+02/10/2014,0,11,0\n\
+03/10/2014,4,4,0\n\
+08/10/2014,5,7,2\n\
+09/10/2014,22,44,11\n\
+10/10/2014,78,87,16\n\
+13/10/2014,0,239,4\n\
+14/10/2014,41,86,5\n\
+15/10/2014,115,114,43\n\
+16/10/2014,19,8,0\n\
+17/10/2014,71,208,206\n\
+21/10/2014,10,5,9\n\
+22/10/2014,0,1,0\n\
+23/10/2014,47,90,4\n\
+24/10/2014,15,6,0\n\
+03/11/2014,0,0,3\n\
+13/11/2014,1,5,0\n\
+14/11/2014,4,23,0\n\
+15/11/2014,37,78,36\n\
+16/11/2014,75,94,20\n\
+17/11/2014,86,207,62\n\
+18/11/2014,61,101,20\n\
+19/11/2014,161,170,105\n\
+20/11/2014,9,21,3\n\
+01/12/2014,19,8,0\n\
+06/12/2014,17,13,4\n\
+08/12/2014,89,49,34\n\
+09/12/2014,0,8,0\n\
+30/12/2014,38,13,6\n\
+31/12/2014,8,4,0\n\
+13/01/2015,3,0,0\n\
+14/01/2015,0,0,0\n\
+15/01/2015,0,4,0\n\
+28/01/2015,2,5,0\n\
+31/01/2015,0,4,47\n\
+05/02/2015,0,1,0\n\
+06/02/2015,18,5,0\n\
+07/02/2015,74,100,37\n\
+08/02/2015,0,2,1\n\
+10/02/2015,32,13,0\n\
+11/02/2015,1,0,0\n\
+12/02/2015,1,1,0\n\
+13/02/2015,0,1,0\n\
+06/04/2015,0,1,0\n\
+",
+"\
+date,added,modified,removed\n\
+27/09/2010,0,0,0\n\
+28/09/2010,219,135,219\n\
+29/09/2010,2888,23283,4196\n\
+02/10/2010,0,5033,0\n\
+04/10/2010,0,0,0\n\
+05/10/2010,1347,16410,327\n\
+06/10/2010,131,6987,0\n\
+10/10/2010,0,729,0\n\
+14/10/2010,827,31361,1090\n\
+20/10/2010,4490,35452,371\n\
+21/10/2010,1841,28454,0\n\
+22/10/2010,1820,30818,327\n\
+23/10/2010,10169,14704,3541\n\
+24/10/2010,14468,202385,49392\n\
+25/10/2010,7341,67123,2965\n\
+26/10/2010,1935,38517,0\n\
+27/10/2010,24,20417,0\n\
+29/10/2010,66,12678,0\n\
+30/10/2010,12608,43220,12720\n\
+02/11/2010,8632,50126,41\n\
+03/11/2010,3587,17269,2584\n\
+04/11/2010,442,1091,0\n\
+05/11/2010,9749,72429,65989\n\
+06/11/2010,0,0,0\n\
+07/11/2010,2861,36071,1758\n\
+08/11/2010,13275,8129,7947\n\
+09/11/2010,1552,44090,1760\n\
+10/11/2010,3673,37926,160\n\
+11/11/2010,0,54,0\n\
+12/11/2010,3219,591,0\n\
+16/11/2010,3749,28298,178\n\
+19/11/2010,172,1494,17\n\
+23/11/2010,4418,11063,1746\n\
+26/11/2010,0,0,0\n\
+27/11/2010,8810,97591,908\n\
+28/11/2010,1905,39048,1179\n\
+29/11/2010,968,8406,102\n\
+30/11/2010,2244,18889,282\n\
+06/12/2010,0,7562,0\n\
+07/12/2010,1715,11475,199\n\
+09/12/2010,848,13352,0\n\
+11/12/2010,100,3459,0\n\
+14/12/2010,504,22772,0\n\
+15/12/2010,2895,23382,0\n\
+16/12/2010,4364,25743,4151\n\
+17/12/2010,78,21014,0\n\
+03/01/2011,1041,16848,834\n\
+04/01/2011,3190,5255,0\n\
+05/01/2011,250,66918,275\n\
+08/01/2011,733,28897,120\n\
+10/01/2011,96,3655,0\n\
+11/01/2011,1350,4845,0\n\
+12/01/2011,120,0,0\n\
+17/01/2011,4362,19975,8386\n\
+20/01/2011,0,323932,0\n\
+21/01/2011,3935,7083,0\n\
+25/01/2011,563,27626,0\n\
+27/01/2011,90,90,0\n\
+28/01/2011,1715,31798,597\n\
+29/01/2011,188,21481,0\n\
+31/01/2011,3280,40085,3133\n\
+01/02/2011,0,2847,0\n\
+02/02/2011,94,2890,100\n\
+07/02/2011,340,484,0\n\
+08/02/2011,560,31297,519\n\
+11/02/2011,1060,30867,316\n\
+12/02/2011,2301,6550,172\n\
+14/02/2011,3447,33558,118\n\
+16/02/2011,680,51665,48\n\
+17/02/2011,3912,35385,38\n\
+18/02/2011,852,35119,268\n\
+23/02/2011,4290,106184,0\n\
+24/02/2011,4435,43073,2615\n\
+25/02/2011,0,503,0\n\
+26/02/2011,0,1199,0\n\
+27/02/2011,848,39429,130\n\
+28/02/2011,1036,2949,338\n\
+01/03/2011,2052,21947,866\n\
+02/03/2011,922,5455,0\n\
+03/03/2011,10173,6211,453\n\
+04/03/2011,368,25296,92\n\
+05/03/2011,204,11774,1952\n\
+08/03/2011,705,23917,0\n\
+09/03/2011,396,28941,362\n\
+10/03/2011,986,342,636\n\
+11/03/2011,345,23437,304\n\
+12/03/2011,5236,64272,2345\n\
+13/03/2011,4673,59530,845\n\
+15/03/2011,3724,8302,152\n\
+17/03/2011,0,1239,0\n\
+25/03/2011,41,63660,3951252\n\
+26/03/2011,24,0,0\n\
+29/03/2011,0,161,207\n\
+30/03/2011,1398,27489,676\n\
+01/04/2011,158,91,48\n\
+06/04/2011,15191,31289,123\n\
+07/04/2011,3129,59788,16248\n\
+08/04/2011,13708,79923,8229\n\
+09/04/2011,4720,116410,6317\n\
+10/04/2011,21628,125933,2238\n\
+11/04/2011,10358,125168,1925\n\
+12/04/2011,269,813,29\n\
+13/04/2011,14987,105527,1119\n\
+14/04/2011,13559,227231,7934\n\
+15/04/2011,19,79,0\n\
+19/04/2011,4059,67143,1768\n\
+20/04/2011,15278,80681,442\n\
+24/04/2011,0,112,0\n\
+25/04/2011,22125,85121,3085\n\
+26/04/2011,15463,65842,0\n\
+27/04/2011,3738,128019,1465\n\
+28/04/2011,8886,132585,1218\n\
+29/04/2011,832,833,182\n\
+30/04/2011,704,3105,1483\n\
+01/05/2011,28404,219653,6005\n\
+02/05/2011,7232,51127,0\n\
+03/05/2011,35977,215367,256\n\
+04/05/2011,15734,0,0\n\
+05/05/2011,1778,334030,0\n\
+07/05/2011,338,112563,1748\n\
+08/05/2011,3257,79241,0\n\
+09/05/2011,0,53113,999\n\
+10/05/2011,8486,14910,0\n\
+11/05/2011,5084,80295,118\n\
+12/05/2011,1968,175416,7468\n\
+13/05/2011,4384,3804,324\n\
+14/05/2011,742,130,0\n\
+19/05/2011,2715,72540,42\n\
+20/05/2011,2913,80530,410\n\
+21/05/2011,18636,78256,2494\n\
+22/05/2011,2060,92380,967\n\
+23/05/2011,1053,57359,137\n\
+26/05/2011,1054,13791,310\n\
+27/05/2011,1255,181990,26\n\
+28/05/2011,1218,7036,1299\n\
+30/05/2011,3474,166497,508\n\
+02/06/2011,0,0,0\n\
+03/06/2011,68,120,0\n\
+06/06/2011,1957,47222,579\n\
+07/06/2011,48693,178458,729\n\
+11/06/2011,5371,225255,9196\n\
+12/06/2011,184,45468,13828\n\
+13/06/2011,5,0,0\n\
+14/06/2011,16271,16653,0\n\
+15/06/2011,3558,47910,964\n\
+17/06/2011,4979,98942,133\n\
+18/06/2011,1199,0,0\n\
+22/06/2011,4570,162258,2912\n\
+23/06/2011,1122,45057,1432\n\
+24/06/2011,4846,170348,2506\n\
+25/06/2011,86,50085,38\n\
+26/06/2011,0,101,0\n\
+28/06/2011,1739,44797,253\n\
+30/06/2011,541,42467,0\n\
+02/07/2011,1342,35666,2356\n\
+03/07/2011,1466,20289,7992\n\
+04/07/2011,271,60,145\n\
+06/07/2011,265,11670,8301\n\
+07/07/2011,0,165,0\n\
+08/07/2011,19435,69279,302\n\
+09/07/2011,941,79630,788\n\
+10/07/2011,5214,53352,1245\n\
+12/07/2011,243,69915,0\n\
+14/07/2011,0,17329,16\n\
+15/07/2011,0,59,0\n\
+16/07/2011,0,56179,0\n\
+17/07/2011,17288,42803,0\n\
+19/07/2011,30038,78456,932\n\
+20/07/2011,8998,78635,13\n\
+27/07/2011,142,17811,0\n\
+01/08/2011,11657,122483,89\n\
+08/08/2011,0,17872,0\n\
+09/08/2011,0,243,99\n\
+10/08/2011,98,0,0\n\
+11/08/2011,0,17872,0\n\
+12/08/2011,3052,57044,160\n\
+13/08/2011,7786,5090,6544\n\
+14/08/2011,4444,1698,50356\n\
+15/08/2011,45057,43288,124355\n\
+16/08/2011,41274,128920,1289576\n\
+17/08/2011,18175,106146,132281\n\
+18/08/2011,12751,98982,4416\n\
+19/08/2011,63714,51962,226\n\
+20/08/2011,102,0,0\n\
+21/08/2011,2745,210390,9813\n\
+22/08/2011,10791,164955,8466\n\
+23/08/2011,90229,210651,9980\n\
+24/08/2011,3409,101226,1218\n\
+25/08/2011,18956,212951,703\n\
+26/08/2011,19215,50406,863\n\
+27/08/2011,9780,100695,246\n\
+28/08/2011,8461,69930,74\n\
+29/08/2011,1764,166390,253\n\
+30/08/2011,418,51532,118\n\
+31/08/2011,0,50960,0\n\
+02/09/2011,164,67984,88\n\
+03/09/2011,1022,35243,0\n\
+07/09/2011,0,17795,0\n\
+08/09/2011,1545,35536,142\n\
+09/09/2011,20337,2386,0\n\
+10/09/2011,13647,15911,65\n\
+12/09/2011,11136,97783,2329\n\
+14/09/2011,814,51473,564\n\
+15/09/2011,0,296,65\n\
+18/09/2011,10049,19546,18506\n\
+19/09/2011,194,50119,0\n\
+20/09/2011,17913,0,0\n\
+21/09/2011,37905,101527,365\n\
+22/09/2011,1004,68356,0\n\
+24/09/2011,0,208,0\n\
+26/09/2011,10203,8907,104\n\
+27/09/2011,17100,307194,18431\n\
+28/09/2011,0,0,0\n\
+29/09/2011,1861,120240,5\n\
+30/09/2011,1169,70444,500\n\
+01/10/2011,0,0,0\n\
+03/10/2011,20,23,32\n\
+04/10/2011,0,145,86\n\
+05/10/2011,18662,69228,0\n\
+06/10/2011,1784,173791,198\n\
+07/10/2011,1376,245148,150\n\
+08/10/2011,9195,624,0\n\
+11/10/2011,2827,181354,1382\n\
+12/10/2011,2996,108887,450\n\
+13/10/2011,784,116274,1604\n\
+14/10/2011,608,52766,0\n\
+17/10/2011,844,88393,25\n\
+19/10/2011,23,80,0\n\
+20/10/2011,3550,316720,1223\n\
+24/10/2011,0,50486,0\n\
+25/10/2011,456,175765,80\n\
+29/10/2011,2423,126214,1670\n\
+31/10/2011,4257,52085,196\n\
+01/11/2011,9853,226808,2208\n\
+02/11/2011,5793,194212,1683\n\
+03/11/2011,9,89064,0\n\
+04/11/2011,36544,583435,49129\n\
+05/11/2011,156,57868,0\n\
+09/11/2011,0,314,0\n\
+10/11/2011,2552,216464,1444\n\
+14/11/2011,357,169,0\n\
+15/11/2011,396,57567,0\n\
+16/11/2011,86,172430,160\n\
+19/11/2011,0,0,0\n\
+22/11/2011,1400,146438,841\n\
+23/11/2011,2366,292163,15401\n\
+30/11/2011,318,91474,0\n\
+07/12/2011,406,10634,12850\n\
+09/12/2011,994,83945,100\n\
+10/12/2011,0,182,0\n\
+11/12/2011,176,25536,0\n\
+13/12/2011,17959,35470,17497\n\
+14/12/2011,27019,58205,984\n\
+15/12/2011,769,51782,108\n\
+20/12/2011,80,306,0\n\
+27/12/2011,120,788,0\n\
+28/12/2011,52,40,0\n\
+30/12/2011,310,116950,374\n\
+31/12/2011,25669,120,0\n\
+01/01/2012,971,58576,0\n\
+02/01/2012,27642,0,0\n\
+09/01/2012,1785,145504,2113\n\
+13/01/2012,0,81,177\n\
+17/01/2012,1328,17485,726\n\
+18/01/2012,635,59027,0\n\
+19/01/2012,2073,690,0\n\
+22/01/2012,194,26098,134\n\
+23/01/2012,62,55080,0\n\
+24/01/2012,5196,122270,332093\n\
+25/01/2012,837,18141,284\n\
+26/01/2012,26287,177207,0\n\
+29/01/2012,4718,32841,112\n\
+30/01/2012,0,59021,0\n\
+03/02/2012,2205,68516,7856\n\
+07/02/2012,476,59953,0\n\
+08/02/2012,0,0,5\n\
+09/02/2012,0,249,0\n\
+10/02/2012,0,304,0\n\
+12/02/2012,0,128,0\n\
+13/02/2012,0,0,33\n\
+14/02/2012,13143,190969,13\n\
+15/02/2012,20962,263501,380\n\
+16/02/2012,544,18323,350\n\
+17/02/2012,1760,120920,86\n\
+18/02/2012,149598,11929,300851\n\
+19/02/2012,43695,723271,17101\n\
+20/02/2012,4963,1071628,34123\n\
+21/02/2012,7101,1742436,2535\n\
+22/02/2012,3650,301427,94\n\
+23/02/2012,10630,589362,5050\n\
+25/02/2012,0,22,0\n\
+26/02/2012,1058,112658,948\n\
+27/02/2012,0,111570,2\n\
+29/02/2012,1230,161678,6088\n\
+02/03/2012,138,45732,0\n\
+04/03/2012,192,223403,0\n\
+06/03/2012,39,0,0\n\
+08/03/2012,522,78800,0\n\
+09/03/2012,0,18,0\n\
+15/03/2012,0,78742,0\n\
+16/03/2012,922,427982,520\n\
+17/03/2012,646,337227,0\n\
+18/03/2012,118,67,0\n\
+19/03/2012,1566,114585,2295\n\
+20/03/2012,22,0,0\n\
+23/03/2012,204,78784,0\n\
+28/03/2012,0,32814,20\n\
+30/03/2012,33013,46278,19\n\
+03/04/2012,0,190391,0\n\
+04/04/2012,508,2231,7995\n\
+06/04/2012,1310,26868,0\n\
+07/04/2012,261,7219,0\n\
+15/04/2012,187,112308,244\n\
+19/04/2012,0,78852,320\n\
+25/04/2012,8,2289,0\n\
+26/04/2012,172,111592,165\n\
+01/05/2012,40,358,0\n\
+04/05/2012,1365,223461,1287\n\
+09/05/2012,223,111545,0\n\
+10/05/2012,68,0,0\n\
+11/05/2012,26,144260,0\n\
+27/05/2012,80,0,178\n\
+29/05/2012,66,0,0\n\
+01/06/2012,54,111562,0\n\
+14/06/2012,1006,111508,0\n\
+20/06/2012,0,58,46\n\
+22/06/2012,357,78738,0\n\
+24/06/2012,0,304760,33070\n\
+25/06/2012,504,49028,100\n\
+28/06/2012,3047,273055,6241\n\
+29/06/2012,1454,192245,0\n\
+30/06/2012,543,113623,96\n\
+02/07/2012,0,139652,0\n\
+03/07/2012,2428,160978,126\n\
+04/07/2012,264,223391,0\n\
+05/07/2012,52,46136,0\n\
+10/07/2012,0,112319,0\n\
+13/07/2012,0,74,0\n\
+17/07/2012,640,13614,0\n\
+19/07/2012,555,22712,35666\n\
+21/07/2012,52,78958,72\n\
+23/07/2012,54,125001,0\n\
+24/07/2012,5997,454286,5018\n\
+25/07/2012,573,639226,628\n\
+26/07/2012,72,111769,0\n\
+31/07/2012,40273,1601725,4349\n\
+01/08/2012,2224,193982,163\n\
+03/08/2012,0,34635,0\n\
+04/08/2012,167,226930,5504\n\
+05/08/2012,9907,768961,7333\n\
+06/08/2012,992,195093,252\n\
+07/08/2012,1757,193717,4307\n\
+09/08/2012,5560,536669,1365\n\
+12/08/2012,288,200140,2156\n\
+13/08/2012,1102,550840,531\n\
+15/08/2012,9457,404547,105\n\
+16/08/2012,1079,282625,0\n\
+20/08/2012,0,249,186\n\
+21/08/2012,0,0,311\n\
+31/08/2012,352,118699,43\n\
+04/09/2012,516,50601,0\n\
+05/09/2012,33004,198,0\n\
+06/09/2012,0,116831,0\n\
+14/09/2012,147,32876,0\n\
+17/09/2012,82,0,0\n\
+18/09/2012,2249,117997,1109\n\
+19/09/2012,35893,926881,2306\n\
+20/09/2012,1232,402898,4754\n\
+23/09/2012,644,36160,175\n\
+24/09/2012,26954,698003,27082\n\
+25/09/2012,6404,848458,4036\n\
+26/09/2012,46808,2178177,3091\n\
+27/09/2012,41559,601821,1869\n\
+28/09/2012,39366,475533,624\n\
+29/09/2012,12839,1133770,5847\n\
+02/10/2012,56577,1570471,15862\n\
+03/10/2012,2470,209777,72\n\
+04/10/2012,268,205726,246\n\
+05/10/2012,2159,174538,1472\n\
+06/10/2012,39102,1034076,58087\n\
+07/10/2012,852,25969,48\n\
+08/10/2012,380,1987,465\n\
+11/10/2012,2523,256565,4725\n\
+12/10/2012,4071,46991,69502\n\
+15/10/2012,335,58352,0\n\
+16/10/2012,78,156930,236\n\
+17/10/2012,4957,502574,5582\n\
+19/10/2012,67,99963,401\n\
+25/10/2012,1643,124406,0\n\
+27/10/2012,310,26504,37\n\
+29/10/2012,420,92272,646\n\
+30/10/2012,1617,220512,182\n\
+31/10/2012,255,93296,0\n\
+02/11/2012,32102,186495,358\n\
+03/11/2012,887,124880,0\n\
+10/11/2012,1267,213280,341\n\
+11/11/2012,1283,134730,367809\n\
+13/11/2012,422,408864,1001\n\
+14/11/2012,35089,188908,32486\n\
+15/11/2012,1210,344856,132\n\
+16/11/2012,419,82,0\n\
+18/11/2012,3231,854325,12063\n\
+19/11/2012,15494,126106,355\n\
+20/11/2012,1499,125647,1234\n\
+21/11/2012,33519,317806,244\n\
+26/11/2012,0,59782,0\n\
+30/11/2012,328,124336,12\n\
+04/12/2012,1442,28126,74\n\
+05/12/2012,137173,658510,37372\n\
+06/12/2012,65892,242721,2830\n\
+07/12/2012,992,216456,0\n\
+08/12/2012,0,310,0\n\
+09/12/2012,7125,347321,866\n\
+10/12/2012,7428,513556,6382\n\
+11/12/2012,49880,672154,24882\n\
+12/12/2012,110858,1834184,83069\n\
+13/12/2012,108772,2021680,48463\n\
+14/12/2012,2696,193214,48\n\
+15/12/2012,46765,462473,9509\n\
+17/12/2012,370,255774,101\n\
+18/12/2012,34075,96938,267\n\
+19/12/2012,1160,317534,2276011\n\
+20/12/2012,114,713,83509\n\
+21/12/2012,0,32304,0\n\
+25/12/2012,523,30871,0\n\
+27/12/2012,1101,62885,32493\n\
+28/12/2012,980,30552,398\n\
+29/12/2012,31106,0,0\n\
+01/01/2013,1027,62996,139\n\
+04/01/2013,0,30,0\n\
+05/01/2013,32244,122,0\n\
+07/01/2013,204,0,0\n\
+08/01/2013,1521,191984,732\n\
+13/01/2013,638,31732,0\n\
+15/01/2013,1823,127459,0\n\
+16/01/2013,4007,37386,156\n\
+20/01/2013,0,74,32194\n\
+22/01/2013,0,127729,110\n\
+23/01/2013,772,196151,1760\n\
+24/01/2013,24,34160,47680\n\
+31/01/2013,1279,260018,512\n\
+01/02/2013,482,351890,226\n\
+05/02/2013,1541,126780,0\n\
+06/02/2013,1828,444542,537\n\
+07/02/2013,66,0,66\n\
+09/02/2013,930,126568,0\n\
+10/02/2013,0,127361,192\n\
+11/02/2013,35764,35376,89\n\
+14/02/2013,27,25348,0\n\
+18/02/2013,97,127223,0\n\
+19/02/2013,725,127375,4\n\
+22/02/2013,0,105079,1747\n\
+23/02/2013,181,35208,0\n\
+26/02/2013,37967,126672,61\n\
+01/03/2013,1,28511,1\n\
+02/03/2013,66380,194599,67090\n\
+03/03/2013,282,354885,0\n\
+04/03/2013,34098,255022,502\n\
+05/03/2013,7930,161335,325\n\
+06/03/2013,8168,463818,7307\n\
+07/03/2013,116972,399541,367\n\
+11/03/2013,15534,567514,9686\n\
+12/03/2013,1201,135921,0\n\
+13/03/2013,63708,1508001,47639\n\
+14/03/2013,62764,1130660,148309\n\
+15/03/2013,4786,368612,2034\n\
+16/03/2013,622,325339,132\n\
+19/03/2013,19640,1005629,25414\n\
+20/03/2013,0,180,0\n\
+21/03/2013,1084,201434,1387\n\
+22/03/2013,2728,137366,0\n\
+24/03/2013,0,32193,0\n\
+25/03/2013,851,0,0\n\
+26/03/2013,687,271,112\n\
+27/03/2013,118,0,0\n\
+30/03/2013,520,249,159\n\
+31/03/2013,36118,38815,0\n\
+02/04/2013,1559,83749,32346\n\
+03/04/2013,390,102,0\n\
+05/04/2013,64618,0,0\n\
+07/04/2013,166,138300,0\n\
+11/04/2013,0,52,86\n\
+15/04/2013,264,0,0\n\
+17/04/2013,604,351,81\n\
+18/04/2013,552,0,0\n\
+19/04/2013,5445,317622,56\n\
+20/04/2013,1157,41472,0\n\
+25/04/2013,229,197,1280\n\
+30/04/2013,1977,181731,885\n\
+01/05/2013,361,64150,131\n\
+04/05/2013,32126,0,0\n\
+05/05/2013,7510,139969,1164\n\
+07/05/2013,96,452,220\n\
+08/05/2013,76,138,24\n\
+13/05/2013,2394,137987,1127\n\
+15/05/2013,781,931,621\n\
+16/05/2013,0,32159,0\n\
+17/05/2013,63,0,0\n\
+19/05/2013,523,390279,881\n\
+20/05/2013,33980,660335,2805\n\
+21/05/2013,872,274,172\n\
+22/05/2013,0,331,421\n\
+23/05/2013,55,32538,0\n\
+24/05/2013,164,139321,0\n\
+25/05/2013,276,115,301\n\
+26/05/2013,885,75592,0\n\
+28/05/2013,1721,864485,1647\n\
+29/05/2013,16253,775225,12950\n\
+30/05/2013,37492,577659,32372\n\
+01/06/2013,0,250094,0\n\
+02/06/2013,5590,148317,1875\n\
+03/06/2013,0,32433,49\n\
+04/06/2013,17,32114,0\n\
+08/06/2013,9270,316833,4573\n\
+11/06/2013,1572,572926,526\n\
+12/06/2013,2088,176982,461\n\
+13/06/2013,2030,431073,1457\n\
+14/06/2013,14981,32319,0\n\
+18/06/2013,1467,319994,0\n\
+19/06/2013,106,64605,136\n\
+20/06/2013,321,143030,0\n\
+21/06/2013,0,97324,0\n\
+24/06/2013,2395,0,2\n\
+25/06/2013,252,288457,655\n\
+26/06/2013,1969,334887,3412\n\
+27/06/2013,1977,48101,929\n\
+28/06/2013,4421,288248,4405\n\
+29/06/2013,88,292,759\n\
+30/06/2013,2290,270409,940\n\
+01/07/2013,0,277,0\n\
+02/07/2013,2798,143678,190\n\
+03/07/2013,1554,210146,0\n\
+04/07/2013,574,192629,381\n\
+05/07/2013,5091,473190,3321\n\
+06/07/2013,351,33760,267\n\
+10/07/2013,2778,341772,1088\n\
+11/07/2013,1850,356367,2062\n\
+12/07/2013,933,96830,0\n\
+16/07/2013,0,32239,0\n\
+18/07/2013,1152,209774,869\n\
+19/07/2013,32482,336781,385\n\
+21/07/2013,96786,0,0\n\
+22/07/2013,0,32169,0\n\
+23/07/2013,717,97684,296\n\
+24/07/2013,483,32731,0\n\
+29/07/2013,316,128395,0\n\
+31/07/2013,1538,65763,32041\n\
+01/08/2013,32138,64374,0\n\
+02/08/2013,1167,143168,649\n\
+05/08/2013,64916,0,32142\n\
+10/08/2013,4235,440843,1571\n\
+12/08/2013,82,32112,0\n\
+13/08/2013,21437,449095,1787\n\
+14/08/2013,30834,16644,486\n\
+15/08/2013,38132,895598,1270\n\
+16/08/2013,2231,214306,2797\n\
+19/08/2013,208,355391,2799\n\
+21/08/2013,1239,334567,700\n\
+22/08/2013,38428,322408,51\n\
+23/08/2013,491,210402,16686\n\
+27/08/2013,924,144586,874\n\
+28/08/2013,1263,144596,0\n\
+30/08/2013,805,80853,467\n\
+31/08/2013,32664,241523,104\n\
+05/09/2013,32729,80841,32646\n\
+17/09/2013,1037,32767,414\n\
+19/09/2013,32652,17319,0\n\
+21/09/2013,2652,32019,928\n\
+24/09/2013,2838,211157,174\n\
+25/09/2013,891,567498,1120\n\
+26/09/2013,1001,148069,681\n\
+03/10/2013,5723,359828,1030\n\
+05/10/2013,81636,2947364,148268\n\
+07/10/2013,32557,64454,450\n\
+09/10/2013,1162,229203,248\n\
+10/10/2013,32284,539325,605\n\
+11/10/2013,43819,1913315,13228\n\
+12/10/2013,32199,32259,55\n\
+15/10/2013,1494,96125,744\n\
+16/10/2013,2298,294103,1415\n\
+17/10/2013,644,149165,193\n\
+25/10/2013,32506,32625,118\n\
+04/11/2013,50470,0,0\n\
+11/11/2013,87,23,0\n\
+15/11/2013,100,0,0\n\
+18/11/2013,396,6187,0\n\
+19/11/2013,33685,185359,1285\n\
+20/11/2013,177,0,0\n\
+23/11/2013,5237,2497,635\n\
+24/11/2013,422,1179,294\n\
+25/11/2013,67,0,0\n\
+30/11/2013,0,64349,52\n\
+03/12/2013,0,147046,319\n\
+04/12/2013,1352,198401,593\n\
+05/12/2013,0,347,0\n\
+12/12/2013,474,65510,0\n\
+13/12/2013,890,275716,903\n\
+16/12/2013,18819,100,0\n\
+08/01/2014,26393,1073530,19636\n\
+09/01/2014,34394,117448,1853\n\
+10/01/2014,171,147224,32353\n\
+13/01/2014,1,148477,111\n\
+14/01/2014,0,35,0\n\
+15/01/2014,24,37,0\n\
+21/01/2014,5,0,0\n\
+03/02/2014,0,36,0\n\
+11/02/2014,79,101,0\n\
+12/02/2014,140,0,0\n\
+18/02/2014,1112,32571,1\n\
+27/02/2014,56,96863,0\n\
+09/03/2014,41,0,0\n\
+13/03/2014,0,0,0\n\
+17/03/2014,0,0,0\n\
+20/03/2014,0,33,68\n\
+21/03/2014,0,0,0\n\
+22/03/2014,0,468,0\n\
+24/03/2014,75083,1300375,67111\n\
+04/04/2014,1032,146965,68\n\
+06/04/2014,607,184504,368\n\
+08/04/2014,122,146866,0\n\
+10/04/2014,0,0,0\n\
+11/04/2014,37,64909,306\n\
+22/04/2014,136,32663,0\n\
+10/05/2014,148,32156,0\n\
+13/05/2014,0,0,21\n\
+18/05/2014,10704,753218,10254\n\
+19/05/2014,701,32197,226\n\
+22/05/2014,36,0,0\n\
+23/05/2014,34819,87,0\n\
+28/05/2014,166,0,0\n\
+30/05/2014,4674,96970,0\n\
+06/06/2014,3205,146525,0\n\
+08/06/2014,567,195000,60\n\
+24/06/2014,17,0,29\n\
+25/06/2014,1886,148749,1793\n\
+27/06/2014,1253,146525,0\n\
+30/06/2014,32673,32023,0\n\
+01/07/2014,0,0,0\n\
+07/07/2014,779,32181,717\n\
+12/07/2014,0,64,0\n\
+17/07/2014,365,32435,0\n\
+29/07/2014,355,146941,0\n\
+05/08/2014,1964,96674,2182\n\
+06/08/2014,0,151139,0\n\
+12/08/2014,0,0,0\n\
+13/08/2014,0,0,0\n\
+15/08/2014,19538,96481,8\n\
+25/08/2014,37,0,0\n\
+28/08/2014,0,0,0\n\
+10/09/2014,305,32062,463\n\
+27/09/2014,196,162854,137\n\
+28/09/2014,0,0,0\n\
+30/09/2014,152,32302,0\n\
+02/10/2014,0,478,0\n\
+03/10/2014,146,32143,0\n\
+08/10/2014,391,64268,188\n\
+09/10/2014,782,391368,551\n\
+10/10/2014,4540,585363,670\n\
+13/10/2014,0,47314,108\n\
+14/10/2014,1229,246762,212\n\
+15/10/2014,2398,296455,1047\n\
+16/10/2014,32972,64532,0\n\
+17/10/2014,67859,774111,4592\n\
+21/10/2014,283,146528,265\n\
+22/10/2014,0,238,0\n\
+23/10/2014,34132,183759,21\n\
+24/10/2014,1181,82597,0\n\
+03/11/2014,0,0,32296\n\
+13/11/2014,11,32229,0\n\
+14/11/2014,32110,102657,0\n\
+15/11/2014,1145,445298,1137\n\
+16/11/2014,4061,301629,612\n\
+17/11/2014,56805,424518,3200\n\
+18/11/2014,2289,112108,925\n\
+19/11/2014,62714,588851,4087\n\
+20/11/2014,43866,99127,136\n\
+01/12/2014,713,86030,0\n\
+06/12/2014,749,86425,86\n\
+08/12/2014,25465,302572,1246\n\
+09/12/2014,0,150963,0\n\
+30/12/2014,1372,32532,102\n\
+31/12/2014,262,32241,0\n\
+13/01/2015,679,0,0\n\
+14/01/2015,0,0,0\n\
+15/01/2015,0,383,0\n\
+28/01/2015,55,150760,0\n\
+31/01/2015,0,94,1402\n\
+05/02/2015,0,41,0\n\
+06/02/2015,967,150760,0\n\
+07/02/2015,131994,372570,1153\n\
+08/02/2015,0,769,75\n\
+10/02/2015,1338,64458,0\n\
+11/02/2015,363,0,0\n\
+12/02/2015,369,369,0\n\
+13/02/2015,0,372,0\n\
+06/04/2015,0,368,0\n\
 "];
 
         _.extend(this, d3c.barCharts());
@@ -12625,20 +12758,24 @@ date,value\n\
         var bars = newBars(svg, uiConfig, x, y);
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Change size");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
+        var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
 
         var controlsPanel = newControlsPanel(root, uiConfig);
         newShowMovingAverageCheckBox(controlsPanel, movingAverageLine);
+        percentileDropDown(controlsPanel, data);
         var groupBy = newGroupByDropDown(controlsPanel, data, "Group by:", ["day", "week", "month"]);
-        newGroupIndexDropDown(controlsPanel, data, "Change size measured in:", ["commits", "files", "lines", "characters"]);
+        newGroupIndexDropDown(controlsPanel, data, "Code churn measured in:", ["commits", "files", "lines", "characters"]);
         addHelpButton(controlsPanel.leftFooter(), svgRoot, uiConfig, description);
         var totalSize = newTotalAmountLabel(controlsPanel.leftFooter(), "Total size:&nbsp;");
 
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKey);
+        bars.onUpdate(legend.update);
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update,
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, mesh.update, xBrush.update,
             groupBy.update, movingAverageLine.update, totalSize.update,
             newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate, totalSize.onXScaleUpdate]);
@@ -12648,7 +12785,7 @@ date,value\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawData = ["\
@@ -13645,6 +13782,7 @@ date,value\n\
         var bars = newBars(svg, uiConfig, x, y);
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Amount of committers");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
 
@@ -13656,8 +13794,8 @@ date,value\n\
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKey);
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
-            movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, mesh.update,
+            dropDown.update, movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate]);
 
         data.sendUpdate();
@@ -13666,7 +13804,7 @@ date,value\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawCsv = "\
@@ -14336,32 +14474,32 @@ date,Mike Bostock,Jason Davies,Michael Bostock,Kristofer Monisit,Daniel Goldbach
                 .attr("transform", "translate(" + uiConfig.margin.left + "," + uiConfig.margin.top + ")");
 
         var seriesData =
-                withSeriesData(
-                        autoGroupOnFirstUpdate(100,
-                                withMinMaxKey(withMinMaxOfRow(
-                                        groupedBy(d3time([d3.time.monday, d3.time.month]),
-                                                withFirstCategories(5, withCategoryExclusion(
-                                                        newDataSource(parsedData, "date")
-                                                )))))));
+            withSeriesData(
+            autoGroupOnFirstUpdate(100,
+            withMinMaxKey(withMinMaxOfRow(
+            groupedBy(d3time([d3.time.monday, d3.time.month]),
+            withFirstCategories(5, withCategoryExclusion(
+            newDataSource(parsedData, "date")
+        )))))));
         var x = newTimeScale("date").nice().rangeRound([0, uiConfig.width]);
         var y = newScale("value").range([uiConfig.height, 0]);
         var xAxis = newXAxis(svgRoot, x, uiConfig);
         var yAxis = newYAxis(svgRoot, y).label("Amount of commits");
+        var mesh = newMesh(svgRoot, uiConfig, y, x);
         var lineSeries = newLineSeries(svgRoot, x, y, uiConfig);
 
         var controlsPanel = newControlsPanel(root, uiConfig);
-        addHelpButton(controlsPanel.leftFooter(), svgRoot, uiConfig, description,
-                "", {tooltipPad: -20});
+        addHelpButton(controlsPanel.leftFooter(), svgRoot, uiConfig, description, "", {tooltipPad: -20});
         newDropDown(controlsPanel, "Interpolation:", ["basis", "linear"], 0, function(value) {
             lineSeries.setInterpolation(value === "0" ? "basis" : "linear");
         });
         var groupBy = newGroupByDropDown(controlsPanel, seriesData, "Group by:", ["week", "month"]);
-        var wordsPanel = newWordsPanel(controlsPanel, lineSeries, seriesData);
+        var wordsPanel = newCategoriesPanel(controlsPanel, lineSeries, seriesData, "Committers: ");
         var nothingToShowLabel = newEmptyChartLabel(root, svgRoot, uiConfig);
 
         seriesData.onUpdate([
             x.update, y.update, groupBy.update,
-            lineSeries.update, xAxis.update, yAxis.update, wordsPanel.update,
+            lineSeries.update, xAxis.update, yAxis.update, mesh.update, wordsPanel.update,
             nothingToShowLabel.update
         ]);
         x.onUpdate([lineSeries.onXScaleUpdate, xAxis.onXScaleUpdate]);
@@ -14370,62 +14508,10 @@ date,Mike Bostock,Jason Davies,Michael Bostock,Kristofer Monisit,Daniel Goldbach
         seriesData.sendUpdate();
     })();
 
-
-    function newWordsPanel(root, lineSeries, dataSource) {
-        var hiddenCategories = [];
-
-        var wordPanel = root.append("span");
-        wordPanel.append("label").html("Committers: ");
-        var wordsSpan = wordPanel.append("span");
-        wordPanel.append("button").text("Reset").on("click", function() {
-            dataSource.clearCategoryExclusions();
-        });
-
-        var it = {};
-        it.update = function(update) {
-            wordsSpan.selectAll(".word").remove();
-
-            var word = wordsSpan.selectAll(".word")
-                    .data(update.seriesData).enter()
-                    .append("span")
-                    .attr("class", "word");
-
-            word.on("mouseover", function(d) {
-                lineSeries.setSelectedCategory(d.category);
-            });
-            word.on("mouseout", function() {
-                lineSeries.setSelectedCategory(null);
-            });
-
-            word.append("input").attr("type", "checkbox")
-                    .attr("checked", function(it) { return _.contains(hiddenCategories, it.category) ? null : ""; })
-                    .on("click", function(it) {
-                        if (d3.event.altKey) {
-                            dataSource.excludeCategory(it.category);
-                        } else {
-                            var visible = this.checked;
-                            lineSeries.setCategoryVisible(it.category, visible);
-                            if (visible) {
-                                hiddenCategories = _.without(hiddenCategories, it.category);
-                            } else {
-                                hiddenCategories.push(it.category);
-                            }
-                        }
-                    });
-            word.append("label").html(function(d){ return "&nbsp;" + d.category; });
-        };
-        it.onLineSeriesUpdate = function() {
-            hiddenCategories.forEach(function(it) {
-                lineSeries.setCategoryVisible(it, false);
-            });
-        };
-        return it;
-    }
-
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawData = ["\
@@ -16413,6 +16499,7 @@ date,value\n\
         var bars = newBars(svg, uiConfig, x, y);
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Amount of todos");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
 
@@ -16424,8 +16511,8 @@ date,value\n\
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKey);
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
-            movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, mesh.update,
+            dropDown.update, movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate]);
 
         data.sendUpdate();
@@ -16434,7 +16521,7 @@ date,value\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawData = ["\
@@ -17431,6 +17518,7 @@ date,value\n\
         var bars = newBars(svg, uiConfig, x, y);
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Amount of files in commit");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var movingAverageLine = newMovingAverageLine(svg, uiConfig, x, y);
 
@@ -17443,8 +17531,8 @@ date,value\n\
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKey);
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
-            movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, mesh.update,
+            dropDown.update, movingAverageLine.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate, movingAverageLine.onXScaleUpdate]);
 
         data.sendUpdate();
@@ -17453,69 +17541,69 @@ date,value\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawData = ["\
 date,unchanged,recently changed\n\
 27/09/2010,0,55\n\
 04/10/2010,52,18\n\
-11/10/2010,54,16\n\
+11/10/2010,54,18\n\
 18/10/2010,59,20\n\
-25/10/2010,17,60\n\
-01/11/2010,61,77\n\
-08/11/2010,122,26\n\
+25/10/2010,17,86\n\
+01/11/2010,61,82\n\
+08/11/2010,122,28\n\
 15/11/2010,137,11\n\
 22/11/2010,135,20\n\
-29/11/2010,147,16\n\
+29/11/2010,147,17\n\
 06/12/2010,151,17\n\
-13/12/2010,160,9\n\
+13/12/2010,160,10\n\
 20/12/2010,169,0\n\
 27/12/2010,169,0\n\
-03/01/2011,131,44\n\
+03/01/2011,131,45\n\
 10/01/2011,167,8\n\
-17/01/2011,151,21\n\
+17/01/2011,151,29\n\
 24/01/2011,159,15\n\
 31/01/2011,132,49\n\
-07/02/2011,167,23\n\
+07/02/2011,167,24\n\
 14/02/2011,179,17\n\
 21/02/2011,175,27\n\
-28/02/2011,175,83\n\
+28/02/2011,175,84\n\
 07/03/2011,229,47\n\
 14/03/2011,249,40\n\
-21/03/2011,275,97\n\
-28/03/2011,359,12\n\
-04/04/2011,359,25\n\
-11/04/2011,338,76\n\
+21/03/2011,275,100\n\
+28/03/2011,359,13\n\
+04/04/2011,359,28\n\
+11/04/2011,338,78\n\
 18/04/2011,399,16\n\
-25/04/2011,392,39\n\
-02/05/2011,370,75\n\
-09/05/2011,420,50\n\
+25/04/2011,392,41\n\
+02/05/2011,370,76\n\
+09/05/2011,420,51\n\
 16/05/2011,453,29\n\
 23/05/2011,438,48\n\
 30/05/2011,476,18\n\
-06/06/2011,455,50\n\
-13/06/2011,470,59\n\
+06/06/2011,455,51\n\
+13/06/2011,470,63\n\
 20/06/2011,504,34\n\
 27/06/2011,510,30\n\
-04/07/2011,454,71\n\
+04/07/2011,454,102\n\
 11/07/2011,509,16\n\
 18/07/2011,438,142\n\
 25/07/2011,577,3\n\
 01/08/2011,539,50\n\
-08/08/2011,563,39\n\
-15/08/2011,429,135\n\
-22/08/2011,508,115\n\
-29/08/2011,599,28\n\
+08/08/2011,563,49\n\
+15/08/2011,429,272\n\
+22/08/2011,508,117\n\
+29/08/2011,599,29\n\
 05/09/2011,608,23\n\
 12/09/2011,615,19\n\
-19/09/2011,612,23\n\
-26/09/2011,597,46\n\
+19/09/2011,612,24\n\
+26/09/2011,597,48\n\
 03/10/2011,601,44\n\
-10/10/2011,607,47\n\
+10/10/2011,607,48\n\
 17/10/2011,640,14\n\
 24/10/2011,630,24\n\
-31/10/2011,634,30\n\
+31/10/2011,634,32\n\
 07/11/2011,650,15\n\
 14/11/2011,660,7\n\
 21/11/2011,544,127\n\
@@ -17525,19 +17613,19 @@ date,unchanged,recently changed\n\
 19/12/2011,672,3\n\
 26/12/2011,665,10\n\
 02/01/2012,669,6\n\
-09/01/2012,657,19\n\
+09/01/2012,657,20\n\
 16/01/2012,666,10\n\
-23/01/2012,657,19\n\
+23/01/2012,657,20\n\
 30/01/2012,660,17\n\
 06/02/2012,665,13\n\
-13/02/2012,396,270\n\
-20/02/2012,569,97\n\
+13/02/2012,396,288\n\
+20/02/2012,569,108\n\
 27/02/2012,640,29\n\
 05/03/2012,660,9\n\
 12/03/2012,659,14\n\
 19/03/2012,656,18\n\
 26/03/2012,666,8\n\
-02/04/2012,587,91\n\
+02/04/2012,587,98\n\
 09/04/2012,678,0\n\
 16/04/2012,666,12\n\
 23/04/2012,670,8\n\
@@ -17549,87 +17637,87 @@ date,unchanged,recently changed\n\
 04/06/2012,679,0\n\
 11/06/2012,675,4\n\
 18/06/2012,674,5\n\
-25/06/2012,646,34\n\
+25/06/2012,646,39\n\
 02/07/2012,673,8\n\
 09/07/2012,675,6\n\
 16/07/2012,669,12\n\
 23/07/2012,664,20\n\
 30/07/2012,660,27\n\
 06/08/2012,662,37\n\
-13/08/2012,682,19\n\
+13/08/2012,682,22\n\
 20/08/2012,693,8\n\
 27/08/2012,696,5\n\
 03/09/2012,689,12\n\
 10/09/2012,696,7\n\
-17/09/2012,685,18\n\
-24/09/2012,673,41\n\
-01/10/2012,513,200\n\
-08/10/2012,533,146\n\
-15/10/2012,663,14\n\
+17/09/2012,685,20\n\
+24/09/2012,673,43\n\
+01/10/2012,513,211\n\
+08/10/2012,533,183\n\
+15/10/2012,663,16\n\
 22/10/2012,670,7\n\
-29/10/2012,661,15\n\
+29/10/2012,661,16\n\
 05/11/2012,672,4\n\
-12/11/2012,569,58\n\
+12/11/2012,569,110\n\
 19/11/2012,612,16\n\
 26/11/2012,624,4\n\
 03/12/2012,613,17\n\
-10/12/2012,608,37\n\
-17/12/2012,458,36\n\
+10/12/2012,608,42\n\
+17/12/2012,458,194\n\
 24/12/2012,484,10\n\
 31/12/2012,486,9\n\
 07/01/2013,489,6\n\
 14/01/2013,489,6\n\
-21/01/2013,473,22\n\
+21/01/2013,473,25\n\
 28/01/2013,464,32\n\
 04/02/2013,483,17\n\
 11/02/2013,492,12\n\
-18/02/2013,495,11\n\
+18/02/2013,495,13\n\
 25/02/2013,345,167\n\
 04/03/2013,341,174\n\
-11/03/2013,146,418\n\
-18/03/2013,530,33\n\
+11/03/2013,146,446\n\
+18/03/2013,530,35\n\
 25/03/2013,552,11\n\
 01/04/2013,538,25\n\
 08/04/2013,554,9\n\
 15/04/2013,545,19\n\
-22/04/2013,559,5\n\
+22/04/2013,559,6\n\
 29/04/2013,548,18\n\
-06/05/2013,554,13\n\
+06/05/2013,554,14\n\
 13/05/2013,553,14\n\
 20/05/2013,543,25\n\
 27/05/2013,532,38\n\
 03/06/2013,549,25\n\
 10/06/2013,549,29\n\
 17/06/2013,559,21\n\
-24/06/2013,545,37\n\
-01/07/2013,525,59\n\
-08/07/2013,571,13\n\
-15/07/2013,559,25\n\
-22/07/2013,571,13\n\
-29/07/2013,568,16\n\
-05/08/2013,576,9\n\
-12/08/2013,553,36\n\
-19/08/2013,556,33\n\
-26/08/2013,574,15\n\
-02/09/2013,583,6\n\
-09/09/2013,589,0\n\
-16/09/2013,579,10\n\
-23/09/2013,562,27\n\
-30/09/2013,559,40\n\
-07/10/2013,551,51\n\
-14/10/2013,593,9\n\
-21/10/2013,599,3\n\
-28/10/2013,602,0\n\
-04/11/2013,598,4\n\
-11/11/2013,600,2\n\
-18/11/2013,593,10\n\
-25/11/2013,595,8\n\
-02/12/2013,595,9\n\
-09/12/2013,597,6\n\
-16/12/2013,599,4\n\
-23/12/2013,603,0\n\
-30/12/2013,603,0\n\
-06/01/2014,561,44\n\
+24/06/2013,545,40\n\
+01/07/2013,524,59\n\
+08/07/2013,570,13\n\
+15/07/2013,558,25\n\
+22/07/2013,570,13\n\
+29/07/2013,567,16\n\
+05/08/2013,575,9\n\
+12/08/2013,552,37\n\
+19/08/2013,555,36\n\
+26/08/2013,573,15\n\
+02/09/2013,582,6\n\
+09/09/2013,588,0\n\
+16/09/2013,578,10\n\
+23/09/2013,561,27\n\
+30/09/2013,558,48\n\
+07/10/2013,550,51\n\
+14/10/2013,592,9\n\
+21/10/2013,598,3\n\
+28/10/2013,601,0\n\
+04/11/2013,597,4\n\
+11/11/2013,599,2\n\
+18/11/2013,592,10\n\
+25/11/2013,594,8\n\
+02/12/2013,594,9\n\
+09/12/2013,596,7\n\
+16/12/2013,598,4\n\
+23/12/2013,602,0\n\
+30/12/2013,602,0\n\
+06/01/2014,561,52\n\
 13/01/2014,596,10\n\
 20/01/2014,605,1\n\
 27/01/2014,606,0\n\
@@ -17668,7 +17756,7 @@ date,unchanged,recently changed\n\
 15/09/2014,623,0\n\
 22/09/2014,617,6\n\
 29/09/2014,611,12\n\
-06/10/2014,595,31\n\
+06/10/2014,595,32\n\
 13/10/2014,598,31\n\
 20/10/2014,601,28\n\
 27/10/2014,629,0\n\
@@ -17684,7 +17772,7 @@ date,unchanged,recently changed\n\
 05/01/2015,630,0\n\
 12/01/2015,629,2\n\
 19/01/2015,631,0\n\
-26/01/2015,625,8\n\
+26/01/2015,625,11\n\
 02/02/2015,605,29\n\
 09/02/2015,620,17\n\
 16/02/2015,637,0\n\
@@ -17699,46 +17787,46 @@ date,unchanged,recently changed\n\
 "\
 date,unchanged,recently changed\n\
 01/09/2010,0,55\n\
-01/10/2010,2,75\n\
-01/11/2010,51,112\n\
-01/12/2010,147,22\n\
-01/01/2011,80,99\n\
-01/02/2011,135,84\n\
-01/03/2011,172,199\n\
-01/04/2011,310,121\n\
-01/05/2011,339,151\n\
-01/06/2011,420,120\n\
-01/07/2011,369,211\n\
-01/08/2011,366,260\n\
-01/09/2011,569,73\n\
-01/10/2011,553,106\n\
-01/11/2011,522,149\n\
+01/10/2010,2,103\n\
+01/11/2010,51,120\n\
+01/12/2010,147,23\n\
+01/01/2011,80,108\n\
+01/02/2011,135,85\n\
+01/03/2011,172,204\n\
+01/04/2011,310,128\n\
+01/05/2011,339,153\n\
+01/06/2011,420,125\n\
+01/07/2011,369,242\n\
+01/08/2011,366,410\n\
+01/09/2011,569,76\n\
+01/10/2011,553,107\n\
+01/11/2011,522,151\n\
 01/12/2011,636,39\n\
-01/01/2012,627,49\n\
-01/02/2012,337,332\n\
-01/03/2012,642,32\n\
-01/04/2012,574,104\n\
-01/05/2012,665,14\n\
-01/06/2012,642,38\n\
-01/07/2012,644,42\n\
-01/08/2012,633,68\n\
-01/09/2012,648,66\n\
-01/10/2012,444,232\n\
-01/11/2012,557,71\n\
-01/12/2012,422,72\n\
-01/01/2013,444,52\n\
-01/02/2013,468,39\n\
-01/03/2013,142,421\n\
-01/04/2013,519,45\n\
-01/05/2013,498,72\n\
-01/06/2013,486,96\n\
-01/07/2013,508,76\n\
-01/08/2013,518,71\n\
-01/09/2013,553,36\n\
-01/10/2013,535,67\n\
-01/11/2013,585,18\n\
-01/12/2013,590,13\n\
-01/01/2014,557,49\n\
+01/01/2012,627,51\n\
+01/02/2012,337,360\n\
+01/03/2012,641,32\n\
+01/04/2012,573,111\n\
+01/05/2012,664,14\n\
+01/06/2012,641,43\n\
+01/07/2012,643,42\n\
+01/08/2012,632,71\n\
+01/09/2012,647,70\n\
+01/10/2012,444,283\n\
+01/11/2012,557,123\n\
+01/12/2012,422,235\n\
+01/01/2013,444,55\n\
+01/02/2013,468,41\n\
+01/03/2013,142,451\n\
+01/04/2013,519,46\n\
+01/05/2013,498,73\n\
+01/06/2013,486,99\n\
+01/07/2013,507,76\n\
+01/08/2013,517,75\n\
+01/09/2013,552,36\n\
+01/10/2013,534,75\n\
+01/11/2013,584,18\n\
+01/12/2013,589,14\n\
+01/01/2014,557,57\n\
 01/02/2014,598,8\n\
 01/03/2014,575,38\n\
 01/04/2014,598,16\n\
@@ -17747,10 +17835,10 @@ date,unchanged,recently changed\n\
 01/07/2014,612,7\n\
 01/08/2014,594,29\n\
 01/09/2014,614,9\n\
-01/10/2014,553,76\n\
+01/10/2014,553,77\n\
 01/11/2014,607,23\n\
 01/12/2014,611,19\n\
-01/01/2015,623,10\n\
+01/01/2015,623,13\n\
 01/02/2015,595,42\n\
 01/03/2015,637,0\n\
 01/04/2015,636,1\n\
@@ -17788,6 +17876,7 @@ date,unchanged,recently changed\n\
         var bars = newBars(svg, uiConfig, x, y, "bars");
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Changed files");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var legend = newLegend(svg, {x: 50, y: 20});
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKey);
@@ -17799,15 +17888,15 @@ date,unchanged,recently changed\n\
         bars.onUpdate(legend.update);
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, dropDown.update,
-            newEmptyChartLabel(root, svgRoot, uiConfig).update]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, mesh.update,
+            dropDown.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
         data.sendUpdate();
     })();
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawData = ["\
@@ -19937,6 +20026,7 @@ date,js,jar,json,csv,html,Other\n\
         var bars = newBars(svg, uiConfig, x, y);
         var xAxis = newXAxis(svg, x, uiConfig);
         var yAxis = newYAxis(svg, y).label("Change size");
+        var mesh = newMesh(svg, uiConfig, y);
         var xBrush = newXBrush(svg, uiConfig, x, brushHeight);
         var legend = newLegend(svg, {x: uiConfig.width - 50, y: 20});
 
@@ -19951,15 +20041,15 @@ date,js,jar,json,csv,html,Other\n\
             newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipWithDateKeyAndCategory).update,
             newBarShading().update]);
 
-        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, groupBy.update,
-                       newEmptyChartLabel(root, svgRoot, uiConfig).update]);
+        data.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, xBrush.update, mesh.update,
+            groupBy.update, newEmptyChartLabel(root, svgRoot, uiConfig).update]);
         x.onUpdate([bars.onXScaleUpdate, xAxis.onXScaleUpdate]);
         data.sendUpdate();
     })();
 </script>
 
 
-
+    
 <script>
     (function() {
         const filesInTheSameCommitGraph = {
@@ -20294,7 +20384,7 @@ date,js,jar,json,csv,html,Other\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         const authorToFileGraph = {
@@ -20580,7 +20670,7 @@ date,js,jar,json,csv,html,Other\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var dataRoot = {"name": "", "size": "13087", "children": [
@@ -23450,7 +23540,7 @@ date,js,jar,json,csv,html,Other\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var commitTimePunchcardRawData = "\
@@ -25948,7 +26038,7 @@ dayOfWeek,hour,minute,value\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var timeBetweenCommitsRawData = "\
@@ -28490,6 +28580,7 @@ metric\n\
         var bars = newBars(svg, uiConfig, x, y, "bars");
         var xAxis = newXAxis(svg, x, uiConfig).tickFormat(timeIntervalFormat);
         var yAxis = newYAxis(svg, y).label("Amount of commits");
+        var mesh = newMesh(svg, uiConfig, y);
         var tooltip = newBarTooltip(root, svgRoot, uiConfig, {css: "tooltip"}, tooltipText);
 
         var controlsPanel = newControlsPanel(root, uiConfig);
@@ -28497,7 +28588,7 @@ metric\n\
 
         bars.onHover([tooltip.update, newBarShading().update]);
 
-        dataSource.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update]);
+        dataSource.onUpdate([x.update, y.update, bars.update, xAxis.update, yAxis.update, mesh.update]);
         dataSource.setPercentile(percentile);
 
 
@@ -28545,7 +28636,7 @@ metric\n\
 </script>
 
 
-
+    
 <script>
     (function() {
         var rawCsv = "\
@@ -28795,6 +28886,7 @@ date,fix,add,test,example,use,remove,now,transition,can,rather,scale,more,geo,da
         var y = newScale("value").range([uiConfig.height, 0]);
         var xAxis = newXAxis(svgRoot, x, uiConfig);
         var yAxis = newYAxis(svgRoot, y).label("Amount of words");
+        var mesh = newMesh(svgRoot, uiConfig, y, x);
         var lineSeries = newLineSeries(svgRoot, x, y, uiConfig);
 
         var controlsPanel = newControlsPanel(root, uiConfig);
@@ -28804,12 +28896,12 @@ date,fix,add,test,example,use,remove,now,transition,can,rather,scale,more,geo,da
             lineSeries.setInterpolation(value === "0" ? "basis" : "linear");
         });
         var groupBy = newGroupByDropDown(controlsPanel, seriesData, "Group by:", ["week", "month"]);
-        var wordsPanel = newWordsPanel(controlsPanel, lineSeries, seriesData);
+        var wordsPanel = newCategoriesPanel(controlsPanel, lineSeries, seriesData, "Words: ");
         var nothingToShowLabel = newEmptyChartLabel(root, svgRoot, uiConfig);
 
         seriesData.onUpdate([
             x.update, y.update, groupBy.update,
-            lineSeries.update, xAxis.update, yAxis.update, wordsPanel.update,
+            lineSeries.update, xAxis.update, yAxis.update, mesh.update, wordsPanel.update,
             nothingToShowLabel.update
         ]);
         x.onUpdate([lineSeries.onXScaleUpdate, xAxis.onXScaleUpdate]);
@@ -28817,63 +28909,12 @@ date,fix,add,test,example,use,remove,now,transition,can,rather,scale,more,geo,da
 
         seriesData.sendUpdate();
 
-
-        function newWordsPanel(root, lineSeries, dataSource) {
-            var hiddenCategories = [];
-
-            var wordPanel = root.append("span");
-            wordPanel.append("label").html("Words: ");
-            var wordsSpan = wordPanel.append("span");
-            wordPanel.append("button").text("Reset").on("click", function() {
-                dataSource.clearCategoryExclusions();
-            });
-
-            var it = {};
-            it.update = function(update) {
-                wordsSpan.selectAll(".word").remove();
-
-                var word = wordsSpan.selectAll(".word")
-                        .data(update.seriesData).enter()
-                        .append("span")
-                        .attr("class", "word");
-
-                word.on("mouseover", function(d) {
-                    lineSeries.setSelectedCategory(d.category);
-                });
-                word.on("mouseout", function() {
-                    lineSeries.setSelectedCategory(null);
-                });
-
-                word.append("input").attr("type", "checkbox")
-                        .attr("checked", function(it) { return _.contains(hiddenCategories, it.category) ? null : ""; })
-                        .on("click", function(it) {
-                            if (d3.event.altKey) {
-                                dataSource.excludeCategory(it.category);
-                            } else {
-                                var visible = this.checked;
-                                lineSeries.setCategoryVisible(it.category, visible);
-                                if (visible) {
-                                    hiddenCategories = _.without(hiddenCategories, it.category);
-                                } else {
-                                    hiddenCategories.push(it.category);
-                                }
-                            }
-                        });
-                word.append("label").html(function(d){ return "&nbsp;" + d.category; });
-            };
-            it.onLineSeriesUpdate = function() {
-                hiddenCategories.forEach(function(it) {
-                    lineSeries.setCategoryVisible(it, false);
-                });
-            };
-            return it;
-        }
     })();
 
 </script>
 
 
-
+    
 <script>
     (function() {
         var commitWordCloudData = {"words": [
@@ -29999,6 +30040,7 @@ date,fix,add,test,example,use,remove,now,transition,can,rather,scale,more,geo,da
     })();
 </script>
 
+<!--script-insert-point-->
 <!--script-insert-point-->
 
 </body>
