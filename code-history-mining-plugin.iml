@@ -1237,15 +1237,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="Gradle: pty4j-0.4.12">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.4.12.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
       <library name="Gradle: snappy-in-java-0.3.1">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/snappy-in-java-0.3.1.jar!/" />
@@ -1256,5 +1247,32 @@
     </orderEntry>
     <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy:2.3.9" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.codehaus.groovy:groovy-json:2.3.9" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: slf4j-api-1.7.10">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/slf4j-api-1.7.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: slf4j-log4j12-1.7.10">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/slf4j-log4j12-1.7.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: pty4j-0.4.15">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.4.15.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
