@@ -30,7 +30,7 @@ Some examples of code history visualizations:
 Csv files with VCS data for the above visualizations
 are available [on google drive](https://googledrive.com/host/0B5PfR1lF8o5SZE1xMXZIWGxBVzQ).
 
-See also [command line version of code-history-mining](http://dkandalov.github.io/code-history-mining-cli).
+See also [code history miner](http://codehistoryminer.com) (web server and CLI application with functionality of this plugin).
 
 
 ### Why?
