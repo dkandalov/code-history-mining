@@ -14,7 +14,7 @@
         </ul>
         For more details and examples of visualizations see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
         <br/><br/>
-        See also <a href="http://dkandalov.github.io/code-history-mining-cli">Command line version of code-history-mining</a> with similar functionality.
+        See also <a href="http://codehistoryminer.com">code history miner</a> web server and CLI with similar functionality.
     ]]></description>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
