@@ -95,7 +95,7 @@ For example two commits from JUnit csv:
 2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.vcm_meta,,,MODIFICATION,added .classpath for eclipse,6,7,1,0,0,199,221,21,0,0,0,0
 ```
 Columns:
- - __revisionDate__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
+ - __commitTime__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
  - __revision__ - unique commit id, format depends on VCS.
  - __author__ - committer name from VCS.
  - __fileNameBefore__ - file name before change, empty if file was added or name didn't change.
