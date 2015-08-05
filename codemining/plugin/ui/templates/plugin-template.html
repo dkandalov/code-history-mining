@@ -35,7 +35,7 @@
 
 <body>
 <!-- HEADER -->
-<nav class="navbar navbar-inverse" role="navigation">
+<nav class="navbar navbar-inverse" role="navigation" id="header">
     <div class="navbar-header">
         <span class="navbar-brand"><!--project-name-->Some Project<!--project-name--></span>
     </div>
@@ -47,7 +47,7 @@
 </div>
 
 <!-- FOOTER  -->
-<footer class="footer">
+<footer class="footer" id="footer">
     <div class="container">
         <div class="row">
             <p class="text-muted">
@@ -65,6 +65,10 @@
         </div>
     </div>
 </footer>
+
+<script>
+    d3c.common().enableShortcutToHideHeaderFooter(window);
+</script>
 
 <!--script-insert-point-->
 
