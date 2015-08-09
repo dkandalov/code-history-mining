@@ -94,15 +94,21 @@ class UI {
 	}
 
 	def showGrabbingInProgressMessage(Project project) {
-		Messages.showInfoMessage(project, "Grabbing project history is already in progress. Please wait for it to finish or cancel it.", "Code History Mining")
+		UIUtil.invokeLaterIfNeeded{
+			Messages.showInfoMessage(project, "Grabbing project history is already in progress. Please wait for it to finish or cancel it.", "Code History Mining")
+		}
 	}
 
 	def showNoVcsRootsMessage(Project project) {
-		Messages.showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+		UIUtil.invokeLaterIfNeeded{
+			Messages.showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
+		}
 	}
 
 	def showNoEventsInStorageMessage(String fileName, Project project) {
-		Messages.showInfoMessage(project, "There is no data in ${fileName} so nothing to visualize.", "Code History Mining")
+		UIUtil.invokeLaterIfNeeded{
+			Messages.showInfoMessage(project, "There is no data in ${fileName} so nothing to visualize.", "Code History Mining")
+		}
 	}
 
 	def showGrabbingFinishedMessage(String message, String title, Project project) {
