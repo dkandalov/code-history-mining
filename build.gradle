@@ -91,7 +91,7 @@ def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
         def file = files.find { it.name == dependencyInfo.fileName }
         def dir = new File(targetDirPath + File.separator + dependencyInfo.path)
         dir.mkdirs()
-        new AntBuilder().copy(
+        new groovy.util.AntBuilder().copy(
                 file: file.canonicalPath,
                 todir: dir.canonicalPath
         )
