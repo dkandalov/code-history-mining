@@ -18,7 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="IDEA IU-14" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="code-history-mining" scope="PROVIDED" />
+    <orderEntry type="module" module-name="code-history-miner" scope="PROVIDED" />
     <orderEntry type="library" exported="" name="Gradle: codemining:core:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: codemining:vcs-reader:1.0" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-csv:1.0" level="project" />
