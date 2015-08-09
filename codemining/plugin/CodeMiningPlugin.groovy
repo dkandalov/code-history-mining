@@ -188,7 +188,9 @@ class CodeMiningPlugin {
 				}
 				eventStorage.flush()
 			}
-		} catch (Cancelled ignore) {}
+		} catch (Cancelled ignore) {
+			eventStorage.flush()
+		}
 
 		def messageText = ""
 		def dateFormatter = dd_MM_yyyy
