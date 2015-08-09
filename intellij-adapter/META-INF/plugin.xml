@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.2.7 beta</version>
+    <version>0.2.8 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
@@ -19,7 +19,8 @@
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges -->
     <!-- since IJ 14 EAP 140.2493 which had groovy libs updated to 2.3.9 -->
-    <idea-version since-build="140.2493"/>
+    <!-- until IJ 14 EAP 142.2084 which had FilePathImpl renamed to LocalFilePath -->
+    <idea-version since-build="140.2493" until-build="142.2084"/>
 
     <!-- http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products -->
     <depends>com.intellij.modules.lang</depends>
