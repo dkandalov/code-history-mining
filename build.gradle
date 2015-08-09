@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 ext.home = System.env.HOME
 ext.basePath = System.getProperty("user.dir")
-ext.ideaPath = "/Applications/IntelliJ IDEA 14.app/Contents"
+ext.ideaPath = "/Applications/IntelliJ IDEA 15 EAP.app/Contents"
 
 
 repositories {
@@ -91,7 +91,7 @@ def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
         def file = files.find { it.name == dependencyInfo.fileName }
         def dir = new File(targetDirPath + File.separator + dependencyInfo.path)
         dir.mkdirs()
-        new groovy.util.AntBuilder().copy(
+        new AntBuilder().copy(
                 file: file.canonicalPath,
                 todir: dir.canonicalPath
         )
@@ -109,8 +109,4 @@ def allDependenciesOf(ResolvedConfiguration configuration) {
 def allDependenciesOf(ResolvedDependency dependency, Set result = []) {
     if (result.containsAll(dependency.children)) [dependency]
     else [dependency] + dependency.children.collectMany{ child -> allDependenciesOf(child) }
-}
-
-def withDefault(value, defaultValue) {
-    value == null ? defaultValue : value
 }

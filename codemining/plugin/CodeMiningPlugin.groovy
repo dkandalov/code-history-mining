@@ -1,4 +1,5 @@
 package codemining.plugin
+
 import codemining.core.common.langutil.*
 import codemining.core.historystorage.EventStorage
 import codemining.core.vcs.MinedCommit
@@ -14,7 +15,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vcs.FilePathImpl
+import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
 import com.intellij.openapi.vfs.VirtualFile
@@ -215,7 +216,7 @@ class CodeMiningPlugin {
 		def virtualFile = PluginUtil.currentFileIn(project)
 		if (virtualFile == null) return
 
-		def filePath = new FilePathImpl(virtualFile)
+		def filePath = new LocalFilePath(virtualFile.canonicalPath, false)
 		def vcsManager = project.getComponent(ProjectLevelVcsManager)
 
 		ui.runInBackground("Looking up history for ${virtualFile.name}") { ProgressIndicator indicator ->

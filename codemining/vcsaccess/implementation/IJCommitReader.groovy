@@ -1,10 +1,9 @@
 package codemining.vcsaccess.implementation
-
 import codemining.core.common.langutil.Date
 import codemining.vcsaccess.VcsActionsLog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
-import com.intellij.openapi.vcs.FilePathImpl
+import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
@@ -44,7 +43,7 @@ class IJCommitReader {
 
 	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
-		def location = changesProvider.getLocationFor(FilePathImpl.create(vcsRoot.path))
+		def location = changesProvider.getLocationFor(new LocalFilePath(vcsRoot.path.canonicalPath, true))
 
 		if (location == null) {
 			log?.failedToLocate(vcsRoot, project)
