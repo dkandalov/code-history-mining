@@ -43,7 +43,7 @@ class CodeMiningPlugin {
 		this.log = log
 	}
 
-	def createVisualization(File file, Visualization visualization) {
+	def createVisualization(File file, Visualization visualization, Project project) {
 		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
 			try {
 				measure.start()
@@ -54,6 +54,10 @@ class CodeMiningPlugin {
 				}
 
 				def events = storage.readAllEvents(file.name, cancelled)
+				if (events.empty) {
+					return ui.showNoEventsInStorageMessage(file.name, project)
+				}
+
 				def listener = new VisualizationListener() {
 					@Override void onProgress(Progress progress) { indicator.fraction = progress.percentComplete() }
 					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }

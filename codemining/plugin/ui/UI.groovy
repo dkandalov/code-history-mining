@@ -101,6 +101,10 @@ class UI {
 		Messages.showWarningDialog(project, "Cannot grab project history because there are no VCS roots setup for it.", "Code History Mining")
 	}
 
+	def showNoEventsInStorageMessage(String fileName, Project project) {
+		Messages.showInfoMessage(project, "There is no data in ${fileName} so nothing to visualize.", "Code History Mining")
+	}
+
 	def showGrabbingFinishedMessage(String message, String title, Project project) {
 		PluginUtil.showInConsole(message, title, project)
 	}
@@ -153,7 +157,7 @@ class UI {
 		Closure<AnAction> createShowInBrowserAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.createVisualization(file, visualization)
+					miner.createVisualization(file, visualization, event.project)
 				}
 			}
 		}
