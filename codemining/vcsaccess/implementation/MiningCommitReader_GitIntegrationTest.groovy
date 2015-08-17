@@ -89,18 +89,18 @@ class MiningCommitReader_GitIntegrationTest {
         ])))
     }
 
-	private static List<MainFileMiner> createCommitMiners(boolean countChangeSizeInLines) {
+	private static List<FileChangeEventMiner> createCommitMiners(boolean countChangeSizeInLines) {
 		def fileTypes = new FileTypes([]) {
 			@Override boolean isBinary(String fileName) {
 				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
 			}
 		}
 		countChangeSizeInLines ?
-			[new MainFileMiner(UTC), new LineAndCharChangeMiner(fileTypes, listener)] :
-			[new MainFileMiner(UTC)]
+			[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, listener)] :
+			[new FileChangeEventMiner(UTC)]
 	}
 
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<MainFileMiner> miners) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<FileChangeEventMiner> miners) {
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
 		def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, commitReaderListener)
 

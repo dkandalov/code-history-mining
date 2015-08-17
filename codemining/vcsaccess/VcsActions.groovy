@@ -48,8 +48,8 @@ class VcsActions {
             }
         }
         def miners = grabChangeSizeInLines ?
-                [new MainFileMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
-                [new MainFileMiner()]
+                [new FileChangeEventMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
+                [new FileChangeEventMiner()]
         def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
         def listener = new MiningCommitReaderListener() {
