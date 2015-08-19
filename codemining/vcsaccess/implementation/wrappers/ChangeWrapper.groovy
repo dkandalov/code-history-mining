@@ -34,12 +34,14 @@ class ChangeWrapper extends Change {
         this.ijChange = ijChange
     }
 
-    @Override String content() {
-        ijChange.afterRevision?.content
+    @Override Change.Content content() {
+	    if (ijChange.afterRevision == null) Change.Content.none
+	    else new Change.Content(ijChange.afterRevision.content)
     }
 
-    @Override String contentBefore() {
-        ijChange.beforeRevision?.content
+    @Override Change.Content contentBefore() {
+	    if (ijChange.beforeRevision == null) Change.Content.none
+	    else new Change.Content(ijChange.beforeRevision.content)
     }
 
     private static Change.Type convert(IJChange.Type changeType) {
