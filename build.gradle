@@ -21,7 +21,7 @@ configurations {
 dependencies {
 	compile "org.codehaus.groovy:groovy:2.3.9"
 	compile "org.codehaus.groovy:groovy-json:2.3.9"
-    compile "codemining:core:1.0"
+    compile "codehistoryminer:core:1.0"
     compile "codemining:vcs-reader:1.0"
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.5.4 beta"
@@ -48,8 +48,8 @@ task jarPlugin(dependsOn: [compileGroovy]) << {
 
     ant.delete(dir: "${basePath}/build/classes/main/.idea")
     ant.delete(dir: "${basePath}/build/classes/main/lib")
-	ant.copy(toDir: "${basePath}/build/classes/main/codemining") {
-		ant.fileset(dir: "${basePath}/codemining/", includes: "**/*.html **/*.css **/*.js")
+	ant.copy(toDir: "${basePath}/build/classes/main/codehistoryminer") {
+		ant.fileset(dir: "${basePath}/codehistoryminer/", includes: "**/*.html **/*.css **/*.js")
 	}
     ant.jar(baseDir: "${basePath}/build/classes/main/", destFile: "$targetFolder/lib/code-history-mining-plugin.jar")
 
@@ -91,6 +91,7 @@ def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
         def file = files.find { it.name == dependencyInfo.fileName }
         def dir = new File(targetDirPath + File.separator + dependencyInfo.path)
         dir.mkdirs()
+	    println("Copying: ${file.canonicalPath}")
         new groovy.util.AntBuilder().copy(
                 file: file.canonicalPath,
                 todir: dir.canonicalPath

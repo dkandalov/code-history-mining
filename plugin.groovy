@@ -1,17 +1,17 @@
-import codemining.core.common.langutil.Measure
-import codemining.historystorage.HistoryStorage
-import codemining.plugin.CodeMiningPlugin
-import codemining.plugin.Log
-import codemining.plugin.ui.FileHistoryStatsToolWindow
-import codemining.plugin.ui.UI
-import codemining.vcsaccess.VcsActions
+import codehistoryminer.core.common.langutil.Measure
+import codehistoryminer.historystorage.HistoryStorage
+import codehistoryminer.plugin.CodeMiningPlugin
+import codehistoryminer.plugin.Log
+import codehistoryminer.plugin.ui.FileHistoryStatsToolWindow
+import codehistoryminer.plugin.ui.UI
+import codehistoryminer.vcsaccess.VcsActions
 import com.intellij.openapi.application.PathManager
 import liveplugin.PluginUtil
 
 import static liveplugin.PluginUtil.show
 // add-to-classpath $HOME/Library/Application Support/IntelliJIdea14/live-plugins/code-history-miner/src/main/
 // add-to-classpath $HOME/Library/Application Support/IntelliJIdea14/live-plugins/code-history-miner/build/classes/main/
-// add-to-classpath $PLUGIN_PATH/lib/codemining/core/1.0/core-1.0.jar
+// add-to-classpath $PLUGIN_PATH/lib/codehistoryminer/core/1.0/core-1.0.jar
 // add-to-classpath $PLUGIN_PATH/lib/codemining/vcs-reader/1.0/vcs-reader-1.0.jar
 // add-to-classpath $PLUGIN_PATH/lib/liveplugin/live-plugin/0.5.4 beta/live-plugin-0.5.4 beta.jar
 // add-to-classpath $PLUGIN_PATH/lib/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar
