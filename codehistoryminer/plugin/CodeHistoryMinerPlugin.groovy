@@ -1,9 +1,4 @@
 package codehistoryminer.plugin
-
-import codehistoryminer.historystorage.HistoryGrabberConfig
-import codehistoryminer.historystorage.HistoryStorage
-import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActions
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.vcs.MinedCommit
@@ -32,15 +27,15 @@ import liveplugin.PluginUtil
 import static codehistoryminer.core.common.langutil.Date.Formatter.dd_MM_yyyy
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplate
 
-class CodeMiningPlugin {
+class CodeHistoryMinerPlugin {
 	private final UI ui
 	private final HistoryStorage storage
 	private final VcsActions vcsAccess
 	private final Measure measure
-	private final CodeMiningPluginLog log
+	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	CodeMiningPlugin(UI ui, HistoryStorage storage, VcsActions vcsAccess, Measure measure, CodeMiningPluginLog log = null) {
+	CodeHistoryMinerPlugin(UI ui, HistoryStorage storage, VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -276,7 +271,7 @@ class CodeMiningPlugin {
 	}
 }
 
-interface CodeMiningPluginLog {
+interface CodeHistoryMinerPluginLog {
 	def loadingProjectHistory(Date fromDate, Date toDate)
 
 	def cancelledBuilding(String visualizationName)

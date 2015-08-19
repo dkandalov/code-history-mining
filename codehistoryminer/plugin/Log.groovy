@@ -1,7 +1,5 @@
 package codehistoryminer.plugin
 
-import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActionsLog
 import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.UI
@@ -10,7 +8,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 
-class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeMiningPluginLog {
+class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeHistoryMinerPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
 
 	@Override def loadingProjectHistory(Date fromDate, Date toDate) {

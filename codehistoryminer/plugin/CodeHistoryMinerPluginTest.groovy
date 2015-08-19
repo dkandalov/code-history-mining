@@ -15,7 +15,7 @@ import org.junit.Test
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
 import static codehistoryminer.plugin.GroovyStubber.*
 
-class CodeMiningPluginTest {
+class CodeHistoryMinerPluginTest {
 
 	@Test def "on VCS update does nothing if already grabbed on this date"() {
 		// given
@@ -33,7 +33,7 @@ class CodeMiningPluginTest {
 				}])
 
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
-		def miner = new CodeMiningPlugin(ui, historyStorage, vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, vcsAccess, new Measure())
 
 		// when / then
 		def now = time("23/11/2012", TimeZone.default)
@@ -58,7 +58,7 @@ class CodeMiningPluginTest {
 					[].iterator()
 				}])
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
-		def miner = new CodeMiningPlugin(ui, historyStorage, vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, vcsAccess, new Measure())
 
 		// when
 		def now = time("23/11/2012")
@@ -82,7 +82,7 @@ class CodeMiningPluginTest {
 				readMinedCommits: returns([].iterator()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
-		def miner = new CodeMiningPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)
@@ -101,7 +101,7 @@ class CodeMiningPluginTest {
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
 		def vcsAccess = stub(VcsActions, [readMinedCommits: returns([].iterator())])
-		def miner = new CodeMiningPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), vcsAccess, new Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)

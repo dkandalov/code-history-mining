@@ -2,7 +2,7 @@ package codehistoryminer.plugin.ui
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
-import codehistoryminer.plugin.CodeMiningPlugin
+import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.ui.http.HttpUtil
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
-	CodeMiningPlugin miner
+	CodeHistoryMinerPlugin miner
 	HistoryStorage storage
 	Log log
 	private ProjectManagerAdapter listener
