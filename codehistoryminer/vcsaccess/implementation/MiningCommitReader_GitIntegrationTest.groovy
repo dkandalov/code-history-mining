@@ -130,7 +130,7 @@ class MiningCommitReader_GitIntegrationTest {
 	private final Project jUnitProject = IJCommitReaderGitTest.findOpenedJUnitProject()
 
 	private static final listener = new MinerListener() {
-        @Override void failedToMine(Change change) {
+		@Override void failedToMine(Change change, String description, Throwable throwable) {
             throw new IllegalStateException("Failed to mine: ${change}")
         }
     }
