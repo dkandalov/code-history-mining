@@ -2,7 +2,7 @@ import codehistoryminer.historystorage.HistoryGrabberConfigTest
 import codehistoryminer.plugin.CodeHistoryMinerPluginTest
 import codehistoryminer.plugin.GroovyStubber
 import codehistoryminer.vcsaccess.implementation.IJCommitReaderGitTest
-import codehistoryminer.vcsaccess.implementation.MiningCommitReader_GitIntegrationTest
+import codehistoryminer.vcsaccess.implementation.MiningMachine_GitIntegrationTest
 import liveplugin.testrunner.IntegrationTestsTextRunner
 // add-to-classpath $HOME/Library/Application Support/IntelliJIdea15/live-plugins/code-history-miner/build/classes/main/
 // add-to-classpath $PLUGIN_PATH/lib/codehistoryminer/core/1.0/core-1.0.jar
@@ -11,6 +11,6 @@ import liveplugin.testrunner.IntegrationTestsTextRunner
 // add-to-classpath $PLUGIN_PATH/lib/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar
 
 def unitTests = [GroovyStubber, CodeHistoryMinerPluginTest, HistoryGrabberConfigTest]
-def integrationTests = [IJCommitReaderGitTest, MiningCommitReader_GitIntegrationTest]
+def integrationTests = [IJCommitReaderGitTest, MiningMachine_GitIntegrationTest]
 def tests = (unitTests + integrationTests).toList()
 IntegrationTestsTextRunner.runIntegrationTests(tests, project, pluginPath)

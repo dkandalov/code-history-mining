@@ -1,9 +1,7 @@
 package codehistoryminer.vcsaccess
-
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.core.common.langutil.Progress
 import codehistoryminer.core.vcs.*
 import codehistoryminer.core.vcs.filetype.FileTypes
 import codehistoryminer.core.vcs.todo.TodoCountMiner
@@ -18,10 +16,9 @@ import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 import vcsreader.Change
-import vcsreader.Commit
+import vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.common.langutil.Misc.withDefault
-import static codehistoryminer.core.vcs.CommitReaderConfig.noCachingDefaults
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 
@@ -35,8 +32,8 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMinedCommits(DateRange dateRange, Project project, boolean grabChangeSizeInLines,
-                                           Progress progress, Cancelled cancelled) {
+    Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
+                                           ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new FileTypes([]) {
             @Override boolean isBinary(String fileName) {
                 FileTypeManager.instance.getFileTypeByFileName(fileName).binary
@@ -50,18 +47,23 @@ class VcsActions {
         def miners = grabChangeSizeInLines ?
                 [new FileChangeEventMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
                 [new FileChangeEventMiner()]
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
+        def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
-        def listener = new MiningCommitReaderListener() {
-            @Override void errorReadingCommits(String error) { log.errorReadingCommits(error) }
-            @Override void onExtractChangeEventException(Exception e) { log.onExtractChangeEventException(e) }
-            @Override void onCurrentDateRange(DateRange range) { progress.add(range.durationInDays()) }
-            @Override void beforeMiningCommit(Commit commit) {}
-            @Override void afterMiningCommit(Commit commit) {}
-        }
+	    def listener = new MiningMachine.Listener() {
+		    @Override void onUpdate(CommitProgressIndicator indicator) { ideIndicator?.fraction = indicator.fraction() }
+		    @Override void beforeCommand(VcsCommand command) {}
+		    @Override void afterCommand(VcsCommand command) {}
+		    @Override void onVcsError(String error) { log.errorReadingCommits(error) }
+		    @Override void onException(Exception e) { log.errorReadingCommits(e.message) }
+		    @Override void failedToMine(Change change, String description, Throwable throwable) {
+			    log.onExtractChangeEventException(throwable)
+		    }
+	    }
 
-	    def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, noCachingDefaults).with(cancelled), miners, listener)
-	    cancelled.wrap(commitReader.readCommits(dateRange))
+	    def config = new MiningMachine.Config(miners, fileTypes, TimeZone.getDefault(), listener, false)
+	    config.cacheFileContent = false
+	    def miningMachine = new MiningMachine(config)
+	    miningMachine.mine(vcsProject, dateRanges, cancelled)
     }
 
     def addVcsUpdateListenerFor(String projectName, Closure closure) {

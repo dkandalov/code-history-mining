@@ -27,7 +27,7 @@ class CodeHistoryMinerPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, readListener ->
+				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, readListener ->
 					grabbedVcs = true
 					[].iterator()
 				}])
@@ -43,8 +43,7 @@ class CodeHistoryMinerPluginTest {
 
 	@Test def "on VCS update grabs history from today to the latest event in file history"() {
 		// given
-		Date grabbedFrom = null
-		Date grabbedTo = null
+		List<DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageFor: returns(stub(EventStorage, [
                         storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
@@ -52,9 +51,8 @@ class CodeHistoryMinerPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { DateRange dateRange, Project project, boolean grabChangeSizeInLines, progress, cancelled ->
-					grabbedFrom = dateRange.from
-					grabbedTo = dateRange.to
+				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, progress, cancelled ->
+					grabbedDateRanges = dateRanges
 					[].iterator()
 				}])
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
@@ -65,8 +63,7 @@ class CodeHistoryMinerPluginTest {
         miner.grabHistoryOnVcsUpdate(someProject, now)
 
         // then
-        assert grabbedFrom == date("20/11/2012")
-        assert grabbedTo == date("23/11/2012")
+        assert grabbedDateRanges == [new DateRange(date("20/11/2012"), date("23/11/2012"))]
     }
 
 	@Test def "on grab history should register VCS update listener"() {

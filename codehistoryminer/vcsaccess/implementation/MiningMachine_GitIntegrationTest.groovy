@@ -2,20 +2,23 @@ package codehistoryminer.vcsaccess.implementation
 import codehistoryminer.core.common.events.CommitInfo
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.events.FileChangeInfo
+import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.vcs.*
+import codehistoryminer.core.vcs.CommitProgressIndicator
+import codehistoryminer.core.vcs.FileChangeEventMiner
+import codehistoryminer.core.vcs.LineAndCharChangeMiner
+import codehistoryminer.core.vcs.MiningMachine
 import codehistoryminer.core.vcs.filetype.FileTypes
 import codehistoryminer.vcsaccess.VcsActionsLog
 import codehistoryminer.vcsaccess.implementation.wrappers.VcsProjectWrapper
-import com.intellij.notification.NotificationType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import liveplugin.PluginUtil
 import org.junit.Test
 import vcsreader.Change
-import vcsreader.Commit
+import vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.common.events.ChangeStats.*
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
@@ -24,13 +27,11 @@ import static codehistoryminer.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
-class MiningCommitReader_GitIntegrationTest {
+class MiningMachine_GitIntegrationTest {
 
-    @Test void "should read file events"() {
+    @Test void "read file events"() {
 		def countChangeSizeInLines = false
-		def commitMiners = createCommitMiners(countChangeSizeInLines)
-
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
+		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -45,11 +46,9 @@ class MiningCommitReader_GitIntegrationTest {
 		])))
 	}
 
-	@Test void "should read file events with change size details"() {
+	@Test void "read file events with change size details"() {
 		def countChangeSizeInLines = true
-		def commitMiners = createCommitMiners(countChangeSizeInLines)
-
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, commitMiners)
+		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
 		assertThat(asString(changeEvents), equalTo(asString([
@@ -64,11 +63,9 @@ class MiningCommitReader_GitIntegrationTest {
 		])))
 	}
 
-	@Test void "should ignore change size details for binary files"() {
+	@Test void "ignore change size details for binary files"() {
         def countChangeSizeInLines = true
-        def commitMiners = createCommitMiners(countChangeSizeInLines)
-
-        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, commitMiners)
+        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, countChangeSizeInLines)
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
         assertThat(asString(changeEvents), equalTo(asString([
@@ -79,9 +76,7 @@ class MiningCommitReader_GitIntegrationTest {
 
 	@Test void "merged commits are skipped because change events create from original commits"() {
         def countChangeSizeInLines = false
-        def commitMiners = createCommitMiners(countChangeSizeInLines)
-
-        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, commitMiners)
+        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, countChangeSizeInLines)
 
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION")),
@@ -89,24 +84,21 @@ class MiningCommitReader_GitIntegrationTest {
         ])))
     }
 
-	private static List<FileChangeEventMiner> createCommitMiners(boolean countChangeSizeInLines) {
+	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
 		def fileTypes = new FileTypes([]) {
 			@Override boolean isBinary(String fileName) {
 				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
 			}
 		}
-		countChangeSizeInLines ?
-			[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, listener)] :
-			[new FileChangeEventMiner(UTC)]
-	}
-
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, List<FileChangeEventMiner> miners) {
-        def projectWrapper = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
-		def commitReader = new MiningCommitReader(new CommitReader(projectWrapper, CommitReaderConfig.noCachingDefaults), miners, commitReaderListener)
-
-		commitReader.readCommits(new DateRange(fromDate, toDate)).collectMany { MinedCommit minedCommit ->
-			minedCommit.fileChangeEvents
-		}
+		def miners = countChangeSizeInLines ?
+				[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
+				[new FileChangeEventMiner(UTC)]
+        def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
+		def config = new MiningMachine.Config(miners, fileTypes, UTC, miningMachineListener, false)
+		config.cacheFileContent = false
+		new MiningMachine(config)
+				.mine(vcsProject, [new DateRange(fromDate, toDate)], Cancelled.never)
+				.collectMany{ it.fileChangeEvents }
 	}
 
 	private static asString(Collection collection) {
@@ -129,22 +121,13 @@ class MiningCommitReader_GitIntegrationTest {
 
 	private final Project jUnitProject = IJCommitReaderGitTest.findOpenedJUnitProject()
 
-	private static final listener = new MinerListener() {
-		@Override void failedToMine(Change change, String description, Throwable throwable) {
-            throw new IllegalStateException("Failed to mine: ${change}")
-        }
-    }
-
-	private final static commitReaderListener = new MiningCommitReaderListener() {
-		@Override void errorReadingCommits(String error) {
-			PluginUtil.show(error, "", NotificationType.ERROR)
-		}
-		@Override void onExtractChangeEventException(Exception e) {
-			PluginUtil.show(e)
-		}
-		@Override void afterMiningCommit(Commit commit) {}
-		@Override void onCurrentDateRange(DateRange dateRange) {}
-		@Override void beforeMiningCommit(Commit commit) {}
+	private final static miningMachineListener = new MiningMachine.Listener() {
+		@Override void onVcsError(String error) { PluginUtil.show(error) }
+		@Override void onException(Exception e) { PluginUtil.show(e) }
+		@Override void onUpdate(CommitProgressIndicator indicator) {}
+		@Override void failedToMine(Change change, String description, Throwable throwable) { PluginUtil.show(throwable) }
+		@Override void beforeCommand(VcsCommand command) {}
+		@Override void afterCommand(VcsCommand command) {}
 	}
 
 	private final static vcsActionsLog = new VcsActionsLog() {
@@ -154,8 +137,8 @@ class MiningCommitReader_GitIntegrationTest {
 		@Override def errorReadingCommits(String error) {
 			PluginUtil.show(error)
 		}
-		@Override def onExtractChangeEventException(Exception e) {
-			PluginUtil.show(e)
+		@Override def onExtractChangeEventException(Throwable t) {
+			PluginUtil.show(t)
 		}
 		@Override def failedToMine(String message) {
 			PluginUtil.show(message)

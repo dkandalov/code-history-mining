@@ -2,7 +2,6 @@ package codehistoryminer.plugin
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.vcs.MinedCommit
-import codehistoryminer.core.vcs.MiningCommitReader
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizationListener
 import codehistoryminer.historystorage.HistoryGrabberConfig
@@ -161,34 +160,20 @@ class CodeHistoryMinerPlugin {
 	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
 						  boolean grabChangeSizeInLines, indicator) {
 		def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
-		def progress = new Progress(dateRanges.sum{ it.durationInDays() } as long).with(new Progress.Listener() {
-			@Override void onUpdate(Progress progress) {
-				indicator?.fraction = progress.percentComplete()
-			}
-		})
 		def cancelled = new Cancelled() {
 			@Override boolean isTrue() {
 				indicator?.canceled
 			}
 		}
+		log?.loadingProjectHistory(dateRanges.first().from, dateRanges.last().to)
 
 		def hadErrors = false
 		try {
-			for (DateRange dateRange in dateRanges) {
-				log?.loadingProjectHistory(dateRange.from, dateRange.to)
-
-				def minedCommits = vcsAccess.readMinedCommits(dateRange, project, grabChangeSizeInLines, progress, cancelled)
-
-				for (MinedCommit minedCommit in minedCommits) {
-					if (minedCommit == MiningCommitReader.failedToMine) {
-						hadErrors = true
-					} else {
-						eventStorage.addEvents(minedCommit.fileChangeEvents)
-					}
-				}
-				eventStorage.flush()
+			def minedCommits = vcsAccess.readMinedCommits(dateRanges, project, grabChangeSizeInLines, indicator, cancelled)
+			for (MinedCommit minedCommit in minedCommits) {
+				eventStorage.addEvents(minedCommit.fileChangeEvents)
 			}
-		} catch (Cancelled ignore) {
+		} finally {
 			eventStorage.flush()
 		}
 

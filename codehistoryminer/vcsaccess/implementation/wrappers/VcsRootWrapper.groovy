@@ -36,7 +36,7 @@ class VcsRootWrapper implements VcsRoot {
             def revision = withDefault(noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
             def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 
-            def changes = convertChangesFrom(ijCommit)
+            def changes = wrapChangesFrom(ijCommit)
             if (changes.empty) continue
 
             def commit = new Commit(
@@ -54,7 +54,7 @@ class VcsRootWrapper implements VcsRoot {
         new VcsProject.LogResult(result, [])
     }
 
-    private List<Change> convertChangesFrom(IJCommit ijCommit) {
+    private List<Change> wrapChangesFrom(IJCommit ijCommit) {
         ijCommit.changes
             .collect { ChangeWrapper.create(it, commonVcsRoot) }
             .findAll{ it != ChangeWrapper.none }
@@ -62,7 +62,7 @@ class VcsRootWrapper implements VcsRoot {
 
 
     @Override VcsProject.LogContentResult contentOf(String filePath, String revision) {
-        throw new IllegalStateException("Shouldn't be called (filePath: ${filePath}; revision: ${revision}")
+        throw new IllegalStateException("Should never be called (filePath: ${filePath}; revision: ${revision}")
     }
 
     @Override VcsProject.UpdateResult update() {
