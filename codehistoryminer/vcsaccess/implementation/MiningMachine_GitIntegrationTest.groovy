@@ -94,8 +94,7 @@ class MiningMachine_GitIntegrationTest {
 				[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
 				[new FileChangeEventMiner(UTC)]
         def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
-		def config = new MiningMachine.Config(miners, fileTypes, UTC, miningMachineListener, false)
-		config.cacheFileContent = false
+		def config = new MiningMachine.Config(miners, fileTypes, UTC).withListener(miningMachineListener).withCacheFileContent(false)
 		new MiningMachine(config)
 				.mine(vcsProject, [new DateRange(fromDate, toDate)], Cancelled.never)
 				.collectMany{ it.fileChangeEvents }
