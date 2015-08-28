@@ -2,9 +2,10 @@ package codehistoryminer.vcsaccess
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.core.vcs.*
-import codehistoryminer.core.vcs.filetype.FileTypes
-import codehistoryminer.core.vcs.todo.TodoCountMiner
+import codehistoryminer.core.vcs.miner.*
+import codehistoryminer.core.vcs.miner.filetype.FileTypes
+import codehistoryminer.core.vcs.miner.todo.TodoCountMiner
+import codehistoryminer.core.vcs.reader.CommitProgressIndicator
 import codehistoryminer.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project

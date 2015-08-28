@@ -5,11 +5,11 @@ import codehistoryminer.core.common.events.FileChangeInfo
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.vcs.CommitProgressIndicator
-import codehistoryminer.core.vcs.FileChangeEventMiner
-import codehistoryminer.core.vcs.LineAndCharChangeMiner
-import codehistoryminer.core.vcs.MiningMachine
-import codehistoryminer.core.vcs.filetype.FileTypes
+import codehistoryminer.core.vcs.reader.CommitProgressIndicator
+import codehistoryminer.core.vcs.miner.FileChangeEventMiner
+import codehistoryminer.core.vcs.miner.LineAndCharChangeMiner
+import codehistoryminer.core.vcs.miner.MiningMachine
+import codehistoryminer.core.vcs.miner.filetype.FileTypes
 import codehistoryminer.vcsaccess.VcsActionsLog
 import codehistoryminer.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager

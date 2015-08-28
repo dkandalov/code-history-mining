@@ -1,7 +1,7 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
-import codehistoryminer.core.vcs.MinedCommit
+import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizationListener
 import codehistoryminer.historystorage.HistoryGrabberConfig
