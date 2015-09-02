@@ -61,7 +61,10 @@ class VcsActions {
 		    }
 	    }
 
-	    def config = new MiningMachine.Config(miners, fileTypes, TimeZone.getDefault()).withListener(listener).withCacheFileContent(false)
+	    def config = new MiningMachine.Config(miners, fileTypes, TimeZone.getDefault())
+			    .withListener(listener)
+			    .withCacheFileContent(false)
+	            .withVcsRequestSizeInDays(1)
 	    def miningMachine = new MiningMachine(config)
 	    miningMachine.mine(vcsProject, dateRanges, cancelled)
     }
