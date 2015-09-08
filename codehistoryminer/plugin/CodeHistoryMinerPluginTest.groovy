@@ -3,7 +3,7 @@ import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
 import codehistoryminer.core.common.langutil.Time
-import codehistoryminer.core.historystorage.EventStorage
+import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.UI
@@ -21,7 +21,7 @@ class CodeHistoryMinerPluginTest {
 		// given
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageFor: returns(stub(EventStorage, [
+				eventStorageFor: returns(stub(EventStorage2, [
 						storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
@@ -45,7 +45,7 @@ class CodeHistoryMinerPluginTest {
 		// given
 		List<DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageFor: returns(stub(EventStorage, [
+				eventStorageFor: returns(stub(EventStorage2, [
                         storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))

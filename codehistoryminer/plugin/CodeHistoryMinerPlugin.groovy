@@ -1,6 +1,6 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.historystorage.EventStorage
+import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizationListener
@@ -157,8 +157,8 @@ class CodeHistoryMinerPlugin {
 		}
 	}
 
-	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
-						  boolean grabChangeSizeInLines, indicator) {
+	private doGrabHistory(Project project, EventStorage2 eventStorage, DateRange requestDateRange,
+	                      boolean grabChangeSizeInLines, indicator) {
 		def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
 		def cancelled = new Cancelled() {
 			@Override boolean isTrue() {
