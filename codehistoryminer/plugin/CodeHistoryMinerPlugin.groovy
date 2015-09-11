@@ -9,11 +9,14 @@ import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.vcsaccess.VcsActions
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
@@ -200,12 +203,6 @@ class CodeHistoryMinerPlugin {
 		[text: messageText, title: "Code History Mining"]
 	}
 
-	def openQueryEditorFor(Project project, File historyFile) {
-		def id = historyStorage.guessProjectNameFrom(historyFile.name)
-		def scriptFile = scriptsStorage.findOrCreateScriptFile(id)
-		ui.openFileInIdeEditor(scriptFile, project)
-	}
-
 	def showCurrentFileHistoryStats(Project project) {
 		def virtualFile = PluginUtil.currentFileIn(project)
 		if (virtualFile == null) return
@@ -263,6 +260,54 @@ class CodeHistoryMinerPlugin {
 	private static prefixOf(String commitMessage) {
 		def words = commitMessage.split(" ")
 		words.size() > 0 ? words[0].trim() : ""
+	}
+
+	def openQueryEditorFor(Project project, File historyFile) {
+		def id = FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
+		def scriptFile = scriptsStorage.findOrCreateScriptFile(id)
+		ui.openFileInIdeEditor(scriptFile, project)
+	}
+
+	def runCurrentFileAsHistoryQueryScript(Project project) {
+		saveAllIdeFiles()
+		def virtualFile = PluginUtil.currentFileIn(project)
+		if (virtualFile == null) return
+		def scriptFileName = virtualFile.name
+		def scriptFolderPath = virtualFile.parent.canonicalPath
+
+		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
+			def listener = new GroovyScriptRunnerListener() { // TODO ui.showError()
+				@Override void loadingError(String message) { PluginUtil.show(message) }
+				@Override void loadingError(Throwable e) { PluginUtil.show(e) }
+				@Override void runningError(Throwable e) { PluginUtil.show(e) }
+			}
+			def scriptRunner = new GroovyScriptRunner(listener)
+			scriptRunner.loadScript(scriptFileName, scriptFolderPath)
+
+			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
+			def hasHistory = historyStorage.historyExistsFor(historyFileName)
+			if (!hasHistory) {
+				// TODO ui.showNoHistory()
+				PluginUtil.show("No history file was found for '$scriptFileName' query script")
+				return
+			}
+
+			def cancelled = new Cancelled() {
+				@Override boolean isTrue() { indicator.canceled }
+			}
+			def events = historyStorage.readAllEvents(historyFileName, cancelled)
+			def result = scriptRunner.runScript([events:events])
+
+			// TODO ui.showResult()
+			PluginUtil.show("Executed '$scriptFileName'")
+			PluginUtil.show(result)
+		}
+	}
+
+	private static void saveAllIdeFiles() {
+		ApplicationManager.application.runWriteAction(new Runnable() {
+			void run() { FileDocumentManager.instance.saveAllDocuments() }
+		})
 	}
 }
 

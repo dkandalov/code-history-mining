@@ -33,31 +33,12 @@ class UI {
 		def projectStats = projectStats()
 		def currentFileHistoryStats = currentFileHistoryStats()
 		def openReadme = openReadme()
-/*
-		// TODO uncomment
-		def runQuery = PluginUtil.registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q") { AnActionEvent event ->
-			def virtualFile = PluginUtil.currentFileIn(event.project)
-			if (virtualFile == null) {
-				return // TODO
-			}
-			def listener = new GroovyScriptRunnerListener() {
-				@Override void loadingError(String message) { PluginUtil.show(message) }
-				@Override void loadingError(Throwable e) { PluginUtil.show(e) }
-				@Override void runningError(Throwable e) { PluginUtil.show(e) }
-			}
-			def scriptRunner = new GroovyScriptRunner(listener)
-			scriptRunner.loadScript(virtualFile.name, virtualFile.parent.canonicalPath)
-			// TODO load events
-			PluginUtil.show(scriptRunner.runScript([events:[]]))
-			PluginUtil.show("Executed ${virtualFile.name}")
-		}
-*/
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
 				[grabHistory, Separator.instance] + codeHistoryActions +
-				[Separator.instance, /*runQuery, */currentFileHistoryStats, projectStats, openReadme]
+				[Separator.instance, currentFileHistoryStats, projectStats, openReadme]
 			}
 		}
 		PluginUtil.registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
@@ -69,6 +50,9 @@ class UI {
 					JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
 					true
 			).showCenteredInCurrentWindow(actionEvent.project)
+		}
+		PluginUtil.registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q", "", "Run Code History Query") { AnActionEvent event ->
+			miner.runCurrentFileAsHistoryQueryScript(event.project)
 		}
 
 		listener = new ProjectManagerAdapter() {
@@ -249,7 +233,7 @@ class UI {
 		new AnAction("Rename") {
 			@Override void actionPerformed(AnActionEvent event) {
 				def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, fileName, new InputValidator() {
-					@Override boolean checkInput(String newFileName) { UI.this.storage.isValidName(newFileName) }
+					@Override boolean checkInput(String newFileName) { UI.this.storage.isValidNewFileName(newFileName) }
 					@Override boolean canClose(String newFileName) { true }
 				})
 				if (newFileName != null) UI.this.storage.rename(fileName, newFileName)

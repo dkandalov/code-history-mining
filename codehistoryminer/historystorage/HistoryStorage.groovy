@@ -32,7 +32,7 @@ class HistoryStorage {
 		HistoryGrabberConfig.saveGrabberConfigOf(projectName, basePath, config)
 	}
 
-	boolean isValidName(String fileName) {
+	boolean isValidNewFileName(String fileName) {
 		fileName.length() > 0 && !new File("$basePath/$fileName").exists()
 	}
 
@@ -42,6 +42,10 @@ class HistoryStorage {
 
 	def delete(String fileName) {
 		JBFileUtil.delete(new File("$basePath/$fileName"))
+	}
+
+	def historyExistsFor(String fileName) {
+		new File("$basePath/$fileName").exists()
 	}
 
 	def readAllEvents(String fileName, Cancelled checkIfCancelled) {

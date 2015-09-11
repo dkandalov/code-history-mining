@@ -9,11 +9,11 @@ class QueryScriptsStorage {
 		this.basePath = basePath
 	}
 
-	File findOrCreateScriptFile(String id) {
+	File findOrCreateScriptFile(String fileName) {
 		def scriptsFolder = new File(basePath)
 		FileUtil.createDirectory(scriptsFolder)
 
-		def scriptFile = new File(scriptsFolder.absolutePath + File.separator + id + ".groovy")
+		def scriptFile = new File(scriptsFolder.absolutePath + File.separator + fileName)
 		def wasCreated = FileUtil.createIfDoesntExist(scriptFile)
 		if (!wasCreated) throw new FileNotFoundException(scriptFile.absolutePath)
 
