@@ -33,11 +33,31 @@ class UI {
 		def projectStats = projectStats()
 		def currentFileHistoryStats = currentFileHistoryStats()
 		def openReadme = openReadme()
+/*
+		// TODO uncomment
+		def runQuery = PluginUtil.registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q") { AnActionEvent event ->
+			def virtualFile = PluginUtil.currentFileIn(event.project)
+			if (virtualFile == null) {
+				return // TODO
+			}
+			def listener = new GroovyScriptRunnerListener() {
+				@Override void loadingError(String message) { PluginUtil.show(message) }
+				@Override void loadingError(Throwable e) { PluginUtil.show(e) }
+				@Override void runningError(Throwable e) { PluginUtil.show(e) }
+			}
+			def scriptRunner = new GroovyScriptRunner(listener)
+			scriptRunner.loadScript(virtualFile.name, virtualFile.parent.canonicalPath)
+			// TODO load events
+			PluginUtil.show(scriptRunner.runScript([events:[]]))
+			PluginUtil.show("Executed ${virtualFile.name}")
+		}
+*/
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
 				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
-				[grabHistory, Separator.instance] + codeHistoryActions + [Separator.instance, currentFileHistoryStats, projectStats, openReadme]
+				[grabHistory, Separator.instance] + codeHistoryActions +
+				[Separator.instance, /*runQuery, */currentFileHistoryStats, projectStats, openReadme]
 			}
 		}
 		PluginUtil.registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
@@ -91,6 +111,10 @@ class UI {
 	private static boolean browserConfiguredIncorrectly() {
 		def settings = GeneralSettings.instance
 		!settings.useDefaultBrowser && !new File(settings.browserPath).exists()
+	}
+
+	def openFileInIdeEditor(File file, Project project) {
+		PluginUtil.openInEditor(file.absolutePath, project)
 	}
 
 	def showGrabbingInProgressMessage(Project project) {
@@ -160,7 +184,14 @@ class UI {
 	}
 
 	private AnAction createActionsOnHistoryFile(File file) {
-		Closure<AnAction> createShowInBrowserAction = { Visualization visualization ->
+		Closure<AnAction> createRunQueryAction = {
+			new AnAction("Open Query Editor") {
+				@Override void actionPerformed(AnActionEvent event) {
+					miner.openQueryEditorFor(event.project, file)
+				}
+			}
+		}
+		Closure<AnAction> createShowVisualizationAction = { Visualization visualization ->
 			new AnAction(visualization.name) {
 				@Override void actionPerformed(AnActionEvent event) {
 					miner.createVisualization(file, visualization, event.project)
@@ -168,23 +199,24 @@ class UI {
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(createShowInBrowserAction(Visualization.all))
-			add(createShowInBrowserAction(Visualization.commitLogAsGraph))
+			add(createRunQueryAction())
+			add(createShowVisualizationAction(Visualization.all))
+			add(createShowVisualizationAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
-			add(createShowInBrowserAction(Visualization.codeChurnChart))
-			add(createShowInBrowserAction(Visualization.amountOfCommittersChart))
-			add(createShowInBrowserAction(Visualization.amountOfCommitsByCommitter))
-			add(createShowInBrowserAction(Visualization.amountOfTodosChart))
-			add(createShowInBrowserAction(Visualization.amountOfFilesInCommitChart))
-			add(createShowInBrowserAction(Visualization.amountOfChangingFilesChart))
-			add(createShowInBrowserAction(Visualization.changeSizeByFileTypeChart))
-			add(createShowInBrowserAction(Visualization.changesTreemap))
-			add(createShowInBrowserAction(Visualization.filesInTheSameCommitGraph))
-			add(createShowInBrowserAction(Visualization.committersChangingSameFilesGraph))
-			add(createShowInBrowserAction(Visualization.commitTimePunchcard))
-			add(createShowInBrowserAction(Visualization.timeBetweenCommitsHistogram))
-			add(createShowInBrowserAction(Visualization.commitMessagesWordChart))
-			add(createShowInBrowserAction(Visualization.commitMessageWordCloud))
+			add(createShowVisualizationAction(Visualization.codeChurnChart))
+			add(createShowVisualizationAction(Visualization.amountOfCommittersChart))
+			add(createShowVisualizationAction(Visualization.amountOfCommitsByCommitter))
+			add(createShowVisualizationAction(Visualization.amountOfTodosChart))
+			add(createShowVisualizationAction(Visualization.amountOfFilesInCommitChart))
+			add(createShowVisualizationAction(Visualization.amountOfChangingFilesChart))
+			add(createShowVisualizationAction(Visualization.changeSizeByFileTypeChart))
+			add(createShowVisualizationAction(Visualization.changesTreemap))
+			add(createShowVisualizationAction(Visualization.filesInTheSameCommitGraph))
+			add(createShowVisualizationAction(Visualization.committersChangingSameFilesGraph))
+			add(createShowVisualizationAction(Visualization.commitTimePunchcard))
+			add(createShowVisualizationAction(Visualization.timeBetweenCommitsHistogram))
+			add(createShowVisualizationAction(Visualization.commitMessagesWordChart))
+			add(createShowVisualizationAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
 			add(showInFileManager(file))
 			add(openInIde(file))

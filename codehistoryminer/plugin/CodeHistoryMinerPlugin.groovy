@@ -6,6 +6,7 @@ import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizationListener
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
+import codehistoryminer.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.vcsaccess.VcsActions
 import com.intellij.openapi.diagnostic.Logger
@@ -13,6 +14,7 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
@@ -34,7 +36,8 @@ class CodeHistoryMinerPlugin {
 	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	CodeHistoryMinerPlugin(UI ui, HistoryStorage storage, VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
+	CodeHistoryMinerPlugin(UI ui, HistoryStorage storage, QueryScriptsStorage queriesStorage,
+	                       VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
 		this.storage = storage
 		this.vcsAccess = vcsAccess
@@ -194,6 +197,18 @@ class CodeHistoryMinerPlugin {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]
+	}
+
+	def openQueryEditorFor(Project project, File historyFile) {
+		def tempDirectory = FileUtil.createTempDirectory("codeminer-", "") // TODO plugins folder, like live-plugins
+		def queryFileName = "query-" + FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
+		def queryFile = new File(tempDirectory.absolutePath + File.separator + queryFileName)
+		def created = queryFile.createNewFile()
+		if (!created) {
+			// TODO ui.showFailedToCreateQueryFile()
+			return
+		}
+		ui.openFileInIdeEditor(queryFile, project)
 	}
 
 	def showCurrentFileHistoryStats(Project project) {
