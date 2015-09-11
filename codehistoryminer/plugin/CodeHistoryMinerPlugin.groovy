@@ -14,7 +14,6 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
 import com.intellij.openapi.vcs.history.VcsFileRevision
@@ -30,16 +29,18 @@ import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplat
 
 class CodeHistoryMinerPlugin {
 	private final UI ui
-	private final HistoryStorage storage
+	private final HistoryStorage historyStorage
+	private final QueryScriptsStorage scriptsStorage
 	private final VcsActions vcsAccess
 	private final Measure measure
 	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	CodeHistoryMinerPlugin(UI ui, HistoryStorage storage, QueryScriptsStorage queriesStorage,
+	CodeHistoryMinerPlugin(UI ui, HistoryStorage historyStorage, QueryScriptsStorage scriptsStorage,
 	                       VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
-		this.storage = storage
+		this.historyStorage = historyStorage
+		this.scriptsStorage = scriptsStorage
 		this.vcsAccess = vcsAccess
 		this.measure = measure
 		this.log = log
@@ -50,12 +51,12 @@ class CodeHistoryMinerPlugin {
 			try {
 				measure.start()
 
-				def projectName = storage.guessProjectNameFrom(file.name)
+				def projectName = historyStorage.guessProjectNameFrom(file.name)
 				def cancelled = new Cancelled() {
 					@Override boolean isTrue() { indicator.canceled }
 				}
 
-				def events = storage.readAllEvents(file.name, cancelled)
+				def events = historyStorage.readAllEvents(file.name, cancelled)
 				if (events.empty) {
 					return ui.showNoEventsInStorageMessage(file.name, project)
 				}
@@ -91,7 +92,7 @@ class CodeHistoryMinerPlugin {
 	}
 
 	def onProjectOpened(Project project) {
-		def grabberConfig = storage.loadGrabberConfigFor(project.name)
+		def grabberConfig = historyStorage.loadGrabberConfigFor(project.name)
 		if (grabberConfig.grabOnVcsUpdate)
 			vcsAccess.addVcsUpdateListenerFor(project.name, this.&grabHistoryOnVcsUpdate)
 	}
@@ -105,10 +106,10 @@ class CodeHistoryMinerPlugin {
 		if (vcsAccess.noVCSRootsIn(project)) return ui.showNoVcsRootsMessage(project)
 
 		def saveConfig = { HistoryGrabberConfig userInput ->
-			storage.saveGrabberConfigFor(project.name, userInput)
+			historyStorage.saveGrabberConfigFor(project.name, userInput)
 		}
 
-		def grabberConfig = storage.loadGrabberConfigFor(project.name)
+		def grabberConfig = historyStorage.loadGrabberConfigFor(project.name)
 		ui.showGrabbingDialog(grabberConfig, project, saveConfig) { HistoryGrabberConfig userInput ->
 			saveConfig(userInput)
 
@@ -122,7 +123,7 @@ class CodeHistoryMinerPlugin {
 				try {
 					measure.start()
 					measure.measure("Total time") {
-						def eventStorage = storage.eventStorageFor(userInput.outputFilePath)
+						def eventStorage = historyStorage.eventStorageFor(userInput.outputFilePath)
                         def requestDateRange = new DateRange(userInput.from, userInput.to)
 
                         def message = doGrabHistory(project, eventStorage, requestDateRange, userInput.grabChangeSizeInLines, indicator)
@@ -139,21 +140,21 @@ class CodeHistoryMinerPlugin {
 
 	def grabHistoryOnVcsUpdate(Project project, Time now = Time.now()) {
 		if (grabHistoryIsInProgress) return
-		def config = storage.loadGrabberConfigFor(project.name)
+		def config = historyStorage.loadGrabberConfigFor(project.name)
 		now = now.withTimeZone(config.lastGrabTime.timeZone())
 		if (config.lastGrabTime.floorToDay() == now.floorToDay()) return
 
 		grabHistoryIsInProgress = true
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
-				def eventStorage = storage.eventStorageFor(config.outputFilePath)
+				def eventStorage = historyStorage.eventStorageFor(config.outputFilePath)
 				def fromDate = eventStorage.storedDateRange().to
 				def toDate = now.toDate().withTimeZone(fromDate.timeZone())
 				def requestDateRange = new DateRange(fromDate, toDate)
 
 				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
 
-				storage.saveGrabberConfigFor(project.name, config.withLastGrabTime(now))
+				historyStorage.saveGrabberConfigFor(project.name, config.withLastGrabTime(now))
 			} finally {
 				grabHistoryIsInProgress = false
 			}
@@ -200,15 +201,9 @@ class CodeHistoryMinerPlugin {
 	}
 
 	def openQueryEditorFor(Project project, File historyFile) {
-		def tempDirectory = FileUtil.createTempDirectory("codeminer-", "") // TODO plugins folder, like live-plugins
-		def queryFileName = "query-" + FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
-		def queryFile = new File(tempDirectory.absolutePath + File.separator + queryFileName)
-		def created = queryFile.createNewFile()
-		if (!created) {
-			// TODO ui.showFailedToCreateQueryFile()
-			return
-		}
-		ui.openFileInIdeEditor(queryFile, project)
+		def id = historyStorage.guessProjectNameFrom(historyFile.name)
+		def scriptFile = scriptsStorage.findOrCreateScriptFile(id)
+		ui.openFileInIdeEditor(scriptFile, project)
 	}
 
 	def showCurrentFileHistoryStats(Project project) {

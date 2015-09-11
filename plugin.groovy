@@ -27,10 +27,10 @@ def log = new Log()
 def measure = new Measure()
 
 def historyStorage = new HistoryStorage(pathToHistoryFiles, measure, log)
-def queriesStorage = new QueryScriptsStorage(pathToQueryFiles)
+def scriptsStorage = new QueryScriptsStorage(pathToQueryFiles)
 def vcsAccess = new VcsActions(measure, log)
 def ui = new UI()
-def miner = new CodeHistoryMinerPlugin(ui, historyStorage, queriesStorage, vcsAccess, measure, log)
+def miner = new CodeHistoryMinerPlugin(ui, historyStorage, scriptsStorage, vcsAccess, measure, log)
 ui.miner = miner
 ui.storage = historyStorage
 ui.log = log

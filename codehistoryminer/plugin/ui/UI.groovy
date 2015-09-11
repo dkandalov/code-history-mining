@@ -199,7 +199,6 @@ class UI {
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(createRunQueryAction())
 			add(createShowVisualizationAction(Visualization.all))
 			add(createShowVisualizationAction(Visualization.commitLogAsGraph))
 			add(Separator.instance)
@@ -218,6 +217,7 @@ class UI {
 			add(createShowVisualizationAction(Visualization.commitMessagesWordChart))
 			add(createShowVisualizationAction(Visualization.commitMessageWordCloud))
 			add(Separator.instance)
+			add(createRunQueryAction())
 			add(showInFileManager(file))
 			add(openInIde(file))
 			add(rename(file.name))
