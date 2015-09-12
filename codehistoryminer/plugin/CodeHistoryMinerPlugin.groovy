@@ -276,7 +276,7 @@ class CodeHistoryMinerPlugin {
 		def scriptFolderPath = virtualFile.parent.canonicalPath
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
-			def listener = new GroovyScriptRunnerListener() {
+			def listener = new GroovyScriptRunner.Listener() {
 				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
 				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
