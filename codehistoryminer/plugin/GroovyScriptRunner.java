@@ -3,7 +3,6 @@ package codehistoryminer.plugin;
 import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.util.GroovyScriptEngine;
-import liveplugin.pluginrunner.PluginRunner;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import java.io.File;
@@ -27,20 +26,21 @@ public class GroovyScriptRunner {
         this.listener = listener;
     }
 
-    public void loadScript(String scriptFileName, String pathToScriptFolder) {
+    public boolean loadScript(String scriptFileName, String pathToScriptFolder) {
         try {
             mainScriptUrl = new File(pathToScriptFolder + File.separator + scriptFileName).toURI().toURL().toString();
             String pluginFolderUrl = "file:///" + pathToScriptFolder + "/"; // prefix with "file:///" for GroovyScriptEngine
 
             List<String> classPath = new ArrayList<String>();
             classPath.add(pluginFolderUrl);
-            ClassLoader classLoader = ClasspathAddition.createClassLoaderWithDependencies(classPath);
+            ClassLoader classLoader = createClassLoader(classPath);
 
             // assume that GroovyScriptEngine is thread-safe
             // (according to this http://groovy.329449.n5.nabble.com/Is-the-GroovyScriptEngine-thread-safe-td331407.html)
             scriptEngine = new GroovyScriptEngine(pluginFolderUrl, classLoader);
             try {
                 scriptEngine.loadScriptByName(mainScriptUrl);
+                return true;
             } catch (Exception e) {
                 listener.runningError(e);
             }
@@ -56,6 +56,7 @@ public class GroovyScriptRunner {
         } catch (Exception e) {
             listener.loadingError(e);
         }
+        return false;
     }
 
     public Object runScript(Map<String, ?> binding) {
@@ -75,21 +76,19 @@ public class GroovyScriptRunner {
         return result;
     }
 
-    private static class ClasspathAddition {
-        public static ClassLoader createClassLoaderWithDependencies(List<String> classPath) throws MalformedURLException {
-            GroovyClassLoader classLoader = new GroovyClassLoader(PluginRunner.class.getClassLoader());
-            for (String path : classPath) {
-                if (path.startsWith("file:/")) {
-                    URL url = new URL(path);
-                    classLoader.addURL(url);
-                    classLoader.addClasspath(url.getFile());
-                } else {
-                    classLoader.addURL(new URL("file:///" + path));
-                    classLoader.addClasspath(path);
-                }
+    private static ClassLoader createClassLoader(List<String> classPath) throws MalformedURLException {
+        GroovyClassLoader classLoader = new GroovyClassLoader(GroovyScriptRunner.class.getClassLoader());
+        for (String path : classPath) {
+            if (path.startsWith("file:/")) {
+                URL url = new URL(path);
+                classLoader.addURL(url);
+                classLoader.addClasspath(url.getFile());
+            } else {
+                classLoader.addURL(new URL("file:///" + path));
+                classLoader.addClasspath(path);
             }
-            return classLoader;
         }
+        return classLoader;
     }
 
     public interface Listener {

@@ -282,7 +282,8 @@ class CodeHistoryMinerPlugin {
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
 			}
 			def scriptRunner = new GroovyScriptRunner(listener)
-			scriptRunner.loadScript(scriptFileName, scriptFolderPath)
+			def wasLoaded = scriptRunner.loadScript(scriptFileName, scriptFolderPath)
+			if (!wasLoaded) return
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
