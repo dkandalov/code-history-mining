@@ -276,31 +276,27 @@ class CodeHistoryMinerPlugin {
 		def scriptFolderPath = virtualFile.parent.canonicalPath
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
-			def listener = new GroovyScriptRunnerListener() { // TODO ui.showError()
-				@Override void loadingError(String message) { PluginUtil.show(message) }
-				@Override void loadingError(Throwable e) { PluginUtil.show(e) }
-				@Override void runningError(Throwable e) { PluginUtil.show(e) }
+			def listener = new GroovyScriptRunnerListener() {
+				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
+				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
+				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
 			}
 			def scriptRunner = new GroovyScriptRunner(listener)
 			scriptRunner.loadScript(scriptFileName, scriptFolderPath)
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
-			if (!hasHistory) {
-				// TODO ui.showNoHistory()
-				PluginUtil.show("No history file was found for '$scriptFileName' query script")
-				return
-			}
+			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
 
 			def cancelled = new Cancelled() {
 				@Override boolean isTrue() { indicator.canceled }
 			}
 			def events = historyStorage.readAllEvents(historyFileName, cancelled)
-			def result = scriptRunner.runScript([events:events])
+			def result = scriptRunner.runScript([
+					events: events, cancelled: cancelled
+			])
 
-			// TODO ui.showResult()
-			PluginUtil.show("Executed '$scriptFileName'")
-			PluginUtil.show(result)
+			if (result != null) ui.showResultOfQueryScript(scriptFileName, result)
 		}
 	}
 
@@ -308,6 +304,12 @@ class CodeHistoryMinerPlugin {
 		ApplicationManager.application.runWriteAction(new Runnable() {
 			void run() { FileDocumentManager.instance.saveAllDocuments() }
 		})
+	}
+
+	private static String unscrambleThrowable(Throwable throwable) {
+		StringWriter writer = new StringWriter()
+		throwable.printStackTrace(new PrintWriter(writer))
+		Unscramble.normalizeText(writer.buffer.toString())
 	}
 }
 

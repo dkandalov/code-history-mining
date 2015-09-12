@@ -21,6 +21,8 @@ import com.intellij.util.ui.UIUtil
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 
+import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
+
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
 	CodeHistoryMinerPlugin miner
@@ -149,6 +151,19 @@ class UI {
 
 	def showFileHasNoVcsHistory(VirtualFile virtualFile) {
 		PluginUtil.show("File ${virtualFile.name} has no VCS history")
+	}
+
+	def showResultOfQueryScript(String scriptFileName, Object result) {
+		PluginUtil.show("Executed '$scriptFileName'")
+		PluginUtil.show(result)
+	}
+
+	def showNoHistoryForQueryScript(String scriptFileName) {
+		PluginUtil.show("No history file was found for '$scriptFileName' query script")
+	}
+
+	def showQueryScriptError(String scriptFileName, String message, Project project) {
+		PluginUtil.showInConsole(message, scriptFileName, project, ERROR_OUTPUT)
 	}
 
 	private currentFileHistoryStats() {
