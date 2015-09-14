@@ -153,8 +153,7 @@ class UI {
 		PluginUtil.show("File ${virtualFile.name} has no VCS history")
 	}
 
-	def showResultOfQueryScript(String scriptFileName, Object result) {
-		PluginUtil.show("Executed '$scriptFileName'")
+	def showResultOfQueryScript(Object result) {
 		PluginUtil.show(result)
 	}
 

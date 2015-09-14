@@ -293,11 +293,13 @@ class CodeHistoryMinerPlugin {
 				@Override boolean isTrue() { indicator.canceled }
 			}
 			def events = historyStorage.readAllEvents(historyFileName, cancelled)
+			// see also queryScriptCompletions.gdsl
 			def result = scriptRunner.runScript([
-					events: events, cancelled: cancelled
+				events: events,
+				cancelled: cancelled
 			])
 
-			if (result != null) ui.showResultOfQueryScript(scriptFileName, result)
+			if (result != null) ui.showResultOfQueryScript(result)
 		}
 	}
 
