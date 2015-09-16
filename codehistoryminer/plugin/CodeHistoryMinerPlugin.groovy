@@ -1,9 +1,13 @@
 package codehistoryminer.plugin
+
+import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
+import codehistoryminer.core.visualizations.Visualization2
 import codehistoryminer.core.visualizations.VisualizationListener
+import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.historystorage.QueryScriptsStorage
@@ -75,11 +79,39 @@ class CodeHistoryMinerPlugin {
 						.inlineImports()
 						.text
 
-				ui.showInBrowser(html, projectName, visualization)
+				ui.showInBrowser(html, projectName, visualization.name)
 
 				measure.forEachDuration{ log?.measuredDuration(it) }
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(visualization.name)
+			}
+		}
+	}
+
+	def runAnalytics(File file, Project project, VisualizedAnalytics analytics) {
+		ui.runInBackground("Creating ${analytics.name()}") { ProgressIndicator indicator ->
+			try {
+				def projectName = historyStorage.guessProjectNameFrom(file.name)
+				def cancelled = new Cancelled() {
+					@Override boolean isTrue() { indicator.canceled }
+				}
+
+				def events = historyStorage.readAllEvents(file.name, cancelled)
+				if (events.empty) {
+					return ui.showNoEventsInStorageMessage(file.name, project)
+				}
+
+				def context = new Context(cancelled, { Logger.getInstance("CodeHistoryMining").info(it.toString()) })
+				Visualization2 visualization = analytics.analyze(events, context)
+				def html = visualization.template
+						.pasteInto(pluginTemplate)
+						.fillProjectName(projectName)
+						.inlineImports()
+						.text
+
+				ui.showInBrowser(html, projectName, analytics.name())
+			} catch (Cancelled ignored) {
+				log?.cancelledBuilding(analytics.name())
 			}
 		}
 	}

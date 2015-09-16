@@ -1,5 +1,7 @@
 package codehistoryminer.plugin.ui
+
 import codehistoryminer.core.visualizations.Visualization
+import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -78,8 +80,8 @@ class UI {
 		}
 	}
 
-	def showInBrowser(String html, String projectName, Visualization visualization) {
-		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualization.name + ".html", log)
+	def showInBrowser(String html, String projectName, String visualizationName) {
+		def url = HttpUtil.loadIntoHttpServer(html, projectName, visualizationName + ".html", log)
 
 		// need to check if browser configured correctly because it looks like IntelliJ won't do it
 		if (browserConfiguredIncorrectly()) {
@@ -196,6 +198,13 @@ class UI {
 				}
 			}
 		}
+		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalytics analytics ->
+			new AnAction(analytics.name()) {
+				@Override void actionPerformed(AnActionEvent event) {
+					miner.runAnalytics(file, event.project, analytics)
+				}
+			}
+		}
 		new DefaultActionGroup(file.name, true).with {
 			add(createShowVisualizationAction(Visualization.all))
 			add(createShowVisualizationAction(Visualization.commitLogAsGraph))
@@ -214,6 +223,7 @@ class UI {
 			add(createShowVisualizationAction(Visualization.timeBetweenCommitsHistogram))
 			add(createShowVisualizationAction(Visualization.commitMessagesWordChart))
 			add(createShowVisualizationAction(Visualization.commitMessageWordCloud))
+//			add(visualizedAnalyticsAction(new VisualizedAnalytics.CommitsByCommitterChart()))
 			add(Separator.instance)
 			add(createRunQueryAction())
 			add(showInFileManager(file))
