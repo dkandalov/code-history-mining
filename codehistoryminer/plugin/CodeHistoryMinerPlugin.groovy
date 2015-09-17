@@ -101,7 +101,12 @@ class CodeHistoryMinerPlugin {
 					return ui.showNoEventsInStorageMessage(file.name, project)
 				}
 
-				def context = new Context(cancelled, { Logger.getInstance("CodeHistoryMining").info(it.toString()) })
+				def context = new Context(cancelled).withListener(new Context.Listener() {
+					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
+				})
+				context.progress.setListener(new Progress.Listener() {
+					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
+				})
 				Visualization2 visualization = analytics.analyze(events, context)
 				def html = visualization.template
 						.pasteInto(pluginTemplate)
