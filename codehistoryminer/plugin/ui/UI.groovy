@@ -1,6 +1,5 @@
 package codehistoryminer.plugin.ui
 
-import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
@@ -23,6 +22,7 @@ import com.intellij.util.ui.UIUtil
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 
+import static codehistoryminer.core.visualizations.VisualizedAnalytics.Bundle.*
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -191,13 +191,6 @@ class UI {
 				}
 			}
 		}
-		Closure<AnAction> createShowVisualizationAction = { Visualization visualization ->
-			new AnAction(visualization.name) {
-				@Override void actionPerformed(AnActionEvent event) {
-					miner.createVisualization(file, visualization, event.project)
-				}
-			}
-		}
 		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalytics analytics ->
 			new AnAction(analytics.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
@@ -206,27 +199,23 @@ class UI {
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(createShowVisualizationAction(Visualization.all))
-			add(createShowVisualizationAction(Visualization.commitLogAsGraph))
+			add(visualizedAnalyticsAction(all))
+			add(visualizedAnalyticsAction(commitLogAsGraph))
 			add(Separator.instance)
-			add(createShowVisualizationAction(Visualization.codeChurnChart))
-			add(createShowVisualizationAction(Visualization.amountOfCommittersChart))
-			add(createShowVisualizationAction(Visualization.amountOfCommitsByCommitter))
-			add(createShowVisualizationAction(Visualization.amountOfTodosChart))
-			add(createShowVisualizationAction(Visualization.amountOfFilesInCommitChart))
-			add(createShowVisualizationAction(Visualization.amountOfChangingFilesChart))
-			add(createShowVisualizationAction(Visualization.changeSizeByFileTypeChart))
-			add(createShowVisualizationAction(Visualization.changesTreemap))
-			add(createShowVisualizationAction(Visualization.filesInTheSameCommitGraph))
-			add(createShowVisualizationAction(Visualization.committersChangingSameFilesGraph))
-			add(createShowVisualizationAction(Visualization.commitTimePunchcard))
-			add(createShowVisualizationAction(Visualization.timeBetweenCommitsHistogram))
-			add(createShowVisualizationAction(Visualization.commitMessagesWordChart))
-			add(createShowVisualizationAction(Visualization.commitMessageWordCloud))
-			add(visualizedAnalyticsAction(new VisualizedAnalytics.CommitsByCommitterChart()))
-			add(visualizedAnalyticsAction(new VisualizedAnalytics.CommitTimePunchcard()))
-			add(visualizedAnalyticsAction(new VisualizedAnalytics.TimeBetweenCommitsHistogram()))
-			add(visualizedAnalyticsAction(VisualizedAnalytics.All))
+			add(visualizedAnalyticsAction(codeChurnChart))
+			add(visualizedAnalyticsAction(amountOfCommittersChart))
+			add(visualizedAnalyticsAction(commitsByCommitterChart))
+			add(visualizedAnalyticsAction(amountOfTodosChart))
+			add(visualizedAnalyticsAction(amountOfFilesInCommitChart))
+			add(visualizedAnalyticsAction(amountOfChangingFilesChart))
+			add(visualizedAnalyticsAction(changeSizeByFileTypeChart))
+			add(visualizedAnalyticsAction(changesTreemap))
+			add(visualizedAnalyticsAction(filesInTheSameCommitGraph))
+			add(visualizedAnalyticsAction(committersChangingSameFilesGraph))
+			add(visualizedAnalyticsAction(commitTimePunchcard))
+			add(visualizedAnalyticsAction(timeBetweenCommitsHistogram))
+			add(visualizedAnalyticsAction(commitMessagesWordChart))
+			add(visualizedAnalyticsAction(commitMessageWordCloud))
 			add(Separator.instance)
 			add(createRunQueryAction())
 			add(showInFileManager(file))
