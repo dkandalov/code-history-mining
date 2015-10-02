@@ -1,12 +1,9 @@
 package codehistoryminer.plugin
-
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.core.vcs.miner.MinedCommit
-import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.Visualization2
-import codehistoryminer.core.visualizations.VisualizationListener
 import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
@@ -51,41 +48,6 @@ class CodeHistoryMinerPlugin {
 		this.vcsAccess = vcsAccess
 		this.measure = measure
 		this.log = log
-	}
-
-	def createVisualization(File file, Visualization visualization, Project project) {
-		ui.runInBackground("Creating ${visualization.name.toLowerCase()}") { ProgressIndicator indicator ->
-			try {
-				measure.start()
-
-				def projectName = historyStorage.guessProjectNameFrom(file.name)
-				def cancelled = new Cancelled() {
-					@Override boolean isTrue() { indicator.canceled }
-				}
-
-				def events = historyStorage.readAllEvents(file.name, cancelled)
-				if (events.empty) {
-					return ui.showNoEventsInStorageMessage(file.name, project)
-				}
-
-				def listener = new VisualizationListener() {
-					@Override void onProgress(Progress progress) { indicator.fraction = progress.percentComplete() }
-					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
-				}
-				def html = visualization
-						.generateFrom(events, projectName, cancelled, listener)
-						.pasteInto(pluginTemplate)
-						.fillProjectName(projectName)
-						.inlineImports()
-						.text
-
-				ui.showInBrowser(html, projectName, visualization.name)
-
-				measure.forEachDuration{ log?.measuredDuration(it) }
-			} catch (Cancelled ignored) {
-				log?.cancelledBuilding(visualization.name)
-			}
-		}
 	}
 
 	def runAnalytics(File file, Project project, VisualizedAnalytics analytics) {
@@ -333,10 +295,27 @@ class CodeHistoryMinerPlugin {
 			// see also queryScriptCompletions.gdsl
 			def result = scriptRunner.runScript([
 				events: events,
-				cancelled: cancelled
+				context: new Context(cancelled)
 			])
 
-			if (result != null) ui.showResultOfQueryScript(result)
+			def projectName = historyStorage.guessProjectNameFrom(historyFileName)
+			showResultOfQueryScript(result, projectName)
+		}
+	}
+
+	private showResultOfQueryScript(result, String projectName) {
+		if (result == null) return
+
+		if (result instanceof Visualization2) {
+			def html = result.template
+					.pasteInto(pluginTemplate)
+					.fillProjectName(projectName)
+					.inlineImports()
+					.text
+			ui.showInBrowser(html, projectName, "")
+
+		} else {
+			PluginUtil.show(result)
 		}
 	}
 

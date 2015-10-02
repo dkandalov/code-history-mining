@@ -1,5 +1,6 @@
 package codehistoryminer.plugin.ui
 
+import codehistoryminer.core.visualizations.Visualization2
 import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
@@ -23,6 +24,7 @@ import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 
 import static codehistoryminer.core.visualizations.VisualizedAnalytics.Bundle.*
+import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -153,10 +155,6 @@ class UI {
 
 	def showFileHasNoVcsHistory(VirtualFile virtualFile) {
 		PluginUtil.show("File ${virtualFile.name} has no VCS history")
-	}
-
-	def showResultOfQueryScript(Object result) {
-		PluginUtil.show(result)
 	}
 
 	def showNoHistoryForQueryScript(String scriptFileName) {

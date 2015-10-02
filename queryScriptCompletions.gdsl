@@ -1,4 +1,4 @@
 contributor(context(scope: scriptScope(), pathRegexp: '.*/query-scripts/.*\\.groovy$')) {
     property name: 'events', type: 'java.util.List<codehistoryminer.core.common.events.FileChangeEvent>'
-    property name: 'cancelled', type: 'codehistoryminer.core.common.langutil.Cancelled'
+    property name: 'context', type: 'codehistoryminer.core.analysis.Context'
 }
