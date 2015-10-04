@@ -1,5 +1,7 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
+import codehistoryminer.core.analysis.values.Table
+import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.core.vcs.miner.MinedCommit
@@ -70,13 +72,8 @@ class CodeHistoryMinerPlugin {
 					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
 				})
 				Visualization2 visualization = analytics.analyze(events, context)
-				def html = visualization.template
-						.pasteInto(pluginTemplate)
-						.fillProjectName(projectName)
-						.inlineImports()
-						.text
+				showResultOfAnalytics(visualization, projectName, project)
 
-				ui.showInBrowser(html, projectName, analytics.name())
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(analytics.name())
 			}
@@ -299,11 +296,11 @@ class CodeHistoryMinerPlugin {
 			])
 
 			def projectName = historyStorage.guessProjectNameFrom(historyFileName)
-			showResultOfQueryScript(result, projectName)
+			showResultOfAnalytics(result, projectName, project)
 		}
 	}
 
-	private showResultOfQueryScript(result, String projectName) {
+	private showResultOfAnalytics(result, String projectName, Project project) {
 		if (result == null) return
 
 		if (result instanceof Visualization2) {
@@ -313,6 +310,18 @@ class CodeHistoryMinerPlugin {
 					.inlineImports()
 					.text
 			ui.showInBrowser(html, projectName, "")
+
+		} else if (result instanceof Table) {
+			def file = FileUtil.createTempFile(projectName + "-result", "")
+			file.renameTo(file.absolutePath + ".csv")
+			file.write(result.toCsv())
+
+			ui.openFileInIdeEditor(file, project)
+
+		} else if (result instanceof TableList) {
+			result.tables.each { table ->
+				showResultOfAnalytics(table, projectName, project)
+			}
 
 		} else {
 			PluginUtil.show(result)

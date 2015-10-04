@@ -1,6 +1,4 @@
 package codehistoryminer.plugin.ui
-
-import codehistoryminer.core.visualizations.Visualization2
 import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
@@ -24,7 +22,6 @@ import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 
 import static codehistoryminer.core.visualizations.VisualizedAnalytics.Bundle.*
-import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -87,7 +84,7 @@ class UI {
 
 		// need to check if browser configured correctly because it looks like IntelliJ won't do it
 		if (browserConfiguredIncorrectly()) {
-			UIUtil.invokeLaterIfNeeded{
+			PluginUtil.invokeLaterOnEDT{
 				Messages.showWarningDialog(
 						"It seems that browser is not configured correctly.\nPlease check Settings -> Web Browsers config.",
 						"Code History Mining"
@@ -104,7 +101,9 @@ class UI {
 	}
 
 	def openFileInIdeEditor(File file, Project project) {
-		PluginUtil.openInEditor(file.absolutePath, project)
+		PluginUtil.invokeLaterOnEDT{
+			PluginUtil.openInEditor(file.absolutePath, project)
+		}
 	}
 
 	def showGrabbingInProgressMessage(Project project) {
