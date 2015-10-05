@@ -79,7 +79,7 @@ class CodeHistoryMinerPlugin {
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(analyticsName)
 			} catch (Exception e) {
-				ui.showAnalyticsError(analyticsName, e, project)
+				ui.showAnalyticsError(analyticsName, Unscramble.unscrambleThrowable(e), project)
 			}
 		}
 	}
@@ -278,8 +278,8 @@ class CodeHistoryMinerPlugin {
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
 			def listener = new GroovyScriptRunner.Listener() {
 				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
-				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
-				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project) }
+				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
+				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
 			def scriptRunner = new GroovyScriptRunner(listener)
 			def wasLoaded = scriptRunner.loadScript(scriptFileName, scriptFolderPath)
@@ -299,7 +299,7 @@ class CodeHistoryMinerPlugin {
 							runAnalytics(new File(historyFileName), project, analytics, analyticsName)
 						}
 					} catch (Exception e) {
-						ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project)
+						ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project)
 					}
 				}
 
@@ -351,12 +351,6 @@ class CodeHistoryMinerPlugin {
 		ApplicationManager.application.runWriteAction(new Runnable() {
 			void run() { FileDocumentManager.instance.saveAllDocuments() }
 		})
-	}
-
-	private static String unscrambleThrowable(Throwable throwable) {
-		StringWriter writer = new StringWriter()
-		throwable.printStackTrace(new PrintWriter(writer))
-		Unscramble.normalizeText(writer.buffer.toString())
 	}
 }
 

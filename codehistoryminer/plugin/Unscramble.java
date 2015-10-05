@@ -3,7 +3,16 @@ package codehistoryminer.plugin;
 import com.intellij.util.text.CharArrayUtil;
 import org.jetbrains.annotations.NonNls;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Unscramble {
+    public static String unscrambleThrowable(Throwable throwable) {
+        StringWriter writer = new StringWriter();
+        throwable.printStackTrace(new PrintWriter(writer));
+        return Unscramble.normalizeText(writer.getBuffer().toString());
+    }
+
     public static String normalizeText(@NonNls String text) {
         StringBuilder builder = new StringBuilder(text.length());
 

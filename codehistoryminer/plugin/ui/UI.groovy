@@ -164,8 +164,8 @@ class UI {
 		PluginUtil.showInConsole(message, scriptFileName, project, ERROR_OUTPUT)
 	}
 
-	def showAnalyticsError(String analyticsName, Exception e, Project project) {
-		PluginUtil.showInConsole(e, analyticsName, project, ERROR_OUTPUT)
+	def showAnalyticsError(String analyticsName, String message, Project project) {
+		PluginUtil.showInConsole(message, analyticsName, project, ERROR_OUTPUT)
 	}
 
 	private currentFileHistoryStats() {
