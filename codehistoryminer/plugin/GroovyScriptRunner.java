@@ -59,6 +59,10 @@ public class GroovyScriptRunner {
         return false;
     }
 
+    public Class[] loadedClasses() {
+        return scriptEngine.getGroovyClassLoader().getLoadedClasses();
+    }
+
     public Object runScript(Map<String, ?> binding) {
         try {
             return scriptEngine.run(mainScriptUrl, createGroovyBinding(binding));

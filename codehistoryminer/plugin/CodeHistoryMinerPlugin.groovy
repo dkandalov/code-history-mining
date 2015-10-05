@@ -1,12 +1,14 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
+import codehistoryminer.core.analysis.FileEventsAnalytics
+import codehistoryminer.core.analysis.Named
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
+import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage2
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization2
-import codehistoryminer.core.visualizations.VisualizedAnalytics
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.historystorage.QueryScriptsStorage
@@ -52,8 +54,8 @@ class CodeHistoryMinerPlugin {
 		this.log = log
 	}
 
-	def runAnalytics(File file, Project project, VisualizedAnalytics analytics) {
-		ui.runInBackground("Creating ${analytics.name()}") { ProgressIndicator indicator ->
+	def runAnalytics(File file, Project project, FileEventsAnalytics analytics, String analyticsName) {
+		ui.runInBackground("Running ${analyticsName}") { ProgressIndicator indicator ->
 			try {
 				def projectName = historyStorage.guessProjectNameFrom(file.name)
 				def cancelled = new Cancelled() {
@@ -71,11 +73,13 @@ class CodeHistoryMinerPlugin {
 				context.progress.setListener(new Progress.Listener() {
 					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
 				})
-				Visualization2 visualization = analytics.analyze(events, context)
-				showResultOfAnalytics(visualization, projectName, project)
+				def result = analytics.analyze(events, context)
+				showResultOfAnalytics(result, projectName, project)
 
 			} catch (Cancelled ignored) {
-				log?.cancelledBuilding(analytics.name())
+				log?.cancelledBuilding(analyticsName)
+			} catch (Exception e) {
+				ui.showAnalyticsError(analyticsName, e, project)
 			}
 		}
 	}
@@ -285,18 +289,33 @@ class CodeHistoryMinerPlugin {
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
 			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
 
-			def cancelled = new Cancelled() {
-				@Override boolean isTrue() { indicator.canceled }
-			}
-			def events = historyStorage.readAllEvents(historyFileName, cancelled)
-			// see also queryScriptCompletions.gdsl
-			def result = scriptRunner.runScript([
-				events: events,
-				context: new Context(cancelled)
-			])
+			def analyticsClasses = scriptRunner.loadedClasses().findAll { FileEventsAnalytics.isAssignableFrom(it) }
+			if (!analyticsClasses.empty) {
+				analyticsClasses.each { aClass ->
+					try {
+						def analytics = aClass.newInstance() as FileEventsAnalytics
+						def analyticsName = analytics instanceof Named ? analytics.name() : analytics.class.simpleName
+						PluginUtil.invokeOnEDT {
+							runAnalytics(new File(historyFileName), project, analytics, analyticsName)
+						}
+					} catch (Exception e) {
+						ui.showQueryScriptError(scriptFileName, unscrambleThrowable(e), project)
+					}
+				}
 
-			def projectName = historyStorage.guessProjectNameFrom(historyFileName)
-			showResultOfAnalytics(result, projectName, project)
+			} else {
+				def analytics = new FileEventsAnalytics() {
+					@Override Object analyze(List<FileChangeEvent> events, Context context) {
+						scriptRunner.runScript([
+								events : events,
+								context: context
+						])
+					}
+				}
+				PluginUtil.invokeOnEDT {
+					runAnalytics(new File(historyFileName), project, analytics, "$scriptFileName query")
+				}
+			}
 		}
 	}
 

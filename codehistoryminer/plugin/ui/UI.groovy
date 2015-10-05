@@ -164,6 +164,10 @@ class UI {
 		PluginUtil.showInConsole(message, scriptFileName, project, ERROR_OUTPUT)
 	}
 
+	def showAnalyticsError(String analyticsName, Exception e, Project project) {
+		PluginUtil.showInConsole(e, analyticsName, project, ERROR_OUTPUT)
+	}
+
 	private currentFileHistoryStats() {
 		new AnAction("Current File History Stats") {
 			@Override void actionPerformed(AnActionEvent event) {
@@ -191,7 +195,7 @@ class UI {
 		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalytics analytics ->
 			new AnAction(analytics.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.runAnalytics(file, event.project, analytics)
+					miner.runAnalytics(file, event.project, analytics, analytics.name())
 				}
 			}
 		}
