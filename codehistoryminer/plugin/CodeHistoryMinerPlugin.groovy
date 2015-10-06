@@ -1,5 +1,6 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
+import codehistoryminer.core.analysis.ContextLogger
 import codehistoryminer.core.analysis.FileEventsAnalytics
 import codehistoryminer.core.analysis.Named
 import codehistoryminer.core.analysis.implementation.GroovyScriptRunner
@@ -68,7 +69,7 @@ class CodeHistoryMinerPlugin {
 					return ui.showNoEventsInStorageMessage(file.name, project)
 				}
 
-				def context = new Context(cancelled).withListener(new Context.Listener() {
+				def context = new Context(cancelled).withLogger(new ContextLogger() {
 					@Override void onLog(String message) { Logger.getInstance("CodeHistoryMining").info(message) }
 				})
 				context.progress.setListener(new Progress.Listener() {
@@ -273,6 +274,7 @@ class CodeHistoryMinerPlugin {
 		saveAllIdeFiles()
 		def virtualFile = PluginUtil.currentFileIn(project)
 		if (virtualFile == null) return
+		def scriptFilePath = virtualFile.canonicalPath
 		def scriptFileName = virtualFile.name
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
@@ -282,7 +284,7 @@ class CodeHistoryMinerPlugin {
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
 			def scriptRunner = new GroovyScriptRunner(listener)
-			def wasLoaded = scriptRunner.loadScript(scriptFileName)
+			def wasLoaded = scriptRunner.loadScript(scriptFilePath)
 			if (!wasLoaded) return
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
