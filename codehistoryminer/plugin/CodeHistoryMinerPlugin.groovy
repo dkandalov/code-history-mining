@@ -274,7 +274,6 @@ class CodeHistoryMinerPlugin {
 		def virtualFile = PluginUtil.currentFileIn(project)
 		if (virtualFile == null) return
 		def scriptFileName = virtualFile.name
-		def scriptFolderPath = virtualFile.parent.canonicalPath
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
 			def listener = new GroovyScriptRunner.Listener() {
@@ -283,7 +282,7 @@ class CodeHistoryMinerPlugin {
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
 			def scriptRunner = new GroovyScriptRunner(listener)
-			def wasLoaded = scriptRunner.loadScript(scriptFileName, scriptFolderPath)
+			def wasLoaded = scriptRunner.loadScript(scriptFileName)
 			if (!wasLoaded) return
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
