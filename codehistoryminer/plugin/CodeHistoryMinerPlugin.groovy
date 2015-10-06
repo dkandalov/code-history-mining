@@ -2,6 +2,7 @@ package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.FileEventsAnalytics
 import codehistoryminer.core.analysis.Named
+import codehistoryminer.core.analysis.implementation.GroovyScriptRunner
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.FileChangeEvent
