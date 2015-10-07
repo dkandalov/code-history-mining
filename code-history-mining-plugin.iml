@@ -18,6 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="IDEA IU-15" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="code-history-miner" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.commons:commons-csv:1.0" level="project" />
     <orderEntry type="module-library">
       <library name="Gradle: alloy">
