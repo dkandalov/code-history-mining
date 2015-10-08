@@ -22,10 +22,11 @@ import static liveplugin.IDEUtil.askIsUserWantsToRestartIde;
 import static liveplugin.IDEUtil.downloadFile;
 
 public class AppComponent implements ApplicationComponent {
-	private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining-plugin/lib/";
-	private static final Logger LOG = Logger.getInstance("CodeHistoryMining");
+    private static final String pluginId = "CodeHistoryMining";
+    private static final String PLUGIN_LIBS_PATH = PathManager.getPluginsPath() + "/code-history-mining-plugin/lib/";
+    private static final Logger LOG = Logger.getInstance(pluginId);
 
-	@Override public void initComponent() {
+    @Override public void initComponent() {
 		boolean onClasspath = checkThatGroovyIsOnClasspath();
 		if (!onClasspath) return;
 
@@ -92,12 +93,12 @@ public class AppComponent implements ApplicationComponent {
 					notification.expire();
 					askIsUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
 				} else {
-					NotificationGroup.balloonGroup("CodeHistoryMining")
+					NotificationGroup.balloonGroup(pluginId)
 							.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
 				}
 			}
 		};
-		NotificationGroup.balloonGroup("CodeHistoryMining").createNotification(
+		NotificationGroup.balloonGroup(pluginId).createNotification(
 				"Code History Mining plugin didn't find Groovy libraries on classpath",
 				"Without it plugin won't work. <a href=\"\">Download Groovy libraries</a> (~6Mb)",
 				NotificationType.ERROR,
