@@ -428,17 +428,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Gradle: jna-utils">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-utils.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="Gradle: jna">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/jna.jar!/" />
@@ -1212,15 +1201,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Gradle: testDiscoveryInstrumenter">
-        <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/testDiscoveryInstrumenter.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="Gradle: winp-1.23">
         <CLASSES>
           <root url="jar://$APPLICATION_HOME_DIR$/lib/winp-1.23.jar!/" />
@@ -1251,9 +1231,54 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Gradle: pty4j-0.4.22">
+      <library name="Gradle: commons-io-2.4">
         <CLASSES>
-          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.4.22.jar!/" />
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/commons-io-2.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: coverage-agent">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/coverage-agent.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: coverage-instrumenter">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/coverage-instrumenter.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: coverage-util">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/coverage-util.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: jna-platform">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/jna-platform.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Gradle: pty4j-0.5">
+        <CLASSES>
+          <root url="jar://$APPLICATION_HOME_DIR$/lib/pty4j-0.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
