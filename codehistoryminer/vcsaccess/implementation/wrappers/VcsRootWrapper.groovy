@@ -36,6 +36,12 @@ class VcsRootWrapper implements VcsRoot {
             def revision = withDefault(noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
             def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 
+	        // workaround because hg4idea will use "revision:changeset" as id (using terms of hg)
+	        if (ijCommit.vcs.name == "hg4idea") {
+		        revision = keepChangeSetOnly(revision)
+		        revisionBefore = keepChangeSetOnly(revision)
+	        }
+
             def changes = wrapChangesFrom(ijCommit)
             if (changes.empty) continue
 
@@ -54,7 +60,13 @@ class VcsRootWrapper implements VcsRoot {
         new VcsProject.LogResult(result, [])
     }
 
-    private List<Change> wrapChangesFrom(IJCommit ijCommit) {
+	private static String keepChangeSetOnly(String s) {
+		def i = s.indexOf(":")
+		if (i == -1 || i == s.length() - 1) return s
+		s.substring(i + 1)
+	}
+
+	private List<Change> wrapChangesFrom(IJCommit ijCommit) {
         ijCommit.changes
             .collect { ChangeWrapper.create(it, commonVcsRoot) }
             .findAll{ it != ChangeWrapper.none }
