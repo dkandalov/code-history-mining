@@ -38,8 +38,8 @@ class VcsRootWrapper implements VcsRoot {
 
 	        // workaround because hg4idea will use "revision:changeset" as id (using terms of hg)
 	        if (ijCommit.vcs.name == "hg4idea") {
-		        revision = keepChangeSetOnly(revision)
-		        revisionBefore = keepChangeSetOnly(revision)
+		        revision = keepHgChangeSetOnly(revision)
+		        revisionBefore = keepHgChangeSetOnly(revision)
 	        }
 
             def changes = wrapChangesFrom(ijCommit)
@@ -60,18 +60,17 @@ class VcsRootWrapper implements VcsRoot {
         new VcsProject.LogResult(result, [])
     }
 
-	private static String keepChangeSetOnly(String s) {
-		def i = s.indexOf(":")
-		if (i == -1 || i == s.length() - 1) return s
-		s.substring(i + 1)
-	}
-
 	private List<Change> wrapChangesFrom(IJCommit ijCommit) {
         ijCommit.changes
             .collect { ChangeWrapper.create(it, commonVcsRoot) }
             .findAll{ it != ChangeWrapper.none }
     }
 
+	private static String keepHgChangeSetOnly(String s) {
+		def i = s.indexOf(":")
+		if (i == -1 || i == s.length() - 1) return s
+		s.substring(i + 1)
+	}
 
     @Override VcsProject.LogContentResult contentOf(String filePath, String revision) {
         throw new IllegalStateException("Should never be called (filePath: ${filePath}; revision: ${revision}")
