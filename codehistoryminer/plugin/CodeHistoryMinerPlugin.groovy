@@ -8,7 +8,7 @@ import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.historystorage.EventStorage2
+import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization2
 import codehistoryminer.historystorage.HistoryGrabberConfig
@@ -166,7 +166,7 @@ class CodeHistoryMinerPlugin {
 		}
 	}
 
-	private doGrabHistory(Project project, EventStorage2 eventStorage, DateRange requestDateRange,
+	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
 	                      boolean grabChangeSizeInLines, indicator) {
 		def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
 		def cancelled = new Cancelled() {
