@@ -1,4 +1,6 @@
 package codehistoryminer.historystorage
+
+import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.JBFileUtil
 import codehistoryminer.core.common.langutil.Measure
@@ -48,7 +50,7 @@ class HistoryStorage {
 		new File("$basePath/$fileName").exists()
 	}
 
-	def readAllEvents(String fileName, Cancelled checkIfCancelled) {
+	List<FileChangeEvent> readAllEvents(String fileName, Cancelled checkIfCancelled) {
 		measure.measure("Storage.readAllEvents"){
 			new EventStorage("$basePath/$fileName").init().readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
 		}
