@@ -37,7 +37,7 @@ class VcsRootWrapper implements VcsRoot {
             def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 
 	        // workaround because hg4idea will use "revision:changeset" as id (using terms of hg)
-	        if (ijCommit.vcs.name == "hg4idea") {
+	        if (ijCommit?.vcs?.name == "hg4idea") {
 		        revision = keepHgChangeSetOnly(revision)
 		        revisionBefore = keepHgChangeSetOnly(revision)
 	        }

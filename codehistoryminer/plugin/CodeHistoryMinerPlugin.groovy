@@ -10,7 +10,7 @@ import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.vcs.miner.MinedCommit
-import codehistoryminer.core.visualizations.Visualization2
+import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.historystorage.HistoryGrabberConfig
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.historystorage.QueryScriptsStorage
@@ -324,7 +324,7 @@ class CodeHistoryMinerPlugin {
 	private showResultOfAnalytics(result, String projectName, Project project) {
 		if (result == null) return
 
-		if (result instanceof Visualization2) {
+		if (result instanceof Visualization) {
 			def html = result.template
 					.pasteInto(pluginTemplate)
 					.fillProjectName(projectName)
