@@ -9,6 +9,7 @@ import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
+import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.historystorage.HistoryGrabberConfig
@@ -344,6 +345,27 @@ class CodeHistoryMinerPlugin {
 				showResultOfAnalytics(table, projectName, project)
 			}
 
+		} else if (result instanceof List) {
+			if (result.isEmpty() || !(result.get(0) instanceof FileChangeEvent)) {
+				result = result.collect{it.toString()}.join("\n")
+
+				def file = FileUtil.createTempFile(projectName + "-result", "")
+				file.renameTo(file.absolutePath + ".csv")
+				file.write(result)
+				ui.openFileInIdeEditor(file, project)
+			} else {
+				def events = result as List<FileChangeEvent>
+				def header = CSVConverter.defaultHeader + events.first().additionalAttributes.keySet()
+				def timeZone = TimeZone.default
+				def formatter = Time.Formatter.yyyy_MM_dd_HHmmss_Z.withTimeZone(timeZone)
+				def converter = new CSVConverter(header.toList(), formatter)
+				result = events.collect{ converter.toCsv(it) }.join("\n")
+
+				def file = FileUtil.createTempFile(projectName + "-result", "")
+				file.renameTo(file.absolutePath + ".csv")
+				file.write(result)
+				ui.openFileInIdeEditor(file, project)
+			}
 		} else {
 			PluginUtil.show(result)
 		}
