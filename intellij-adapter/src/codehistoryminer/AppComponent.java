@@ -8,7 +8,7 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import groovy.lang.Binding;
-import liveplugin.IDEUtil;
+import liveplugin.LivePluginAppComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import static liveplugin.IDEUtil.askIsUserWantsToRestartIde;
 import static liveplugin.IDEUtil.downloadFile;
@@ -109,6 +110,11 @@ public class AppComponent implements ApplicationComponent {
 	}
 
 	private static boolean isGroovyOnClasspath() {
-		return IDEUtil.isOnClasspath("org.codehaus.groovy.runtime.DefaultGroovyMethods");
+		return isOnClasspath("org.codehaus.groovy.runtime.DefaultGroovyMethods");
+	}
+
+	private static boolean isOnClasspath(String className) {
+		URL resource = LivePluginAppComponent.class.getClassLoader().getResource(className.replace(".", "/") + ".class");
+		return resource != null;
 	}
 }
