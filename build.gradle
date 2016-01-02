@@ -4,7 +4,7 @@ apply plugin: 'maven'
 
 ext.home = System.env.HOME
 ext.basePath = System.getProperty("user.dir")
-ext.ideaPath = "/Applications/IntelliJ IDEA 15 EAP.app/Contents"
+ext.ideaPath = "/Applications/IntelliJ IDEA 15.app/Contents"
 
 
 repositories {
@@ -25,6 +25,7 @@ dependencies {
     compile "codehistoryminer:vcs-reader:1.0"
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.5.4 beta"
+    compile "junit:junit:4.12"
 
     provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", exclude: "groovy-all*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
