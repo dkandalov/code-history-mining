@@ -24,7 +24,7 @@ dependencies {
     compile "codehistoryminer:core:1.0"
     compile "codehistoryminer:vcs-reader:1.0"
     compile "org.apache.commons:commons-csv:1.0"
-    compile "liveplugin:live-plugin:0.5.4 beta"
+    compile "liveplugin:live-plugin:0.5.6 beta"
 
     provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", exclude: "groovy-all*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")

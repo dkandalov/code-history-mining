@@ -1,14 +1,20 @@
 package codehistoryminer.plugin.ui
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.keymap.KeymapUtil
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowAnchor
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.GridBag
 import com.intellij.util.ui.UIUtil
+import org.jetbrains.annotations.NotNull
 
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
@@ -16,11 +22,10 @@ import java.awt.*
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
 
-import static liveplugin.PluginUtil.registerToolWindowIn
+import static com.intellij.openapi.wm.ToolWindowAnchor.RIGHT
+import static java.awt.GridBagConstraints.*
 import static liveplugin.PluginUtil.unregisterToolWindow
-import static java.awt.GridBagConstraints.BOTH
-import static java.awt.GridBagConstraints.NORTH
-import static java.awt.GridBagConstraints.SOUTH
+import static liveplugin.implementation.Misc.newDisposable
 
 class FileAmountToolWindow {
 	private static final toolWindowId = "File Amount by Type"
@@ -104,5 +109,22 @@ class FileAmountToolWindow {
 				ClipboardSynchronizer.instance.setContent(content, content)
 			}
 		}, "Copy", copyKeyStroke, JComponent.WHEN_FOCUSED)
+	}
+
+	private static ToolWindow registerToolWindowIn(@NotNull Project project, String toolWindowId, Disposable disposable,
+	                                               JComponent component, ToolWindowAnchor location = RIGHT) {
+		newDisposable(disposable) {
+			ToolWindowManager.getInstance(project).unregisterToolWindow(toolWindowId)
+		}
+
+		def manager = ToolWindowManager.getInstance(project)
+		if (manager.getToolWindow(toolWindowId) != null) {
+			manager.unregisterToolWindow(toolWindowId)
+		}
+
+		def toolWindow = manager.registerToolWindow(toolWindowId, false, location)
+		def content = ContentFactory.SERVICE.instance.createContent(component, "", false)
+		toolWindow.contentManager.addContent(content)
+		toolWindow
 	}
 }

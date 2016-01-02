@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static liveplugin.IDEUtil.askIsUserWantsToRestartIde;
+import static liveplugin.IDEUtil.askIfUserWantsToRestartIde;
 import static liveplugin.IDEUtil.downloadFile;
 
 public class AppComponent implements ApplicationComponent {
@@ -92,7 +92,7 @@ public class AppComponent implements ApplicationComponent {
 				boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.3.9/", "groovy-all-2.3.9.jar", PLUGIN_LIBS_PATH);
 				if (downloaded) {
 					notification.expire();
-					askIsUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
+					askIfUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
 				} else {
 					NotificationGroup.balloonGroup(pluginId)
 							.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
