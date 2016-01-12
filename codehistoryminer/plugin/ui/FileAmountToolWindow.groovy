@@ -1,8 +1,13 @@
 package codehistoryminer.plugin.ui
+
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
-import com.intellij.openapi.Disposable
-import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPlaces
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.DefaultActionGroup
+import com.intellij.openapi.actionSystem.IdeActions
 import com.intellij.openapi.keymap.KeymapUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.SimpleToolWindowPanel
@@ -25,28 +30,17 @@ import java.awt.event.ActionEvent
 import static com.intellij.openapi.wm.ToolWindowAnchor.RIGHT
 import static java.awt.GridBagConstraints.*
 import static liveplugin.PluginUtil.unregisterToolWindow
-import static liveplugin.implementation.Misc.newDisposable
 
 class FileAmountToolWindow {
 	private static final toolWindowId = "File Amount by Type"
 
-	static showIn(project, fileCountByFileExtension) {
-		def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
-
-		def actionGroup = new DefaultActionGroup().with{
-			add(new AnAction(AllIcons.Actions.Cancel) {
-				@Override void actionPerformed(AnActionEvent event) {
-					unregisterToolWindow(toolWindowId)
-				}
-			})
-			it
-		}
-
+	static showIn(Project project, Map fileCountByFileExtension) {
 		def createToolWindowPanel = {
 			JPanel rootPanel = new JPanel().with{
 				layout = new GridBagLayout()
 				GridBag bag = new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).setDefaultFill(BOTH)
 
+				def totalAmountOfFiles = fileCountByFileExtension.entrySet().sum(0){ it.value }
 				JBTable table = createTable(fileCountByFileExtension, totalAmountOfFiles)
 				add(new JBScrollPane(table), bag.nextLine().next().anchor(NORTH))
 
@@ -63,7 +57,15 @@ class FileAmountToolWindow {
 					}, new GridBag().setDefaultWeightX(1).setDefaultWeightY(1).nextLine().next().fillCellHorizontally().anchor(NORTH))
 					it
 				}, bag.nextLine().next().anchor(SOUTH))
+				it
+			}
 
+			def actionGroup = new DefaultActionGroup().with{
+				add(new AnAction(AllIcons.Actions.Cancel) {
+					@Override void actionPerformed(AnActionEvent event) {
+						unregisterToolWindow(toolWindowId)
+					}
+				})
 				it
 			}
 
@@ -73,9 +75,8 @@ class FileAmountToolWindow {
 			toolWindowPanel
 		}
 
-		def toolWindow = registerToolWindowIn(project, toolWindowId, createToolWindowPanel(), ToolWindowAnchor.RIGHT)
-		def doNothing = {} as Runnable
-		toolWindow.show(doNothing)
+		def toolWindow = registerToolWindowIn(project, toolWindowId, createToolWindowPanel(), RIGHT)
+		toolWindow.show({} as Runnable)
 	}
 
 	private static JBTable createTable(fileCountByFileExtension, totalAmountOfFiles) {
@@ -111,12 +112,8 @@ class FileAmountToolWindow {
 		}, "Copy", copyKeyStroke, JComponent.WHEN_FOCUSED)
 	}
 
-	private static ToolWindow registerToolWindowIn(@NotNull Project project, String toolWindowId, Disposable disposable,
+	private static ToolWindow registerToolWindowIn(@NotNull Project project, String toolWindowId,
 	                                               JComponent component, ToolWindowAnchor location = RIGHT) {
-		newDisposable(disposable) {
-			ToolWindowManager.getInstance(project).unregisterToolWindow(toolWindowId)
-		}
-
 		def manager = ToolWindowManager.getInstance(project)
 		if (manager.getToolWindow(toolWindowId) != null) {
 			manager.unregisterToolWindow(toolWindowId)
