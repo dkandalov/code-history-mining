@@ -1,4 +1,4 @@
-package codehistoryminer.vcsaccess.implementation.wrappers
+package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 import com.intellij.openapi.vcs.changes.Change as IJChange
 import vcsreader.Change
 

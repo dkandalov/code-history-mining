@@ -1,4 +1,4 @@
-package codehistoryminer.vcsaccess.implementation
+package codehistoryminer.plugin.vcsaccess.implementation
 import codehistoryminer.core.common.events.CommitInfo
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.events.FileChangeInfo
@@ -10,8 +10,8 @@ import codehistoryminer.core.vcs.miner.FileChangeEventMiner
 import codehistoryminer.core.vcs.miner.LineAndCharChangeMiner
 import codehistoryminer.core.vcs.miner.MiningMachine
 import codehistoryminer.core.vcs.miner.filetype.FileTypes
-import codehistoryminer.vcsaccess.VcsActionsLog
-import codehistoryminer.vcsaccess.implementation.wrappers.VcsProjectWrapper
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
@@ -22,8 +22,8 @@ import vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.common.events.ChangeStats.*
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
-import static codehistoryminer.vcsaccess.VcsActions.commonVcsRootsAncestor
-import static codehistoryminer.vcsaccess.VcsActions.vcsRootsIn
+import static codehistoryminer.plugin.vcsaccess.VcsActions.commonVcsRootsAncestor
+import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 

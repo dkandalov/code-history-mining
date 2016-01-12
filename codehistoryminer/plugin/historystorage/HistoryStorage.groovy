@@ -1,4 +1,4 @@
-package codehistoryminer.historystorage
+package codehistoryminer.plugin.historystorage
 
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.Cancelled

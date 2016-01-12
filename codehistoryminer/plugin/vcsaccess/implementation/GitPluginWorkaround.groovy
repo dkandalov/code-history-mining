@@ -1,4 +1,4 @@
-package codehistoryminer.vcsaccess.implementation
+package codehistoryminer.plugin.vcsaccess.implementation
 
 import codehistoryminer.core.common.langutil.Date
 import com.intellij.openapi.project.Project

@@ -1,4 +1,4 @@
-package codehistoryminer.historystorage
+package codehistoryminer.plugin.historystorage
 import org.junit.Test
 
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.date

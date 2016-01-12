@@ -1,4 +1,4 @@
-package codehistoryminer.vcsaccess.implementation
+package codehistoryminer.plugin.vcsaccess.implementation
 import codehistoryminer.core.common.langutil.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -11,7 +11,7 @@ import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
 import org.junit.Test
 
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.date
-import static codehistoryminer.vcsaccess.VcsActions.vcsRootsIn
+import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
 
 class IJCommitReaderGitTest {
 

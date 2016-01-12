@@ -1,4 +1,4 @@
-package codehistoryminer.historystorage
+package codehistoryminer.plugin.historystorage
 import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.core.common.langutil.Time
 import com.intellij.openapi.util.io.FileUtil

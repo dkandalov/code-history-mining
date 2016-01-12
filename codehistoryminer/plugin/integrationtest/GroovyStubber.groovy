@@ -1,4 +1,4 @@
-package codehistoryminer.plugin
+package codehistoryminer.plugin.integrationtest
 import org.junit.Test
 
 @SuppressWarnings("GrMethodMayBeStatic")

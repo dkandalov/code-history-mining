@@ -1,13 +1,11 @@
 package codehistoryminer.plugin
 
 import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.historystorage.HistoryStorage
-import codehistoryminer.historystorage.QueryScriptsStorage
-import codehistoryminer.plugin.CodeHistoryMinerPlugin
-import codehistoryminer.plugin.Log
+import codehistoryminer.plugin.historystorage.HistoryStorage
+import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.FileHistoryStatsToolWindow
 import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActions
+import codehistoryminer.plugin.vcsaccess.VcsActions
 import com.intellij.openapi.application.PathManager
 import liveplugin.PluginUtil
 
@@ -33,8 +31,8 @@ def historyStorage = new HistoryStorage(pathToHistoryFiles, measure, log)
 def scriptsStorage = new QueryScriptsStorage(pathToQueryFiles)
 def vcsAccess = new VcsActions(measure, log)
 def ui = new UI()
-def miner = new CodeHistoryMinerPlugin(ui, historyStorage, scriptsStorage, vcsAccess, measure, log)
-ui.miner = miner
+def minerPlugin = new CodeHistoryMinerPlugin(ui, historyStorage, scriptsStorage, vcsAccess, measure, log)
+ui.minerPlugin = minerPlugin
 ui.storage = historyStorage
 ui.log = log
 ui.init()

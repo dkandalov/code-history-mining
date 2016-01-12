@@ -12,11 +12,11 @@ import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
-import codehistoryminer.historystorage.HistoryGrabberConfig
-import codehistoryminer.historystorage.HistoryStorage
-import codehistoryminer.historystorage.QueryScriptsStorage
+import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
+import codehistoryminer.plugin.historystorage.HistoryStorage
+import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActions
+import codehistoryminer.plugin.vcsaccess.VcsActions
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager

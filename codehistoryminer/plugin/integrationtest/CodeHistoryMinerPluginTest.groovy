@@ -1,20 +1,19 @@
-package codehistoryminer.plugin
-import codehistoryminer.core.common.langutil.Date
-import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.core.common.langutil.Time
+package codehistoryminer.plugin.integrationtest
+
+import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorage
-import codehistoryminer.historystorage.HistoryGrabberConfig
-import codehistoryminer.historystorage.HistoryStorage
-import codehistoryminer.historystorage.QueryScriptsStorage
+import codehistoryminer.plugin.CodeHistoryMinerPlugin
+import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
+import codehistoryminer.plugin.historystorage.HistoryStorage
+import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActions
+import codehistoryminer.plugin.vcsaccess.VcsActions
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test
 
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
-import static codehistoryminer.plugin.GroovyStubber.*
+import static codehistoryminer.plugin.integrationtest.GroovyStubber.*
 
 class CodeHistoryMinerPluginTest {
 
@@ -28,7 +27,7 @@ class CodeHistoryMinerPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, readListener ->
+				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, readListener, Cancelled cancelled ->
 					grabbedVcs = true
 					[].iterator()
 				}])

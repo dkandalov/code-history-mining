@@ -1,9 +1,9 @@
 package codehistoryminer.plugin
 
 import codehistoryminer.core.common.langutil.Date
-import codehistoryminer.historystorage.HistoryStorage
+import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.UI
-import codehistoryminer.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot

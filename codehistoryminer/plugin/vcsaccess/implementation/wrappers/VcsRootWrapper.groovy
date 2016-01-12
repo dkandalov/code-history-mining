@@ -1,11 +1,11 @@
-package codehistoryminer.vcsaccess.implementation.wrappers
+package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 
 import codehistoryminer.core.common.langutil.Date
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
-import codehistoryminer.vcsaccess.VcsActionsLog
-import codehistoryminer.vcsaccess.implementation.IJCommitReader
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.implementation.IJCommitReader
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject

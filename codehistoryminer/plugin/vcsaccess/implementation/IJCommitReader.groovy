@@ -1,6 +1,6 @@
-package codehistoryminer.vcsaccess.implementation
+package codehistoryminer.plugin.vcsaccess.implementation
 import codehistoryminer.core.common.langutil.Date
-import codehistoryminer.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
 import com.intellij.openapi.vcs.LocalFilePath

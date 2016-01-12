@@ -1,7 +1,7 @@
 package codehistoryminer.plugin.ui
 import codehistoryminer.core.visualizations.VisualizedAnalytics
-import codehistoryminer.historystorage.HistoryGrabberConfig
-import codehistoryminer.historystorage.HistoryStorage
+import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
+import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.ui.http.HttpUtil
 import com.intellij.ide.BrowserUtil
@@ -26,7 +26,7 @@ import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
-	CodeHistoryMinerPlugin miner
+	CodeHistoryMinerPlugin minerPlugin
 	HistoryStorage storage
 	Log log
 	private ProjectManagerAdapter listener
@@ -55,15 +55,15 @@ class UI {
 			).showCenteredInCurrentWindow(actionEvent.project)
 		}
 		PluginUtil.registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q", "", "Run Code History Query") { AnActionEvent event ->
-			miner.runCurrentFileAsHistoryQueryScript(event.project)
+			minerPlugin.runCurrentFileAsHistoryQueryScript(event.project)
 		}
 
 		listener = new ProjectManagerAdapter() {
-			@Override void projectOpened(Project project) { miner.onProjectOpened(project) }
-			@Override void projectClosed(Project project) { miner.onProjectClosed(project) }
+			@Override void projectOpened(Project project) { minerPlugin.onProjectOpened(project) }
+			@Override void projectClosed(Project project) { minerPlugin.onProjectClosed(project) }
 		}
 		ProjectManager.instance.addProjectManagerListener(listener)
-		ProjectManager.instance.openProjects.each{ miner.onProjectOpened(it) }
+		ProjectManager.instance.openProjects.each{ minerPlugin.onProjectOpened(it) }
 	}
 
 	def dispose(oldUI) {
@@ -134,14 +134,14 @@ class UI {
 
 	private grabHistory() {
 		PluginUtil.registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
-			miner.grabHistoryOf(event.project)
+			minerPlugin.grabHistoryOf(event.project)
 		}
 	}
 
 	private projectStats() {
 		new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) {
-				FileAmountToolWindow.showIn(event.project, UI.this.miner.fileCountByFileExtension(event.project))
+				FileAmountToolWindow.showIn(event.project, UI.this.minerPlugin.fileCountByFileExtension(event.project))
 			}
 		}
 	}
@@ -171,7 +171,7 @@ class UI {
 	private currentFileHistoryStats() {
 		new AnAction("Current File History Stats") {
 			@Override void actionPerformed(AnActionEvent event) {
-				UI.this.miner.showCurrentFileHistoryStats(event.project)
+				UI.this.minerPlugin.showCurrentFileHistoryStats(event.project)
 			}
 		}
 	}
@@ -188,14 +188,14 @@ class UI {
 		Closure<AnAction> createRunQueryAction = {
 			new AnAction("Open Query Editor") {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.openQueryEditorFor(event.project, file)
+					minerPlugin.openQueryEditorFor(event.project, file)
 				}
 			}
 		}
 		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalytics analytics ->
 			new AnAction(analytics.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
-					miner.runAnalytics(file, event.project, analytics, analytics.name())
+					minerPlugin.runAnalytics(file, event.project, analytics, analytics.name())
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-package codehistoryminer.historystorage
+package codehistoryminer.plugin.historystorage
 
 import com.intellij.openapi.util.io.FileUtil
 

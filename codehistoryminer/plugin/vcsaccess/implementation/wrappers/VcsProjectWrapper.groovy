@@ -1,7 +1,7 @@
-package codehistoryminer.vcsaccess.implementation.wrappers
+package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
-import codehistoryminer.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
