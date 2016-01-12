@@ -1,3 +1,5 @@
+package codehistoryminer.plugin
+
 import codehistoryminer.historystorage.HistoryGrabberConfigTest
 import codehistoryminer.plugin.CodeHistoryMinerPluginTest
 import codehistoryminer.plugin.GroovyStubber

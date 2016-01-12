@@ -1,3 +1,5 @@
+package codehistoryminer.plugin
+
 import codehistoryminer.core.common.langutil.Measure
 import codehistoryminer.historystorage.HistoryStorage
 import codehistoryminer.historystorage.QueryScriptsStorage
