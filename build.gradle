@@ -33,33 +33,60 @@ dependencies {
 
 sourceSets {
     main {
-        java { srcDir "./intellij-adapter/src" }
+        java { srcDir "./" }
         groovy { srcDir "./" }
     }
 }
 
+//noinspection GroovyAssignabilityCheck
 task jarPlugin(dependsOn: [compileGroovy]) << {
-    def targetFolder = "${basePath}/build/code-history-mining-plugin/code-history-mining-plugin"
-    ant.delete(dir: targetFolder)
+	def libDir = "${basePath}/lib"
+	def srcDir = "${basePath}/src/main"
+	def resourcesDir = "${basePath}/src/resources"
+	def compiledDir = "${basePath}/build/classes/main"
+	def targetDir = "${basePath}/build/code-history-mining-plugin/code-history-mining-plugin"
 
-    ant.copy(toDir: "${basePath}/build/classes/main/META-INF/") {
-        ant.fileset(dir: "${basePath}/intellij-adapter/META-INF")
+    ant.delete(dir: targetDir)
+
+    ant.copy(toDir: "${compiledDir}/META-INF/") {
+        ant.fileset(dir: "${resourcesDir}/META-INF")
     }
 
-    ant.delete(dir: "${basePath}/build/classes/main/.idea")
-    ant.delete(dir: "${basePath}/build/classes/main/lib")
-	ant.copy(toDir: "${basePath}/build/classes/main/codehistoryminer") {
-		ant.fileset(dir: "${basePath}/codehistoryminer/", includes: "**/*.html **/*.css **/*.js")
+    ant.delete(dir: "${compiledDir}/.idea")
+    ant.delete(dir: "${compiledDir}/lib")
+	ant.copy(toDir: "${compiledDir}/codehistoryminer") {
+		ant.fileset(dir: "${srcDir}/codehistoryminer/", includes: "**/*.html **/*.css **/*.js **/*.gdsl")
 	}
-    ant.jar(baseDir: "${basePath}/build/classes/main/", destFile: "$targetFolder/lib/code-history-mining-plugin.jar")
+    ant.jar(baseDir: compiledDir, destFile: "$targetDir/lib/code-history-mining-plugin.jar")
 
-    ant.copy(toDir: "$targetFolder/lib", flatten: true) { file ->
-        ant.fileset(dir: "${basePath}/lib") {
-            include(name: "**/*.jar")
-        }
+    ant.copy(toDir: "$targetDir/lib", flatten: true) { file ->
+        ant.fileset(dir: libDir) { include(name: "**/*.jar") }
     }
 }
 
+//noinspection GroovyAssignabilityCheck
+task validatePluginJar(dependsOn: jarPlugin) << {
+  	def targetDir = "${basePath}/build/code-history-mining-plugin/code-history-mining-plugin" // TODO
+	assert new File(targetDir).listFiles().collect{it.name} == ["lib"]
+
+	def expectedFiles = [
+			"annotations-.*.jar",
+			"code-history-mining-plugin.jar",
+			"commons-csv-.*.jar",
+			"core-.*.jar",
+			"groovy-.*.jar",
+			"groovy-json-.*.jar",
+			"live-plugin-.*.jar",
+			"vcs-reader-.*.jar",
+	]
+	def actualFiles = new File(targetDir + "/lib").listFiles().collect{it.name}.sort()
+	[actualFiles, expectedFiles].transpose().each { String actual, String expected ->
+		assert actual.matches(expected)
+	}
+	assert actualFiles.size() == expectedFiles.size()
+}
+
+//noinspection GroovyAssignabilityCheck
 task zipPlugin(dependsOn: jarPlugin) << {
     ant.zip(
         destfile: "${basePath}/build/code-history-mining-plugin.zip",
@@ -82,8 +109,8 @@ def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
     if (!files.collect{it.name}.containsAll(dependenciesInfo.collect{it.fileName})) {
         throw new IllegalStateException(
                 "Expected files to contain all dependencies. But was\n" +
-                        "files:\n${files.join("\n")}\n" +
-                        "dependencies:\n${dependenciesInfo.join("\n")}"
+                "files:\n${files.join("\n")}\n" +
+                "dependencies:\n${dependenciesInfo.join("\n")}"
         )
     }
 
