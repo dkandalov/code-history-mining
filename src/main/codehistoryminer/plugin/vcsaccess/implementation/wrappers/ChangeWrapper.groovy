@@ -1,5 +1,6 @@
 package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 import com.intellij.openapi.vcs.changes.Change as IJChange
+import org.jetbrains.annotations.NotNull
 import vcsreader.Change
 
 import static codehistoryminer.core.common.langutil.Misc.withDefault
@@ -34,14 +35,14 @@ class ChangeWrapper extends Change {
         this.ijChange = ijChange
     }
 
-    @Override Change.Content content() {
-	    if (ijChange.afterRevision == null) Change.Content.none
-	    else new Change.Content(ijChange.afterRevision.content)
+	@NotNull @Override Change.FileContent fileContent() {
+	    if (ijChange.afterRevision == null) Change.FileContent.none
+	    else new Change.FileContent(ijChange.afterRevision.content)
     }
 
-    @Override Change.Content contentBefore() {
-	    if (ijChange.beforeRevision == null) Change.Content.none
-	    else new Change.Content(ijChange.beforeRevision.content)
+	@NotNull @Override Change.FileContent fileContentBefore() {
+	    if (ijChange.beforeRevision == null) Change.FileContent.none
+	    else new Change.FileContent(ijChange.beforeRevision.content)
     }
 
     private static Change.Type convert(IJChange.Type changeType) {
