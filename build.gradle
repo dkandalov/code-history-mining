@@ -33,10 +33,13 @@ dependencies {
 
 sourceSets {
     main {
-        java { srcDir "./" }
-        groovy { srcDir "./" }
+        java { srcDir "./src/main" }
+        groovy { srcDir "./src/main" }
+	    resources { srcDir "src/resources" }
     }
-}
+	test {
+		groovy { srcDir "./src/test-integration" }
+}   }
 
 //noinspection GroovyAssignabilityCheck
 task jarPlugin(dependsOn: [compileGroovy]) << {
