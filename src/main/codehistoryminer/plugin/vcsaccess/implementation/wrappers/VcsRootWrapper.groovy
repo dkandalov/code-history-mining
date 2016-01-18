@@ -72,7 +72,7 @@ class VcsRootWrapper implements VcsRoot {
 		s.substring(i + 1)
 	}
 
-    @Override VcsProject.LogFileContentResult contentOf(String filePath, String revision) {
+    @Override VcsProject.LogFileContentResult logFileContent(String filePath, String revision) {
         throw new IllegalStateException("Should never be called (filePath: ${filePath}; revision: ${revision}")
     }
 
