@@ -47,8 +47,8 @@ class ChangeWrapper extends Change {
 
     private static Change.Type convert(IJChange.Type changeType) {
         switch (changeType) {
-            case IJChange.Type.MODIFICATION: return Change.Type.MODIFICATION
-            case IJChange.Type.NEW: return Change.Type.NEW
+            case IJChange.Type.MODIFICATION: return Change.Type.MODIFIED
+            case IJChange.Type.NEW: return Change.Type.ADDED
             case IJChange.Type.DELETED: return Change.Type.DELETED
             case IJChange.Type.MOVED: return Change.Type.MOVED
             default: throw new IllegalStateException("Unknown change type: ${changeType}")

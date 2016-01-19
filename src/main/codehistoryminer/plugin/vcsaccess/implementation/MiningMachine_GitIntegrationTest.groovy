@@ -35,14 +35,14 @@ class MiningMachine_GitIntegrationTest {
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
         assertThat(asString(changeEvents), equalTo(asString([
-				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFIED")),
 				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION")),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION"))
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFIED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "ADDED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFIED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED")),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFIED"))
 		])))
 	}
 
@@ -52,14 +52,14 @@ class MiningMachine_GitIntegrationTest {
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
 		assertThat(asString(changeEvents), equalTo(asString([
-				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFICATION"), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", "MODIFIED"), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
 				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", "MOVED"), linesStats(129, 123, 2, 8, 15) + charsStats(3822, 3824, 165, 413, 414)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFICATION"), linesStats(128, 132, 0, 3, 0) + charsStats(3682, 3807, 0, 140, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "NEW"), linesStats(0, 125, 125, 0, 0) + charsStats(0, 3316, 3316, 0, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFICATION"), linesStats(157, 64, 0, 26, 84) + charsStats(4102, 1582, 0, 809, 2233)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION"), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFICATION"), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFICATION"), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", "MODIFIED"), linesStats(128, 132, 0, 3, 0) + charsStats(3682, 3807, 0, 140, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", "ADDED"), linesStats(0, 125, 125, 0, 0) + charsStats(0, 3316, 3316, 0, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", "MODIFIED"), linesStats(157, 64, 0, 26, 84) + charsStats(4102, 1582, 0, 809, 2233)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED"), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED"), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
+				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFIED"), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
 		])))
 	}
 
@@ -70,7 +70,7 @@ class MiningMachine_GitIntegrationTest {
 
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED"), linesStatsNA() + charsStatsNA()),
-                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "NEW"), linesStatsNA() + charsStatsNA()),
+                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "ADDED"), linesStatsNA() + charsStatsNA()),
         ])))
     }
 
@@ -79,8 +79,8 @@ class MiningMachine_GitIntegrationTest {
         def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, countChangeSizeInLines)
 
         assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFICATION")),
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", "NEW"))
+                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFIED")),
+                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", "ADDED"))
         ])))
     }
 
