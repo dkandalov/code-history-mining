@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import codehistoryminer.plugin.vcsaccess.implementation.IJCommitReader
+import com.intellij.vcs.log.VcsShortCommitDetails
 import vcsreader.Change
 import vcsreader.Commit
 import vcsreader.VcsProject
@@ -45,10 +46,16 @@ class VcsRootWrapper implements VcsRoot {
             def changes = wrapChangesFrom(ijCommit)
             if (changes.empty) continue
 
-            def commit = new Commit(
+	        def commitTime
+	        if (ijCommit instanceof VcsShortCommitDetails) {
+		        commitTime = new java.util.Date(ijCommit.authorTime)
+	        } else {
+		        commitTime = ijCommit.commitDate
+	        }
+	        def commit = new Commit(
                     revision,
                     revisionBefore,
-                    ijCommit.commitDate,
+			        commitTime,
                     ijCommit.committerName,
                     ijCommit.comment.trim(),
                     changes
