@@ -355,7 +355,7 @@ class CodeHistoryMinerPlugin {
 				ui.openFileInIdeEditor(file, project)
 			} else {
 				def events = result as List<FileChangeEvent>
-				def header = CSVConverter.defaultHeader + events.first().additionalAttributes.keySet()
+				def header = events.first().keySet()
 				def timeZone = TimeZone.default
 				def formatter = Time.Formatter.yyyy_MM_dd_HHmmss_Z.withTimeZone(timeZone)
 				def converter = new CSVConverter(header.toList(), formatter)
