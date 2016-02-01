@@ -65,7 +65,7 @@ class CodeHistoryMinerPlugin {
 					@Override boolean isTrue() { indicator.canceled }
 				}
 
-				def events = historyStorage.readAllEvents(file.name, cancelled)
+				def events = historyStorage.readAllEvents(file.name, cancelled).collect{ new FileChangeEvent(it) }
 				if (events.empty) {
 					return ui.showNoEventsInStorageMessage(file.name, project)
 				}
@@ -181,7 +181,7 @@ class CodeHistoryMinerPlugin {
 		try {
 			def minedCommits = vcsAccess.readMinedCommits(dateRanges, project, grabChangeSizeInLines, indicator, cancelled)
 			for (MinedCommit minedCommit in minedCommits) {
-				eventStorage.addEvents(minedCommit.fileChangeEvents)
+				eventStorage.addEvents(minedCommit.eventList)
 			}
 		} finally {
 			eventStorage.flush()
@@ -355,11 +355,10 @@ class CodeHistoryMinerPlugin {
 				ui.openFileInIdeEditor(file, project)
 			} else {
 				def events = result as List<FileChangeEvent>
-				def header = events.first().keySet()
 				def timeZone = TimeZone.default
 				def formatter = Time.Formatter.yyyy_MM_dd_HHmmss_Z.withTimeZone(timeZone)
-				def converter = new CSVConverter(header.toList(), formatter)
-				result = events.collect{ converter.toCsv(it) }.join("\n")
+				def converter = new CSVConverter(formatter)
+				result = events.collect{ converter.toCsv(it.event) }.join("\n")
 
 				def file = FileUtil.createTempFile(projectName + "-result", "")
 				file.renameTo(file.absolutePath + ".csv")
