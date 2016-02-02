@@ -1,7 +1,8 @@
 package codehistoryminer.plugin.integrationtest
 
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.historystorage.EventStorage
+import codehistoryminer.core.historystorage.EventStorageReader
+import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
@@ -21,9 +22,10 @@ class CodeHistoryMinerPluginTest {
 		// given
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageFor: returns(stub(EventStorage, [
+				eventStorageReader: returns(stub(EventStorageReader, [
 						storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
+				eventStorageWriter: returns(stub(EventStorageWriter, [:])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
@@ -45,9 +47,10 @@ class CodeHistoryMinerPluginTest {
 		// given
 		List<DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageFor: returns(stub(EventStorage, [
+				eventStorageReader: returns(stub(EventStorageReader, [
                         storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
 				])),
+				eventStorageWriter: returns(stub(EventStorageWriter, [:])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,

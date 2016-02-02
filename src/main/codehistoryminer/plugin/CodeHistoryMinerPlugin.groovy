@@ -1,4 +1,5 @@
 package codehistoryminer.plugin
+
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
 import codehistoryminer.core.analysis.FileEventsAnalytics
@@ -8,7 +9,6 @@ import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.historystorage.EventStorage
 import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
@@ -129,11 +129,13 @@ class CodeHistoryMinerPlugin {
 				try {
 					measure.start()
 					measure.measure("Total time") {
-						def eventStorage = historyStorage.eventStorageFor(userInput.outputFilePath)
-                        def requestDateRange = new DateRange(userInput.from, userInput.to)
-
-                        def message = doGrabHistory(project, eventStorage, requestDateRange, userInput.grabChangeSizeInLines, indicator)
-
+                        def message = doGrabHistory(
+		                        project,
+		                        userInput.outputFilePath,
+		                        userInput.from, userInput.to,
+		                        userInput.grabChangeSizeInLines,
+		                        indicator
+                        )
 						ui.showGrabbingFinishedMessage(message.text, message.title, project)
 					}
 					measure.forEachDuration{ log?.measuredDuration(it) }
@@ -153,12 +155,8 @@ class CodeHistoryMinerPlugin {
 		grabHistoryIsInProgress = true
 		ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 			try {
-				def eventStorage = historyStorage.eventStorageFor(config.outputFilePath)
-				def fromDate = eventStorage.storedDateRange().to
-				def toDate = now.toDate().withTimeZone(fromDate.timeZone())
-				def requestDateRange = new DateRange(fromDate, toDate)
-
-				doGrabHistory(project, eventStorage, requestDateRange, config.grabChangeSizeInLines, indicator)
+				def toDate = now.toDate().withTimeZone(config.lastGrabTime.timeZone())
+				doGrabHistory(project, config.outputFilePath, null, toDate, config.grabChangeSizeInLines, indicator)
 
 				historyStorage.saveGrabberConfigFor(project.name, config.withLastGrabTime(now))
 			} finally {
@@ -167,9 +165,13 @@ class CodeHistoryMinerPlugin {
 		}
 	}
 
-	private doGrabHistory(Project project, EventStorage eventStorage, DateRange requestDateRange,
+	private doGrabHistory(Project project, String outputFile, Date from, Date to,
 	                      boolean grabChangeSizeInLines, indicator) {
-		def dateRanges = requestDateRange.subtract(eventStorage.storedDateRange())
+		def storageReader = historyStorage.eventStorageReader(outputFile)
+
+		if (from == null) from = storageReader.storedDateRange().to
+		def requestDateRange = new DateRange(from, to)
+		def dateRanges = requestDateRange.subtract(storageReader.storedDateRange())
 		def cancelled = new Cancelled() {
 			@Override boolean isTrue() {
 				indicator?.canceled
@@ -178,32 +180,35 @@ class CodeHistoryMinerPlugin {
 		log?.loadingProjectHistory(dateRanges.first().from, dateRanges.last().to)
 
 		def hadErrors = false
+		def storageWriter = historyStorage.eventStorageWriter(outputFile)
 		try {
 			def minedCommits = vcsAccess.readMinedCommits(dateRanges, project, grabChangeSizeInLines, indicator, cancelled)
 			for (MinedCommit minedCommit in minedCommits) {
-				eventStorage.addEvents(minedCommit.eventList)
+				storageWriter.addEvents(minedCommit.eventList)
 			}
 		} finally {
-			eventStorage.flush()
+			storageWriter.flush()
 		}
 
 		def messageText = ""
-		def dateFormatter = dd_MM_yyyy
-		if (eventStorage.hasNoEvents()) {
-			def from = dateFormatter.format(requestDateRange.from)
-			def to = dateFormatter.format(requestDateRange.to)
-			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "However, it has nothing in it probably because there are no commits from ${from} to ${to}\n"
+		if (storageReader.hasNoEvents()) {
+			messageText += "Grabbed history to ${outputFile}\n"
+			messageText += "However, it has nothing in it probably because there are no commits ${formatRange(requestDateRange)}\n"
 		} else {
-			def from = dateFormatter.format(eventStorage.storedDateRange().from)
-			def to = dateFormatter.format(eventStorage.storedDateRange().to)
-			messageText += "Grabbed history to ${eventStorage.filePath}\n"
-			messageText += "It should have history from '${from}' to '${to}'.\n"
+			messageText += "Grabbed history to ${outputFile}\n"
+			messageText += "It should have history ${formatRange(storageReader.storedDateRange())}'.\n"
 		}
 		if (hadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
 		}
 		[text: messageText, title: "Code History Mining"]
+	}
+
+	private static String formatRange(DateRange dateRange) {
+		def dateFormatter = dd_MM_yyyy
+		def from = dateFormatter.format(dateRange.from)
+		def to = dateFormatter.format(dateRange.to)
+		"from '${from}' to '${to}'"
 	}
 
 	def showCurrentFileHistoryStats(Project project) {

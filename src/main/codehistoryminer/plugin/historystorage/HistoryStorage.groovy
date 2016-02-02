@@ -4,7 +4,8 @@ import codehistoryminer.core.common.events.Event
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.JBFileUtil
 import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.core.historystorage.EventStorage
+import codehistoryminer.core.historystorage.EventStorageReader
+import codehistoryminer.core.historystorage.EventStorageWriter
 import org.jetbrains.annotations.Nullable
 
 class HistoryStorage {
@@ -52,7 +53,7 @@ class HistoryStorage {
 
 	List<Event> readAllEvents(String fileName, Cancelled checkIfCancelled) {
 		measure.measure("Storage.readAllEvents"){
-			def storage = new EventStorage("$basePath/$fileName").init()
+			def storage = new EventStorageReader("$basePath/$fileName").init()
 			storage.readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
 		}
 	}
@@ -63,8 +64,13 @@ class HistoryStorage {
 	}
 
 	@SuppressWarnings("GrMethodMayBeStatic")
-	EventStorage eventStorageFor(String filePath) {
-		new EventStorage(filePath).init()
+	EventStorageReader eventStorageReader(String filePath) {
+		new EventStorageReader(filePath).init()
+	}
+
+	@SuppressWarnings("GrMethodMayBeStatic")
+	EventStorageWriter eventStorageWriter(String filePath) {
+		new EventStorageWriter(filePath).init()
 	}
 
 	interface Log {
