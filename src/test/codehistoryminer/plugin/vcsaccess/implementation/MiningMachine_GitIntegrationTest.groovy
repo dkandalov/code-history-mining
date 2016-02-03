@@ -43,7 +43,7 @@ class MiningMachine_GitIntegrationTest {
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED")),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED")),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFIED"))
-		])))
+		]*.event)))
 	}
 
 	@Test void "read file events with change size details"() {
@@ -60,7 +60,7 @@ class MiningMachine_GitIntegrationTest {
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED"), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", "MODIFIED"), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
 				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", "MODIFIED"), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
-		])))
+		]*.event)))
 	}
 
 	@Test void "ignore change size details for binary files"() {
@@ -71,7 +71,7 @@ class MiningMachine_GitIntegrationTest {
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", "DELETED"), linesStatsNA() + charsStatsNA()),
                 fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", "ADDED"), linesStatsNA() + charsStatsNA()),
-        ])))
+        ]*.event)))
     }
 
 	@Test void "merged commits are skipped because change events create from original commits"() {
@@ -81,7 +81,7 @@ class MiningMachine_GitIntegrationTest {
         assertThat(asString(changeEvents), equalTo(asString([
                 fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", "MODIFIED")),
                 fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", "ADDED"))
-        ])))
+        ]*.event)))
     }
 
 	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {

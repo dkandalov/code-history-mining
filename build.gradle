@@ -38,8 +38,10 @@ sourceSets {
 	    resources { srcDir "src/resources" }
     }
 	test {
-		groovy { srcDir "./src/test-integration" }
-}   }
+		java { srcDir "./src/test" }
+		groovy { srcDir "./src/test" }
+	}
+}
 
 //noinspection GroovyAssignabilityCheck
 task jarPlugin(dependsOn: [compileGroovy]) << {
