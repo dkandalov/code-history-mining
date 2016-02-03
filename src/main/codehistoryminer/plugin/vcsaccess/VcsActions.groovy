@@ -1,13 +1,13 @@
 package codehistoryminer.plugin.vcsaccess
+
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
 import codehistoryminer.core.vcs.miner.*
-import codehistoryminer.core.vcs.miner.filetype.FileTypes
 import codehistoryminer.core.vcs.miner.todo.TodoCountMiner
 import codehistoryminer.core.vcs.reader.CommitProgressIndicator
+import codehistoryminer.plugin.vcsaccess.implementation.IJFileTypes
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
@@ -35,11 +35,7 @@ class VcsActions {
 
     Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
                                            ideIndicator, Cancelled cancelled) {
-	    def fileTypes = new FileTypes([]) {
-            @Override boolean isBinary(String fileName) {
-                FileTypeManager.instance.getFileTypeByFileName(fileName).binary
-            }
-        }
+	    def fileTypes = new IJFileTypes()
         def noContentListener = new MinerListener() {
             @Override void failedToMine(Change change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)

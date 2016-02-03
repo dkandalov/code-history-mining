@@ -1,18 +1,17 @@
 package codehistoryminer.plugin.vcsaccess.implementation
+
 import codehistoryminer.core.common.events.CommitInfo
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.events.FileChangeInfo
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.vcs.reader.CommitProgressIndicator
 import codehistoryminer.core.vcs.miner.FileChangeEventMiner
 import codehistoryminer.core.vcs.miner.LineAndCharChangeMiner
 import codehistoryminer.core.vcs.miner.MiningMachine
-import codehistoryminer.core.vcs.miner.filetype.FileTypes
+import codehistoryminer.core.vcs.reader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import liveplugin.PluginUtil
@@ -85,11 +84,7 @@ class MiningMachine_GitIntegrationTest {
     }
 
 	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
-		def fileTypes = new FileTypes([]) {
-			@Override boolean isBinary(String fileName) {
-				FileTypeManager.instance.getFileTypeByFileName(fileName).binary
-			}
-		}
+		def fileTypes = new IJFileTypes()
 		def miners = countChangeSizeInLines ?
 				[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
 				[new FileChangeEventMiner(UTC)]
