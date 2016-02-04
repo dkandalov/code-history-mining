@@ -30,7 +30,7 @@
         </component>
     </application-components>
 
-    <!-- this is to pull github plugin dependencies for GitPluginWorkaround class -->
-    <depends optional="true">org.jetbrains.plugins.github</depends>
+    <!-- this is to pull git plugin dependencies for GitPluginWorkaround class -->
+    <depends optional="false">Git4Idea</depends>
 
 </idea-plugin>
