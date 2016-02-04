@@ -52,7 +52,7 @@ class IJCommitReader {
 		}
 
 		if (isGit(changesProvider)) {
-			return GitPluginWorkaround.getCommittedChanges_with_intellij_git_api_workarounds(project, location, fromDate, toDate)
+			return GitPluginWorkaround.requestCommits(project, location, fromDate, toDate)
 		}
 
 		def settings = changesProvider.createDefaultSettings()

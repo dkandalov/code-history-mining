@@ -16,21 +16,21 @@ class GitPluginWorkaround {
 	/**
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
-	static List<CommittedChangeList> getCommittedChanges_with_intellij_git_api_workarounds(Project project, RepositoryLocation location,
-	                                                                                       Date fromDate = null, Date toDate = null) {
+	static List<CommittedChangeList> requestCommits(Project project, RepositoryLocation location,
+	                                                Date fromDate, Date toDate) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
-			@Override void consume(GitSimpleHandler h) {
+			@Override void consume(GitSimpleHandler handler) {
 				// makes git notice file renames/moves (not sure but seems that otherwise intellij api doesn't do it)
-				h.addParameters("-M")
+				handler.addParameters("-M")
 
-				if (toDate != null) h.addParameters("--before=" + GitUtil.gitTime(toDate.javaDate()));
-				if (fromDate != null) h.addParameters("--after=" + GitUtil.gitTime(fromDate.javaDate()));
+				if (toDate != null) handler.addParameters("--before=" + GitUtil.gitTime(toDate.javaDate()));
+				if (fromDate != null) handler.addParameters("--after=" + GitUtil.gitTime(fromDate.javaDate()));
 			}
 		}
 		def resultConsumer = new Consumer<GitCommittedChangeList>() {
 			@Override void consume(GitCommittedChangeList gitCommit) {
-				result << gitCommit
+				result.add(gitCommit)
 			}
 		}
 		VirtualFile root = LocalFileSystem.instance.findFileByIoFile(((GitRepositoryLocation) location).root)
@@ -42,7 +42,12 @@ class GitPluginWorkaround {
 
 		GitUtil.getLocalCommittedChanges(project, root, parametersSpecifier, resultConsumer, skipDiffsForMerge)
 
-		def isNotMergeCommit = { CommittedChangeList commit -> commit.changes.size() > 0 }
-		result.findAll{isNotMergeCommit(it)}
+		result.findAll{ !isMergeCommit(it) }
+	}
+
+	private static isMergeCommit(CommittedChangeList changeList) {
+		// Strictly speaking condition below is not correct since git allows commits with no changes.
+		// This should be good enough though, because commits without changes are very rare.
+		changeList.changes.empty
 	}
 }
