@@ -33,9 +33,11 @@ public class AppComponent implements ApplicationComponent {
 
 		try {
 
-			Class<?> aClass = Class.forName("plugin");
+			Class<?> aClass = Class.forName("codehistoryminer.plugin.plugin");
 			Method method = findMethod("run", aClass);
-			if (method == null) throw new IllegalStateException("Couldn't find 'plugin' class");
+			if (method == null) {
+				throw new IllegalStateException("Couldn't find 'codehistoryminer.plugin.plugin' class");
+			}
 
 			Constructor<?> constructor = aClass.getDeclaredConstructor(Binding.class);
 			method.invoke(constructor.newInstance(createBinding()));
