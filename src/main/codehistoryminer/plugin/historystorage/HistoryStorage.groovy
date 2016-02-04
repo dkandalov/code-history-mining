@@ -1,6 +1,7 @@
 package codehistoryminer.plugin.historystorage
 
 import codehistoryminer.core.common.events.Event
+import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.Cancelled
 import codehistoryminer.core.common.langutil.JBFileUtil
 import codehistoryminer.core.common.langutil.Measure
@@ -70,7 +71,7 @@ class HistoryStorage {
 
 	@SuppressWarnings("GrMethodMayBeStatic")
 	EventStorageWriter eventStorageWriter(String filePath) {
-		new EventStorageWriter(filePath).init()
+		new EventStorageWriter(filePath, FileChangeEvent.keyAttributes).init()
 	}
 
 	interface Log {
