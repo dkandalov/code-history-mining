@@ -35,6 +35,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
+import static codehistoryminer.core.common.events.FileChangeEvent.dateRangeBetween
 import static codehistoryminer.core.common.langutil.Date.Formatter.dd_MM_yyyy
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplate
 
@@ -168,10 +169,11 @@ class CodeHistoryMinerPlugin {
 	private doGrabHistory(Project project, String outputFile, Date from, Date to,
 	                      boolean grabChangeSizeInLines, indicator) {
 		def storageReader = historyStorage.eventStorageReader(outputFile)
+		def storedDateRange = dateRangeBetween(storageReader.firstEvent(), storageReader.lastEvent())
 
-		if (from == null) from = storageReader.storedDateRange().to
+		if (from == null) from = storedDateRange.to
 		def requestDateRange = new DateRange(from, to)
-		def dateRanges = requestDateRange.subtract(storageReader.storedDateRange())
+		def dateRanges = requestDateRange.subtract(storedDateRange)
 		def cancelled = new Cancelled() {
 			@Override boolean isTrue() {
 				indicator?.canceled
@@ -195,8 +197,9 @@ class CodeHistoryMinerPlugin {
 			messageText += "Grabbed history to ${outputFile}\n"
 			messageText += "However, it has nothing in it probably because there are no commits ${formatRange(requestDateRange)}\n"
 		} else {
+			def newStoredDateRange = dateRangeBetween(storageReader.firstEvent(), storageReader.lastEvent())
 			messageText += "Grabbed history to ${outputFile}\n"
-			messageText += "It should have history ${formatRange(storageReader.storedDateRange())}'.\n"
+			messageText += "It should have history ${formatRange(newStoredDateRange)}'.\n"
 		}
 		if (hadErrors) {
 			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
