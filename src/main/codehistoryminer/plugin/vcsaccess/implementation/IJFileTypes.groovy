@@ -9,12 +9,12 @@ class IJFileTypes extends FileTypes {
 		super([])
 	}
 
-	@Override boolean isBinary(Change change) {
+	@Override boolean isBinaryFileName(Change change) {
 		def fileTypeManager = FileTypeManager.instance
 		def isBinaryName = { String fileName ->
 			// check for empty string because fileTypeManager considers empty file names to be binary
 			!fileName.empty && fileTypeManager.getFileTypeByFileName(fileName).binary
 		}
-		isBinaryName(change.filePathBefore) || isBinaryName(change.filePath) || super.isBinary(change)
+		isBinaryName(change.filePathBefore) || isBinaryName(change.filePath) || super.isBinaryFileName(change)
 	}
 }
