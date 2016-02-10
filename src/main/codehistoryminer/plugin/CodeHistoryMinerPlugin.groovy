@@ -2,7 +2,7 @@ package codehistoryminer.plugin
 
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
-import codehistoryminer.core.analysis.FileEventsAnalytics
+import codehistoryminer.core.analysis.EventsAnalyzer
 import codehistoryminer.core.analysis.Named
 import codehistoryminer.core.analysis.implementation.GroovyScriptRunner
 import codehistoryminer.core.analysis.values.Table
@@ -58,7 +58,7 @@ class CodeHistoryMinerPlugin {
 		this.log = log
 	}
 
-	def runAnalytics(File file, Project project, FileEventsAnalytics analytics, String analyticsName) {
+	def runAnalytics(File file, Project project, EventsAnalyzer analytics, String analyticsName) {
 		ui.runInBackground("Running ${analyticsName}") { ProgressIndicator indicator ->
 			try {
 				def projectName = historyStorage.guessProjectNameFrom(file.name)
@@ -300,11 +300,11 @@ class CodeHistoryMinerPlugin {
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
 			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
 
-			def analyticsClasses = scriptRunner.loadedClasses().findAll { FileEventsAnalytics.isAssignableFrom(it) }
+			def analyticsClasses = scriptRunner.loadedClasses().findAll { EventsAnalyzer.isAssignableFrom(it) }
 			if (!analyticsClasses.empty) {
 				analyticsClasses.each { aClass ->
 					try {
-						def analytics = aClass.newInstance() as FileEventsAnalytics
+						def analytics = aClass.newInstance() as EventsAnalyzer
 						def analyticsName = analytics instanceof Named ? analytics.name() : analytics.class.simpleName
 						PluginUtil.invokeOnEDT {
 							runAnalytics(new File(historyFileName), project, analytics, analyticsName)
@@ -315,7 +315,7 @@ class CodeHistoryMinerPlugin {
 				}
 
 			} else {
-				def analytics = new FileEventsAnalytics() {
+				def analytics = new EventsAnalyzer() {
 					@Override Object analyze(List<FileChangeEvent> events, Context context) {
 						scriptRunner.runScript([
 								events : events,

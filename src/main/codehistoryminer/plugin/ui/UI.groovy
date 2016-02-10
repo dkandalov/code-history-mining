@@ -1,5 +1,5 @@
 package codehistoryminer.plugin.ui
-import codehistoryminer.core.visualizations.VisualizedAnalytics
+import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -21,7 +21,7 @@ import com.intellij.util.ui.UIUtil
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
 
-import static codehistoryminer.core.visualizations.VisualizedAnalytics.Bundle.*
+import static VisualizedAnalyzer.Bundle.*
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -192,7 +192,7 @@ class UI {
 				}
 			}
 		}
-		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalytics analytics ->
+		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalyzer analytics ->
 			new AnAction(analytics.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
 					minerPlugin.runAnalytics(file, event.project, analytics, analytics.name())
