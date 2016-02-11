@@ -1,5 +1,4 @@
 package codehistoryminer.plugin.ui
-
 import codehistoryminer.core.common.langutil.Date
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
@@ -106,7 +105,7 @@ class FileHistoryStatsToolWindow {
 			toolWindowPanel
 		}
 
-		def toolWindow = registerToolWindowIn(project, toolWindowId, createToolWindowPanel(), ToolWindowAnchor.RIGHT)
+		def toolWindow = registerToolWindow(project, toolWindowId, project, ToolWindowAnchor.RIGHT, createToolWindowPanel)
 		def doNothing = {} as Runnable
 		toolWindow.show(doNothing)
 	}
