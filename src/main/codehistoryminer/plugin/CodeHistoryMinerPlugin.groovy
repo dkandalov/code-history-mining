@@ -209,9 +209,8 @@ class CodeHistoryMinerPlugin {
 	}
 
 	private static String formatRange(DateRange dateRange) {
-		def dateFormatter = dd_MM_yyyy
-		def from = dateFormatter.format(dateRange.from)
-		def to = dateFormatter.format(dateRange.to)
+		def from = dd_MM_yyyy.format(dateRange.from)
+		def to = dd_MM_yyyy.format(dateRange.to)
 		"from '${from}' to '${to}'"
 	}
 
