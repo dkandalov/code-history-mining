@@ -138,7 +138,7 @@ class CodeHistoryMinerPlugin {
 		                        userInput.grabChangeSizeInLines,
 		                        indicator
                         )
-						ui.showGrabbingFinishedMessage(message.text, message.title, project)
+						ui.showGrabbingFinishedMessage(message, project)
 					}
 					measure.forEachDuration{ log?.measuredDuration(it) }
 				} finally {
@@ -194,24 +194,25 @@ class CodeHistoryMinerPlugin {
 		}
 
 		def messageText = ""
+		def outputFileLink = "<a href='file:///${new File(outputFile).canonicalPath}'>${new File(outputFile).name}</a>"
 		if (storageReader.hasNoEvents()) {
-			messageText += "Grabbed history to ${outputFile}\n"
-			messageText += "However, it has nothing in it probably because there are no commits ${formatRange(requestDateRange)}\n"
+			messageText += "Grabbed history to ${outputFileLink}<br/>"
+			messageText += "However, it has nothing in it probably because there are no commits ${formatRange(requestDateRange)}."
 		} else {
 			def newStoredDateRange = dateRangeBetween(storageReader.firstEvent(), storageReader.lastEvent())
-			messageText += "Grabbed history to ${outputFile}\n"
-			messageText += "It should have history ${formatRange(newStoredDateRange)}'.\n"
+			messageText += "Grabbed history to ${outputFileLink}.<br/>"
+			messageText += "It should have history ${formatRange(newStoredDateRange)}."
 		}
 		if (hadErrors) {
-			messageText += "\nThere were errors while reading commits from VCS, please check IDE log for details.\n"
+			messageText += "<br/>There were errors while reading commits from VCS, please check IDE log for details."
 		}
-		[text: messageText, title: "Code History Mining"]
+		messageText
 	}
 
 	private static String formatRange(DateRange dateRange) {
 		def from = dd_MM_yyyy.format(dateRange.from)
 		def to = dd_MM_yyyy.format(dateRange.to)
-		"from '${from}' to '${to}'"
+		"from <b>${from}</b> to <b>${to}</b>"
 	}
 
 	def showCurrentFileHistoryStats(Project project) {

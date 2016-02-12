@@ -1,13 +1,18 @@
 package codehistoryminer.plugin.ui
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
+import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
-import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.ui.http.HttpUtil
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationListener
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
 import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -18,11 +23,19 @@ import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.UIUtil
+import liveplugin.CanCallFromAnyThread
 import liveplugin.PluginUtil
+import liveplugin.implementation.Misc
+import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 
-import static VisualizedAnalyzer.Bundle.*
+import javax.swing.event.HyperlinkEvent
+
+import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
+import static com.intellij.notification.NotificationType.INFORMATION
+
+import static liveplugin.PluginUtil.registerAction
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
@@ -44,8 +57,8 @@ class UI {
 				[Separator.instance, currentFileHistoryStats, projectStats, openReadme]
 			}
 		}
-		PluginUtil.registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
-		PluginUtil.registerAction("CodeHistoryMiningPopup", "alt shift H", "", "Show Code History Mining Popup") { AnActionEvent actionEvent ->
+		registerAction("CodeHistoryMiningMenu", "", "VcsGroups", "Code History Mining", actionGroup)
+		registerAction("CodeHistoryMiningPopup", "alt shift H", "", "Show Code History Mining Popup") { AnActionEvent actionEvent ->
 			JBPopupFactory.instance.createActionGroupPopup(
 					"Code History Mining",
 					actionGroup,
@@ -54,7 +67,7 @@ class UI {
 					true
 			).showCenteredInCurrentWindow(actionEvent.project)
 		}
-		PluginUtil.registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q", "", "Run Code History Query") { AnActionEvent event ->
+		registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q", "", "Run Code History Query") { AnActionEvent event ->
 			minerPlugin.runCurrentFileAsHistoryQueryScript(event.project)
 		}
 
@@ -124,8 +137,14 @@ class UI {
 		}
 	}
 
-	def showGrabbingFinishedMessage(String message, String title, Project project) {
-		PluginUtil.showInConsole(message, title, project)
+	def showGrabbingFinishedMessage(String message, Project project) {
+		UIUtil.invokeLaterIfNeeded{
+			show(message, "Code History Mining", INFORMATION, "Code History Mining", new NotificationListener() {
+				@Override void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
+					openInIde(new File(event.URL.path), project)
+				}
+			})
+		}
 	}
 
 	def runInBackground(String taskDescription, Closure closure) {
@@ -133,7 +152,7 @@ class UI {
 	}
 
 	private grabHistory() {
-		PluginUtil.registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
+		registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
 			minerPlugin.grabHistoryOf(event.project)
 		}
 	}
@@ -220,21 +239,25 @@ class UI {
 			add(Separator.instance)
 			add(createRunQueryAction())
 			add(showInFileManager(file))
-			add(openInIde(file))
-			add(rename(file.name))
-			add(delete(file.name))
+			add(openInIdeAction(file))
+			add(renameFileAction(file.name))
+			add(deleteFileAction(file.name))
 			it
 		}
 	}
 
-	private static openInIde(File file) {
+	private static openInIdeAction(File file) {
 		new AnAction("Open in IDE") {
 			@Override void actionPerformed(AnActionEvent event) {
-				def virtualFile = VirtualFileManager.instance.findFileByUrl("file://" + file.canonicalPath)
-				if (virtualFile != null) {
-					FileEditorManager.getInstance(event.project).openFile(virtualFile, true)
-				}
+				openInIde(file, event.project)
 			}
+		}
+	}
+
+	private static openInIde(File file, Project project) {
+		def virtualFile = VirtualFileManager.instance.findFileByUrl("file://" + file.canonicalPath)
+		if (virtualFile != null) {
+			FileEditorManager.getInstance(project).openFile(virtualFile, true)
 		}
 	}
 
@@ -246,7 +269,7 @@ class UI {
 		}
 	}
 
-	private rename(String fileName) {
+	private renameFileAction(String fileName) {
 		new AnAction("Rename") {
 			@Override void actionPerformed(AnActionEvent event) {
 				def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, fileName, new InputValidator() {
@@ -258,12 +281,25 @@ class UI {
 		}
 	}
 
-	private delete(String fileName) {
+	private deleteFileAction(String fileName) {
 		new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
 				int userAnswer = Messages.showOkCancelDialog("Delete ${fileName}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
 				if (userAnswer == Messages.OK) storage.delete(fileName)
 			}
+		}
+	}
+
+	@CanCallFromAnyThread
+	static show(@Nullable message, @Nullable String title = "", NotificationType notificationType = INFORMATION,
+	            String groupDisplayId = "", @Nullable NotificationListener notificationListener = null) {
+		PluginUtil.invokeLaterOnEDT {
+			message = Misc.asString(message)
+			// this is because Notification doesn't accept empty messages
+			if (message.trim().empty) message = "[empty message]"
+
+			def notification = new Notification(groupDisplayId, title, message, notificationType, notificationListener)
+			ApplicationManager.application.messageBus.syncPublisher(Notifications.TOPIC).notify(notification)
 		}
 	}
 
