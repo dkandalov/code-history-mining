@@ -1,5 +1,4 @@
 package codehistoryminer.plugin
-
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
 import codehistoryminer.core.analysis.EventsAnalyzer
@@ -10,6 +9,7 @@ import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
+import codehistoryminer.core.historystorage.TypeConverter
 import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.vcs.miner.MinedCommit
 import codehistoryminer.core.visualizations.Visualization
@@ -366,8 +366,7 @@ class CodeHistoryMinerPlugin {
 			} else {
 				def events = result as List<Event>
 				def timeZone = TimeZone.default
-				def formatter = Time.Formatter.yyyy_MM_dd_HHmmss_Z.withTimeZone(timeZone)
-				def converter = new CSVConverter(formatter)
+				def converter = new CSVConverter(TypeConverter.Default.create(timeZone))
 				result = events.collect{ converter.toCsv(it) }.join("\n")
 
 				def file = FileUtil.createTempFile(projectName + "-result", "")
