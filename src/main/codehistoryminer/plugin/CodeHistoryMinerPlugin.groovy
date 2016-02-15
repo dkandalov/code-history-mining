@@ -292,8 +292,8 @@ class CodeHistoryMinerPlugin {
 				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
-			def groovyScript = new GroovyScript(listener)
-			def wasLoaded = groovyScript.loadScript(scriptFilePath)
+			def groovyScript = new GroovyScript(scriptFilePath, listener)
+			def wasLoaded = groovyScript.loadScript()
 			if (!wasLoaded) return
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
