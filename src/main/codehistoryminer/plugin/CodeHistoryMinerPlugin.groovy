@@ -3,7 +3,7 @@ import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
 import codehistoryminer.core.analysis.EventsAnalyzer
 import codehistoryminer.core.analysis.Named
-import codehistoryminer.core.analysis.implementation.GroovyScriptRunner
+import codehistoryminer.core.analysis.implementation.GroovyScript
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
@@ -287,20 +287,20 @@ class CodeHistoryMinerPlugin {
 		def scriptFileName = virtualFile.name
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
-			def listener = new GroovyScriptRunner.Listener() {
+			def listener = new GroovyScript.Listener() {
 				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
 				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
-			def scriptRunner = new GroovyScriptRunner(listener)
-			def wasLoaded = scriptRunner.loadScript(scriptFilePath)
+			def groovyScript = new GroovyScript(listener)
+			def wasLoaded = groovyScript.loadScript(scriptFilePath)
 			if (!wasLoaded) return
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
 			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
 
-			def analyticsClasses = scriptRunner.loadedClasses().findAll { EventsAnalyzer.isAssignableFrom(it) }
+			def analyticsClasses = groovyScript.loadedClasses().findAll { EventsAnalyzer.isAssignableFrom(it) }
 			if (!analyticsClasses.empty) {
 				analyticsClasses.each { aClass ->
 					try {
@@ -317,7 +317,7 @@ class CodeHistoryMinerPlugin {
 			} else {
 				def analytics = new EventsAnalyzer() {
 					@Override Object analyze(List<Event> events, Context context) {
-						scriptRunner.runScript([
+						groovyScript.runScript([
 								events : events,
 								context: context
 						])
