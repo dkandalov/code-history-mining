@@ -7,7 +7,6 @@ import codehistoryminer.core.analysis.implementation.GroovyScriptRunner
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
-import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.TypeConverter
 import codehistoryminer.core.historystorage.implementation.CSVConverter
@@ -317,8 +316,7 @@ class CodeHistoryMinerPlugin {
 
 			} else {
 				def analytics = new EventsAnalyzer() {
-					@Override Object analyze(List<Event> eventList, Context context) {
-						def events = eventList.collect{ new FileChangeEvent(it) }
+					@Override Object analyze(List<Event> events, Context context) {
 						scriptRunner.runScript([
 								events : events,
 								context: context
