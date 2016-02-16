@@ -2,7 +2,8 @@ package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
 import codehistoryminer.core.analysis.EventAnalyzer
-import codehistoryminer.core.analysis.Named
+import codehistoryminer.core.analysis.implementation.AnalyzerScriptLoader
+import codehistoryminer.core.analysis.implementation.CombinedAnalyzer
 import codehistoryminer.core.analysis.implementation.GroovyScript
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
@@ -38,6 +39,7 @@ import liveplugin.PluginUtil
 import static codehistoryminer.core.common.events.FileChangeEvent.dateRangeBetween
 import static codehistoryminer.core.common.langutil.Date.Formatter.dd_MM_yyyy
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplate
+import static liveplugin.PluginUtil.invokeOnEDT
 
 class CodeHistoryMinerPlugin {
 	private final UI ui
@@ -65,7 +67,6 @@ class CodeHistoryMinerPlugin {
 				def cancelled = new Cancelled() {
 					@Override boolean isTrue() { indicator.canceled }
 				}
-
 				def events = historyStorage.readAllEvents(file.name, cancelled)
 				if (events.empty) {
 					return ui.showNoEventsInStorageMessage(file.name, project)
@@ -287,45 +288,22 @@ class CodeHistoryMinerPlugin {
 		def scriptFileName = virtualFile.name
 
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
-			def listener = new GroovyScript.Listener() {
+			def loaderListener = new GroovyScript.Listener() {
 				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
 				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
-			def groovyScript = new GroovyScript(scriptFilePath, listener)
-			def wasLoaded = groovyScript.loadScript()
-			if (!wasLoaded) return
+			def analyzersLoader = new AnalyzerScriptLoader(scriptFilePath, loaderListener)
+			def analyzers = analyzersLoader.load()
+			if (analyzers == null) return ui.failedToLoadAnalyzers(scriptFilePath)
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
 			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
 
-			def analyticsClasses = groovyScript.loadedClasses().findAll { EventAnalyzer.isAssignableFrom(it) }
-			if (!analyticsClasses.empty) {
-				analyticsClasses.each { aClass ->
-					try {
-						def analytics = aClass.newInstance() as EventAnalyzer
-						def analyticsName = analytics instanceof Named ? analytics.name() : analytics.class.simpleName
-						PluginUtil.invokeOnEDT {
-							runAnalytics(new File(historyFileName), project, analytics, analyticsName)
-						}
-					} catch (Exception e) {
-						ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project)
-					}
-				}
-
-			} else {
-				def analytics = new EventAnalyzer() {
-					@Override Object analyze(List<Event> events, Context context) {
-						groovyScript.runScript([
-								events : events,
-								context: context
-						])
-					}
-				}
-				PluginUtil.invokeOnEDT {
-					runAnalytics(new File(historyFileName), project, analytics, "$scriptFileName query")
-				}
+			invokeOnEDT {
+				def combinedAnalyzer = new CombinedAnalyzer(analyzers)
+				runAnalytics(new File(historyFileName), project, combinedAnalyzer, scriptFileName)
 			}
 		}
 	}
@@ -354,8 +332,12 @@ class CodeHistoryMinerPlugin {
 			}
 
 		} else if (result instanceof List) {
-			if (result.isEmpty() || !(result.get(0) instanceof Event)) {
-				result = result.collect{it.toString()}.join("\n")
+			if (!result.empty && [Visualization, Table, TableList].any{ it.isAssignableFrom(result.first().class)}) {
+				result.each {
+					showResultOfAnalytics(it, projectName, project)
+				}
+			} else if (result.isEmpty() || !(result.first() instanceof Event)) {
+				result = result.collect { it.toString() }.join("\n")
 
 				def file = FileUtil.createTempFile(projectName + "-result", "")
 				file.renameTo(file.absolutePath + ".csv")

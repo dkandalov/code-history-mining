@@ -34,7 +34,6 @@ import javax.swing.event.HyperlinkEvent
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
-
 import static liveplugin.PluginUtil.registerAction
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -173,6 +172,10 @@ class UI {
 
 	def showFileHasNoVcsHistory(VirtualFile virtualFile) {
 		PluginUtil.show("File ${virtualFile.name} has no VCS history")
+	}
+
+	def failedToLoadAnalyzers(String scriptFilePath) {
+		PluginUtil.show("Failed to load analyzers from '$scriptFilePath'", "", NotificationType.WARNING)
 	}
 
 	def showNoHistoryForQueryScript(String scriptFileName) {
