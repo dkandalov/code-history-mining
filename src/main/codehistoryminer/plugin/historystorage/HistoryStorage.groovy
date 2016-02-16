@@ -53,10 +53,13 @@ class HistoryStorage {
 		new File("$basePath/$fileName").exists()
 	}
 
-	List<Event> readAllEvents(String fileName, Cancelled checkIfCancelled) {
+	List<Event> readAllEvents(String fileName, Cancelled cancelled) {
 		measure.measure("Storage.readAllEvents"){
-			def storage = new EventStorageReader("$basePath/$fileName", FileChangeEventConverter.create()).init()
-			storage.readAllEvents(checkIfCancelled){ line, e -> log?.failedToRead(line) }
+			def listener = new EventStorageReader.Listener() {
+				@Override void failedToReadLine(String line, Exception e) { log?.failedToRead(line) }
+			}
+			def storage = new EventStorageReader("$basePath/$fileName", FileChangeEventConverter.create(), listener).init()
+			storage.readAllEvents(cancelled)
 		}
 	}
 
