@@ -331,23 +331,26 @@ class CodeHistoryMinerPlugin {
 				showResultOfAnalytics(table, projectName, project)
 			}
 
-		} else if (result instanceof List) {
+		} else if (result instanceof Collection) {
 			if (!result.empty && [Visualization, Table, TableList].any{ it.isAssignableFrom(result.first().class)}) {
 				result.each {
 					showResultOfAnalytics(it, projectName, project)
 				}
-			} else if (result.isEmpty() || !(result.first() instanceof Event)) {
-				result = result.collect { it.toString() }.join("\n")
+			} else if (!result.empty && (result.first() instanceof Map)) {
+				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
+
+			} else if (!result.empty || !(result.first() instanceof Event)) {
+				def events = result as Collection<Event>
+				def converter = new CSVConverter(TypeConverter.Default.create(TimeZone.default))
+				result = events.collect{ converter.toCsv(it) }.join("\n")
 
 				def file = FileUtil.createTempFile(projectName + "-result", "")
 				file.renameTo(file.absolutePath + ".csv")
 				file.write(result)
 				ui.openFileInIdeEditor(file, project)
+
 			} else {
-				def events = result as List<Event>
-				def timeZone = TimeZone.default
-				def converter = new CSVConverter(TypeConverter.Default.create(timeZone))
-				result = events.collect{ converter.toCsv(it) }.join("\n")
+				result = result.collect { it.toString() }.join("\n")
 
 				def file = FileUtil.createTempFile(projectName + "-result", "")
 				file.renameTo(file.absolutePath + ".csv")
