@@ -1,4 +1,11 @@
 package codehistoryminer.plugin.ui
+
+import codehistoryminer.core.analysis.values.Table
+import codehistoryminer.core.analysis.values.TableList
+import codehistoryminer.core.common.events.Event
+import codehistoryminer.core.historystorage.TypeConverter
+import codehistoryminer.core.historystorage.implementation.CSVConverter
+import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
@@ -20,6 +27,7 @@ import com.intellij.openapi.project.ProjectManagerAdapter
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.UIUtil
@@ -32,6 +40,7 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
+import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
 import static liveplugin.PluginUtil.registerAction
@@ -188,6 +197,60 @@ class UI {
 
 	def showAnalyticsError(String analyticsName, String message, Project project) {
 		PluginUtil.showInConsole(message, analyticsName, project, ERROR_OUTPUT)
+	}
+
+	def showResultOfAnalytics(result, String projectName, Project project) {
+		if (result == null) return
+
+		if (result instanceof Visualization) {
+			def html = result.template
+					.pasteInto(pluginTemplate)
+					.fillProjectName(projectName)
+					.inlineImports()
+					.text
+			showInBrowser(html, projectName, "")
+
+		} else if (result instanceof Table) {
+			def file = FileUtil.createTempFile(projectName + "-result", "")
+			file.renameTo(file.absolutePath + ".csv")
+			file.write(result.toCsv())
+
+			openFileInIdeEditor(file, project)
+
+		} else if (result instanceof TableList) {
+			result.tables.each { table ->
+				showResultOfAnalytics(table, projectName, project)
+			}
+
+		} else if (result instanceof Collection) {
+			if (!result.empty && [Visualization, Table, TableList, List].any{ it.isAssignableFrom(result.first().getClass())}) {
+				result.each {
+					showResultOfAnalytics(it, projectName, project)
+				}
+			} else if (!result.empty && (result.first() instanceof Map)) {
+				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
+
+			} else if (!result.empty && (result.first() instanceof Event)) {
+				def events = result as Collection<Event>
+				def converter = new CSVConverter(TypeConverter.Default.create(TimeZone.default))
+				result = events.collect{ converter.toCsv(it) }.join("\n")
+
+				def file = FileUtil.createTempFile(projectName + "-result", "")
+				file.renameTo(file.absolutePath + ".csv")
+				file.write(result)
+				openFileInIdeEditor(file, project)
+
+			} else {
+				result = result.collect { it.toString() }.join("\n")
+
+				def file = FileUtil.createTempFile(projectName + "-result", "")
+				file.renameTo(file.absolutePath + ".csv")
+				file.write(result)
+				openFileInIdeEditor(file, project)
+			}
+		} else {
+			PluginUtil.show(result)
+		}
 	}
 
 	private currentFileHistoryStats() {

@@ -5,14 +5,8 @@ import codehistoryminer.core.analysis.EventAnalyzer
 import codehistoryminer.core.analysis.implementation.AnalyzerScriptLoader
 import codehistoryminer.core.analysis.implementation.CombinedAnalyzer
 import codehistoryminer.core.analysis.implementation.GroovyScript
-import codehistoryminer.core.analysis.values.Table
-import codehistoryminer.core.analysis.values.TableList
-import codehistoryminer.core.common.events.Event
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.historystorage.TypeConverter
-import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.vcs.miner.MinedCommit
-import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.QueryScriptsStorage
@@ -38,7 +32,6 @@ import liveplugin.PluginUtil
 
 import static codehistoryminer.core.common.events.FileChangeEvent.dateRangeBetween
 import static codehistoryminer.core.common.langutil.Date.Formatter.dd_MM_yyyy
-import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplate
 import static liveplugin.PluginUtil.invokeOnEDT
 
 class CodeHistoryMinerPlugin {
@@ -79,7 +72,7 @@ class CodeHistoryMinerPlugin {
 					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
 				})
 				def result = analyzer.analyze(events, context)
-				showResultOfAnalytics(result, projectName, project)
+				ui.showResultOfAnalytics(result, projectName, project)
 
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(analyticsName)
@@ -305,60 +298,6 @@ class CodeHistoryMinerPlugin {
 				def combinedAnalyzer = new CombinedAnalyzer(analyzers)
 				runAnalytics(new File(historyFileName), project, combinedAnalyzer, scriptFileName)
 			}
-		}
-	}
-
-	private showResultOfAnalytics(result, String projectName, Project project) {
-		if (result == null) return
-
-		if (result instanceof Visualization) {
-			def html = result.template
-					.pasteInto(pluginTemplate)
-					.fillProjectName(projectName)
-					.inlineImports()
-					.text
-			ui.showInBrowser(html, projectName, "")
-
-		} else if (result instanceof Table) {
-			def file = FileUtil.createTempFile(projectName + "-result", "")
-			file.renameTo(file.absolutePath + ".csv")
-			file.write(result.toCsv())
-
-			ui.openFileInIdeEditor(file, project)
-
-		} else if (result instanceof TableList) {
-			result.tables.each { table ->
-				showResultOfAnalytics(table, projectName, project)
-			}
-
-		} else if (result instanceof Collection) {
-			if (!result.empty && [Visualization, Table, TableList, List].any{ it.isAssignableFrom(result.first().getClass())}) {
-				result.each {
-					showResultOfAnalytics(it, projectName, project)
-				}
-			} else if (!result.empty && (result.first() instanceof Map)) {
-				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
-
-			} else if (!result.empty && (result.first() instanceof Event)) {
-				def events = result as Collection<Event>
-				def converter = new CSVConverter(TypeConverter.Default.create(TimeZone.default))
-				result = events.collect{ converter.toCsv(it) }.join("\n")
-
-				def file = FileUtil.createTempFile(projectName + "-result", "")
-				file.renameTo(file.absolutePath + ".csv")
-				file.write(result)
-				ui.openFileInIdeEditor(file, project)
-
-			} else {
-				result = result.collect { it.toString() }.join("\n")
-
-				def file = FileUtil.createTempFile(projectName + "-result", "")
-				file.renameTo(file.absolutePath + ".csv")
-				file.write(result)
-				ui.openFileInIdeEditor(file, project)
-			}
-		} else {
-			PluginUtil.show(result)
 		}
 	}
 
