@@ -60,7 +60,7 @@ class CodeHistoryMinerPlugin {
 		this.log = log
 	}
 
-	def runAnalytics(File file, Project project, EventAnalyzer analytics, String analyticsName) {
+	def runAnalytics(File file, Project project, EventAnalyzer analyzer, String analyticsName) {
 		ui.runInBackground("Running ${analyticsName}") { ProgressIndicator indicator ->
 			try {
 				def projectName = historyStorage.guessProjectNameFrom(file.name)
@@ -78,7 +78,7 @@ class CodeHistoryMinerPlugin {
 				context.progress.setListener(new Progress.Listener() {
 					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
 				})
-				def result = analytics.analyze(events, context)
+				def result = analyzer.analyze(events, context)
 				showResultOfAnalytics(result, projectName, project)
 
 			} catch (Cancelled ignored) {
@@ -332,14 +332,14 @@ class CodeHistoryMinerPlugin {
 			}
 
 		} else if (result instanceof Collection) {
-			if (!result.empty && [Visualization, Table, TableList].any{ it.isAssignableFrom(result.first().class)}) {
+			if (!result.empty && [Visualization, Table, TableList, List].any{ it.isAssignableFrom(result.first().getClass())}) {
 				result.each {
 					showResultOfAnalytics(it, projectName, project)
 				}
 			} else if (!result.empty && (result.first() instanceof Map)) {
 				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
 
-			} else if (!result.empty || !(result.first() instanceof Event)) {
+			} else if (!result.empty && (result.first() instanceof Event)) {
 				def events = result as Collection<Event>
 				def converter = new CSVConverter(TypeConverter.Default.create(TimeZone.default))
 				result = events.collect{ converter.toCsv(it) }.join("\n")
