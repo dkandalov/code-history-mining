@@ -1,5 +1,4 @@
 package codehistoryminer.plugin.ui
-
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
@@ -25,7 +24,6 @@ import com.intellij.openapi.project.ProjectManagerAdapter
 import com.intellij.openapi.ui.InputValidator
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.util.ui.UIUtil
@@ -38,7 +36,6 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
-
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
@@ -219,11 +216,7 @@ class UI {
 			}
 
 		} else if (result instanceof Collection) {
-			if (!result.empty && [Visualization, Table, TableList, Collection].any{ it.isInstance(result.first()) }) {
-				result.each {
-					showResultOfAnalytics(it, projectName, project)
-				}
-			} else if (!result.empty && (result.first() instanceof Map)) {
+			if (!result.empty && (result.first() instanceof Map)) {
 				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
 
 			} else if (!result.empty && (result.first() instanceof Event)) {
@@ -231,12 +224,9 @@ class UI {
 				openFileInIdeEditor(file, project)
 
 			} else {
-				result = result.collect { it.toString() }.join("\n")
-
-				def file = FileUtil.createTempFile(projectName + "-result", "")
-				file.renameTo(file.absolutePath + ".csv")
-				file.write(result)
-				openFileInIdeEditor(file, project)
+				result.each {
+					showResultOfAnalytics(it, projectName, project)
+				}
 			}
 		} else {
 			PluginUtil.show(result)
