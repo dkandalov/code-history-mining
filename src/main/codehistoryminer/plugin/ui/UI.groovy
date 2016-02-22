@@ -3,8 +3,6 @@ package codehistoryminer.plugin.ui
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
-import codehistoryminer.core.historystorage.TypeConverter
-import codehistoryminer.core.historystorage.implementation.CSVConverter
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -40,6 +38,7 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
+
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
@@ -211,10 +210,7 @@ class UI {
 			showInBrowser(html, projectName, "")
 
 		} else if (result instanceof Table) {
-			def file = FileUtil.createTempFile(projectName + "-result", "")
-			file.renameTo(file.absolutePath + ".csv")
-			file.write(result.toCsv())
-
+			def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
 			openFileInIdeEditor(file, project)
 
 		} else if (result instanceof TableList) {
@@ -223,7 +219,7 @@ class UI {
 			}
 
 		} else if (result instanceof Collection) {
-			if (!result.empty && [Visualization, Table, TableList, List].any{ it.isAssignableFrom(result.first().getClass())}) {
+			if (!result.empty && [Visualization, Table, TableList, Collection].any{ it.isInstance(result.first()) }) {
 				result.each {
 					showResultOfAnalytics(it, projectName, project)
 				}
@@ -231,13 +227,7 @@ class UI {
 				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
 
 			} else if (!result.empty && (result.first() instanceof Event)) {
-				def events = result as Collection<Event>
-				def converter = new CSVConverter(TypeConverter.Default.create(TimeZone.default))
-				result = events.collect{ converter.toCsv(it) }.join("\n")
-
-				def file = FileUtil.createTempFile(projectName + "-result", "")
-				file.renameTo(file.absolutePath + ".csv")
-				file.write(result)
+				def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
 				openFileInIdeEditor(file, project)
 
 			} else {
