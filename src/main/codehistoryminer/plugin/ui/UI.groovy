@@ -228,6 +228,8 @@ class UI {
 					showResultOfAnalytics(it, projectName, project)
 				}
 			}
+		} else if (result instanceof File) {
+			openFileInIdeEditor(result, project)
 		} else {
 			PluginUtil.show(result)
 		}
