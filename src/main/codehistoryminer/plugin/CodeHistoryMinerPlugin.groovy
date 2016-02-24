@@ -1,7 +1,7 @@
 package codehistoryminer.plugin
 import codehistoryminer.core.analysis.Context
 import codehistoryminer.core.analysis.ContextLogger
-import codehistoryminer.core.analysis.EventAnalyzer
+import codehistoryminer.core.analysis.Analyzer
 import codehistoryminer.core.analysis.implementation.AnalyzerScriptLoader
 import codehistoryminer.core.analysis.implementation.CombinedAnalyzer
 import codehistoryminer.core.analysis.implementation.GroovyScript
@@ -53,7 +53,7 @@ class CodeHistoryMinerPlugin {
 		this.log = log
 	}
 
-	def runAnalytics(File file, Project project, EventAnalyzer analyzer, String analyticsName) {
+	def runAnalytics(File file, Project project, Analyzer analyzer, String analyticsName) {
 		ui.runInBackground("Running ${analyticsName}") { ProgressIndicator indicator ->
 			try {
 				def projectName = historyStorage.guessProjectNameFrom(file.name)
