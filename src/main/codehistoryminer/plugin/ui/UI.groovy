@@ -217,7 +217,8 @@ class UI {
 
 		} else if (result instanceof Collection) {
 			if (!result.empty && (result.first() instanceof Map)) {
-				showResultOfAnalytics(result.collect{ new Event(it as Map) }, projectName, project)
+				def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
+				openFileInIdeEditor(file, project)
 
 			} else if (!result.empty && (result.first() instanceof Event)) {
 				def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
