@@ -72,7 +72,7 @@ class CodeHistoryMinerPlugin {
 					@Override void onUpdate(Progress progress) { indicator.fraction = progress.percentComplete() }
 				})
 				def result = analyzer.analyze(events, context)
-				ui.showResultOfAnalytics(result, projectName, project)
+				ui.showAnalyzerResult(result, projectName, project)
 
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(analyticsName)

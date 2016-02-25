@@ -1,4 +1,5 @@
 package codehistoryminer.plugin.ui
+
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
@@ -112,11 +113,6 @@ class UI {
 		BrowserUtil.browse(url)
 	}
 
-	private static boolean browserConfiguredIncorrectly() {
-		def settings = GeneralSettings.instance
-		!settings.useDefaultBrowser && !new File(settings.browserPath).exists()
-	}
-
 	def openFileInIdeEditor(File file, Project project) {
 		PluginUtil.invokeLaterOnEDT{
 			PluginUtil.openInEditor(file.absolutePath, project)
@@ -155,20 +151,6 @@ class UI {
 		PluginUtil.doInBackground(taskDescription, closure)
 	}
 
-	private grabHistory() {
-		registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
-			minerPlugin.grabHistoryOf(event.project)
-		}
-	}
-
-	private projectStats() {
-		new AnAction("Amount of Files in Project") {
-			@Override void actionPerformed(AnActionEvent event) {
-				FileAmountToolWindow.showIn(event.project, UI.this.minerPlugin.fileCountByFileExtension(event.project))
-			}
-		}
-	}
-
 	def showFileHistoryStatsToolWindow(Project project, Map statsMap) {
 		PluginUtil.invokeOnEDT {
 			FileHistoryStatsToolWindow.showIn(project, statsMap)
@@ -195,9 +177,7 @@ class UI {
 		PluginUtil.showInConsole(message, analyticsName, project, ERROR_OUTPUT)
 	}
 
-	def showResultOfAnalytics(result, String projectName, Project project) {
-		if (result == null) return
-
+	def showAnalyzerResult(result, String projectName, Project project) {
 		if (result instanceof Visualization) {
 			def html = result.template
 					.pasteInto(pluginTemplate)
@@ -212,7 +192,7 @@ class UI {
 
 		} else if (result instanceof TableList) {
 			result.tables.each { table ->
-				showResultOfAnalytics(table, projectName, project)
+				showAnalyzerResult(table, projectName, project)
 			}
 
 		} else if (result instanceof Collection) {
@@ -226,7 +206,7 @@ class UI {
 
 			} else {
 				result.each {
-					showResultOfAnalytics(it, projectName, project)
+					showAnalyzerResult(it, projectName, project)
 				}
 			}
 		} else if (result instanceof File) {
@@ -236,18 +216,21 @@ class UI {
 		}
 	}
 
-	private currentFileHistoryStats() {
-		new AnAction("Current File History Stats") {
-			@Override void actionPerformed(AnActionEvent event) {
-				UI.this.minerPlugin.showCurrentFileHistoryStats(event.project)
-			}
+	private static boolean browserConfiguredIncorrectly() {
+		def settings = GeneralSettings.instance
+		!settings.useDefaultBrowser && !new File(settings.browserPath).exists()
+	}
+
+	private grabHistory() {
+		registerAction("GrabProjectHistory", "", "", "Grab Project History"){ AnActionEvent event ->
+			minerPlugin.grabHistoryOf(event.project)
 		}
 	}
 
-	private static openReadme() {
-		new AnAction("Read Me (page on GitHub)") {
+	private projectStats() {
+		new AnAction("Amount of Files in Project") {
 			@Override void actionPerformed(AnActionEvent event) {
-				BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use")
+				FileAmountToolWindow.showIn(event.project, UI.this.minerPlugin.fileCountByFileExtension(event.project))
 			}
 		}
 	}
@@ -292,6 +275,22 @@ class UI {
 			add(renameFileAction(file.name))
 			add(deleteFileAction(file.name))
 			it
+		}
+	}
+
+	private currentFileHistoryStats() {
+		new AnAction("Current File History Stats") {
+			@Override void actionPerformed(AnActionEvent event) {
+				UI.this.minerPlugin.showCurrentFileHistoryStats(event.project)
+			}
+		}
+	}
+
+	private static openReadme() {
+		new AnAction("Read Me (page on GitHub)") {
+			@Override void actionPerformed(AnActionEvent event) {
+				BrowserUtil.open("https://github.com/dkandalov/code-history-mining#how-to-use")
+			}
 		}
 	}
 
@@ -349,6 +348,24 @@ class UI {
 
 			def notification = new Notification(groupDisplayId, title, message, notificationType, notificationListener)
 			ApplicationManager.application.messageBus.syncPublisher(Notifications.TOPIC).notify(notification)
+		}
+	}
+
+	static abstract class Displayable<T> {
+		final T value
+
+		Displayable(T value) {
+			this.value = value
+		}
+
+		static class TextFile extends Displayable<File> {
+			TextFile(File value) { super(value) }
+		}
+		static class HtmlFile extends Displayable<String> {
+			HtmlFile(String value) { super(value) }
+		}
+		static class Value extends Displayable<String> {
+			Value(String value) { super(value) }
 		}
 	}
 
