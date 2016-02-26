@@ -6,7 +6,7 @@ import codehistoryminer.core.analysis.implementation.AnalyzerScriptLoader
 import codehistoryminer.core.analysis.implementation.CombinedAnalyzer
 import codehistoryminer.core.analysis.implementation.GroovyScript
 import codehistoryminer.core.common.langutil.*
-import codehistoryminer.core.vcs.miner.MinedCommit
+import codehistoryminer.core.miner.MinedCommit
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.QueryScriptsStorage
@@ -34,7 +34,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
-import static codehistoryminer.core.common.events.FileChangeEvent.dateRangeBetween
+import static codehistoryminer.publicapi.analysis.filechange.FileChangeEvent.dateRangeBetween
 import static codehistoryminer.publicapi.lang.Date.Formatter.dd_MM_yyyy
 import static liveplugin.PluginUtil.invokeOnEDT
 

@@ -1,11 +1,12 @@
 package codehistoryminer.plugin.vcsaccess
 
+import codehistoryminer.core.miner.filechange.FileChangeEventMiner
+import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
-import codehistoryminer.core.vcs.miner.*
-import codehistoryminer.core.vcs.miner.todo.TodoCountMiner
-import codehistoryminer.core.vcs.reader.CommitProgressIndicator
+import codehistoryminer.core.miner.todo.TodoCountMiner
+import codehistoryminer.core.vcsreader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.implementation.IJFileTypes
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.project.Project
@@ -33,10 +34,10 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
-                                           ideIndicator, Cancelled cancelled) {
+    Iterator<codehistoryminer.core.miner.MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
+                                                                       ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new IJFileTypes()
-        def noContentListener = new MinerListener() {
+        def noContentListener = new codehistoryminer.core.miner.MinerListener() {
             @Override void failedToMine(Change change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
@@ -46,7 +47,7 @@ class VcsActions {
                 [new FileChangeEventMiner()]
         def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
-	    def listener = new MiningMachine.Listener() {
+	    def listener = new codehistoryminer.core.miner.MiningMachine.Listener() {
 		    @Override void onUpdate(CommitProgressIndicator indicator) { ideIndicator?.fraction = indicator.fraction() }
 		    @Override void beforeCommand(VcsCommand command) {}
 		    @Override void afterCommand(VcsCommand command) {}
@@ -57,11 +58,11 @@ class VcsActions {
 		    }
 	    }
 
-	    def config = new MiningMachine.Config(miners, fileTypes, TimeZone.getDefault())
+	    def config = new codehistoryminer.core.miner.MiningMachine.Config(miners, fileTypes, TimeZone.getDefault())
 			    .withListener(listener)
 			    .withCacheFileContent(false)
 	            .withVcsRequestSizeInDays(1)
-	    def miningMachine = new MiningMachine(config)
+	    def miningMachine = new codehistoryminer.core.miner.MiningMachine(config)
 	    miningMachine.mine(vcsProject, dateRanges, cancelled)
     }
 

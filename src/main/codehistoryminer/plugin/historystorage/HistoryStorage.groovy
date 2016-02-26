@@ -1,13 +1,13 @@
 package codehistoryminer.plugin.historystorage
 
-import codehistoryminer.core.common.events.Event
+import codehistoryminer.core.miner.Event
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.common.langutil.JBFileUtil
 import codehistoryminer.core.common.langutil.Measure
 import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.core.historystorage.FileChangeEventConverter
-import codehistoryminer.core.vcs.miner.FileChangeEventMiner
+import codehistoryminer.core.miner.filechange.FileChangeEventMiner
 import org.jetbrains.annotations.Nullable
 
 class HistoryStorage {

@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
-import codehistoryminer.core.vcs.reader.filetypes.FileTypes
+import codehistoryminer.core.vcsreader.filetypes.FileTypes
 import com.intellij.openapi.fileTypes.FileTypeManager
 import vcsreader.Change
 

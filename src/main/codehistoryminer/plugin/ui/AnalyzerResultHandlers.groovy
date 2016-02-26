@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.ui
 
-import codehistoryminer.core.analysis.values.Table
+import codehistoryminer.publicapi.analysis.values.Table
 import codehistoryminer.core.historystorage.TypeConverter
 import codehistoryminer.core.historystorage.implementation.CSVConverter
 import com.intellij.openapi.util.io.FileUtil

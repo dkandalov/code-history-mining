@@ -1,9 +1,9 @@
 package codehistoryminer.plugin.ui
 
-import codehistoryminer.core.analysis.values.Table
-import codehistoryminer.core.analysis.values.TableList
-import codehistoryminer.core.common.events.Event
-import codehistoryminer.core.common.events.EventWrapper
+import codehistoryminer.publicapi.analysis.values.Table
+import codehistoryminer.publicapi.analysis.values.TableList
+import codehistoryminer.core.miner.Event
+import codehistoryminer.core.miner.EventWrapper
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.CodeHistoryMinerPlugin

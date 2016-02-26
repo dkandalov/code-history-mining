@@ -1,15 +1,15 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
-import codehistoryminer.core.common.events.CommitInfo
-import codehistoryminer.core.common.events.FileChangeEvent
-import codehistoryminer.core.common.events.FileChangeInfo
+import codehistoryminer.core.miner.filechange.CommitInfo
+import codehistoryminer.publicapi.analysis.filechange.FileChangeEvent
+import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.vcs.miner.FileChangeEventMiner
-import codehistoryminer.core.vcs.miner.LineAndCharChangeMiner
-import codehistoryminer.core.vcs.miner.MiningMachine
-import codehistoryminer.core.vcs.reader.CommitProgressIndicator
+import codehistoryminer.core.miner.filechange.FileChangeEventMiner
+import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
+import codehistoryminer.core.miner.MiningMachine
+import codehistoryminer.core.vcsreader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
 import com.intellij.openapi.project.Project
@@ -19,8 +19,8 @@ import org.junit.Test
 import vcsreader.Change
 import vcsreader.vcs.commandlistener.VcsCommand
 
-import static codehistoryminer.core.common.events.ChangeStats.*
-import static codehistoryminer.core.common.events.ChangeType.*
+import static codehistoryminer.publicapi.analysis.linechangecount.ChangeStats.*
+import static codehistoryminer.publicapi.analysis.filechange.ChangeType.*
 import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
 import static codehistoryminer.plugin.vcsaccess.VcsActions.commonVcsRootsAncestor
 import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
