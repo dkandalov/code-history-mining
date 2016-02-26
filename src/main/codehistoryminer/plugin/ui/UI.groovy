@@ -3,6 +3,7 @@ package codehistoryminer.plugin.ui
 import codehistoryminer.core.analysis.values.Table
 import codehistoryminer.core.analysis.values.TableList
 import codehistoryminer.core.common.events.Event
+import codehistoryminer.core.common.events.EventWrapper
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
+
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
@@ -187,27 +189,21 @@ class UI {
 			showInBrowser(html, projectName, "")
 
 		} else if (result instanceof Table) {
-			def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
-			openFileInIdeEditor(file, project)
+			openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
 
 		} else if (result instanceof TableList) {
-			result.tables.each { table ->
-				showAnalyzerResult(table, projectName, project)
+			result.tables.each { table -> showAnalyzerResult(table, projectName, project) }
+
+		} else if (result instanceof Collection && !result.empty) {
+			def first = result.first()
+			if (first instanceof EventWrapper) {
+				result = result.collect{ it.event }
+				first = result.first()
 			}
-
-		} else if (result instanceof Collection) {
-			if (!result.empty && (result.first() instanceof Map)) {
-				def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
-				openFileInIdeEditor(file, project)
-
-			} else if (!result.empty && (result.first() instanceof Event)) {
-				def file = AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result")
-				openFileInIdeEditor(file, project)
-
+			if (first instanceof Map || first instanceof Event) {
+				openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
 			} else {
-				result.each {
-					showAnalyzerResult(it, projectName, project)
-				}
+				result.each { showAnalyzerResult(it, projectName, project) }
 			}
 		} else if (result instanceof File) {
 			openFileInIdeEditor(result, project)
@@ -348,24 +344,6 @@ class UI {
 
 			def notification = new Notification(groupDisplayId, title, message, notificationType, notificationListener)
 			ApplicationManager.application.messageBus.syncPublisher(Notifications.TOPIC).notify(notification)
-		}
-	}
-
-	static abstract class Displayable<T> {
-		final T value
-
-		Displayable(T value) {
-			this.value = value
-		}
-
-		static class TextFile extends Displayable<File> {
-			TextFile(File value) { super(value) }
-		}
-		static class HtmlFile extends Displayable<String> {
-			HtmlFile(String value) { super(value) }
-		}
-		static class Value extends Displayable<String> {
-			Value(String value) { super(value) }
 		}
 	}
 
