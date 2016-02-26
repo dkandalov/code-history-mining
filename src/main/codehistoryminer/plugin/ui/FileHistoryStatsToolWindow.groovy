@@ -1,5 +1,5 @@
 package codehistoryminer.plugin.ui
-import codehistoryminer.core.common.langutil.Date
+import codehistoryminer.publicapi.lang.Date
 import com.intellij.icons.AllIcons
 import com.intellij.ide.ClipboardSynchronizer
 import com.intellij.openapi.actionSystem.*

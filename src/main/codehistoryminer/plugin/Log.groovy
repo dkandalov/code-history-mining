@@ -1,6 +1,6 @@
 package codehistoryminer.plugin
 
-import codehistoryminer.core.common.langutil.Date
+import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog

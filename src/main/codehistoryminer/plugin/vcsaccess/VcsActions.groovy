@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.vcsaccess
 
-import codehistoryminer.core.common.langutil.Cancelled
+import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.common.langutil.Measure
 import codehistoryminer.core.vcs.miner.*

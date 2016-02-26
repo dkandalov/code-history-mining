@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
-import codehistoryminer.core.common.langutil.Date
+import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList

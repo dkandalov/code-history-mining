@@ -2,5 +2,5 @@ package codehistoryminer.plugin
 
 contributor(context(scope: scriptScope(), pathRegexp: '.*/query-scripts/.*\\.groovy$')) {
     property name: 'events', type: 'java.util.List<codehistoryminer.core.common.events.FileChangeEvent>'
-    property name: 'context', type: 'codehistoryminer.core.analysis.Context'
+    property name: 'context', type: 'codehistoryminer.publicapi.analysis.Context'
 }

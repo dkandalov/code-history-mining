@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.historystorage
-import codehistoryminer.core.common.langutil.Date
-import codehistoryminer.core.common.langutil.Time
+import codehistoryminer.publicapi.lang.Date
+import codehistoryminer.publicapi.lang.Time
 import com.intellij.openapi.util.io.FileUtil
 import groovy.json.JsonSlurper
 import groovy.transform.Immutable

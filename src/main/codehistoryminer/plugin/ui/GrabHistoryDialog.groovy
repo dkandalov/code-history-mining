@@ -1,5 +1,4 @@
 package codehistoryminer.plugin.ui
-import codehistoryminer.core.common.langutil.Date
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileChooser.FileChooser

@@ -1,7 +1,7 @@
 package codehistoryminer.plugin
-import codehistoryminer.core.analysis.Context
-import codehistoryminer.core.analysis.ContextLogger
-import codehistoryminer.core.analysis.Analyzer
+import codehistoryminer.publicapi.analysis.Context
+import codehistoryminer.publicapi.analysis.ContextLogger
+import codehistoryminer.publicapi.analysis.Analyzer
 import codehistoryminer.core.analysis.implementation.AnalyzerScriptLoader
 import codehistoryminer.core.analysis.implementation.CombinedAnalyzer
 import codehistoryminer.core.analysis.implementation.GroovyScript
@@ -12,6 +12,10 @@ import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActions
+import codehistoryminer.publicapi.lang.Cancelled
+import codehistoryminer.publicapi.lang.Date
+import codehistoryminer.publicapi.lang.Progress
+import codehistoryminer.publicapi.lang.Time
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -31,7 +35,7 @@ import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
 import static codehistoryminer.core.common.events.FileChangeEvent.dateRangeBetween
-import static codehistoryminer.core.common.langutil.Date.Formatter.dd_MM_yyyy
+import static codehistoryminer.publicapi.lang.Date.Formatter.dd_MM_yyyy
 import static liveplugin.PluginUtil.invokeOnEDT
 
 class CodeHistoryMinerPlugin {

@@ -9,6 +9,9 @@ import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActions
+import codehistoryminer.publicapi.lang.Cancelled
+import codehistoryminer.publicapi.lang.Date
+import codehistoryminer.publicapi.lang.Time
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test

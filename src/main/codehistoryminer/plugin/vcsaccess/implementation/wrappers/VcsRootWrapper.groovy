@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 
-import codehistoryminer.core.common.langutil.Date
+import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit

@@ -3,8 +3,8 @@ package codehistoryminer.plugin.vcsaccess.implementation
 import codehistoryminer.core.common.events.CommitInfo
 import codehistoryminer.core.common.events.FileChangeEvent
 import codehistoryminer.core.common.events.FileChangeInfo
-import codehistoryminer.core.common.langutil.Cancelled
-import codehistoryminer.core.common.langutil.Date
+import codehistoryminer.publicapi.lang.Cancelled
+import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.core.common.langutil.DateRange
 import codehistoryminer.core.vcs.miner.FileChangeEventMiner
 import codehistoryminer.core.vcs.miner.LineAndCharChangeMiner
