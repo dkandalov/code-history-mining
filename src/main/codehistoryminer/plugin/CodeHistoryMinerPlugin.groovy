@@ -53,8 +53,8 @@ class CodeHistoryMinerPlugin {
 		this.log = log
 	}
 
-	def runAnalytics(File file, Project project, Analyzer analyzer, String analyticsName) {
-		ui.runInBackground("Running ${analyticsName}") { ProgressIndicator indicator ->
+	def runAnalyzer(File file, Project project, Analyzer analyzer, String analyzerName) {
+		ui.runInBackground("Running ${analyzerName}") { ProgressIndicator indicator ->
 			try {
 				def projectName = historyStorage.guessProjectNameFrom(file.name)
 				def cancelled = new Cancelled() {
@@ -75,9 +75,9 @@ class CodeHistoryMinerPlugin {
 				ui.showAnalyzerResult(result, projectName, project)
 
 			} catch (Cancelled ignored) {
-				log?.cancelledBuilding(analyticsName)
+				log?.cancelledBuilding(analyzerName)
 			} catch (Exception e) {
-				ui.showAnalyticsError(analyticsName, Unscramble.unscrambleThrowable(e), project)
+				ui.showAnalyzerError(analyzerName, Unscramble.unscrambleThrowable(e), project)
 			}
 		}
 	}
@@ -296,7 +296,7 @@ class CodeHistoryMinerPlugin {
 
 			invokeOnEDT {
 				def combinedAnalyzer = new CombinedAnalyzer(analyzers)
-				runAnalytics(new File(historyFileName), project, combinedAnalyzer, scriptFileName)
+				runAnalyzer(new File(historyFileName), project, combinedAnalyzer, scriptFileName)
 			}
 		}
 	}

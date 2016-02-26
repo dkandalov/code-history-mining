@@ -175,8 +175,8 @@ class UI {
 		PluginUtil.showInConsole(message, scriptFileName, project, ERROR_OUTPUT)
 	}
 
-	def showAnalyticsError(String analyticsName, String message, Project project) {
-		PluginUtil.showInConsole(message, analyticsName, project, ERROR_OUTPUT)
+	def showAnalyzerError(String analyzerName, String message, Project project) {
+		PluginUtil.showInConsole(message, analyzerName, project, ERROR_OUTPUT)
 	}
 
 	def showAnalyzerResult(result, String projectName, Project project) {
@@ -239,31 +239,31 @@ class UI {
 				}
 			}
 		}
-		Closure<AnAction> visualizedAnalyticsAction = { VisualizedAnalyzer analytics ->
-			new AnAction(analytics.name()) {
+		Closure<AnAction> runAnalyzerAction = { VisualizedAnalyzer analyzer ->
+			new AnAction(analyzer.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
-					minerPlugin.runAnalytics(file, event.project, analytics, analytics.name())
+					minerPlugin.runAnalyzer(file, event.project, analyzer, analyzer.name())
 				}
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(visualizedAnalyticsAction(all))
-			add(visualizedAnalyticsAction(commitLogAsGraph))
+			add(runAnalyzerAction(all))
+			add(runAnalyzerAction(commitLogAsGraph))
 			add(Separator.instance)
-			add(visualizedAnalyticsAction(codeChurnChart))
-			add(visualizedAnalyticsAction(amountOfCommittersChart))
-			add(visualizedAnalyticsAction(commitsByCommitterChart))
-			add(visualizedAnalyticsAction(amountOfTodosChart))
-			add(visualizedAnalyticsAction(amountOfFilesInCommitChart))
-			add(visualizedAnalyticsAction(amountOfChangingFilesChart))
-			add(visualizedAnalyticsAction(changeSizeByFileTypeChart))
-			add(visualizedAnalyticsAction(changesTreemap))
-			add(visualizedAnalyticsAction(filesInTheSameCommitGraph))
-			add(visualizedAnalyticsAction(committersChangingSameFilesGraph))
-			add(visualizedAnalyticsAction(commitTimePunchcard))
-			add(visualizedAnalyticsAction(timeBetweenCommitsHistogram))
-			add(visualizedAnalyticsAction(commitMessagesWordChart))
-			add(visualizedAnalyticsAction(commitMessageWordCloud))
+			add(runAnalyzerAction(codeChurnChart))
+			add(runAnalyzerAction(amountOfCommittersChart))
+			add(runAnalyzerAction(commitsByCommitterChart))
+			add(runAnalyzerAction(amountOfTodosChart))
+			add(runAnalyzerAction(amountOfFilesInCommitChart))
+			add(runAnalyzerAction(amountOfChangingFilesChart))
+			add(runAnalyzerAction(changeSizeByFileTypeChart))
+			add(runAnalyzerAction(changesTreemap))
+			add(runAnalyzerAction(filesInTheSameCommitGraph))
+			add(runAnalyzerAction(committersChangingSameFilesGraph))
+			add(runAnalyzerAction(commitTimePunchcard))
+			add(runAnalyzerAction(timeBetweenCommitsHistogram))
+			add(runAnalyzerAction(commitMessagesWordChart))
+			add(runAnalyzerAction(commitMessageWordCloud))
 			add(Separator.instance)
 			add(createRunQueryAction())
 			add(showInFileManager(file))
