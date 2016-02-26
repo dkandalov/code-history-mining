@@ -1,6 +1,6 @@
 package codehistoryminer.plugin
 
-import codehistoryminer.core.common.langutil.Measure
+import codehistoryminer.core.lang.Measure
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.QueryScriptsStorage
 import codehistoryminer.plugin.ui.FileHistoryStatsToolWindow

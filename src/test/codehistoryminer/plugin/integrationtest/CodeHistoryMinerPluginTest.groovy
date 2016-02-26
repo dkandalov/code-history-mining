@@ -1,6 +1,5 @@
 package codehistoryminer.plugin.integrationtest
 
-import codehistoryminer.core.common.langutil.*
 import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -16,7 +15,7 @@ import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.project.Project
 import org.junit.Test
 
-import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
+import static codehistoryminer.core.lang.DateTimeTestUtil.*
 import static codehistoryminer.plugin.integrationtest.GroovyStubber.*
 
 class CodeHistoryMinerPluginTest {
@@ -32,13 +31,13 @@ class CodeHistoryMinerPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, readListener, Cancelled cancelled ->
+				[readMinedCommits: { List<codehistoryminer.core.lang.DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, readListener, Cancelled cancelled ->
 					grabbedVcs = true
 					[].iterator()
 				}])
 
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
-		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, stub(QueryScriptsStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, stub(QueryScriptsStorage), vcsAccess, new codehistoryminer.core.lang.Measure())
 
 		// when / then
 		def now = time("23/11/2012", TimeZone.default)
@@ -48,7 +47,7 @@ class CodeHistoryMinerPluginTest {
 
 	@Test def "on VCS update grabs history from today to the latest event in file history"() {
 		// given
-		List<DateRange> grabbedDateRanges = null
+		List<codehistoryminer.core.lang.DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageReader: returns(stub(EventStorageReader, [
                         storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
@@ -57,19 +56,19 @@ class CodeHistoryMinerPluginTest {
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))
 		])
 		def vcsAccess = stub(VcsActions,
-				[readMinedCommits: { List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, progress, cancelled ->
+				[readMinedCommits: { List<codehistoryminer.core.lang.DateRange> dateRanges, Project project, boolean grabChangeSizeInLines, progress, cancelled ->
 					grabbedDateRanges = dateRanges
 					[].iterator()
 				}])
 		def ui = stub(UI, [runInBackground: runOnTheSameThread])
-		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, stub(QueryScriptsStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, historyStorage, stub(QueryScriptsStorage), vcsAccess, new codehistoryminer.core.lang.Measure())
 
 		// when
 		def now = time("23/11/2012")
         miner.grabHistoryOnVcsUpdate(someProject, now)
 
         // then
-        assert grabbedDateRanges == [new DateRange(date("20/11/2012"), date("23/11/2012"))]
+        assert grabbedDateRanges == [new codehistoryminer.core.lang.DateRange(date("20/11/2012"), date("23/11/2012"))]
     }
 
 	@Test def "on grab history should register VCS update listener"() {
@@ -85,7 +84,7 @@ class CodeHistoryMinerPluginTest {
 				readMinedCommits: returns([].iterator()),
 				addVcsUpdateListenerFor: { String projectName, listener -> listeningToProject = projectName }
 		])
-		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), stub(QueryScriptsStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), stub(QueryScriptsStorage), vcsAccess, new codehistoryminer.core.lang.Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)
@@ -104,7 +103,7 @@ class CodeHistoryMinerPluginTest {
 				showGrabbingInProgressMessage: does{ showedGrabbingInProgress++ },
 		])
 		def vcsAccess = stub(VcsActions, [readMinedCommits: returns([].iterator())])
-		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), stub(QueryScriptsStorage), vcsAccess, new Measure())
+		def miner = new CodeHistoryMinerPlugin(ui, stub(HistoryStorage), stub(QueryScriptsStorage), vcsAccess, new codehistoryminer.core.lang.Measure())
 
 		// when / then
 		miner.grabHistoryOf(someProject)

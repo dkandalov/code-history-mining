@@ -1,8 +1,8 @@
 package codehistoryminer.plugin.historystorage
 import org.junit.Test
 
-import static codehistoryminer.core.common.langutil.DateTimeTestUtil.date
-import static codehistoryminer.core.common.langutil.DateTimeTestUtil.time
+import static codehistoryminer.core.lang.DateTimeTestUtil.date
+import static codehistoryminer.core.lang.DateTimeTestUtil.time
 
 class HistoryGrabberConfigTest {
 	@Test void "convert state to/from json"() {

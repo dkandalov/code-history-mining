@@ -2,8 +2,8 @@ package codehistoryminer.plugin.historystorage
 
 import codehistoryminer.core.miner.Event
 import codehistoryminer.publicapi.lang.Cancelled
-import codehistoryminer.core.common.langutil.JBFileUtil
-import codehistoryminer.core.common.langutil.Measure
+import codehistoryminer.core.lang.JBFileUtil
+import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.core.historystorage.FileChangeEventConverter

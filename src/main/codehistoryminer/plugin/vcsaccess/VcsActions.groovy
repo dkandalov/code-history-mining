@@ -3,8 +3,8 @@ package codehistoryminer.plugin.vcsaccess
 import codehistoryminer.core.miner.filechange.FileChangeEventMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.publicapi.lang.Cancelled
-import codehistoryminer.core.common.langutil.DateRange
-import codehistoryminer.core.common.langutil.Measure
+import codehistoryminer.core.lang.DateRange
+import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.miner.todo.TodoCountMiner
 import codehistoryminer.core.vcsreader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.implementation.IJFileTypes
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable
 import vcsreader.Change
 import vcsreader.vcs.commandlistener.VcsCommand
 
-import static codehistoryminer.core.common.langutil.Misc.withDefault
+import static codehistoryminer.core.lang.Misc.withDefault
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 

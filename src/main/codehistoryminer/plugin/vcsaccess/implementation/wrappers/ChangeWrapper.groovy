@@ -3,7 +3,7 @@ import com.intellij.openapi.vcs.changes.Change as IJChange
 import org.jetbrains.annotations.NotNull
 import vcsreader.Change
 
-import static codehistoryminer.core.common.langutil.Misc.withDefault
+import static codehistoryminer.core.lang.Misc.withDefault
 
 @SuppressWarnings("UnnecessaryQualifiedReference") // because IntelliJ doesn't understand that import is required by groovy
 class ChangeWrapper extends Change {

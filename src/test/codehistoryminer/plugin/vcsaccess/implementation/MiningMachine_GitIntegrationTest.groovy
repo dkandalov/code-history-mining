@@ -5,7 +5,7 @@ import codehistoryminer.publicapi.analysis.filechange.FileChangeEvent
 import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.publicapi.lang.Date
-import codehistoryminer.core.common.langutil.DateRange
+import codehistoryminer.core.lang.DateRange
 import codehistoryminer.core.miner.filechange.FileChangeEventMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.core.miner.MiningMachine
@@ -21,7 +21,7 @@ import vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.publicapi.analysis.linechangecount.ChangeStats.*
 import static codehistoryminer.publicapi.analysis.filechange.ChangeType.*
-import static codehistoryminer.core.common.langutil.DateTimeTestUtil.*
+import static codehistoryminer.core.lang.DateTimeTestUtil.*
 import static codehistoryminer.plugin.vcsaccess.VcsActions.commonVcsRootsAncestor
 import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
 import static org.hamcrest.CoreMatchers.equalTo

@@ -12,7 +12,7 @@ import vcsreader.Commit
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
-import static codehistoryminer.core.common.langutil.Misc.withDefault
+import static codehistoryminer.core.lang.Misc.withDefault
 import static vcsreader.Change.noRevision
 
 class VcsRootWrapper implements VcsRoot {
