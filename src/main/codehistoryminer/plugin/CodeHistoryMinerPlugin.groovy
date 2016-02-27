@@ -33,7 +33,7 @@ import com.intellij.util.indexing.FileBasedIndex
 import groovy.time.TimeCategory
 import liveplugin.PluginUtil
 
-import static codehistoryminer.publicapi.analysis.filechange.FileChangeEvent.dateRangeBetween
+import static codehistoryminer.publicapi.analysis.filechange.FileChange.dateRangeBetween
 import static codehistoryminer.publicapi.lang.Date.Formatter.dd_MM_yyyy
 import static liveplugin.PluginUtil.invokeOnEDT
 

@@ -1,7 +1,7 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
 import codehistoryminer.core.miner.filechange.CommitInfo
-import codehistoryminer.publicapi.analysis.filechange.FileChangeEvent
+import codehistoryminer.publicapi.analysis.filechange.FileChange
 import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.publicapi.lang.Date
@@ -84,7 +84,7 @@ class MiningMachine_GitIntegrationTest {
         ]*.event)))
     }
 
-	private static List<FileChangeEvent> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
+	private static List<FileChange> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
 		def fileTypes = new IJFileTypes()
 		def miners = countChangeSizeInLines ?
 				[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
@@ -100,7 +100,7 @@ class MiningMachine_GitIntegrationTest {
 		collection.join(",\n")
 	}
 	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = [:]) {
-		new FileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes)
+		new FileChange(commitInfo, fileChangeInfo, additionalAttributes)
 	}
 	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType) {
 		new FileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType)
