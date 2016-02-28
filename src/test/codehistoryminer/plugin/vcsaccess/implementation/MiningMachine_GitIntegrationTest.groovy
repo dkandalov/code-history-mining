@@ -29,62 +29,62 @@ import static org.junit.Assert.assertThat
 
 class MiningMachine_GitIntegrationTest {
 
-    @Test void "read file events"() {
+    @Test void "read file change data"() {
 		def countChangeSizeInLines = false
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
+		def changes = readChanges(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
-        assertThat(asString(changeEvents), equalTo(asString([
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", MODIFIED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", MOVED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", MODIFIED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", ADDED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", MODIFIED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED)),
-		        fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", MODIFIED))
+        assertThat(asString(changes), equalTo(asString([
+		        fileChange(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", MODIFIED)),
+		        fileChange(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", MOVED)),
+		        fileChange(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", MODIFIED)),
+		        fileChange(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", ADDED)),
+		        fileChange(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", MODIFIED)),
+		        fileChange(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED)),
+		        fileChange(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED)),
+		        fileChange(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", MODIFIED))
 		]*.data)))
 	}
 
-	@Test void "read file events with change size details"() {
+	@Test void "read file with change size details"() {
 		def countChangeSizeInLines = true
-		def changeEvents = readChangeEvents(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
+		def changes = readChanges(date("03/10/2007"), date("04/10/2007"), jUnitProject, countChangeSizeInLines)
                 .findAll{ it.commitTime == commitInfo.commitTime }
 
-		assertThat(asString(changeEvents), equalTo(asString([
-				fileChangeEvent(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", MODIFIED), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", MOVED), linesStats(129, 123, 2, 8, 15) + charsStats(3822, 3824, 165, 413, 414)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", MODIFIED), linesStats(128, 132, 0, 3, 0) + charsStats(3682, 3807, 0, 140, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", ADDED), linesStats(0, 125, 125, 0, 0) + charsStats(0, 3316, 3316, 0, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", MODIFIED), linesStats(157, 64, 0, 26, 84) + charsStats(4102, 1582, 0, 809, 2233)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
-				fileChangeEvent(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", MODIFIED), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
+		assertThat(asString(changes), equalTo(asString([
+				fileChange(commitInfo, fileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", MODIFIED), linesStats(37, 37, 0, 4, 0) + charsStats(950, 978, 0, 215, 0)),
+				fileChange(commitInfo, fileChangeInfo("TheoryMethod.java", "TheoryMethodRunner.java", "/src/org/junit/experimental/theories/internal", "/src/org/junit/experimental/theories/internal", MOVED), linesStats(129, 123, 2, 8, 15) + charsStats(3822, 3824, 165, 413, 414)),
+				fileChange(commitInfo, fileChangeInfo("", "JUnit4ClassRunner.java", "", "/src/org/junit/internal/runners", MODIFIED), linesStats(128, 132, 0, 3, 0) + charsStats(3682, 3807, 0, 140, 0)),
+				fileChange(commitInfo, fileChangeInfo("", "JUnit4MethodRunner.java", "", "/src/org/junit/internal/runners", ADDED), linesStats(0, 125, 125, 0, 0) + charsStats(0, 3316, 3316, 0, 0)),
+				fileChange(commitInfo, fileChangeInfo("", "TestMethod.java", "", "/src/org/junit/internal/runners", MODIFIED), linesStats(157, 64, 0, 26, 84) + charsStats(4102, 1582, 0, 809, 2233)),
+				fileChange(commitInfo, fileChangeInfo("", "StubbedTheories.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED), linesStats(19, 19, 0, 2, 0) + charsStats(514, 530, 0, 96, 0)),
+				fileChange(commitInfo, fileChangeInfo("", "StubbedTheoryMethod.java", "", "/src/org/junit/tests/experimental/theories/extendingwithstubs", MODIFIED), linesStats(55, 55, 0, 2, 0) + charsStats(1698, 1710, 0, 118, 0)),
+				fileChange(commitInfo, fileChangeInfo("", "TestMethodInterfaceTest.java", "", "/src/org/junit/tests/extension", MODIFIED), linesStats(34, 34, 0, 2, 0) + charsStats(814, 838, 0, 109, 0))
 		]*.data)))
 	}
 
 	@Test void "ignore change size details for binary files"() {
         def countChangeSizeInLines = true
-        def changeEvents = readChangeEvents(date("15/07/2012"), date("16/07/2012"), jUnitProject, countChangeSizeInLines)
+        def changes = readChanges(date("15/07/2012"), date("16/07/2012"), jUnitProject, countChangeSizeInLines)
                 .findAll { it.fileName.contains(".jar") || it.fileNameBefore.contains(".jar") }
 
-        assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", DELETED), statsNA()),
-                fileChangeEvent(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", ADDED), statsNA()),
+        assertThat(asString(changes), equalTo(asString([
+		        fileChange(commitInfo2, fileChangeInfo("hamcrest-core-1.3.0RC2.jar", "", "/lib", "", DELETED), statsNA()),
+		        fileChange(commitInfo2, fileChangeInfo("", "hamcrest-core-1.3.jar", "", "/lib", ADDED), statsNA()),
         ]*.data)))
     }
 
-	@Test void "merged commits are skipped because change events create from original commits"() {
+	@Test void "merged commits are skipped because change data is created from original commits"() {
         def countChangeSizeInLines = false
-        def changeEvents = readChangeEvents(date("11/04/2014"), date("14/04/2014"), jUnitProject, countChangeSizeInLines)
+        def changes = readChanges(date("11/04/2014"), date("14/04/2014"), jUnitProject, countChangeSizeInLines)
 
-        assertThat(asString(changeEvents), equalTo(asString([
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", MODIFIED)),
-                fileChangeEvent(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", ADDED))
+        assertThat(asString(changes), equalTo(asString([
+		        fileChange(commitInfo3, fileChangeInfo("", "ErrorReportingRunner.java", "", "/src/main/java/org/junit/internal/runners", MODIFIED)),
+		        fileChange(commitInfo3, fileChangeInfo("", "ErrorReportingRunnerTest.java", "", "/src/test/java/org/junit/tests/internal/runners", ADDED))
         ]*.data)))
     }
 
-	private static List<FileChange> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
+	private static List<FileChange> readChanges(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
 		def fileTypes = new IJFileTypes()
 		def miners = countChangeSizeInLines ?
 				[new FileChangeMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
@@ -99,7 +99,7 @@ class MiningMachine_GitIntegrationTest {
 	private static asString(Collection collection) {
 		collection.join(",\n")
 	}
-	private static fileChangeEvent(commitInfo, fileChangeInfo, additionalAttributes = [:]) {
+	private static fileChange(commitInfo, fileChangeInfo, additionalAttributes = [:]) {
 		new FileChange(commitInfo, fileChangeInfo, additionalAttributes)
 	}
 	private static fileChangeInfo(fileNameBefore, fileName, packageNameBefore, packageName, fileChangeType) {
@@ -132,7 +132,7 @@ class MiningMachine_GitIntegrationTest {
 		@Override def errorReadingCommits(String error) {
 			PluginUtil.show(error)
 		}
-		@Override def onExtractChangeEventException(Throwable t) {
+		@Override def onFailedToMineException(Throwable t) {
 			PluginUtil.show(t)
 		}
 		@Override def failedToMine(String message) {

@@ -1,5 +1,8 @@
 package codehistoryminer.plugin.vcsaccess
 
+import codehistoryminer.core.miner.MinedCommit
+import codehistoryminer.core.miner.MinerListener
+import codehistoryminer.core.miner.MiningMachine
 import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.publicapi.lang.Cancelled
@@ -34,10 +37,10 @@ class VcsActions {
 		this.log = log
 	}
 
-    Iterator<codehistoryminer.core.miner.MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
+    Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
                                                                        ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new IJFileTypes()
-        def noContentListener = new codehistoryminer.core.miner.MinerListener() {
+        def noContentListener = new MinerListener() {
             @Override void failedToMine(Change change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
@@ -47,22 +50,22 @@ class VcsActions {
                 [new FileChangeMiner()]
         def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
-	    def listener = new codehistoryminer.core.miner.MiningMachine.Listener() {
+	    def listener = new MiningMachine.Listener() {
 		    @Override void onUpdate(CommitProgressIndicator indicator) { ideIndicator?.fraction = indicator.fraction() }
 		    @Override void beforeCommand(VcsCommand command) {}
 		    @Override void afterCommand(VcsCommand command) {}
 		    @Override void onVcsError(String error) { log.errorReadingCommits(error) }
 		    @Override void onException(Exception e) { log.errorReadingCommits(e.message) }
 		    @Override void failedToMine(Change change, String description, Throwable throwable) {
-			    log.onExtractChangeEventException(throwable)
+			    log.onFailedToMineException(throwable)
 		    }
 	    }
 
-	    def config = new codehistoryminer.core.miner.MiningMachine.Config(miners, fileTypes, TimeZone.getDefault())
+	    def config = new MiningMachine.Config(miners, fileTypes, TimeZone.getDefault())
 			    .withListener(listener)
 			    .withCacheFileContent(false)
 	            .withVcsRequestSizeInDays(1)
-	    def miningMachine = new codehistoryminer.core.miner.MiningMachine(config)
+	    def miningMachine = new MiningMachine(config)
 	    miningMachine.mine(vcsProject, dateRanges, cancelled)
     }
 

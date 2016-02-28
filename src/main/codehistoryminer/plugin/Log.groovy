@@ -35,7 +35,7 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeHistoryMiner
 		logger.warn("Failed to find location for ${vcsRoot} in ${project}")
 	}
 
-    @Override def onExtractChangeEventException(Throwable t) {
+    @Override def onFailedToMineException(Throwable t) {
         logger.warn(t)
     }
 

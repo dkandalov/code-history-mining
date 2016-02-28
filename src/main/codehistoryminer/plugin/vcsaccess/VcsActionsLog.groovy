@@ -8,6 +8,6 @@ interface VcsActionsLog {
     def errorReadingCommits(Exception e, Date fromDate, Date toDate)
     def errorReadingCommits(String error)
     def failedToLocate(VcsRoot vcsRoot, Project project)
-    def onExtractChangeEventException(Throwable t)
+    def onFailedToMineException(Throwable t)
     def failedToMine(String message)
 }
