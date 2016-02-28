@@ -6,7 +6,7 @@ import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.core.lang.DateRange
-import codehistoryminer.core.miner.filechange.FileChangeEventMiner
+import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.core.miner.MiningMachine
 import codehistoryminer.core.vcsreader.CommitProgressIndicator
@@ -87,8 +87,8 @@ class MiningMachine_GitIntegrationTest {
 	private static List<FileChange> readChangeEvents(Date fromDate, Date toDate, Project project, boolean countChangeSizeInLines) {
 		def fileTypes = new IJFileTypes()
 		def miners = countChangeSizeInLines ?
-				[new FileChangeEventMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
-				[new FileChangeEventMiner(UTC)]
+				[new FileChangeMiner(UTC), new LineAndCharChangeMiner(fileTypes, miningMachineListener)] :
+				[new FileChangeMiner(UTC)]
         def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), vcsActionsLog)
 		def config = new MiningMachine.Config(miners, fileTypes, UTC).withListener(miningMachineListener).withCacheFileContent(false)
 		new MiningMachine(config)

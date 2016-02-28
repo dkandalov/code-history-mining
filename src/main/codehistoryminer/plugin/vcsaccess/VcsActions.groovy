@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.vcsaccess
 
-import codehistoryminer.core.miner.filechange.FileChangeEventMiner
+import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.lang.DateRange
@@ -43,8 +43,8 @@ class VcsActions {
             }
         }
         def miners = grabChangeSizeInLines ?
-                [new FileChangeEventMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
-                [new FileChangeEventMiner()]
+                [new FileChangeMiner(), new LineAndCharChangeMiner(fileTypes, noContentListener), new TodoCountMiner(fileTypes)] :
+                [new FileChangeMiner()]
         def vcsProject = new VcsProjectWrapper(project, vcsRootsIn(project), commonVcsRootsAncestor(project), log)
 
 	    def listener = new codehistoryminer.core.miner.MiningMachine.Listener() {

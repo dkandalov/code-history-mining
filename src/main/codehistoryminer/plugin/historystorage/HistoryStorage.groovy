@@ -6,8 +6,8 @@ import codehistoryminer.core.lang.JBFileUtil
 import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
-import codehistoryminer.core.historystorage.FileChangeEventConverter
-import codehistoryminer.core.miner.filechange.FileChangeEventMiner
+import codehistoryminer.core.historystorage.FileChangeConverter
+import codehistoryminer.core.miner.filechange.FileChangeMiner
 import org.jetbrains.annotations.Nullable
 
 class HistoryStorage {
@@ -58,7 +58,7 @@ class HistoryStorage {
 			def listener = new EventStorageReader.Listener() {
 				@Override void failedToReadLine(String line, Exception e) { log?.failedToRead(line) }
 			}
-			def storage = new EventStorageReader("$basePath/$fileName", FileChangeEventConverter.create(), listener).init()
+			def storage = new EventStorageReader("$basePath/$fileName", FileChangeConverter.create(), listener).init()
 			storage.readAllEvents(cancelled)
 		}
 	}
@@ -70,15 +70,15 @@ class HistoryStorage {
 
 	@SuppressWarnings("GrMethodMayBeStatic")
 	EventStorageReader eventStorageReader(String filePath) {
-		new EventStorageReader(filePath, FileChangeEventConverter.create()).init()
+		new EventStorageReader(filePath, FileChangeConverter.create()).init()
 	}
 
 	@SuppressWarnings("GrMethodMayBeStatic")
 	EventStorageWriter eventStorageWriter(String filePath) {
 		new EventStorageWriter(
 				filePath,
-				FileChangeEventMiner.keyAttributes,
-				FileChangeEventConverter.create(),
+				FileChangeMiner.keyAttributes,
+				FileChangeConverter.create(),
 				new EventStorageWriter.Listener()
 		).init()
 	}
