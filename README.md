@@ -2,7 +2,7 @@
 
 This is a plugin for [IntelliJ](https://github.com/JetBrains/intellij-community) IDEs to visualize project source code history.
 Analysis is based on file-level changes and therefore programming language-agnostic.
-You can install it from IDE Settings -> Plugins or download from [plugin repository](http://plugins.jetbrains.com/plugin/7273).
+You can install it from ``IDE Settings -> Plugins`` or download from [plugin repository](http://plugins.jetbrains.com/plugin/7273).
 
 Some examples of code history visualizations:
 [JUnit](http://dkandalov.github.io/code-history-mining/JUnit.html),
@@ -49,8 +49,9 @@ See also [Your Code as a Crime Scene book](https://pragprog.com/book/atcrime/you
  at this step code history is consumed from csv file and visualized in browser.
  All visualizations are self-contained one file html pages so that they can be saved and shared without external dependencies.
 
-#### Grab VCS history
-Use ``Main menu -> VCS -> Code History Mining`` or ``alt+shift+H``.
+#### Grab Project history
+Use ``Main menu -> VCS -> Code History Mining`` or ``alt+shift+H`` to open plugin popup
+and choose ``Grab Project History`` action.
 
 You should see this window:
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
@@ -63,11 +64,13 @@ You should see this window:
  Note that it requires loading file content and can slow down grabbing history and IDE responsiveness.
 
 #### Visualize
-By default cvs files with history are saved to "[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
-Files from this folder are displayed in plugin menu.
-Each csv file will have sub-menu with visualizations:
+Use ``Main menu -> VCS -> Code History Mining`` or ``alt+shift+H`` to open plugin popup,
+select one of the grabbed files and choose visualization from sub-menu:
 
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/popup-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
+
+By default cvs files with history are saved to "[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
+Files from this folder are displayed in plugin menu.
 
 When opened in browser visualizations will have help button with short description,
 e.g. see visualizations for [JUnit](http://dkandalov.github.io/code-history-mining/JUnit.html).
@@ -87,12 +90,12 @@ Each commit is broken down into several lines. One line corresponds to one file 
 Commits are stored ordered by time from present to past.
 For example two commits from JUnit csv:
 ```
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,IMoney.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,38,42,4,0,0,817,888,71,0,0,0,0
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,Money.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,70,73,3,1,0,1595,1684,86,32,0,0,0
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyBag.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,140,131,8,4,23,3721,3594,214,154,511,0,0
-2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyTest.java,,/junit/samples/money,MODIFICATION,Cleaning up MoneyBag construction,156,141,0,34,0,5187,4785,0,1594,0,0,0
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.classpath,,,NEW,added .classpath for eclipse,0,6,6,0,0,0,240,240,0,0,0,0
-2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.vcm_meta,,,MODIFICATION,added .classpath for eclipse,6,7,1,0,0,199,221,21,0,0,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,IMoney.java,,/junit/samples/money,MODIFIED,Cleaning up MoneyBag construction,38,42,4,0,0,817,888,71,0,0,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,Money.java,,/junit/samples/money,MODIFIED,Cleaning up MoneyBag construction,70,73,3,1,0,1595,1684,86,32,0,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyBag.java,,/junit/samples/money,MODIFIED,Cleaning up MoneyBag construction,140,131,8,4,23,3721,3594,214,154,511,0,0
+2001-10-02 20:38:22 +0100,0bb3dfe2939cc214ee5e77556a48d4aea9c6396a,kbeck,,MoneyTest.java,,/junit/samples/money,MODIFIED,Cleaning up MoneyBag construction,156,141,0,34,0,5187,4785,0,1594,0,0,0
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.classpath,,,ADDED,added .classpath for eclipse,0,6,6,0,0,0,240,240,0,0,0,0
+2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.vcm_meta,,,MODIFIED,added .classpath for eclipse,6,7,1,0,0,199,221,21,0,0,0,0
 ```
 Columns:
  - __commitTime__ - in ``yyyy-MM-dd HH:mm:ss Z`` format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
@@ -102,7 +105,7 @@ Columns:
  - __fileName__ - file name after change, empty if file was deleted.
  - __packageNameBefore__ - file path before change, empty if file was added, path didn't change or file is in root folder.
  - __packageName__ - file path after change, empty if files was deleted or is in root folder.
- - __fileChangeType__ - ``NEW``, ``MODIFIED``, ``MOVED`` or ``DELETED``. Renamed or moved files are ``MOVED`` even if file content has changed.
+ - __fileChangeType__ - ``ADDED``, ``MODIFIED``, ``MOVED`` or ``DELETED``. Renamed or moved files are ``MOVED`` even if file content has changed.
  - __commitMessage__ - commit message, new line breaks are replaced with ``\\n``.
  - __linesBefore__ - number of lines in file before change;
      ``-1`` if file is binary or ``Grab change size`` checkbox is not selected in ``Grab Project History`` dialog;
