@@ -1,7 +1,5 @@
 package codehistoryminer.plugin.ui
 
-import codehistoryminer.publicapi.analysis.values.Table
-import codehistoryminer.publicapi.analysis.values.TableList
 import codehistoryminer.core.miner.Data
 import codehistoryminer.core.miner.DataWrapper
 import codehistoryminer.core.visualizations.Visualization
@@ -10,6 +8,9 @@ import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.http.HttpUtil
+import codehistoryminer.publicapi.analysis.values.Table
+import codehistoryminer.publicapi.analysis.values.TableList
+import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.GeneralSettings
 import com.intellij.ide.actions.ShowFilePathAction
@@ -38,7 +39,6 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
-
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
@@ -46,12 +46,16 @@ import static liveplugin.PluginUtil.registerAction
 
 @SuppressWarnings("GrMethodMayBeStatic")
 class UI {
-	CodeHistoryMinerPlugin minerPlugin
-	HistoryStorage storage
-	Log log
+	private CodeHistoryMinerPlugin minerPlugin
+	private HistoryStorage historyStorage
+	private Log log
 	private ProjectManagerAdapter listener
 
-	def init() {
+	def init(CodeHistoryMinerPlugin minerPlugin, HistoryStorage historyStorage, Log log) {
+		this.minerPlugin = minerPlugin
+		this.historyStorage = historyStorage
+		this.log = log
+
 		def grabHistory = grabHistory()
 		def projectStats = projectStats()
 		def currentFileHistoryStats = currentFileHistoryStats()
@@ -59,7 +63,7 @@ class UI {
 
 		def actionGroup = new ActionGroup("Code History Mining", true) {
 			@Override AnAction[] getChildren(@Nullable AnActionEvent anActionEvent) {
-				def codeHistoryActions = storage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
+				def codeHistoryActions = historyStorage.filesWithCodeHistory().collect{ createActionsOnHistoryFile(it) }
 				[grabHistory, Separator.instance] + codeHistoryActions +
 				[Separator.instance, currentFileHistoryStats, projectStats, openReadme]
 			}
@@ -74,9 +78,7 @@ class UI {
 					true
 			).showCenteredInCurrentWindow(actionEvent.project)
 		}
-		registerAction("CodeHistoryMiningRunQuery", "alt C, alt Q", "", "Run Code History Query") { AnActionEvent event ->
-			minerPlugin.runCurrentFileAsHistoryQueryScript(event.project)
-		}
+		registerAction("CodeHistoryMiningRunScript", "alt shift E", "EditorPopupMenu", "Run Code History Script", runScriptAction())
 
 		listener = new ProjectManagerAdapter() {
 			@Override void projectOpened(Project project) { minerPlugin.onProjectOpened(project) }
@@ -116,7 +118,10 @@ class UI {
 	}
 
 	def openFileInIdeEditor(File file, Project project) {
-		PluginUtil.invokeLaterOnEDT{
+		PluginUtil.invokeLaterOnEDT {
+			def virtualFile = VirtualFileManager.instance.refreshAndFindFileByUrl("file://" + file.absolutePath)
+			if (virtualFile == null) return show("Didn't find ${"file://" + file.absolutePath}", "", NotificationType.WARNING)
+			FileEditorManager.getInstance(project).openFile(virtualFile, true, true)
 			PluginUtil.openInEditor(file.absolutePath, project)
 		}
 	}
@@ -167,11 +172,11 @@ class UI {
 		PluginUtil.show("Failed to load analyzers from '$scriptFilePath'", "", NotificationType.WARNING)
 	}
 
-	def showNoHistoryForQueryScript(String scriptFileName) {
-		PluginUtil.show("No history file was found for '$scriptFileName' query script")
+	def showNoHistoryForScript(String scriptFileName) {
+		PluginUtil.show("No history file was found for '$scriptFileName' script")
 	}
 
-	def showQueryScriptError(String scriptFileName, String message, Project project) {
+	def showScriptError(String scriptFileName, String message, Project project) {
 		PluginUtil.showInConsole(message, scriptFileName, project, ERROR_OUTPUT)
 	}
 
@@ -232,13 +237,6 @@ class UI {
 	}
 
 	private AnAction createActionsOnHistoryFile(File file) {
-		Closure<AnAction> createRunQueryAction = {
-			new AnAction("Open Query Editor") {
-				@Override void actionPerformed(AnActionEvent event) {
-					minerPlugin.openQueryEditorFor(event.project, file)
-				}
-			}
-		}
 		Closure<AnAction> runAnalyzerAction = { VisualizedAnalyzer analyzer ->
 			new AnAction(analyzer.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
@@ -265,7 +263,7 @@ class UI {
 			add(runAnalyzerAction(commitMessagesWordChart))
 			add(runAnalyzerAction(commitMessageWordCloud))
 			add(Separator.instance)
-			add(createRunQueryAction())
+			add(createRunScriptAction(file))
 			add(showInFileManager(file))
 			add(openInIdeAction(file))
 			add(renameFileAction(file.name))
@@ -317,10 +315,10 @@ class UI {
 		new AnAction("Rename") {
 			@Override void actionPerformed(AnActionEvent event) {
 				def newFileName = Messages.showInputDialog("New file name:", "Rename File", null, fileName, new InputValidator() {
-					@Override boolean checkInput(String newFileName) { UI.this.storage.isValidNewFileName(newFileName) }
+					@Override boolean checkInput(String newFileName) { UI.this.historyStorage.isValidNewFileName(newFileName) }
 					@Override boolean canClose(String newFileName) { true }
 				})
-				if (newFileName != null) UI.this.storage.rename(fileName, newFileName)
+				if (newFileName != null) UI.this.historyStorage.rename(fileName, newFileName)
 			}
 		}
 	}
@@ -329,7 +327,28 @@ class UI {
 		new AnAction("Delete") {
 			@Override void actionPerformed(AnActionEvent event) {
 				int userAnswer = Messages.showOkCancelDialog("Delete ${fileName}?", "Delete File", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
-				if (userAnswer == Messages.OK) storage.delete(fileName)
+				if (userAnswer == Messages.OK) historyStorage.delete(fileName)
+			}
+		}
+	}
+
+	private createRunScriptAction(File file) {
+		new AnAction("Open Script Editor") {
+			@Override void actionPerformed(AnActionEvent event) {
+				minerPlugin.openScriptEditorFor(event.project, file)
+			}
+		}
+	}
+
+	private runScriptAction() {
+		new AnAction(AllIcons.Actions.Execute) {
+			@Override void actionPerformed(AnActionEvent event) {
+				minerPlugin.runCurrentFileAsScript(event.project)
+			}
+			@Override void update(AnActionEvent event) {
+				def isScript = minerPlugin.isCurrentFileScript(event.project)
+				event.presentation.enabled = isScript
+				event.presentation.visible = isScript
 			}
 		}
 	}

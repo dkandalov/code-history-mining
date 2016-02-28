@@ -1,11 +1,12 @@
 package codehistoryminer.plugin.historystorage
 
 import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.io.FileUtilRt
 
-class QueryScriptsStorage {
+class ScriptStorage {
 	private final String basePath
 
-	QueryScriptsStorage(String basePath = null) {
+	ScriptStorage(String basePath = null) {
 		this.basePath = basePath
 	}
 
@@ -18,5 +19,10 @@ class QueryScriptsStorage {
 		if (!wasCreated) throw new FileNotFoundException(scriptFile.absolutePath)
 
 		scriptFile
+	}
+
+	boolean isScriptFile(String filePath) {
+		FileUtilRt.getExtension(filePath) == "groovy" &&
+		FileUtil.isAncestor(new File(basePath), new File(filePath), true)
 	}
 }

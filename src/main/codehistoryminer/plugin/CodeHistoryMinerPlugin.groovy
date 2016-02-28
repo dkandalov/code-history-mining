@@ -12,7 +12,7 @@ import codehistoryminer.core.analysis.implementation.GroovyScript
 import codehistoryminer.core.miner.MinedCommit
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
-import codehistoryminer.plugin.historystorage.QueryScriptsStorage
+import codehistoryminer.plugin.historystorage.ScriptStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActions
 import codehistoryminer.publicapi.lang.Cancelled
@@ -44,17 +44,17 @@ import static liveplugin.PluginUtil.invokeOnEDT
 class CodeHistoryMinerPlugin {
 	private final UI ui
 	private final HistoryStorage historyStorage
-	private final QueryScriptsStorage scriptsStorage
+	private final ScriptStorage scriptStorage
 	private final VcsActions vcsAccess
 	private final Measure measure
 	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
-	CodeHistoryMinerPlugin(UI ui, HistoryStorage historyStorage, QueryScriptsStorage scriptsStorage,
+	CodeHistoryMinerPlugin(UI ui, HistoryStorage historyStorage, ScriptStorage scriptStorage,
 	                       VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
 		this.historyStorage = historyStorage
-		this.scriptsStorage = scriptsStorage
+		this.scriptStorage = scriptStorage
 		this.vcsAccess = vcsAccess
 		this.measure = measure
 		this.log = log
@@ -274,24 +274,24 @@ class CodeHistoryMinerPlugin {
 		words.size() > 0 ? words[0].trim() : ""
 	}
 
-	def openQueryEditorFor(Project project, File historyFile) {
+	def openScriptEditorFor(Project project, File historyFile) {
 		def id = FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
-		def scriptFile = scriptsStorage.findOrCreateScriptFile(id)
+		def scriptFile = scriptStorage.findOrCreateScriptFile(id)
 		ui.openFileInIdeEditor(scriptFile, project)
 	}
 
-	def runCurrentFileAsHistoryQueryScript(Project project) {
+	def runCurrentFileAsScript(Project project) {
 		saveAllIdeFiles()
 		def virtualFile = PluginUtil.currentFileIn(project)
 		if (virtualFile == null) return
 		def scriptFilePath = virtualFile.canonicalPath
 		def scriptFileName = virtualFile.name
 
-		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
+		ui.runInBackground("Running script: $scriptFileName") { ProgressIndicator indicator ->
 			def loaderListener = new GroovyScript.Listener() {
-				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
-				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
-				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
+				@Override void loadingError(String message) { ui.showScriptError(scriptFileName, message, project) }
+				@Override void loadingError(Throwable e) { ui.showScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
+				@Override void runningError(Throwable e) { ui.showScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
 			def analyzersLoader = new AnalyzerScriptLoader(scriptFilePath, loaderListener)
 			def analyzers = analyzersLoader.load()
@@ -299,13 +299,18 @@ class CodeHistoryMinerPlugin {
 
 			def historyFileName = FileUtil.getNameWithoutExtension(scriptFileName) + ".csv"
 			def hasHistory = historyStorage.historyExistsFor(historyFileName)
-			if (!hasHistory) return ui.showNoHistoryForQueryScript(scriptFileName)
+			if (!hasHistory) return ui.showNoHistoryForScript(scriptFileName)
 
 			invokeOnEDT {
 				def combinedAnalyzer = new CombinedAnalyzer(analyzers)
 				runAnalyzer(new File(historyFileName), project, combinedAnalyzer, scriptFileName)
 			}
 		}
+	}
+
+	boolean isCurrentFileScript(Project project) {
+		def virtualFile = PluginUtil.currentFileIn(project)
+		scriptStorage.isScriptFile(virtualFile.canonicalPath)
 	}
 
 	private static void saveAllIdeFiles() {
