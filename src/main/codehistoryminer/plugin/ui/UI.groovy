@@ -3,7 +3,7 @@ package codehistoryminer.plugin.ui
 import codehistoryminer.publicapi.analysis.values.Table
 import codehistoryminer.publicapi.analysis.values.TableList
 import codehistoryminer.core.miner.Data
-import codehistoryminer.core.miner.EventWrapper
+import codehistoryminer.core.miner.DataWrapper
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
@@ -196,8 +196,8 @@ class UI {
 
 		} else if (result instanceof Collection && !result.empty) {
 			def first = result.first()
-			if (first instanceof EventWrapper) {
-				result = result.collect{ it.event }
+			if (first instanceof DataWrapper) {
+				result = result.collect{ it.data }
 				first = result.first()
 			}
 			if (first instanceof Map || first instanceof Data) {
