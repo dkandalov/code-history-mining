@@ -1,7 +1,8 @@
 package codehistoryminer.plugin.vcsaccess
 
 import codehistoryminer.core.miner.MinedCommit
-import codehistoryminer.core.miner.MinerListener
+import codehistoryminer.core.miner.Miner
+
 import codehistoryminer.core.miner.MiningMachine
 import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
@@ -40,7 +41,7 @@ class VcsActions {
     Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
                                                                        ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new IJFileTypes()
-        def noContentListener = new MinerListener() {
+        def noContentListener = new Miner.Listener() {
             @Override void failedToMine(Change change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
