@@ -1,18 +1,17 @@
 package codehistoryminer.plugin.vcsaccess
 
+import codehistoryminer.core.lang.DateRange
+import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.miner.MinedCommit
-import codehistoryminer.core.miner.Miner
-
+import codehistoryminer.core.miner.MinerListener
 import codehistoryminer.core.miner.MiningMachine
 import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
-import codehistoryminer.publicapi.lang.Cancelled
-import codehistoryminer.core.lang.DateRange
-import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.miner.todo.TodoCountMiner
 import codehistoryminer.core.vcsreader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.implementation.IJFileTypes
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
+import codehistoryminer.publicapi.lang.Cancelled
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.vcs.ProjectLevelVcsManager
@@ -41,7 +40,7 @@ class VcsActions {
     Iterator<MinedCommit> readMinedCommits(List<DateRange> dateRanges, Project project, boolean grabChangeSizeInLines,
                                                                        ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new IJFileTypes()
-        def noContentListener = new Miner.Listener() {
+        def noContentListener = new MinerListener() {
             @Override void failedToMine(Change change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
