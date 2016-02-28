@@ -1,4 +1,8 @@
 package codehistoryminer.plugin
+
+import codehistoryminer.core.lang.DateRange
+import codehistoryminer.core.lang.Measure
+import codehistoryminer.core.lang.Unscramble
 import codehistoryminer.publicapi.analysis.Context
 import codehistoryminer.publicapi.analysis.ContextLogger
 import codehistoryminer.publicapi.analysis.Analyzer
@@ -42,12 +46,12 @@ class CodeHistoryMinerPlugin {
 	private final HistoryStorage historyStorage
 	private final QueryScriptsStorage scriptsStorage
 	private final VcsActions vcsAccess
-	private final codehistoryminer.core.lang.Measure measure
+	private final Measure measure
 	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
 	CodeHistoryMinerPlugin(UI ui, HistoryStorage historyStorage, QueryScriptsStorage scriptsStorage,
-	                       VcsActions vcsAccess, codehistoryminer.core.lang.Measure measure, CodeHistoryMinerPluginLog log = null) {
+	                       VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
 		this.historyStorage = historyStorage
 		this.scriptsStorage = scriptsStorage
@@ -80,7 +84,7 @@ class CodeHistoryMinerPlugin {
 			} catch (Cancelled ignored) {
 				log?.cancelledBuilding(analyzerName)
 			} catch (Exception e) {
-				ui.showAnalyzerError(analyzerName, codehistoryminer.core.lang.Unscramble.unscrambleThrowable(e), project)
+				ui.showAnalyzerError(analyzerName, Unscramble.unscrambleThrowable(e), project)
 			}
 		}
 	}
@@ -169,7 +173,7 @@ class CodeHistoryMinerPlugin {
 		def storedDateRange = dateRangeBetween(storageReader.firstEvent(), storageReader.lastEvent())
 
 		if (from == null) from = storedDateRange.to
-		def requestDateRange = new codehistoryminer.core.lang.DateRange(from, to)
+		def requestDateRange = new DateRange(from, to)
 		def dateRanges = requestDateRange.subtract(storedDateRange)
 		def cancelled = new Cancelled() {
 			@Override boolean isTrue() {
@@ -205,7 +209,7 @@ class CodeHistoryMinerPlugin {
 		messageText
 	}
 
-	private static String formatRange(codehistoryminer.core.lang.DateRange dateRange) {
+	private static String formatRange(DateRange dateRange) {
 		def from = dd_MM_yyyy.format(dateRange.from)
 		def to = dd_MM_yyyy.format(dateRange.to)
 		"from <b>${from}</b> to <b>${to}</b>"
@@ -286,8 +290,8 @@ class CodeHistoryMinerPlugin {
 		ui.runInBackground("Running query script: $scriptFileName") { ProgressIndicator indicator ->
 			def loaderListener = new GroovyScript.Listener() {
 				@Override void loadingError(String message) { ui.showQueryScriptError(scriptFileName, message, project) }
-				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, codehistoryminer.core.lang.Unscramble.unscrambleThrowable(e), project) }
-				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, codehistoryminer.core.lang.Unscramble.unscrambleThrowable(e), project) }
+				@Override void loadingError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
+				@Override void runningError(Throwable e) { ui.showQueryScriptError(scriptFileName, Unscramble.unscrambleThrowable(e), project) }
 			}
 			def analyzersLoader = new AnalyzerScriptLoader(scriptFilePath, loaderListener)
 			def analyzers = analyzersLoader.load()
