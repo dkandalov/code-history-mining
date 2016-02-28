@@ -2,7 +2,7 @@ package codehistoryminer.plugin.ui
 
 import codehistoryminer.publicapi.analysis.values.Table
 import codehistoryminer.publicapi.analysis.values.TableList
-import codehistoryminer.core.miner.Event
+import codehistoryminer.core.miner.Data
 import codehistoryminer.core.miner.EventWrapper
 import codehistoryminer.core.visualizations.Visualization
 import codehistoryminer.core.visualizations.VisualizedAnalyzer
@@ -200,7 +200,7 @@ class UI {
 				result = result.collect{ it.event }
 				first = result.first()
 			}
-			if (first instanceof Map || first instanceof Event) {
+			if (first instanceof Map || first instanceof Data) {
 				openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
 			} else {
 				result.each { showAnalyzerResult(it, projectName, project) }

@@ -1,6 +1,6 @@
 package codehistoryminer.plugin.historystorage
 
-import codehistoryminer.core.miner.Event
+import codehistoryminer.core.miner.Data
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.lang.JBFileUtil
 import codehistoryminer.core.lang.Measure
@@ -53,8 +53,8 @@ class HistoryStorage {
 		new File("$basePath/$fileName").exists()
 	}
 
-	List<Event> readAllEvents(String fileName, Cancelled cancelled) {
-		measure.measure("Storage.readAllEvents"){
+	List<Data> readAll(String fileName, Cancelled cancelled) {
+		measure.measure("Storage.readAll"){
 			def listener = new EventStorageReader.Listener() {
 				@Override void failedToReadLine(String line, Exception e) { log?.failedToRead(line) }
 			}

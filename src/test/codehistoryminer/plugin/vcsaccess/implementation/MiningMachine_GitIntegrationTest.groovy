@@ -93,7 +93,7 @@ class MiningMachine_GitIntegrationTest {
 		def config = new MiningMachine.Config(miners, fileTypes, UTC).withListener(miningMachineListener).withCacheFileContent(false)
 		new MiningMachine(config)
 				.mine(vcsProject, [new DateRange(fromDate, toDate)], Cancelled.never)
-				.collectMany{ it.eventList }
+				.collectMany{ it.dataList }
 	}
 
 	private static asString(Collection collection) {

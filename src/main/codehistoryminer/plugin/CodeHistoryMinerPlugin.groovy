@@ -63,7 +63,7 @@ class CodeHistoryMinerPlugin {
 				def cancelled = new Cancelled() {
 					@Override boolean isTrue() { indicator.canceled }
 				}
-				def events = historyStorage.readAllEvents(file.name, cancelled)
+				def events = historyStorage.readAll(file.name, cancelled)
 				if (events.empty) {
 					return ui.showNoEventsInStorageMessage(file.name, project)
 				}
@@ -183,7 +183,7 @@ class CodeHistoryMinerPlugin {
 		try {
 			def minedCommits = vcsAccess.readMinedCommits(dateRanges, project, grabChangeSizeInLines, indicator, cancelled)
 			for (MinedCommit minedCommit in minedCommits) {
-				storageWriter.addEvents(minedCommit.eventList)
+				storageWriter.addData(minedCommit.dataList)
 			}
 		} finally {
 			storageWriter.flush()
