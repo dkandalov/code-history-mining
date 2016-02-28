@@ -63,7 +63,7 @@ You should see this window:
  Note that it requires loading file content and can slow down grabbing history and IDE responsiveness.
 
 #### Visualize
-By default cvs files with history are saved to [\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
+By default cvs files with history are saved to "[plugins folder](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
 Files from this folder are displayed in plugin menu.
 Each csv file will have sub-menu with visualizations:
 
@@ -102,7 +102,7 @@ Columns:
  - __fileName__ - file name after change, empty if file was deleted.
  - __packageNameBefore__ - file path before change, empty if file was added, path didn't change or file is in root folder.
  - __packageName__ - file path after change, empty if files was deleted or is in root folder.
- - __fileChangeType__ - ``NEW``, ``MODIFICATION``, ``MOVED`` or ``DELETED``. Renamed or moved files are ``MOVED`` even if file content has changed.
+ - __fileChangeType__ - ``NEW``, ``MODIFIED``, ``MOVED`` or ``DELETED``. Renamed or moved files are ``MOVED`` even if file content has changed.
  - __commitMessage__ - commit message, new line breaks are replaced with ``\\n``.
  - __linesBefore__ - number of lines in file before change;
      ``-1`` if file is binary or ``Grab change size`` checkbox is not selected in ``Grab Project History`` dialog;
