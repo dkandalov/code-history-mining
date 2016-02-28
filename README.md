@@ -50,7 +50,7 @@ See also [Your Code as a Crime Scene book](https://pragprog.com/book/atcrime/you
  All visualizations are self-contained one file html pages so that they can be saved and shared without external dependencies.
 
 #### Grab VCS history
-Use "Main menu -> VCS -> Code History Mining" or "alt+shift+H".
+Use ``Main menu -> VCS -> Code History Mining`` or ``alt+shift+H``.
 
 You should see this window:
 <img src="https://raw.github.com/dkandalov/code-history-mining/master/grab-history-screenshot.png" alt="screenshot" title="screenshot" align="center"/>
@@ -63,7 +63,7 @@ You should see this window:
  Note that it requires loading file content and can slow down grabbing history and IDE responsiveness.
 
 #### Visualize
-By default cvs files with history are saved to "[\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
+By default cvs files with history are saved to [\<plugins folder\>](http://devnet.jetbrains.com/docs/DOC-181)/code-history-mining" folder.
 Files from this folder are displayed in plugin menu.
 Each csv file will have sub-menu with visualizations:
 
@@ -95,18 +95,18 @@ For example two commits from JUnit csv:
 2001-07-09 23:51:53 +0100,ce0bb8f59ea7de1ac3bb4f678f7ddf84fe9388ed,egamma,,.vcm_meta,,,MODIFICATION,added .classpath for eclipse,6,7,1,0,0,199,221,21,0,0,0,0
 ```
 Columns:
- - __commitTime__ - in "yyyy-MM-dd HH:mm:ss Z" format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
+ - __commitTime__ - in ``yyyy-MM-dd HH:mm:ss Z`` format with local timezone (see [javadoc](http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html) for details).
  - __revision__ - unique commit id, format depends on VCS.
  - __author__ - committer name from VCS.
  - __fileNameBefore__ - file name before change, empty if file was added or name didn't change.
  - __fileName__ - file name after change, empty if file was deleted.
  - __packageNameBefore__ - file path before change, empty if file was added, path didn't change or file is in root folder.
  - __packageName__ - file path after change, empty if files was deleted or is in root folder.
- - __fileChangeType__ - "NEW", "MODIFICATION", "MOVED" or "DELETED". Renamed or moved files are "MOVED" even if file content has changed.
- - __commitMessage__ - commit message, new line breaks are replaced with "\\n".
+ - __fileChangeType__ - ``NEW``, ``MODIFICATION``, ``MOVED`` or ``DELETED``. Renamed or moved files are ``MOVED`` even if file content has changed.
+ - __commitMessage__ - commit message, new line breaks are replaced with ``\\n``.
  - __linesBefore__ - number of lines in file before change;
-     "-1" if file is binary or "Grab change size" checkbox is not selected in "Grab Project History" dialog;
-     "-2" if file is too big for IntelliJ to diff.
+     ``-1`` if file is binary or ``Grab change size`` checkbox is not selected in ``Grab Project History`` dialog;
+     ``-2`` if file is too big for IntelliJ to diff.
  - __linesAfter__ - similar to the above.
  - __other before/after columns__ - similar to the above, should be self-explanatory.
 
