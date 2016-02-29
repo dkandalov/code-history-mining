@@ -237,7 +237,7 @@ class UI {
 	}
 
 	private AnAction createActionsOnHistoryFile(File file) {
-		Closure<AnAction> runAnalyzerAction = { VisualizedAnalyzer analyzer ->
+		Closure<AnAction> showVisualizationAction = { VisualizedAnalyzer analyzer ->
 			new AnAction(analyzer.name()) {
 				@Override void actionPerformed(AnActionEvent event) {
 					minerPlugin.runAnalyzer(file, event.project, analyzer, analyzer.name())
@@ -245,25 +245,25 @@ class UI {
 			}
 		}
 		new DefaultActionGroup(file.name, true).with {
-			add(runAnalyzerAction(all))
-			add(runAnalyzerAction(commitLogAsGraph))
+			add(showVisualizationAction(all))
+			add(openScriptEditorAction(file))
 			add(Separator.instance)
-			add(runAnalyzerAction(codeChurnChart))
-			add(runAnalyzerAction(amountOfCommittersChart))
-			add(runAnalyzerAction(commitsByCommitterChart))
-			add(runAnalyzerAction(amountOfTodosChart))
-			add(runAnalyzerAction(amountOfFilesInCommitChart))
-			add(runAnalyzerAction(amountOfChangingFilesChart))
-			add(runAnalyzerAction(changeSizeByFileTypeChart))
-			add(runAnalyzerAction(changesTreemap))
-			add(runAnalyzerAction(filesInTheSameCommitGraph))
-			add(runAnalyzerAction(committersChangingSameFilesGraph))
-			add(runAnalyzerAction(commitTimePunchcard))
-			add(runAnalyzerAction(timeBetweenCommitsHistogram))
-			add(runAnalyzerAction(commitMessagesWordChart))
-			add(runAnalyzerAction(commitMessageWordCloud))
+			add(showVisualizationAction(codeChurnChart))
+			add(showVisualizationAction(amountOfCommittersChart))
+			add(showVisualizationAction(commitsByCommitterChart))
+			add(showVisualizationAction(amountOfTodosChart))
+			add(showVisualizationAction(amountOfFilesInCommitChart))
+			add(showVisualizationAction(amountOfChangingFilesChart))
+			add(showVisualizationAction(changeSizeByFileTypeChart))
+			add(showVisualizationAction(changesTreemap))
+			add(showVisualizationAction(filesInTheSameCommitGraph))
+			add(showVisualizationAction(committersChangingSameFilesGraph))
+			add(showVisualizationAction(commitTimePunchcard))
+			add(showVisualizationAction(commitMessagesWordChart))
+			add(showVisualizationAction(commitMessageWordCloud))
 			add(Separator.instance)
-			add(createRunScriptAction(file))
+			add(showVisualizationAction(commitLogAsGraph))
+			add(Separator.instance)
 			add(showInFileManager(file))
 			add(openInIdeAction(file))
 			add(renameFileAction(file.name))
@@ -332,7 +332,7 @@ class UI {
 		}
 	}
 
-	private createRunScriptAction(File file) {
+	private openScriptEditorAction(File file) {
 		new AnAction("Open Script Editor") {
 			@Override void actionPerformed(AnActionEvent event) {
 				minerPlugin.openScriptEditorFor(event.project, file)
