@@ -4,12 +4,15 @@ import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.core.lang.DateRange
 import codehistoryminer.core.lang.Measure
+import codehistoryminer.core.miner.filechange.CommitInfo
+import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.plugin.CodeHistoryMinerPlugin
 import codehistoryminer.plugin.historystorage.HistoryGrabberConfig
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.ScriptStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActions
+import codehistoryminer.publicapi.analysis.filechange.FileChange
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.publicapi.lang.Time
@@ -19,6 +22,7 @@ import org.junit.Test
 
 import static codehistoryminer.core.lang.DateTimeTestUtil.*
 import static codehistoryminer.plugin.integrationtest.GroovyStubber.*
+import static codehistoryminer.publicapi.analysis.filechange.ChangeType.MODIFIED
 
 class CodeHistoryMinerPluginTest {
 
@@ -26,9 +30,6 @@ class CodeHistoryMinerPluginTest {
 		// given
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
-				eventStorageReader: returns(stub(EventStorageReader, [
-						storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
-				])),
 				eventStorageWriter: returns(stub(EventStorageWriter, [:])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("09:00 23/11/2012")))
 		])
@@ -52,7 +53,8 @@ class CodeHistoryMinerPluginTest {
 		List<DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
 				eventStorageReader: returns(stub(EventStorageReader, [
-                        storedDateRange: returns(dateRange("01/11/2012", "20/11/2012"))
+                        firstEvent: returns(eventWithCommitDate("01/11/2012")),
+                        lastEvent: returns(eventWithCommitDate("20/11/2012"))
 				])),
 				eventStorageWriter: returns(stub(EventStorageWriter, [:])),
 				loadGrabberConfigFor: returns(someConfig.withLastGrabTime(time("13:40 20/11/2012")))
@@ -115,6 +117,12 @@ class CodeHistoryMinerPluginTest {
 		miner.grabHistoryOf(someProject)
 		assert showedGrabberDialog == 1
 		assert showedGrabbingInProgress == 1
+	}
+
+	private static eventWithCommitDate(String date) {
+		def commitInfo = new CommitInfo("43b0fe352d5bced0c341640d0c630d23f2022a7e", "dsaff <dsaff>", time("14:42:16 ${date}"), "")
+		def fileChangeInfo = new FileChangeInfo("", "Theories.java", "", "/src/org/junit/experimental/theories", MODIFIED)
+		new FileChange(commitInfo, fileChangeInfo)
 	}
 
 	private static final runOnTheSameThread = { taskDescription, closure -> closure([:] as ProgressIndicator) }
