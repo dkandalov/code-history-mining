@@ -1,29 +1,29 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
-import codehistoryminer.core.miner.filechange.CommitInfo
-import codehistoryminer.publicapi.analysis.filechange.FileChange
-import codehistoryminer.core.miner.filechange.FileChangeInfo
-import codehistoryminer.publicapi.lang.Cancelled
-import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.core.lang.DateRange
+import codehistoryminer.core.miner.MiningMachine
+import codehistoryminer.core.miner.filechange.CommitInfo
+import codehistoryminer.core.miner.filechange.FileChangeInfo
 import codehistoryminer.core.miner.filechange.FileChangeMiner
 import codehistoryminer.core.miner.linchangecount.LineAndCharChangeMiner
-import codehistoryminer.core.miner.MiningMachine
 import codehistoryminer.core.vcsreader.CommitProgressIndicator
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import codehistoryminer.plugin.vcsaccess.implementation.wrappers.VcsProjectWrapper
+import codehistoryminer.publicapi.analysis.filechange.FileChange
+import codehistoryminer.publicapi.lang.Cancelled
+import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import liveplugin.PluginUtil
 import org.junit.Test
-import vcsreader.Change
+import vcsreader.VcsChange
 import vcsreader.vcs.commandlistener.VcsCommand
 
-import static codehistoryminer.publicapi.analysis.linechangecount.ChangeStats.*
-import static codehistoryminer.publicapi.analysis.filechange.ChangeType.*
 import static codehistoryminer.core.lang.DateTimeTestUtil.*
 import static codehistoryminer.plugin.vcsaccess.VcsActions.commonVcsRootsAncestor
 import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
+import static codehistoryminer.publicapi.analysis.filechange.ChangeType.*
+import static codehistoryminer.publicapi.analysis.linechangecount.ChangeStats.*
 import static org.hamcrest.CoreMatchers.equalTo
 import static org.junit.Assert.assertThat
 
@@ -120,7 +120,7 @@ class MiningMachine_GitIntegrationTest {
 		@Override void onVcsError(String error) { PluginUtil.show(error) }
 		@Override void onException(Exception e) { PluginUtil.show(e) }
 		@Override void onUpdate(CommitProgressIndicator indicator) {}
-		@Override void failedToMine(Change change, String description, Throwable throwable) { PluginUtil.show(throwable) }
+		@Override void failedToMine(VcsChange change, String description, Throwable throwable) { PluginUtil.show(throwable) }
 		@Override void beforeCommand(VcsCommand command) {}
 		@Override void afterCommand(VcsCommand command) {}
 	}

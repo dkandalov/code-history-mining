@@ -1,14 +1,14 @@
 package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 
+import codehistoryminer.plugin.vcsaccess.VcsActionsLog
+import codehistoryminer.plugin.vcsaccess.implementation.IJCommitReader
 import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
-import codehistoryminer.plugin.vcsaccess.VcsActionsLog
-import codehistoryminer.plugin.vcsaccess.implementation.IJCommitReader
 import com.intellij.vcs.log.VcsShortCommitDetails
-import vcsreader.Change
 import vcsreader.Commit
+import vcsreader.VcsChange
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
@@ -67,7 +67,7 @@ class VcsRootWrapper implements VcsRoot {
         new VcsProject.LogResult(result, [])
     }
 
-	private List<Change> wrapChangesFrom(IJCommit ijCommit) {
+	private List<VcsChange> wrapChangesFrom(IJCommit ijCommit) {
         ijCommit.changes
             .collect { ChangeWrapper.create(it, commonVcsRoot) }
             .findAll{ it != ChangeWrapper.none }

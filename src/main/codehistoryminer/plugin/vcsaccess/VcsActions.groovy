@@ -20,7 +20,7 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import vcsreader.Change
+import vcsreader.VcsChange
 import vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.lang.Misc.withDefault
@@ -41,7 +41,7 @@ class VcsActions {
                                                                        ideIndicator, Cancelled cancelled) {
 	    def fileTypes = new IJFileTypes()
         def noContentListener = new MinerListener() {
-            @Override void failedToMine(Change change, String message, Throwable throwable) {
+            @Override void failedToMine(VcsChange change, String message, Throwable throwable) {
                 log.failedToMine(message + ": " + change.toString() + ". " + throwable?.message)
             }
         }
@@ -56,7 +56,7 @@ class VcsActions {
 		    @Override void afterCommand(VcsCommand command) {}
 		    @Override void onVcsError(String error) { log.errorReadingCommits(error) }
 		    @Override void onException(Exception e) { log.errorReadingCommits(e.message) }
-		    @Override void failedToMine(Change change, String description, Throwable throwable) {
+		    @Override void failedToMine(VcsChange change, String description, Throwable throwable) {
 			    log.onFailedToMineException(throwable)
 		    }
 	    }
