@@ -1,18 +1,13 @@
 <idea-plugin version="2">
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
-    <version>0.2.10 beta</version>
+    <version>0.3.0 beta</version>
     <vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/code-history-mining">Dmitry Kandalov</vendor>
 
     <description><![CDATA[
-        This is proof-of-concept plugin for code history analysis.<br/>
-        How to use:
-        <ul>
-            <li>"VCS -> Code History Mining -> Grab Project History" to grab history from version control and save it as csv file</li>
-            <li>"VCS -> Code History Mining -> [choose cvs file]" to read history from csv and visualizes it (needs a browser with SVG support)</li>
-            <li>(also available as popup menu, alt+shift+H)</li>
-        </ul>
-        For more details and examples of visualizations see <a href="https://github.com/dkandalov/code-history-mining">GitHub page</a>.
+        This is proof-of-concept plugin for code history visualization and analysis.<br/>
+        For more details and examples of visualizations see
+        <a href="https://github.com/dkandalov/code-history-mining#code-history-mining-intellij-plugin">GitHub page</a>.
         <br/><br/>
         See also <a href="http://codehistoryminer.com">code history miner</a> web server and CLI with similar functionality.
     ]]></description>
