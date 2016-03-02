@@ -42,6 +42,7 @@ import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
 import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
+import static com.intellij.notification.NotificationType.WARNING
 import static liveplugin.PluginUtil.registerAction
 
 @SuppressWarnings("GrMethodMayBeStatic")
@@ -120,7 +121,7 @@ class UI {
 	def openFileInIdeEditor(File file, Project project) {
 		PluginUtil.invokeLaterOnEDT {
 			def virtualFile = VirtualFileManager.instance.refreshAndFindFileByUrl("file://" + file.absolutePath)
-			if (virtualFile == null) return show("Didn't find ${"file://" + file.absolutePath}", "", NotificationType.WARNING)
+			if (virtualFile == null) return show("Didn't find ${"file://" + file.absolutePath}", "", WARNING)
 			FileEditorManager.getInstance(project).openFile(virtualFile, true, true)
 			PluginUtil.openInEditor(file.absolutePath, project)
 		}
@@ -148,7 +149,13 @@ class UI {
 		UIUtil.invokeLaterIfNeeded{
 			show(message, "Code History Mining", INFORMATION, "Code History Mining", new NotificationListener() {
 				@Override void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
-					openInIde(new File(event.URL.path), project)
+					def linkUrl = event.URL.path
+					if (linkUrl.endsWith("/visualize")) {
+						linkUrl = linkUrl.replace("/visualize", "")
+						minerPlugin.runAnalyzer(new File(linkUrl), project, all, all.name())
+					} else {
+						openInIde(new File(linkUrl), project)
+					}
 				}
 			})
 		}
@@ -169,7 +176,7 @@ class UI {
 	}
 
 	def failedToLoadAnalyzers(String scriptFilePath) {
-		PluginUtil.show("Failed to load analyzers from '$scriptFilePath'", "", NotificationType.WARNING)
+		PluginUtil.show("Failed to load analyzers from '$scriptFilePath'", "", WARNING)
 	}
 
 	def showNoHistoryForScript(String scriptFileName) {
@@ -297,9 +304,11 @@ class UI {
 	}
 
 	private static openInIde(File file, Project project) {
-		def virtualFile = VirtualFileManager.instance.findFileByUrl("file://" + file.canonicalPath)
+		def virtualFile = VirtualFileManager.instance.refreshAndFindFileByUrl("file://" + file.canonicalPath)
 		if (virtualFile != null) {
 			FileEditorManager.getInstance(project).openFile(virtualFile, true)
+		} else {
+			show("Couldn't find file ${file.canonicalPath} to open in IDE", "", WARNING)
 		}
 	}
 

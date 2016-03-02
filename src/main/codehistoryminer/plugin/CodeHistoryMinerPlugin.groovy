@@ -195,13 +195,15 @@ class CodeHistoryMinerPlugin {
 
 		def messageText = ""
 		def outputFileLink = "<a href='file:///${new File(outputFile).canonicalPath}'>${new File(outputFile).name}</a>"
+		def allVisualizationsLink = "<a href='file:///${new File(outputFile).canonicalPath}/visualize'>all vizualizations</a>"
 		if (storageReader.hasNoEvents()) {
 			messageText += "Grabbed history to ${outputFileLink}<br/>"
 			messageText += "However, it has nothing in it probably because there are no commits ${formatRange(requestDateRange)}."
 		} else {
 			def newStoredDateRange = dateRangeBetween(storageReader.firstEvent(), storageReader.lastEvent())
-			messageText += "Grabbed history to ${outputFileLink}.<br/>"
-			messageText += "It should have history ${formatRange(newStoredDateRange)}."
+			messageText += "<br/>Grabbed history to ${outputFileLink}.<br/>"
+			messageText += "It contains history ${formatRange(newStoredDateRange)}.<br/><br/>"
+			messageText += "You can run ${allVisualizationsLink} or choose one in plugin popup menu."
 		}
 		if (hadErrors) {
 			messageText += "<br/>There were errors while reading commits from VCS, please check IDE log for details."
