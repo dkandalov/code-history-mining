@@ -80,7 +80,7 @@ class VcsRootWrapper implements VcsRoot {
 	}
 
     @Override VcsProject.LogFileContentResult logFileContent(String filePath, String revision) {
-        throw new IllegalStateException("Should never be called (filePath: ${filePath}; revision: ${revision}")
+        throw new IllegalStateException("Method should never be called (filePath: ${filePath}; revision: ${revision})")
     }
 
     @Override VcsProject.UpdateResult update() {

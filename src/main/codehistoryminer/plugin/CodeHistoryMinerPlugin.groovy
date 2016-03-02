@@ -275,8 +275,8 @@ class CodeHistoryMinerPlugin {
 	}
 
 	def openScriptEditorFor(Project project, File historyFile) {
-		def id = FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
-		def scriptFile = scriptStorage.findOrCreateScriptFile(id)
+		def fileName = FileUtil.getNameWithoutExtension(historyFile.name) + ".groovy"
+		def scriptFile = scriptStorage.findOrCreateScriptFile(fileName)
 		ui.openFileInIdeEditor(scriptFile, project)
 	}
 
