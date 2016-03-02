@@ -13,7 +13,6 @@ import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
 import static codehistoryminer.core.lang.Misc.withDefault
-import static vcsreader.vcs.Change.noRevision
 
 class VcsRootWrapper implements VcsRoot {
     private final IJProject project
@@ -34,8 +33,8 @@ class VcsRootWrapper implements VcsRoot {
 
         def result = []
         for (IJCommit ijCommit in commits) {
-            def revision = withDefault(noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
-            def revisionBefore = withDefault(noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
+            def revision = withDefault(VcsChange.noRevision, ijCommit.changes.first().afterRevision?.revisionNumber?.asString())
+            def revisionBefore = withDefault(VcsChange.noRevision, ijCommit.changes.first().beforeRevision?.revisionNumber?.asString())
 
 	        // workaround because hg4idea will use "revision:changeset" as id (using terms of hg)
 	        if (ijCommit?.vcs?.name == "hg4idea") {
