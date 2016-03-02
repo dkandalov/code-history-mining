@@ -7,13 +7,13 @@ import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
 import com.intellij.vcs.log.VcsShortCommitDetails
-import vcsreader.Commit
+import vcsreader.vcs.Commit
 import vcsreader.VcsChange
 import vcsreader.VcsProject
 import vcsreader.VcsRoot
 
 import static codehistoryminer.core.lang.Misc.withDefault
-import static vcsreader.Change.noRevision
+import static vcsreader.vcs.Change.noRevision
 
 class VcsRootWrapper implements VcsRoot {
     private final IJProject project

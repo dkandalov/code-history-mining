@@ -1,7 +1,7 @@
 package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 import com.intellij.openapi.vcs.changes.Change as IJChange
 import org.jetbrains.annotations.NotNull
-import vcsreader.Change
+import vcsreader.vcs.Change
 import vcsreader.VcsChange
 
 import static codehistoryminer.core.lang.Misc.withDefault
