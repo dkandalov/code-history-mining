@@ -87,9 +87,10 @@ select one the grabbed files and choose ``Open Script Editor``.
 This will open new tab where you can write Groovy code.
 To run the script use ``alt+shift+E`` shortcut (or ``Run Code History Script`` in editor context menu).
 
+For details see [Code History Script API](https://github.com/dkandalov/code-history-mining/wiki/Code-History-Script-API) wiki page.
+
 The script is general purpose Groovy code with few implicit variables to access grabbed data and
 no particular restrictions (similar to [LivePlugin](https://github.com/dkandalov/live-plugin#liveplugin)).
-For details see [Code History Script API](https://github.com/dkandalov/code-history-mining/wiki/Code-History-Script-API) wiki page.
 
 
 ### Misc notes
