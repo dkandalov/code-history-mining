@@ -198,7 +198,7 @@ class UI {
 					.fillProjectName(projectName)
 					.inlineImports()
 					.text
-			showInBrowser(html, projectName, "")
+			showInBrowser(html, projectName, projectName)
 
 		} else if (result instanceof Table) {
 			openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
