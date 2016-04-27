@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable
 import javax.swing.event.HyperlinkEvent
 
 import static codehistoryminer.core.visualizations.VisualizedAnalyzer.Bundle.*
-import static codehistoryminer.plugin.ui.templates.PluginTemplates.getPluginTemplate
+import static codehistoryminer.plugin.ui.templates.PluginTemplates.pluginTemplate
 import static com.intellij.execution.ui.ConsoleViewContentType.ERROR_OUTPUT
 import static com.intellij.notification.NotificationType.INFORMATION
 import static com.intellij.notification.NotificationType.WARNING
@@ -193,12 +193,7 @@ class UI {
 
 	def showAnalyzerResult(result, String projectName, Project project) {
 		if (result instanceof Visualization) {
-			def html = result.template
-					.pasteInto(pluginTemplate)
-					.fillProjectName(projectName)
-					.inlineImports()
-					.text
-			showInBrowser(html, projectName, projectName)
+			showAnalyzerResult([result], projectName, project)
 
 		} else if (result instanceof Table) {
 			openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
@@ -214,6 +209,13 @@ class UI {
 			}
 			if (first instanceof Map || first instanceof Data) {
 				openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
+			} else if (first instanceof Visualization) {
+				int i = 0
+				def template = result.inject(pluginTemplate) { accTemplate, it ->
+					it.template.fill("id", "\"id${i++}\"").pasteInto(accTemplate)
+				}
+				def html = template.fillProjectName(projectName).inlineImports().text
+				showInBrowser(html, projectName, projectName)
 			} else {
 				result.each { showAnalyzerResult(it, projectName, project) }
 			}
