@@ -15,7 +15,7 @@ import static liveplugin.PluginUtil.show
 // add-to-classpath $PLUGIN_PATH/build/classes/main/
 // add-to-classpath $PLUGIN_PATH/lib/codehistoryminer/core/1.0/core-1.0.jar
 // add-to-classpath $PLUGIN_PATH/lib/codehistoryminer/vcs-reader/1.0/vcs-reader-1.0.jar
-// add-to-classpath $PLUGIN_PATH/lib/liveplugin/live-plugin/0.5.7 beta/live-plugin-0.5.7 beta.jar
+// add-to-classpath $PLUGIN_PATH/lib/liveplugin/live-plugin/0.5.8 beta/live-plugin-0.5.8 beta.jar
 // add-to-classpath $PLUGIN_PATH/lib/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar
 
 //noinspection GroovyConstantIfStatement
