@@ -120,10 +120,8 @@ class UI {
 
 	def openFileInIdeEditor(File file, Project project) {
 		PluginUtil.invokeLaterOnEDT {
-			def virtualFile = VirtualFileManager.instance.refreshAndFindFileByUrl("file://" + file.absolutePath)
-			if (virtualFile == null) return show("Didn't find ${"file://" + file.absolutePath}", "", WARNING)
-			FileEditorManager.getInstance(project).openFile(virtualFile, true, true)
-			PluginUtil.openInEditor(file.absolutePath, project)
+			def virtualFile = PluginUtil.openInEditor(file.absolutePath, project)
+			if (virtualFile == null) show("Didn't find ${"file://" + file.absolutePath}", "", WARNING)
 		}
 	}
 
