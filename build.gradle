@@ -19,12 +19,12 @@ configurations {
 }
 
 dependencies {
-	compile "org.codehaus.groovy:groovy:2.3.9"
-	compile "org.codehaus.groovy:groovy-json:2.3.9"
+	compile "org.codehaus.groovy:groovy:2.4.6"
+	compile "org.codehaus.groovy:groovy-json:2.4.6"
     compile "codehistoryminer:core:1.0"
     compile "codehistoryminer:vcs-reader:1.0"
     compile "org.apache.commons:commons-csv:1.0"
-    compile "liveplugin:live-plugin:0.5.7 beta"
+    compile "liveplugin:live-plugin:0.5.8 beta"
 
     provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", exclude: "groovy-all*.jar")
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
