@@ -4,7 +4,10 @@ apply plugin: 'maven'
 
 ext.home = System.env.HOME
 ext.basePath = System.getProperty("user.dir")
-ext.ideaPath = "/Applications/IntelliJ IDEA 15.app/Contents"
+ext.ideaPath = "/Applications/IntelliJ IDEA 2016.app/Contents"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 
 repositories {
@@ -22,7 +25,7 @@ dependencies {
 	compile "org.codehaus.groovy:groovy:2.4.6"
 	compile "org.codehaus.groovy:groovy-json:2.4.6"
     compile "codehistoryminer:core:1.0"
-    compile "codehistoryminer:vcs-reader:1.0"
+    compile "org.vcsreader:vcs-reader:1.0.0"
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.5.8 beta"
 
