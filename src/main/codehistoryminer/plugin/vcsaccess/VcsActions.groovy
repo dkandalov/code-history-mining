@@ -20,8 +20,8 @@ import com.intellij.openapi.vcs.update.UpdatedFilesListener
 import com.intellij.util.messages.MessageBusConnection
 import liveplugin.PluginUtil
 import org.jetbrains.annotations.Nullable
-import vcsreader.VcsChange
-import vcsreader.vcs.commandlistener.VcsCommand
+import org.vcsreader.VcsChange
+import org.vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.lang.Misc.withDefault
 import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES

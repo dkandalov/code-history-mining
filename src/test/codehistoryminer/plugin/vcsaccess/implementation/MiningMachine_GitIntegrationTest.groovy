@@ -16,8 +16,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
 import liveplugin.PluginUtil
 import org.junit.Test
-import vcsreader.VcsChange
-import vcsreader.vcs.commandlistener.VcsCommand
+import org.vcsreader.VcsChange
+import org.vcsreader.vcs.commandlistener.VcsCommand
 
 import static codehistoryminer.core.lang.DateTimeTestUtil.*
 import static codehistoryminer.plugin.vcsaccess.VcsActions.commonVcsRootsAncestor

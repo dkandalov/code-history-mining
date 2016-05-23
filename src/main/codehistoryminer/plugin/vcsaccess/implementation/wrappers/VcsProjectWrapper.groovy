@@ -2,8 +2,8 @@ package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
-import vcsreader.VcsProject
-import vcsreader.VcsRoot
+import org.vcsreader.VcsProject
+import org.vcsreader.VcsRoot
 
 class VcsProjectWrapper extends VcsProject {
     VcsProjectWrapper(IJProject project, List<IJVcsRoot> roots, String commonVcsRoot, VcsActionsLog log) {

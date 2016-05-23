@@ -2,7 +2,7 @@ package codehistoryminer.plugin.vcsaccess.implementation
 
 import codehistoryminer.core.vcsreader.filetypes.FileTypes
 import com.intellij.openapi.fileTypes.FileTypeManager
-import vcsreader.VcsChange
+import org.vcsreader.VcsChange
 
 class IJFileTypes extends FileTypes {
 	IJFileTypes() {
