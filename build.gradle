@@ -25,7 +25,7 @@ dependencies {
 	compile "org.codehaus.groovy:groovy:2.4.6"
 	compile "org.codehaus.groovy:groovy-json:2.4.6"
     compile "codehistoryminer:core:1.0"
-    compile "org.vcsreader:vcs-reader:1.0.0"
+    compile "org.vcsreader:vcsreader:1.0.0"
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.5.8 beta"
 
@@ -84,7 +84,7 @@ task validatePluginJar(dependsOn: jarPlugin) << {
 			"groovy-.*.jar",
 			"groovy-json-.*.jar",
 			"live-plugin-.*.jar",
-			"vcs-reader-.*.jar",
+			"vcsreader-.*.jar",
 	]
 	def actualFiles = new File(targetDir + "/lib").listFiles().collect{it.name}.sort()
 	[actualFiles, expectedFiles].transpose().each { String actual, String expected ->
