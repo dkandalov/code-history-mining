@@ -1,6 +1,5 @@
 package codehistoryminer.plugin;
 
-import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
@@ -12,7 +11,6 @@ import liveplugin.LivePluginAppComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.event.HyperlinkEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,22 +40,11 @@ public class AppComponent implements ApplicationComponent {
 			Constructor<?> constructor = aClass.getDeclaredConstructor(Binding.class);
 			method.invoke(constructor.newInstance(createBinding()));
 
-		} catch (ClassNotFoundException e) {
-			handleException(e);
-		} catch (InvocationTargetException e) {
-			handleException(e);
-		} catch (IllegalAccessException e) {
-			handleException(e);
-		} catch (InstantiationException e) {
-			handleException(e);
-		} catch (URISyntaxException e) {
-			handleException(e);
-		} catch (NoSuchMethodException e) {
-			handleException(e);
-		} catch (IllegalStateException e) {
+		} catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException |
+				 NoSuchMethodException | URISyntaxException | IllegalStateException e) {
 			handleException(e);
 		}
-	}
+    }
 
 	private static void handleException(Exception e) {
 		LOG.error("Error during initialization", e);
@@ -89,16 +76,14 @@ public class AppComponent implements ApplicationComponent {
 	private static boolean checkThatGroovyIsOnClasspath() {
 		if (isGroovyOnClasspath()) return true;
 
-		NotificationListener listener = new NotificationListener() {
-			@Override public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent event) {
-				boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.3.9/", "groovy-all-2.3.9.jar", PLUGIN_LIBS_PATH);
-				if (downloaded) {
-					notification.expire();
-					askIfUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
-				} else {
-					NotificationGroup.balloonGroup(pluginId)
-							.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
-				}
+		NotificationListener listener = (notification, event) -> {
+			boolean downloaded = downloadFile("http://repo1.maven.org/maven2/org/codehaus/groovy/groovy-all/2.4.6/", "groovy-all-2.4.6.jar", PLUGIN_LIBS_PATH);
+			if (downloaded) {
+				notification.expire();
+				askIfUserWantsToRestartIde("For Groovy libraries to be loaded IDE restart is required. Restart now?");
+			} else {
+				NotificationGroup.balloonGroup(pluginId)
+						.createNotification("Failed to download Groovy libraries", NotificationType.WARNING);
 			}
 		};
 		NotificationGroup.balloonGroup(pluginId).createNotification(
