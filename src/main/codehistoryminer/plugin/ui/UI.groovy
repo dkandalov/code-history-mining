@@ -194,10 +194,10 @@ class UI {
 			showAnalyzerResult([result], projectName, project)
 
 		} else if (result instanceof Table) {
-			openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
+			showAnalyzerResult([result], projectName, project)
 
 		} else if (result instanceof TableList) {
-			result.tables.each { table -> showAnalyzerResult(table, projectName, project) }
+			showAnalyzerResult(result.tables, projectName, project)
 
 		} else if (result instanceof Collection && !result.empty) {
 			def first = result.first()
@@ -206,7 +206,8 @@ class UI {
 				first = result.first()
 			}
 			if (first instanceof Map || first instanceof Data) {
-				openFileInIdeEditor(AnalyzerResultHandlers.saveAsCsvFile(result, projectName + "-result"), project)
+				openFileInIdeEditor(AnalyzerResultHandlers.saveDataCollectionAsCsvFile(result, projectName), project)
+
 			} else if (first instanceof Visualization) {
 				int i = 0
 				def template = result.inject(pluginTemplate) { accTemplate, it ->
@@ -214,6 +215,10 @@ class UI {
 				}
 				def html = template.fillProjectName(projectName).inlineImports().text
 				showInBrowser(html, projectName, projectName)
+
+			} else if (first instanceof Table) {
+				openFileInIdeEditor(AnalyzerResultHandlers.saveTablesAsCsvFile(result, projectName), project)
+
 			} else {
 				result.each { showAnalyzerResult(it, projectName, project) }
 			}
