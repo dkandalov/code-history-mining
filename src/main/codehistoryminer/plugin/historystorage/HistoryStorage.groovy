@@ -3,7 +3,6 @@ package codehistoryminer.plugin.historystorage
 import codehistoryminer.core.miner.Data
 import codehistoryminer.publicapi.lang.Cancelled
 import codehistoryminer.core.lang.JBFileUtil
-import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.historystorage.EventStorageReader
 import codehistoryminer.core.historystorage.EventStorageWriter
 import codehistoryminer.core.historystorage.FileChangeConverter
@@ -13,11 +12,9 @@ import org.jetbrains.annotations.Nullable
 class HistoryStorage {
 	private final String basePath
 	private final Log log
-	private final Measure measure
 
-	HistoryStorage(String basePath = null, Measure measure = null, @Nullable Log log = null) {
+	HistoryStorage(String basePath = null, @Nullable Log log = null) {
 		this.basePath = basePath
-		this.measure = measure
 		this.log = log
 	}
 
@@ -54,13 +51,11 @@ class HistoryStorage {
 	}
 
 	List<Data> readAll(String fileName, Cancelled cancelled) {
-		measure.measure("Storage.readAll"){
-			def listener = new EventStorageReader.Listener() {
-				@Override void failedToReadLine(String line, Exception e) { log?.failedToRead(line) }
-			}
-			def storage = new EventStorageReader("$basePath/$fileName", FileChangeConverter.create(), listener).init()
-			storage.readAllEvents(cancelled)
+		def listener = new EventStorageReader.Listener() {
+			@Override void failedToReadLine(String line, Exception e) { log?.failedToRead(line) }
 		}
+		def storage = new EventStorageReader("$basePath/$fileName", FileChangeConverter.create(), listener).init()
+		storage.readAllEvents(cancelled)
 	}
 
 	@SuppressWarnings("GrMethodMayBeStatic")

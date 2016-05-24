@@ -1,7 +1,6 @@
 package codehistoryminer.plugin
 
 import codehistoryminer.core.lang.DateRange
-import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.lang.Unscramble
 import codehistoryminer.publicapi.analysis.Context
 import codehistoryminer.publicapi.analysis.ContextLogger
@@ -46,17 +45,15 @@ class CodeHistoryMinerPlugin {
 	private final HistoryStorage historyStorage
 	private final ScriptStorage scriptStorage
 	private final VcsActions vcsAccess
-	private final Measure measure
 	private final CodeHistoryMinerPluginLog log
 	private volatile boolean grabHistoryIsInProgress
 
 	CodeHistoryMinerPlugin(UI ui, HistoryStorage historyStorage, ScriptStorage scriptStorage,
-	                       VcsActions vcsAccess, Measure measure, CodeHistoryMinerPluginLog log = null) {
+	                       VcsActions vcsAccess, CodeHistoryMinerPluginLog log = null) {
 		this.ui = ui
 		this.historyStorage = historyStorage
 		this.scriptStorage = scriptStorage
 		this.vcsAccess = vcsAccess
-		this.measure = measure
 		this.log = log
 	}
 
@@ -129,18 +126,14 @@ class CodeHistoryMinerPlugin {
 			grabHistoryIsInProgress = true
 			ui.runInBackground("Grabbing project history") { ProgressIndicator indicator ->
 				try {
-					measure.start()
-					measure.measure("Total time") {
-                        def message = doGrabHistory(
-		                        project,
-		                        userInput.outputFilePath,
-		                        userInput.from, userInput.to,
-		                        userInput.grabChangeSizeInLines,
-		                        indicator
-                        )
-						ui.showGrabbingFinishedMessage(message, project)
-					}
-					measure.forEachDuration{ log?.measuredDuration(it) }
+                    def message = doGrabHistory(
+	                        project,
+	                        userInput.outputFilePath,
+	                        userInput.from, userInput.to,
+	                        userInput.grabChangeSizeInLines,
+	                        indicator
+                    )
+					ui.showGrabbingFinishedMessage(message, project)
 				} finally {
 					grabHistoryIsInProgress = false
 				}

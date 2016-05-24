@@ -1,7 +1,6 @@
 package codehistoryminer.plugin.vcsaccess
 
 import codehistoryminer.core.lang.DateRange
-import codehistoryminer.core.lang.Measure
 import codehistoryminer.core.miner.MinedCommit
 import codehistoryminer.core.miner.MinerListener
 import codehistoryminer.core.miner.MiningMachine
@@ -28,12 +27,10 @@ import static com.intellij.openapi.vcs.update.UpdatedFilesListener.UPDATED_FILES
 import static com.intellij.openapi.vfs.VfsUtil.getCommonAncestor
 
 class VcsActions {
-	private final Measure measure
 	private final VcsActionsLog log
 	private final Map<String, MessageBusConnection> connectionByProjectName = [:]
 
-    VcsActions(Measure measure = new Measure(), @Nullable VcsActionsLog log = null) {
-		this.measure = measure
+    VcsActions(@Nullable VcsActionsLog log = null) {
 		this.log = log
 	}
 

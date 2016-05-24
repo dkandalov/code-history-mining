@@ -1,6 +1,5 @@
 package codehistoryminer.plugin
 
-import codehistoryminer.core.lang.Measure
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.historystorage.ScriptStorage
 import codehistoryminer.plugin.ui.FileHistoryStatsToolWindow
@@ -25,13 +24,12 @@ def pathToHistoryFiles = "${PathManager.pluginsPath}/code-history-mining"
 def pathToScriptFiles = "${PathManager.pluginsPath}/code-history-mining/scripts"
 
 def log = new Log()
-def measure = new Measure()
 
-def historyStorage = new HistoryStorage(pathToHistoryFiles, measure, log)
+def historyStorage = new HistoryStorage(pathToHistoryFiles, log)
 def scriptStorage = new ScriptStorage(pathToScriptFiles)
-def vcsAccess = new VcsActions(measure, log)
+def vcsAccess = new VcsActions(log)
 def ui = new UI()
-def minerPlugin = new CodeHistoryMinerPlugin(ui, historyStorage, scriptStorage, vcsAccess, measure, log)
+def minerPlugin = new CodeHistoryMinerPlugin(ui, historyStorage, scriptStorage, vcsAccess, log)
 ui.init(minerPlugin, historyStorage, log)
 
 
