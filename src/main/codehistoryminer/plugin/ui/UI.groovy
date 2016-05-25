@@ -217,7 +217,9 @@ class UI {
 				showInBrowser(html, projectName, projectName)
 
 			} else if (first instanceof Table) {
-				openFileInIdeEditor(AnalyzerResultHandlers.saveTablesAsCsvFile(result, projectName), project)
+				AnalyzerResultHandlers.saveTablesAsCsvFile(result, projectName).each { file ->
+					openFileInIdeEditor(file, project)
+				}
 
 			} else {
 				result.each { showAnalyzerResult(it, projectName, project) }
