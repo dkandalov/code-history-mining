@@ -27,7 +27,7 @@ def pathToScriptFiles = "${PathManager.pluginsPath}/code-history-mining/scripts"
 def log = new Log()
 
 def historyStorage = new HistoryStorage(pathToHistoryFiles, log)
-def scriptStorage = new ScriptStorage(pathToScriptFiles)
+def scriptStorage = new ScriptStorage(pathToScriptFiles).init(pluginDisposable)
 def vcsAccess = new VcsActions(log)
 def ui = new UI()
 def minerPlugin = new CodeHistoryMinerPlugin(ui, historyStorage, scriptStorage, vcsAccess, log)
