@@ -1,5 +1,5 @@
 package codehistoryminer.plugin.vcsaccess.implementation
-import codehistoryminer.publicapi.lang.Date
+
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.CommittedChangesProvider
@@ -7,6 +7,7 @@ import com.intellij.openapi.vcs.LocalFilePath
 import com.intellij.openapi.vcs.VcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import org.jetbrains.annotations.Nullable
+import org.vcsreader.lang.TimeRange
 
 class IJCommitReader {
 	private final Project project
@@ -18,30 +19,28 @@ class IJCommitReader {
 		this.log = log
 	}
 
-	List<Commit> readCommits(Date historyStartDate, Date historyEndDate, List<VcsRoot> vcsRoots) {
-		assert historyStartDate.before(historyEndDate)
-
+	List<Commit> readCommits(TimeRange timeRange, List<VcsRoot> vcsRoots) {
 		lastRequestHadErrors = false
 
         List<Commit> changes = []
         try {
-            changes = requestCommitsFrom(vcsRoots, project, historyStartDate, historyEndDate)
+            changes = requestCommitsFrom(vcsRoots, project, timeRange)
         } catch (Exception e) {
             // this is to catch errors in VCS plugin implementation
             // e.g. this one http://youtrack.jetbrains.com/issue/IDEA-105360
-            log?.errorReadingCommits(e, historyStartDate, historyEndDate)
+            log?.errorReadingCommits(e, timeRange)
             lastRequestHadErrors = true
         }
         changes
 	}
 
-	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, Date fromDate, Date toDate) {
+	private List<Commit> requestCommitsFrom(List<VcsRoot> vcsRoots, Project project, TimeRange timeRange) {
 		vcsRoots
-            .collectMany{ root -> doRequestCommitsFor(root, project, fromDate, toDate) }
+            .collectMany{ root -> doRequestCommitsFor(root, project, timeRange) }
             .sort{ it.commitDate }
 	}
 
-	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, Date fromDate, Date toDate) {
+	private List<Commit> doRequestCommitsFor(VcsRoot vcsRoot, Project project, TimeRange timeRange) {
 		def changesProvider = vcsRoot.vcs.committedChangesProvider
 		def location = changesProvider.getLocationFor(new LocalFilePath(vcsRoot.path.canonicalPath, true))
 
@@ -52,18 +51,15 @@ class IJCommitReader {
 		}
 
 		if (isGit(changesProvider)) {
-			return GitPluginWorkaround.requestCommits(project, location, fromDate, toDate)
+			return GitPluginWorkaround.requestCommits(project, location, timeRange)
 		}
 
 		def settings = changesProvider.createDefaultSettings()
-		if (fromDate != null) {
-			settings.USE_DATE_AFTER_FILTER = true
-			settings.dateAfter = fromDate.javaDate()
-		}
-		if (toDate != null) {
-			settings.USE_DATE_BEFORE_FILTER = true
-			settings.dateBefore = toDate.javaDate()
-		}
+		settings.USE_DATE_AFTER_FILTER = true
+		settings.dateAfter = new Date(timeRange.from().toEpochMilli())
+		settings.USE_DATE_BEFORE_FILTER = true
+		settings.dateBefore = new Date(timeRange.to().toEpochMilli())
+
 		changesProvider.getCommittedChanges(settings, location, changesProvider.unlimitedCountValue)
 	}
 

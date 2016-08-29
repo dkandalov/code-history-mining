@@ -1,6 +1,5 @@
 package codehistoryminer.plugin.vcsaccess.implementation
 
-import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.RepositoryLocation
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
@@ -11,21 +10,21 @@ import git4idea.GitUtil
 import git4idea.changes.GitCommittedChangeList
 import git4idea.changes.GitRepositoryLocation
 import git4idea.commands.GitSimpleHandler
+import org.vcsreader.lang.TimeRange
 
 class GitPluginWorkaround {
 	/**
 	 * Originally based on git4idea.changes.GitCommittedChangeListProvider#getCommittedChangesImpl
 	 */
-	static List<CommittedChangeList> requestCommits(Project project, RepositoryLocation location,
-	                                                Date fromDate, Date toDate) {
+	static List<CommittedChangeList> requestCommits(Project project, RepositoryLocation location, TimeRange timeRange) {
 		def result = []
 		def parametersSpecifier = new Consumer<GitSimpleHandler>() {
 			@Override void consume(GitSimpleHandler handler) {
 				// makes git notice file renames/moves (not sure but seems that otherwise intellij api doesn't do it)
 				handler.addParameters("-M")
 
-				if (toDate != null) handler.addParameters("--before=" + GitUtil.gitTime(toDate.javaDate()));
-				if (fromDate != null) handler.addParameters("--after=" + GitUtil.gitTime(fromDate.javaDate()));
+				handler.addParameters("--after=" + String.valueOf(timeRange.from().epochSecond))
+				handler.addParameters("--before=" + String.valueOf(timeRange.to().epochSecond))
 			}
 		}
 		def resultConsumer = new Consumer<GitCommittedChangeList>() {

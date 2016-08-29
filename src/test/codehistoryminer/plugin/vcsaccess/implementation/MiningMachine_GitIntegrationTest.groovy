@@ -17,6 +17,7 @@ import com.intellij.openapi.vcs.VcsRoot
 import liveplugin.PluginUtil
 import org.junit.Test
 import org.vcsreader.VcsChange
+import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.VcsCommand
 
 import static codehistoryminer.core.lang.DateTimeTestUtil.*
@@ -126,7 +127,7 @@ class MiningMachine_GitIntegrationTest {
 	}
 
 	private final static vcsActionsLog = new VcsActionsLog() {
-		@Override def errorReadingCommits(Exception e, Date fromDate, Date toDate) {
+		@Override def errorReadingCommits(Exception e, TimeRange timeRange) {
 			PluginUtil.show(e)
 		}
 		@Override def errorReadingCommits(String error) {

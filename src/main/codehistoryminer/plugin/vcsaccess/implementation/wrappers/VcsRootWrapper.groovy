@@ -2,15 +2,15 @@ package codehistoryminer.plugin.vcsaccess.implementation.wrappers
 
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
 import codehistoryminer.plugin.vcsaccess.implementation.IJCommitReader
-import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
 import com.intellij.vcs.log.VcsShortCommitDetails
-import org.vcsreader.vcs.Commit
 import org.vcsreader.VcsChange
 import org.vcsreader.VcsProject
 import org.vcsreader.VcsRoot
+import org.vcsreader.lang.TimeRange
+import org.vcsreader.vcs.Commit
 
 import static codehistoryminer.core.lang.Misc.withDefault
 
@@ -27,9 +27,9 @@ class VcsRootWrapper implements VcsRoot {
         this.log = log
     }
 
-    @Override VcsProject.LogResult log(java.util.Date fromDate, java.util.Date toDate) {
+    @Override VcsProject.LogResult log(TimeRange timeRange) {
         def reader = new IJCommitReader(project, log)
-        def commits = reader.readCommits(new Date(fromDate), new Date(toDate), [vcsRoot])
+        def commits = reader.readCommits(timeRange, [vcsRoot])
 
         def result = []
         for (IJCommit ijCommit in commits) {

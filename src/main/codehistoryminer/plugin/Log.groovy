@@ -1,12 +1,17 @@
 package codehistoryminer.plugin
 
-import codehistoryminer.publicapi.lang.Date
 import codehistoryminer.plugin.historystorage.HistoryStorage
 import codehistoryminer.plugin.ui.UI
 import codehistoryminer.plugin.vcsaccess.VcsActionsLog
+import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.VcsRoot
+import org.vcsreader.lang.TimeRange
+
+import java.time.format.DateTimeFormatter
+
+import static java.time.ZoneOffset.UTC
 
 class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeHistoryMinerPluginLog {
 	private final logger = Logger.getInstance("CodeHistoryMining")
@@ -23,8 +28,11 @@ class Log implements VcsActionsLog, HistoryStorage.Log, UI.Log, CodeHistoryMiner
 		logger.info((String) entry.key + ": " + entry.value)
 	}
 
-	@Override errorReadingCommits(Exception e, Date fromDate, Date toDate) {
-		logger.warn("Error while reading commits from ${fromDate} to ${toDate}", e)
+	@Override errorReadingCommits(Exception e, TimeRange timeRange) {
+		def formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(UTC)
+		def from = formatter.format(timeRange.from())
+		def to = formatter.format(timeRange.to())
+		logger.warn("Error while reading commits from ${from} to ${to}", e)
 	}
 
 	@Override errorReadingCommits(String error) {
