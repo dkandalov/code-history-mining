@@ -12,6 +12,8 @@ import org.vcsreader.VcsRoot
 import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Commit
 
+import java.time.Instant
+
 import static codehistoryminer.core.lang.Misc.withDefault
 
 class VcsRootWrapper implements VcsRoot {
@@ -47,9 +49,9 @@ class VcsRootWrapper implements VcsRoot {
 
 	        def commitTime
 	        if (ijCommit instanceof VcsShortCommitDetails) {
-		        commitTime = new java.util.Date(ijCommit.authorTime)
+		        commitTime = Instant.ofEpochMilli(ijCommit.authorTime)
 	        } else {
-		        commitTime = ijCommit.commitDate
+		        commitTime = Instant.ofEpochMilli(ijCommit.commitDate.time)
 	        }
 	        def commit = new Commit(
                     revision,
