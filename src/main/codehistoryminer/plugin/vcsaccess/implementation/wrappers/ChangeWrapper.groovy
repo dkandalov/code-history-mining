@@ -69,10 +69,10 @@ class ChangeWrapper implements VcsChange {
 
     private static VcsChange.Type convert(IJChange.Type changeType) {
         switch (changeType) {
-            case IJChange.Type.MODIFICATION: return VcsChange.Type.MODIFIED
-            case IJChange.Type.NEW: return VcsChange.Type.ADDED
-            case IJChange.Type.DELETED: return VcsChange.Type.DELETED
-            case IJChange.Type.MOVED: return VcsChange.Type.MOVED
+            case IJChange.Type.MODIFICATION: return VcsChange.Type.Modified
+            case IJChange.Type.NEW: return VcsChange.Type.Added
+            case IJChange.Type.DELETED: return VcsChange.Type.Deleted
+            case IJChange.Type.MOVED: return VcsChange.Type.Moved
             default: throw new IllegalStateException("Unknown change type: ${changeType}")
         }
     }
