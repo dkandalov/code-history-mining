@@ -27,9 +27,11 @@ dependencies {
     compile "codehistoryminer:core:1.0"
     compile "org.vcsreader:vcsreader:1.1.0"
     compile "org.apache.commons:commons-csv:1.0"
-    compile "liveplugin:live-plugin:0.5.10 beta"
+    compile "liveplugin:live-plugin:0.5.11 beta"
+	compile "org.jetbrains:annotations-java5:15.0" // use java5 annotations because groovy can't compile java8 @NotNull annotations
 
-    provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", exclude: "groovy-all*.jar")
+	// exclude kotlin and annotations.jar because java8 annotations are not compiling with groovy
+	provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", excludes: ["groovy-all*.jar", "kotlin*.jar", "annotations.jar"])
     provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
 }
 
@@ -102,46 +104,45 @@ task zipPlugin(dependsOn: jarPlugin) << {
 }
 
 task downloadMavenDependencies() << {
-    copyAllMavenDependenciesTo("lib", [configurations.compile])
-}
-
-def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
-    Collection<File> files = configuration.files
-    def allDependencies = allDependenciesOf(configuration.resolvedConfiguration)
-
-    def dependenciesInfo = allDependencies.collect { ResolvedDependency dependency ->
-        def relativePath = (dependency.moduleGroup.split("\\.") + [dependency.moduleName, dependency.moduleVersion]).join(File.separator)
-        [path: relativePath, fileName: dependency.moduleName + "-" + dependency.moduleVersion + ".jar"]
-    }
-    if (!files.collect{it.name}.containsAll(dependenciesInfo.collect{it.fileName})) {
-        throw new IllegalStateException(
-                "Expected files to contain all dependencies. But was\n" +
-                "files:\n${files.join("\n")}\n" +
-                "dependencies:\n${dependenciesInfo.join("\n")}"
-        )
-    }
-
-    dependenciesInfo.each { dependencyInfo ->
-        def file = files.find { it.name == dependencyInfo.fileName }
-        def dir = new File(targetDirPath + File.separator + dependencyInfo.path)
-        dir.mkdirs()
-	    println("Copying: ${file.canonicalPath}")
-        new groovy.util.AntBuilder().copy(
-                file: file.canonicalPath,
-                todir: dir.canonicalPath
-        )
-    }
+	copyAllMavenDependenciesTo("lib", [configurations.compile])
 }
 def copyAllMavenDependenciesTo(String targetDirPath, Collection<Configuration> configurations) {
-    ant.delete(dir: targetDirPath)
-    for (Configuration configuration : configurations) {
-        copyMavenDependenciesTo(targetDirPath, configuration)
-    }
+	ant.delete(dir: targetDirPath)
+	for (Configuration configuration : configurations) {
+		copyMavenDependenciesTo(targetDirPath, configuration)
+	}
+}
+def copyMavenDependenciesTo(String targetDirPath, Configuration configuration) {
+	def files = configuration.files
+	def allDependencies = allDependenciesOf(configuration.resolvedConfiguration)
+
+	def dependenciesInfo = allDependencies.collect { ResolvedDependency dependency ->
+		def relativePath = (dependency.moduleGroup.split("\\.") + [dependency.moduleName, dependency.moduleVersion]).join(File.separator)
+		[path: relativePath, fileName: dependency.moduleName + "-" + dependency.moduleVersion + ".jar"]
+	}
+	if (!files.collect{it.name}.containsAll(dependenciesInfo.collect{it.fileName})) {
+		throw new IllegalStateException(
+				"Expected files to contain all dependencies. But was\n" +
+						"files:\n${files.join("\n")}\n" +
+						"dependencies:\n${dependenciesInfo.join("\n")}"
+		)
+	}
+
+	dependenciesInfo.each { dependencyInfo ->
+		def file = files.find { it.name == dependencyInfo.fileName }
+		def dir = new File(targetDirPath + File.separator + dependencyInfo.path)
+		dir.mkdirs()
+		println("Copying: ${file.canonicalPath}")
+		new groovy.util.AntBuilder().copy(
+				file: file.canonicalPath,
+				todir: dir.canonicalPath
+		)
+	}
 }
 def allDependenciesOf(ResolvedConfiguration configuration) {
-    configuration.firstLevelModuleDependencies.collectMany { allDependenciesOf(it) }
+	configuration.firstLevelModuleDependencies.collectMany { allDependenciesOf(it) }
 }
 def allDependenciesOf(ResolvedDependency dependency, Set result = []) {
-    if (result.containsAll(dependency.children)) [dependency]
-    else [dependency] + dependency.children.collectMany{ child -> allDependenciesOf(child) }
+	if (result.containsAll(dependency.children)) [dependency]
+	else [dependency] + dependency.children.collectMany{ child -> allDependenciesOf(child) }
 }
