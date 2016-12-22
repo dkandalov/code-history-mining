@@ -63,7 +63,7 @@ class VcsRootWrapper implements VcsRoot {
             result.add(commit)
         }
 
-        new LogResult(result, [])
+        new LogResult(result)
     }
 
 	private List<VcsChange> wrapChangesFrom(IJCommit ijCommit) {
