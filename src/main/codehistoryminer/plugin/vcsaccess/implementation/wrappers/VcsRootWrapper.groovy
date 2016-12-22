@@ -6,9 +6,7 @@ import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
 import com.intellij.vcs.log.VcsShortCommitDetails
-import org.vcsreader.VcsChange
-import org.vcsreader.VcsProject
-import org.vcsreader.VcsRoot
+import org.vcsreader.*
 import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Commit
 
@@ -29,7 +27,7 @@ class VcsRootWrapper implements VcsRoot {
         this.log = log
     }
 
-    @Override VcsProject.LogResult log(TimeRange timeRange) {
+    @Override LogResult log(TimeRange timeRange) {
         def reader = new IJCommitReader(project, log)
         def commits = reader.readCommits(timeRange, [vcsRoot])
 
@@ -65,7 +63,7 @@ class VcsRootWrapper implements VcsRoot {
             result.add(commit)
         }
 
-        new VcsProject.LogResult(result, [])
+        new LogResult(result, [])
     }
 
 	private List<VcsChange> wrapChangesFrom(IJCommit ijCommit) {
@@ -80,16 +78,24 @@ class VcsRootWrapper implements VcsRoot {
 		s.substring(i + 1)
 	}
 
-    @Override VcsProject.LogFileContentResult logFileContent(String filePath, String revision) {
+    @Override LogFileContentResult logFileContent(String filePath, String revision) {
         throw new IllegalStateException("Method should never be called (filePath: ${filePath}; revision: ${revision})")
     }
 
-    @Override VcsProject.UpdateResult update() {
+    @Override UpdateResult update() {
         throw new UnsupportedOperationException()
     }
 
-    @Override VcsProject.CloneResult cloneToLocal() {
+    @Override CloneResult cloneToLocal() {
         throw new UnsupportedOperationException()
     }
+
+	@Override String repoFolder() {
+		vcsRoot.path.path
+	}
+
+	@Override String repoUrl() {
+		throw new UnsupportedOperationException()
+	}
 }
 
