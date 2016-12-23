@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project as IJProject
 import com.intellij.openapi.vcs.VcsRoot as IJVcsRoot
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as IJCommit
 import com.intellij.vcs.log.VcsShortCommitDetails
+import org.jetbrains.annotations.NotNull
 import org.vcsreader.*
 import org.vcsreader.lang.TimeRange
 import org.vcsreader.vcs.Commit
@@ -90,7 +91,7 @@ class VcsRootWrapper implements VcsRoot {
         throw new UnsupportedOperationException()
     }
 
-	@Override String repoFolder() {
+	@NotNull @Override String repoFolder() {
 		vcsRoot.path.path
 	}
 
