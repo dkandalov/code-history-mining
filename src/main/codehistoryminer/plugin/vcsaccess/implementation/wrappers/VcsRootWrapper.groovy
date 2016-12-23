@@ -98,5 +98,9 @@ class VcsRootWrapper implements VcsRoot {
 	@Override String repoUrl() {
 		throw new UnsupportedOperationException()
 	}
+
+	@Override boolean cancelLastCommand() {
+		throw new UnsupportedOperationException()
+	}
 }
 
