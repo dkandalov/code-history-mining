@@ -87,7 +87,7 @@ class VcsRootWrapper implements VcsRoot {
         throw new UnsupportedOperationException()
     }
 
-    @Override CloneResult cloneToLocal() {
+    @Override CloneResult cloneIt() {
         throw new UnsupportedOperationException()
     }
 
