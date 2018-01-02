@@ -25,7 +25,7 @@ import static codehistoryminer.publicapi.analysis.filechange.ChangeType.MODIFIED
 
 class CodeHistoryMinerPluginTest {
 
-	@Test def "on VCS update does nothing if already grabbed on this date"() {
+	@Test void "on VCS update does nothing if already grabbed on this date"() {
 		// given
 		def grabbedVcs = false
 		def historyStorage = stub(HistoryStorage, [
@@ -47,7 +47,7 @@ class CodeHistoryMinerPluginTest {
 		assert !grabbedVcs
 	}
 
-	@Test def "on VCS update grabs history from today to the latest event in file history"() {
+	@Test void "on VCS update grabs history from today to the latest event in file history"() {
 		// given
 		List<DateRange> grabbedDateRanges = null
 		def historyStorage = stub(HistoryStorage, [
@@ -74,7 +74,7 @@ class CodeHistoryMinerPluginTest {
         assert grabbedDateRanges == [new DateRange(date("20/11/2012"), date("23/11/2012"))]
     }
 
-	@Test def "on grab history should register VCS update listener"() {
+	@Test void "on grab history should register VCS update listener"() {
 		// given
 		def listeningToProject = ""
 		def ui = stub(UI, [
