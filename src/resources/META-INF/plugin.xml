@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>CodeHistoryMining</id>
     <name>Code History Mining</name>
     <version>0.3.2 beta</version>

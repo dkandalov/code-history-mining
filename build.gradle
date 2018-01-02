@@ -1,29 +1,36 @@
-//plugins {
-//	id "org.jetbrains.intellij" version "0.2.16"
-//}
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "http://dl.bintray.com/jetbrains/intellij-plugin-service" }
+	}
+}
+plugins {
+	id "org.jetbrains.intellij" version "0.2.16"
+}
 apply plugin: "java"
 apply plugin: "groovy"
-apply plugin: "maven"
-
-ext.home = System.env.HOME
-ext.basePath = System.getProperty("user.dir")
-ext.ideaPath = "/Applications/IntelliJ IDEA 2016.app/Contents"
+apply plugin: "idea"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
 	mavenCentral()
-    maven { url "lib" }
 	ivy {
 		layout "pattern"
 		artifactPattern "./lib/[artifact]-[revision](.[ext])"
 	}
 }
-
-configurations {
-    provided
-    compile.extendsFrom provided
+intellij {
+	// (to find available IDE versions see https://www.jetbrains.com/intellij-repository/releases)
+	def ideVersion = System.getenv().getOrDefault("IDEA_VERSION", "IU-172.3757.29")
+	println("Using ide version: ${ideVersion}")
+	version ideVersion
+	pluginName = "CodeHistoryMining"
+	downloadSources = true
+	sameSinceUntilBuild = false
+	updateSinceUntilBuild = false
+	plugins = ["git4idea"]
 }
 
 dependencies {
@@ -34,25 +41,18 @@ dependencies {
     compile "org.apache.commons:commons-csv:1.0"
     compile "liveplugin:live-plugin:0.6.3 beta"
 	compile "org.jetbrains:annotations-java5:15.0" // use java5 annotations because groovy can't compile java8 @NotNull annotations
-
-	// exclude kotlin and annotations.jar because java8 annotations are not compiling with groovy
-	provided fileTree(dir: "${ideaPath}/lib/", include: "*.jar", excludes: ["groovy-all*.jar", "kotlin*.jar", "annotations.jar"])
-    provided fileTree(dir: "${ideaPath}/plugins/git4idea/lib/", include: "*.jar")
 }
 
 sourceSets {
     main {
-        java { srcDir "./src/main" }
-        groovy { srcDir "./src/main" }
+        java { srcDir "src/main" }
 	    resources { srcDir "src/resources" }
     }
 	test {
-		java { srcDir "./src/test" }
-		groovy { srcDir "./src/test" }
+		java { srcDir "src/test" }
 	}
 }
 
-//noinspection GroovyAssignabilityCheck
 task jarPlugin(dependsOn: [compileGroovy]) << {
 	def libDir = "${basePath}/lib"
 	def srcDir = "${basePath}/src/main"

@@ -1,4 +1,5 @@
 package codehistoryminer.plugin.vcsaccess.implementation
+
 import codehistoryminer.publicapi.lang.Date
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -8,11 +9,13 @@ import com.intellij.openapi.vcs.changes.Change
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList as Commit
 import com.intellij.openapi.vcs.versionBrowser.VcsRevisionNumberAware
+import org.junit.Ignore
 import org.junit.Test
 
 import static codehistoryminer.core.lang.DateTimeTestUtil.date
 import static codehistoryminer.plugin.vcsaccess.VcsActions.vcsRootsIn
 
+@Ignore // so that the project can be built in gradle
 class IJCommitReaderGitTest {
 
 	@Test void "renamed file is interpreted as a single event"() {
