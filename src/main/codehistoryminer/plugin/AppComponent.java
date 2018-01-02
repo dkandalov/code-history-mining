@@ -17,8 +17,8 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static liveplugin.IDEUtil.askIfUserWantsToRestartIde;
-import static liveplugin.IDEUtil.downloadFile;
+import static liveplugin.IdeUtil.askIfUserWantsToRestartIde;
+import static liveplugin.IdeUtil.downloadFile;
 
 public class AppComponent implements ApplicationComponent {
     private static final String pluginId = "CodeHistoryMining";

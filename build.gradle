@@ -1,6 +1,9 @@
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'maven'
+//plugins {
+//	id "org.jetbrains.intellij" version "0.2.16"
+//}
+apply plugin: "java"
+apply plugin: "groovy"
+apply plugin: "maven"
 
 ext.home = System.env.HOME
 ext.basePath = System.getProperty("user.dir")
@@ -9,11 +12,13 @@ ext.ideaPath = "/Applications/IntelliJ IDEA 2016.app/Contents"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-
 repositories {
 	mavenCentral()
-	mavenLocal()
-    maven { url 'lib' }
+    maven { url "lib" }
+	ivy {
+		layout "pattern"
+		artifactPattern "./lib/[artifact]-[revision](.[ext])"
+	}
 }
 
 configurations {
@@ -27,7 +32,7 @@ dependencies {
     compile "codehistoryminer:core:1.0"
     compile "org.vcsreader:vcsreader:1.1.0"
     compile "org.apache.commons:commons-csv:1.0"
-    compile "liveplugin:live-plugin:0.5.11 beta"
+    compile "liveplugin:live-plugin:0.6.3 beta"
 	compile "org.jetbrains:annotations-java5:15.0" // use java5 annotations because groovy can't compile java8 @NotNull annotations
 
 	// exclude kotlin and annotations.jar because java8 annotations are not compiling with groovy
